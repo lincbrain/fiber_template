@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
-"""Compare the seven MRI template variants without their two in-sample biases (Table 1 and the supplementary variant tables).
+"""Compare the seven MRI templates built from different channel combinations, without their two in-sample biases (Table 1 and the
+supplementary template tables), so that the comparison does not favor a template for having seen the brain it is scored on.
 
 You need (configs/products_mri.yaml)
-  crossmodal_cache: every variant's warped inputs; template_mri: the template's supports and FA; mri_runs: the four-channel run's
+  crossmodal_cache: every template's warped inputs; template_mri: the template's supports and FA; mri_runs: the four-channel run's
   coverage mask and the evaluators' records; numbers_of_record: the old-metrics records.
 
 What it does
   1. checks that it reproduces the evaluators' in-sample values (to 1e-9) before changing anything;
   2. computes the template-referenced measures (T2 NMI, fraction MAE, tensor overlap) in sample and leaving each brain out of its
      own reference;
-  3. computes the pairwise measures (fiber angle in white matter = FA > 0.25, b0 r, mask Dice) on all pairs and on the pairs of
+  3. computes the pairwise measures (angular error between principal eigenvectors in white matter = FA > 0.25, Pearson r between the
+     warped b0 images, Dice coefficient between the warped brain masks) on all pairs and on the pairs of
      distinct brains (a brain against its own mirror is left out);
   4. compares four-channel with T2 + tensor per brain, with an exact paired bootstrap over the brains;
-  5. ranks the variants before and after the correction.
+  5. ranks the templates before and after the correction.
 
 You get
   $LINC_NUMBERS/variants_leave_self_out_rebuild_fa025.json

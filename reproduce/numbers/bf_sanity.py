@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
-"""The sanity pass over the 21 reconstructed blockface volumes (linc/blockface/sanity.py: orientation, grayscale vs mask, the side of the
-marker tubes, size against the cohort, alignment through the stack). Paper: Results, "All 21 photographed stacks were reconstructed".
--> $LINC_NUMBERS/bf_sanity.json
+"""The sanity check of the 21 reconstructed blockface volumes (Results, "All 21 photographed stacks were reconstructed").
+
     python reproduce/numbers/bf_sanity.py
+
+You need
+  the 21 reconstructions ($LINC_DATA/sub-<ID>/blockface).
+What it does
+  linc/blockface/sanity.py on all 21: orientation, grayscale against mask, the side of the marker tubes, size against the cohort,
+  alignment through the stack.
+You get
+  $LINC_NUMBERS/bf_sanity.json.
 """
 import copy
 import sys

@@ -7,7 +7,7 @@ You need (configs/products_mri.yaml)
 
 What it does
   measures every label's volume under three rules: footprint (density >= 0.1), solid (density > 0.5) and, for the bundles, the
-  connected pathway with its inferred share; groups are measured on the group's own density (the union of the classes is kept beside).
+  connected pathway with its inferred fraction; groups are measured on the group's own density (the union of the classes is kept beside).
 
 You get
   $LINC_NUMBERS/tracer_label_volumes_v2c.json
@@ -25,8 +25,10 @@ CONNECTED_FROM = "work" if "--connected-from" in sys.argv and sys.argv[sys.argv.
 if "--connected-from" in sys.argv:
     i = sys.argv.index("--connected-from"); del sys.argv[i:i + 2]
 SUBS = [
+    ('internal_capsule=f"SARM level 6 label {IC_LABEL} (ic) carried into the template; + 0.5 mm = 2 binary dilations (Fig. 9 c)"',
+     'internal_capsule=f"SARM level 6 label {IC_LABEL} (ic) transformed to the template; + 0.5 mm = 2 binary dilations (the capsule panel of the tracer figure)"'),
     ('RULE_TEXT = {"footprint": "density >= 0.1 (what Fig. 9 shows)", "solid": "density > 0.5"}',
-     'RULE_TEXT = {"footprint": "density >= 0.1 (what Fig. 9 shows)", "solid": "density > 0.5", "connected": "the connected pathway: density > 0.5 seeds grown through >= 0.25 (26-connected) plus the inferred joins that connect every piece into one pathway (tracer_connected_v2c; bundles; terminals keep the grown solid)"}'),
+     'RULE_TEXT = {"footprint": "density >= 0.1 (what the tracer figure shows)", "solid": "density > 0.5", "connected": "the connected pathway: density > 0.5 seeds grown through >= 0.25 (26-connected) plus the inferred joins that connect every component into one pathway (tracer_connected_v2c; bundles; terminals keep the grown solid)"}'),
     ('    ap.add_argument("--labels", default="tracer_template_r058d", help="label folder: a key of configs/products_blockface.yaml")\n'
      '    ap.add_argument("--name", default="tracer_label_volumes_r058d", help="record name ($LINC_NUMBERS/<name>.json)")\n'
      '    a = ap.parse_args()\n'

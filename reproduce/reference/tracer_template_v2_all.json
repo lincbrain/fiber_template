@@ -190,7 +190,7 @@
    "MF191": "paper/numbers/tracer_template_v2_mf191.json"
   },
   "audit_rematch": {
-   "rule": "paper/numbers/tracer_match_audit_r058.json credible offsets (found despite the scan's bias to the record slice); decided 30 Oct 2026: move only where the tissue outline agrees",
+   "rule": "paper/numbers/tracer_match_audit_r058.json credible offsets (detected despite the scan's bias to the record slice); decided 30 Oct 2026: move only where the tissue outline agrees",
    "MR243_s03_0001": {
     "decision": "moved to the audited slice",
     "slice_record": 8,
@@ -223,10 +223,10 @@
    }
   },
   "label_sources": {
-   "MR243": "labels/tracer_v2 (histo_interp_v2.py on the sheets of record labels/push_tracer_r058d: the grades of a group interpolated as one label, per-hemisphere pairing, ends extended to mid-gap), carried by the chain of record",
-   "MR252": "labels/tracer_v2 (histo_interp_v2.py on the sheets of record labels/push_tracer_r058d: the grades of a group interpolated as one label, per-hemisphere pairing, ends extended to mid-gap), carried by the chain of record",
-   "MR256": "labels/tracer_v2 (histo_interp_v2.py on the sheets of record labels/push_tracer_r058d: the grades of a group interpolated as one label, per-hemisphere pairing, ends extended to mid-gap), carried by the chain of record",
-   "MF191": "labels/tracer_v2 (histo_interp_v2.py on the sheets of record labels/push_tracer_r058d: the grades of a group interpolated as one label, per-hemisphere pairing, ends extended to mid-gap), carried by the chain of record"
+   "MR243": "labels/tracer_v2 (histo_interp_v2.py on the sheets of record labels/push_tracer_r058d: the grades of a group interpolated as one label, per-hemisphere pairing, ends extended to mid-gap), transformed by the registrations of record",
+   "MR252": "labels/tracer_v2 (histo_interp_v2.py on the sheets of record labels/push_tracer_r058d: the grades of a group interpolated as one label, per-hemisphere pairing, ends extended to mid-gap), transformed by the registrations of record",
+   "MR256": "labels/tracer_v2 (histo_interp_v2.py on the sheets of record labels/push_tracer_r058d: the grades of a group interpolated as one label, per-hemisphere pairing, ends extended to mid-gap), transformed by the registrations of record",
+   "MF191": "labels/tracer_v2 (histo_interp_v2.py on the sheets of record labels/push_tracer_r058d: the grades of a group interpolated as one label, per-hemisphere pairing, ends extended to mid-gap), transformed by the registrations of record"
   },
   "v2": {
    "interpolation": "labels/histo_interp_v2.py",

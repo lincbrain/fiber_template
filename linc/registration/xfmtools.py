@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
-"""Pull maps between world spaces, composed and applied with one interpolation; linear registration with symmetry-preserving
-parametrisations.
+"""Transforms between world spaces, composed and applied with one interpolation, and linear registration with parametrizations that
+keep the left-right symmetry.
 
-A transform from space SRC to space TGT is stored as a PULL map evaluated on the TGT grid,
+You need
+  images in world space (NIfTI) and transforms in the form below.
+What it does
+  A transform from space SRC to space TGT is stored as a pull map evaluated on the TGT grid (for each TGT point, where to sample
+  SRC):
+          src_world = L @ (x + d(x))          x = TGT world point (RAS mm)
+  with L a 4x4 RAS world matrix and d a displacement field in RAS mm sampled on a named TGT grid (d may be absent). Chains are
+  composed as world maps and applied once (one interpolation of the source image, linear or nearest). FireANTs/ANTs fields are
+  LPS-signed in x and y on disk: `read_fireants_field` converts them to RAS on load.
+  Linear registration, for template-to-template steps whose two frames both have their mid-sagittal plane at x = 0:
+      'pitch_yz'   rotation about x + (ty, tz)                                   3 dof
+      'sym_affine' diag(sx) (+) a general 2x2 on (y, z) + (ty, tz)               7 dof
+                   (the most general affine that commutes with the left-right flip)
+  plus the ordinary 'rigid' (6), 'similarity' (7) and 'affine' (12). Cost: NCC (sign selectable) on masked, downsampled images;
+  Powell's method.
+You get
+  composed and resampled images; on disk (`save_map` / `load_map`): <name>_L.txt (4x4 RAS world), optional <name>_d.nii.gz (RAS mm
+  on its grid) and maps.json.
 
-        src_world = L @ (x + d(x))          x = TGT world point (RAS mm)
-
-with L a 4x4 RAS world matrix and d a displacement field in RAS mm sampled on a named TGT grid (d may be absent). Chains are
-composed as world maps and applied ONCE (one interpolation of the source image, linear or nearest). FireANTs/ANTs fields are x/y
-LPS-signed on disk: `read_fireants_field` converts them to RAS on load.
-
-On disk (`save_map` / `load_map`): <name>_L.txt (4x4 RAS world), optional <name>_d.nii.gz (RAS mm on its grid) and maps.json.
-
-Linear registration with SYMMETRY-PRESERVING parametrisations (for template<->template steps whose two frames both have their
-mid-sagittal plane at x = 0):
-    'pitch_yz'   rotation about x + (ty, tz)                                   3 dof
-    'sym_affine' diag(sx) (+) a general 2x2 on (y, z) + (ty, tz)               7 dof
-                 -- the most general affine that commutes with the x-flip
-plus ordinary 'rigid' (6), 'similarity' (7), 'affine' (12). Cost = NCC (sign selectable) on masked, downsampled images, Powell.
-
-Ported unchanged from the analysis project's featurereg/xfmtools.py (only this docstring is new).
+Ported unchanged from the analysis project's featurereg/xfmtools.py.
 """
 import json
 import os

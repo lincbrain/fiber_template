@@ -1,24 +1,31 @@
-"""The blockface template's finish (Methods, "Blockface template"; reproduce/templates/blockface.md, stage E): the published template
-is not MMORF's own average. Every input is pulled ONCE from its 0.25 mm completed volume through its final (step-8) MMORF warp,
-on the step-8 box (the run-113 box's 0.25 mm lattice), and the members are averaged with precision weights:
-    recon point x -> the input's MMORF warp (fsl_rel, on its canon2 0.25 mm grid) -> x-mirror if it is a flipped twin (exact: the grid
-    is symmetric about x = 0) -> the seam flattening (from the completion cache's seam.json; the identity here) -> sample.
-Per member, a REAL part and a SYNTHETIC part (precision rule; the author's ruling, w = 1/(tau^2 + sigma^2)):
-    a_i = r_i [phi_i / tau2 + (1 - phi_i) / (tau2 + s2_interp)],   b_i = (1 - r_i) m_i / (tau2 + s2_syn(D_i))
-    template = sum_i (a_i R_i + b_i S_i) / sum_i (a_i + b_i)
-with r_i the member's seam ramp, phi_i its photographed fraction, D_i the depth past its photographed end, m_i = 1 for a brain with
-MRI and 0 for one without (whose synthesis carries no weight); tau2, s2_interp and s2_syn(d) from the precision JSON. The
-non-tissue shell inside each member's photographed extent gets weight 0 (shell rule, 1 mm). Every product is symmetrized,
-0.5 (V + M(V)), and its exact symmetry asserted.
-The b0 channel is pulled through the same warps: every member's brain at full weight, except the 8 brains without MRI, whose
-weight is their step-8 b0 cost mask (the author's step-8 rule); TPL (the MRI template's b0) enters once, through the bridge.
-`embed` pads the box products onto the run-113 grid's 2x refinement at an integer offset (no resampling).
+"""The blockface template's final average (Methods, "Blockface template"; reproduce/templates/blockface.md, stage E). The published
+template is not MMORF's own average: each input is resampled once from its 0.25 mm volume through its final MMORF warp, and the
+members are averaged with weights from their expected error, so photographed tissue counts more than synthesized tissue.
 
-Ported from the analysis project: bftemplate/finish_t1.py (the precision rule with the shell rule, the rule of record; the eps and
-handover rules were superseded), bftemplate/d2b/finish_d2bs8w_b0.py, bftemplate/d2b/finish_d2bs8.py (the step-8 box and `embed`),
-bftemplate/finish_hr.py, bftemplate/prep_t1.py, bftemplate/d2/prep_d2.py (the one b0 rule) and synthesis/code/flatten_seam.py
-(`rotation_to`); function bodies unchanged. Paths recorded inside the products are re-rooted (linc.paths.rerooted); the others
-come from configs/products_blockface.yaml.
+You need
+  the eighth step's MMORF warps, every input's 0.25 mm volume (photographed and synthesized tissue) with its photographed fraction,
+  and the precision JSON (the variances below); file locations: configs/products_blockface.yaml.
+What it does
+  For each point x of the eighth step's box: x -> the input's MMORF warp (fsl_rel, on its 0.25 mm grid) -> mirrored in x for a
+  mirror image (exact: the grid is symmetric about x = 0) -> the seam flattening (from the synthesis cache's seam.json; the
+  identity here) -> sampled. Per member, a photographed part R and a synthesized part S, weighted w = 1/(tau^2 + sigma^2):
+      a_i = r_i [phi_i / tau2 + (1 - phi_i) / (tau2 + s2_interp)],   b_i = (1 - r_i) m_i / (tau2 + s2_syn(D_i))
+      template = sum_i (a_i R_i + b_i S_i) / sum_i (a_i + b_i)
+  with r_i the member's ramp at its junction plane, phi_i its photographed fraction, D_i the depth past its photographed end, and
+  m_i = 1 for a brain with MRI and 0 for one without (whose synthesized tissue gets no weight); tau2, s2_interp (interpolated
+  sections) and s2_syn(d) (synthesized tissue at depth d) from the precision JSON. The non-tissue shell inside each member's
+  photographed extent gets weight 0 (1 mm). Every product is symmetrized, 0.5 (V + M(V)), and its exact symmetry asserted. The b0
+  channel goes through the same warps: every member's brain at full weight, except the 8 brains without MRI, whose weight is their
+  b0 cost mask of the eighth step; TPL (the MRI template's b0) once, through the bridge.
+You get
+  the template's channels on the eighth step's box; `embed` pads them onto the 2x refinement of the frame of record at an integer
+  offset (no resampling).
+
+Ported from the analysis project: bftemplate/finish_t1.py (the precision rule with the shell rule),
+bftemplate/d2b/finish_d2bs8w_b0.py, bftemplate/d2b/finish_d2bs8.py (the eighth step's box and `embed`), bftemplate/finish_hr.py,
+bftemplate/prep_t1.py, bftemplate/d2/prep_d2.py (the one b0 rule) and synthesis/code/flatten_seam.py (`rotation_to`); function
+bodies unchanged. Paths recorded inside the products are re-rooted (linc.paths.rerooted); the others come from
+configs/products_blockface.yaml.
 """
 import argparse
 import glob

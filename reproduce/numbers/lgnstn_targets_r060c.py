@@ -1,24 +1,31 @@
 #!/usr/bin/env python3
-"""The LGN and STN of MM1-MM3 (the observer's labels of record) carried into each of the three registration targets of the target
-comparison (NMT v2, CIVM-R, our template; linc/evaluation/targets.py) and their agreement between brains in each target space (paper:
-Results, "The template as a registration target", Table 3). Reference row: the same labels carried in the same run through the paper's
-own MRI-based alignment (the R5 of record) onto our template.
+"""How well the LGN and STN of MM1-MM3 agree between brains in each of the three registration targets of the target comparison (NMT
+v2, CIVM-R, our template; linc/evaluation/targets.py), with the labels transformed into each target (Results, "The template as a
+registration target", Table 3). Reference row: the same labels transformed in the same run through the paper's own MRI-based
+alignment onto our template.
 
-Carry (the dense rule of the labels of record): the demons-interpolated blockface label (products_mri.yaml `push_current`:
-<S>/<S>_<st>_bfnative_L2_demons.nii.gz) cropped to its box + 2 mm (at least 1 mm along the section axis), Gaussian anti-aliasing per
-source axis (FWHM = max(source spacing, target voxel)), ONE linear resample through the chain, probability > 0.5.
-Chain: the brain's R1 of record (registry bf-native -> b0-native, configs/subjects/<ID>.yaml variant_of_record; QC must pass), then
-the target-comparison entry (products_blockface.yaml `r060_runs`/xfm/sub-<S>/b0-native__to__<target>; no registry QC status: the chain is
-non-strict) or, for the reference row, the R5 of record (registry b0-native -> mri-template, strict) onto the template's b0 grid.
-Each target's grid is its prepared image in $LINC_WORK/r060/targets (run reproduce/numbers/r060_target_comparison.py, or
-`python -m linc.evaluation.targets prep`, first).
-Agreement per target: the three pairs of brains x four hemisphere-structures; Dice, ASSD (mm), centroid distance (mm); also in
-"ours-scale" mm (x (V_ours / V_target)^(1/3), V = the target's brain-mask volume). The record also carries, unchanged, the superseded
-r060b summaries (products: numbers_of_record) and the r060b carry's blockface volumes (`lgnstn_r060b_carries`).
--> $LINC_WORK/r060c/<S>/<S>_<st>_<target>_{prob,mask}_demons.nii.gz, carry_<S>.json; $LINC_NUMBERS/lgnstn_targets_r060c.json
     python reproduce/numbers/lgnstn_targets_r060c.py [--carry-only S ...] [--score-only]
-Ported from the analysis project's labels/r060/lgnstn_targets_r060.py (1 Nov 2026, the r060c version). The record's free-text `method`
-is kept as the analysis wrote it (METHOD below; its internal request names removed on 3 Nov 2026), as for every record.
+
+You need
+  the observer's labels of record on the blockface (products_mri.yaml `push_current`: <S>/<S>_<st>_bfnative_L2_demons.nii.gz); each
+  brain's blockface-to-b0 registration of record (registry bf-native -> b0-native, configs/subjects/<ID>.yaml variant_of_record;
+  its QC must pass); the target comparison's entries (products_blockface.yaml `r060_runs`/xfm/sub-<S>/b0-native__to__<target>) and,
+  for the reference row, the b0-to-template registration of record (registry b0-native -> mri-template); each target's prepared
+  image in $LINC_WORK/r060/targets (run reproduce/numbers/r060_target_comparison.py, or `python -m linc.evaluation.targets prep`,
+  first).
+What it does
+  Transform (the dense rule of the labels of record): each label cropped to its box + 2 mm (at least 1 mm along the section axis),
+  Gaussian anti-aliasing per source axis (FWHM = max(source spacing, target voxel)), one linear resample through the chain,
+  probability > 0.5. Agreement per target: the three pairs of brains x four hemisphere-structures; the Dice coefficient, the
+  average symmetric surface distance (mm) and the centroid distance (mm) between the two brains' labels; also in "ours-scale" mm
+  (x (V_ours / V_target)^(1/3), V = the target's brain-mask volume).
+You get
+  $LINC_WORK/r060c/<S>/<S>_<st>_<target>_{prob,mask}_demons.nii.gz and carry_<S>.json; $LINC_NUMBERS/lgnstn_targets_r060c.json,
+  which also holds, unchanged, the superseded r060b summaries (products: numbers_of_record) and the r060b run's blockface volumes
+  (`lgnstn_r060b_carries`).
+
+Ported from the analysis project's labels/r060/lgnstn_targets_r060.py (1 Nov 2026, the r060c version). The record's free-text
+`method` is kept as the analysis wrote it (METHOD below; its internal request names removed on 3 Nov 2026), as for every record.
 """
 import argparse
 import itertools

@@ -19,7 +19,7 @@ Each model is a folder `$LINC_MODELS/segment/<task>/`:
 - `SHA256SUMS`, the checksums of `model.pt` and `spec.json`. `linc-register` checks them before it uses the MRI model.
 
 They come with the data release (`derivatives/models/segment/<model>/`). Check a downloaded copy with
-`python models/verify_weights.py models/segmentation.sha256 --root $LINC_MODELS/segment`; `models/segmentation.md` gives each
+`$PY models/verify_weights.py models/segmentation.sha256 --root $LINC_MODELS/segment`; `models/segmentation.md` gives each
 model's input, output, post-processing and parameters.
 
 ## Environment

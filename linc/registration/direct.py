@@ -1,22 +1,27 @@
-"""A brain's blockface registered DIRECTLY into a template, without its own MRI: onto a blockface template (route A of the route test,
-`to_blockface_template`) or onto the MRI template's b0 image (direct placement, `direct_placement`; paper: Methods, "Registration to
-the brain's own MRI and caudal completion": "the 8 brains without MRI were registered in the same way to the b0 image of the MRI
-template instead, a step we call direct placement").
+"""A brain's blockface registered directly to a template, without its own MRI: to a blockface template (the blockface-based
+alignment, `to_blockface_template`) or to the MRI template's b0 image (the cross-modal alignment, `direct_placement`: how the 8
+brains without MRI were registered; Methods, "Blockface to MRI registration and synthesis of missing sections").
 
-The chain (parameters in configs/registration.yaml `direct`):
-  1. a RIGID (6 dof) on the binary masks at 0.5 mm with a full-sphere search (+-180 deg; masks have no contrast to be fooled by, and a
-     rigid cannot stretch a truncated brain);
-  2. dof-7 (rigid + isotropic scale, correlation ratio) on the masked grayscale against a band of the template as long as the placed
-     brain, anchored whole / anterior / caudal (the measurement says which end is missing), scored on the whole template (NCC x
-     containment; the NCC's magnitude for the cross-modal b0 target);
-  3. direct placement only: dof-9 from the best dof-7 (a scale along each axis), kept only if every scale lies in [0.6, 1.25];
-  4. the template cut to the extent the placed brain covers (1 mm inside both A-P faces); the template's flat brainstem cut on both
-     inputs; the feature-based deformable registration on the template's 0.25 mm grid, padded (>= M mm of zeros, dims a multiple of K);
-  5. the products by ONE resample from the native pyramid through the linear map + warp: grayscale, RGB and mask on the template grid;
-     direct placement also writes its transform entry bf-native -> <template space>.
+You need
+  the brain's reconstruction and mask (<ID>_blockface.ome.zarr, <ID>_mask), the template image and its mask, FSL and the anatomix
+  environment (featurereg.py); parameters: configs/registration.yaml `direct`.
+What it does
+  1. a rigid registration (6 degrees of freedom) of the binary masks at 0.5 mm, searching all rotations (+-180 deg): masks have no
+     contrast to mislead it, and a rigid transform cannot stretch a brain whose caudal part is missing;
+  2. 7 degrees of freedom (rigid + isotropic scale, correlation ratio) on the masked grayscale, against a band of the template as
+     long as the brain, anchored whole, anterior or caudal (the measured length says which end is missing), scored on the whole
+     template (NCC x containment; the NCC's magnitude for the b0 target, whose contrast is inverted);
+  3. cross-modal alignment only: 9 degrees of freedom from the best 7 (a scale along each axis), kept only if every scale lies in
+     [0.6, 1.25];
+  4. the template cut to the part the brain covers (1 mm inside both A-P faces), and the brainstem cut flat on both inputs; the
+     feature-based deformable registration (featurereg.py) on the template's 0.25 mm grid, padded with zeros;
+  5. the products by one resample from the native pyramid through the linear transform and the warp (resample.py).
+You get
+  the grayscale, RGB and mask on the template grid; for the cross-modal alignment, also its registry entry bf-native -> <template
+  space> (linc/xfm.py).
 
-Ported from the analysis project: bftemplate/direct/register_direct.py (route A; its helpers) and featurereg/d2_s2_register.py (direct
-placement), the final settings only; unchanged numerically. Their automated QC gates are not part of the release.
+Ported from the analysis project: bftemplate/direct/register_direct.py (the blockface-based alignment) and
+featurereg/d2_s2_register.py (the cross-modal alignment), the final settings only, unchanged numerically.
 """
 import hashlib
 import json

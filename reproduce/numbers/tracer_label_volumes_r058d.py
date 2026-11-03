@@ -1,19 +1,23 @@
 #!/usr/bin/env python3
-"""The tracer labels' volumes in the MRI template, per case and class, under both label rules, with the share inside the template's
-white matter and, for the bundles, inside the SARM internal capsule (paper: Results, tracer labels; Supplementary Table S4).
+"""The tracer labels' volumes in the MRI template, per case and class, under both label rules, with the fraction inside the
+template's white matter and, for the bundles, inside the SARM internal capsule (Results, tracer labels; Supplementary Table S4).
 
-Labels: the final tracer labels in the template (configs/products_blockface.yaml `tracer_template_r058d`, the set of record for Fig. 9):
-<S>/<S>_<class>_mri-template_density.nii.gz, the carried density (0-1; the share of annotated source tissue in the 0.25 mm voxel).
-Rules: footprint = density >= 0.1 (what Fig. 9 shows; the _footprint files); solid = density > 0.5 (the _mri-template files). Both are
-recomputed from the density and asserted equal to the files.
-Masks, all on the template's 0.25 mm grid:
-  white matter      linc_mri_wm_fa025 = template FA > 0.25 inside the template brain mask (asserted)
-  internal capsule  SARM level 6 label 50 (ic, NMT v2 SARM key) carried into the template by the atlas mapping of record
-                    (`atlas_nmt`/SARM_level6_in_template.nii.gz); also + 0.5 mm (2 dilations), as Fig. 9 (c) draws it
-Groups as Fig. 9 draws them: bundles = Fiber_{light,moderate,dense}_bundle + Bundle (the "Fibers" strokes left out); terminals =
-Terminal_{light,moderate,dense}. Volumes in mm^3 (voxels x 0.015625); shares of the label's own voxels.
--> $LINC_NUMBERS/tracer_label_volumes_r058d.json
     python reproduce/numbers/tracer_label_volumes_r058d.py [--labels <products key>] [--name <record>]
+
+You need
+  labels   the final tracer labels in the template (configs/products_blockface.yaml `tracer_template_r058d`, the set of record for
+           Fig. 9): <S>/<S>_<class>_mri-template_density.nii.gz, the transformed density (0-1; the fraction of annotated source
+           tissue in the 0.25 mm voxel)
+  masks    on the template's 0.25 mm grid: white matter = linc_mri_wm_fa025 (template FA > 0.25 inside the template brain mask,
+           asserted); internal capsule = SARM level 6 label 50 (ic, NMT v2 SARM key) transformed into the template by the
+           registration of record (`atlas_nmt`/SARM_level6_in_template.nii.gz), also + 0.5 mm (2 dilations), as Fig. 9 (c) draws it
+What it does
+  Rules: footprint = density >= 0.1 (what Fig. 9 shows; the _footprint files); solid = density > 0.5 (the _mri-template files);
+  both recomputed from the density and asserted equal to the files. Groups as Fig. 9 draws them: bundles =
+  Fiber_{light,moderate,dense}_bundle + Bundle (the "Fibers" strokes left out); terminals = Terminal_{light,moderate,dense}.
+You get
+  $LINC_NUMBERS/tracer_label_volumes_r058d.json: volumes in mm^3 (voxels x 0.015625) and fractions of the label's own voxels.
+
 Ported from the analysis project's labels/tracer_label_volumes_r058.py (run there as --labels labels/tracer_template_r058d
 --name tracer_label_volumes_r058d).
 """

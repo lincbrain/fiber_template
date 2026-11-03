@@ -12,7 +12,7 @@ nnU-Net models (`models/blockface_segmentation.md`) and the MRI brain-mask netwo
 
 **The weights are not in git.**
 - Put each model's folder (`model.pt`, `spec.json`, `card.md`, `SHA256SUMS`) under `$LINC_MODELS/segment/<model>/`.
-- Check them with `python models/verify_weights.py models/segmentation.sha256 --root $LINC_MODELS/segment`.
+- Check them with `$PY models/verify_weights.py models/segmentation.sha256 --root $LINC_MODELS/segment`.
 - Download location: with the data release (`derivatives/models/segment/<model>/`).
 - `cli/linc-segment predict --model <model> ...` then finds them by name; `linc-reconstruct` and `linc-register` call it through
   `LINC_SEGMENT_PYTHON` (`env/deep.yml`).

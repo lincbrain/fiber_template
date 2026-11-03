@@ -3,7 +3,7 @@
 
 You need (configs/products_mri.yaml, configs/products_blockface.yaml)
   tracer_template_v2: the interpolated labels; tracer_template_v2c: the connected pathways (or --connected-from work);
-  atlas_nmt: the SARM level-6 atlas carried into the template (its internal capsule).
+  atlas_nmt: the SARM level-6 atlas transformed to the template (its internal capsule).
 
 What it does
   measures each case's position inside the capsule (dorsal-ventral and medial-lateral, over the whole limb and per coronal plane)
@@ -25,7 +25,7 @@ if "--connected-from" in sys.argv:
     i = sys.argv.index("--connected-from"); del sys.argv[i:i + 2]
 SUBS = [
     ('RULE_TEXT = {"footprint": "density >= 0.1 (what Fig. 9 shows)", "solid": "density > 0.5"}',
-     'RULE_TEXT = {"footprint": "density >= 0.1 (what Fig. 9 shows)", "solid": "density > 0.5", "connected": "the connected pathway: density > 0.5 seeds grown through >= 0.25 (26-connected) plus the inferred joins that connect every piece into one pathway (tracer_connected_v2c; alic only)"}'),
+     'RULE_TEXT = {"footprint": "density >= 0.1 (what the tracer figure shows)", "solid": "density > 0.5", "connected": "the connected pathway: density > 0.5 seeds grown through >= 0.25 (26-connected) plus the inferred joins that connect every component into one pathway (tracer_connected_v2c; alic only)"}'),
     ('    ap.add_argument("--labels", default="tracer_template_r058d", help="label folder: a key of configs/products_blockface.yaml")\n'
      '    ap.add_argument("--name", default="tracer_alic_topography_r058d", help="record name ($LINC_NUMBERS/<name>.json)")\n'
      '    a = ap.parse_args()\n'

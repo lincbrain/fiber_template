@@ -1,14 +1,16 @@
-# The MRI route: a brain's own b0 → the MRI template
+# The MRI-based alignment: a brain's own b0 → the MRI template
 
-Paper: Methods, "Link to the MRI channels and placement of photographed brains" (sec:m-link), the MRI route. Code:
+This registration aligns each brain that has MRI to the MRI template through its own b0, the MRI contrast every such brain has.
+Paper: Methods (sec:m-link), the MRI-based alignment. Code:
 `linc/link/b0_to_template.py`. Parameters: `configs/link.yaml` `b0_to_template`. Products of record: the 13 registry entries
-`data/sub-<ID>/xfm/b0-native__to__mri-template/` (recipe D22).
+`data/sub-<ID>/xfm/b0-native__to__mri-template/`.
 
 ## What it does
 
 For each brain with MRI, its native b0 is registered to the MRI template's b0 channel:
 
-1. **Canonical placement.** The b0's FLIRT 6-dof placement in the run-113 frame is followed by the run-113 → canonical bridge rigid.
+1. **Initial alignment.** The b0 is aligned rigidly (FLIRT, 6 dof) to the 0.5 mm frame of the first MRI template run
+   (`$LINC_TEMPLATE/frames/mri_template_0p5.nii.gz`), then transformed rigidly from that frame to the template's grid (the frame bridge).
 2. **Input check.** The b0 is re-debiased with ANTs N4 when its residual field exceeds 1.5. Of the brains of record, only MR253 needed it.
 3. **Linear start.** A 7-dof similarity is fitted, then a 12-dof affine. The affine is rejected, leaving the similarity only, when its
    anisotropy exceeds 1.5.
@@ -26,11 +28,11 @@ The registry entry holds two components, in pull order: `<ID>_warp.nii.gz` (`itk
 These follow the data layout (`$LINC_DATA/sub-<ID>/mri/`):
 - `<ID>_mri_b0_native.nii.gz`;
 - the brain's mask of record, `<ID>_mri_mask_native.nii.gz`;
-- the run-113 placement, `<ID>_mri2template.mat` with its reference `<ID>_mri.nii.gz`. `--place-b0 <run-113 0.5 mm frame>` remakes it
+- the initial rigid alignment, `<ID>_mri2template.mat` with its reference `<ID>_mri.nii.gz`. `--place-b0 <the 0.5 mm frame>` remakes it
   with FLIRT.
 
-You also need the template's `mri/linc_mri_b0.nii.gz` and `mri/linc_mri_brainmask.nii.gz`, and the bridge
-(`configs/link.yaml` `inputs.bridge`, or `--bridge`).
+You also need the template's `mri/linc_mri_b0.nii.gz` and `mri/linc_mri_brainmask.nii.gz`, and the frame bridge, the rigid transform
+from the 0.5 mm frame to the template's grid (`configs/link.yaml` `inputs.bridge`, or `--bridge`).
 
 ## Command
 
@@ -63,13 +65,14 @@ anatomix engine environment (`env/anatomix-upstream`, torch 2.13.0+cu126). It wa
 | QC numbers of record (NCC at the b0's 0.7 mm FWHM, envelope Dice) | 0.731 and 0.978, as recorded |
 
 Not ported: the analysis harness's regqc store, montages and working-grid edge diagnostics; the other linear modes of the test
-script; the declared-box outline scoring (no box is declared for this route).
+script; the declared-box outline scoring (no box is declared for this alignment).
 
 ### Second brain, through the release CLI (22 Oct 2026, MF6 = MF275)
 
-`linc-register mri-template` end to end on MF6, in envs built fresh from `env/mri.yml` and `env/anatomix.yml` (PYTHONNOUSERSITE=1),
+`linc-register mri-template` end to end on MF6, in environments built fresh from the then `env/mri.yml` (since merged into
+`env/linc.yml`) and `env/anatomix.yml` (PYTHONNOUSERSITE=1),
 on an NVIDIA RTX 6000 Ada: entry written, QC pass (outline PASS); `<ID>_start_pull.txt` md5-identical to the record's; warp
 displacement difference at the 3.3 M template-brain voxels median 0.0052 mm, p99 0.090 mm, max 0.448 mm (the record ran on an
 RTX 3090). Control: the same command in the environments of record on the same GPU gave a warp md5-identical to the fresh-env run,
 so the residual comes from the GPU model, not the environment. `python -m linc.xfm chain --from bf-native --to mri-template` resolves
-through the R1 entry (linc-register mri) and this one.
+through the blockface-to-b0 registration's entry (linc-register mri) and this one.

@@ -1,7 +1,15 @@
-"""linc.paths.rerooted and the placeholder table: both recorded forms (a prefix of the machine that made the products, a $LINC_<ROOT>
-placeholder), the pass-through, the local table preferred over the committed example, and the clear failure without it. Synthetic
-prefixes only; no data (CPU):
-    python -m pytest tests/test_paths.py      or      python tests/test_paths.py"""
+"""Tests of linc.paths.rerooted and the placeholder table (CPU, no data; synthetic prefixes only).
+
+    python -m pytest tests/test_paths.py      or      python tests/test_paths.py
+
+You need
+  env/linc.yml.
+What it does
+  It checks both recorded forms (a prefix of the machine that made the products, a $LINC_<ROOT> placeholder), the pass-through,
+  that the local table is preferred over the committed example, and the clear failure without one.
+You get
+  pytest's pass / fail per test.
+"""
 import contextlib
 import os
 import sys

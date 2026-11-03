@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
-"""The registration of each brain's blockface to its own b0 (R1), over all 13 brains with MRI: the interior edge distance of each
-registration (linc/evaluation/regeval.py `edge_mean`, computed on the registration's own products: the b0 on its 0.25 mm grid and
-the registered blockface), and its median, IQR (numpy's default linear interpolation), minimum and maximum.
-Paper: Results, registration of each brain's blockface to its own MRI. The products: configs/products_blockface.yaml `r1_products`.
--> $LINC_NUMBERS/r1_edge_summary.json
+"""How well each brain's blockface is registered to its own b0, over all 13 brains with MRI (Results, registration of each brain's
+blockface to its own MRI).
+
     python reproduce/numbers/r1_edge_summary.py
+
+You need
+  the registrations' products (configs/products_blockface.yaml `r1_products`: the b0 on its 0.25 mm grid and the registered
+  blockface).
+What it does
+  The interior edge distance of each registration (linc/evaluation/regeval.py `edge_mean`), and its median, interquartile range
+  (numpy's default linear interpolation), minimum and maximum.
+You get
+  $LINC_NUMBERS/r1_edge_summary.json.
 """
 import sys
 from pathlib import Path

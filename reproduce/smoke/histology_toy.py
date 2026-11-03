@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
-"""Smoke test of cli/linc-histology on toy data written on the fly (env/tirl.yml with TIRL 3.6.2 and zarr2nii; no release data, no
-network weights, no GPU; a few minutes).
-
-The toy brain of reproduce/smoke/reconstruct_toy.py is reconstructed first (its blockface store and mask); then one synthetic
-histology section (a stained ellipse on a white slide, JPEG 2000) is matched to the store's middle section by a one-row match table,
-the regions are the mask split into left and right halves, and `linc-histology all` runs every step: match, pieces, masks, prepare,
-register (TIRL, one whole-section piece, a lighter schedule of the same four stages: the smoke checks that the steps run, not the
-registration of record) and rgb. Checks: every step's product exists, with its provenance.
+"""Smoke test of cli/linc-histology on toy data written on the fly, to check that every step runs (no release data, no network
+weights, no GPU; a few minutes).
 
     python reproduce/smoke/histology_toy.py [--keep]
+
+You need
+  env/tirl.yml with TIRL and zarr2nii.
+What it does
+  The toy brain of reproduce/smoke/reconstruct_toy.py is reconstructed first (its blockface store and mask); then one synthetic
+  histology section (a stained ellipse on a white slide, JPEG 2000) is matched to the store's middle section by a one-row match
+  table, the regions are the mask split into left and right halves, and `linc-histology all` runs every step: match, pieces, masks,
+  prepare, register (TIRL, one whole-section component, a lighter schedule of the same four stages: the smoke test checks that the
+  steps run, not the registration of record) and rgb.
+You get
+  PASS when every step's product exists, with its provenance; --keep leaves the temporary folder (printed).
 """
 import argparse
 import os

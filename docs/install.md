@@ -5,19 +5,20 @@ The pipeline's stages need different environments and programs; set up only thos
 **1. Python environments.** One script builds them all:
 
 ```bash
-bash env/install.sh --tirl-src <folder with the TIRL sources>
+export LINC_TIRL_SRC=<folder with the TIRL sources>
+bash env/install.sh
 source envs/linc_envs.sh          # in every new shell: points the pipeline at these environments
 ```
 
 `env/install.sh` creates each environment from its file in `env/` into `envs/` in your clone (`--prefix` gives another folder),
 runs the source installs the files' headers describe, installs this package into each, and ends with the installation check
-(`docs/reproduce.md`). It takes about 40 minutes, most of it downloading. It is safe to run again: an environment it already built
+(`docs/reproduce.md`). It takes about 20–25 minutes, most of it downloading. It is safe to run again: an environment it already built
 is skipped, and nothing is deleted. After `git pull` changes an `env/*.yml` file, remove that environment's folder under
 `envs/` and run `env/install.sh` again: it rebuilds only what is missing. `--only linc,deep` builds some of them; `--with-nnunet` adds the environment of the earlier
 blockface networks, needed only to reproduce their masks.
 
 TIRL 3.6.3 and its three script packages (tirlscripts-oxford-scriptutils 1.1.1, tirlscripts-stanford-core 1.2.2,
-tirlscripts-mgh-linc 1.0.1) are installed from a local folder that holds their four source trees, given as `--tirl-src` or as
+tirlscripts-mgh-linc 1.0.1) are installed from a local folder that holds their four source trees, named by
 `LINC_TIRL_SRC`. TIRL is not yet publicly distributed: ask its authors for the sources. Without them, the TIRL environment is created
 without TIRL, and the reconstruction and histology steps refuse to run.
 
@@ -27,7 +28,7 @@ The environments, because their packages conflict (TIRL needs numpy 1.x; nnU-Net
 |---|---|
 | `env/linc.yml` | `linc-register` (its linear stages and products) and `linc-register mri-template`, `linc-mri prep`, the MRI channels' construction (MMORF 1.0.1), `linc-labels carry` and `linc-labels interpolate` (SimpleITK demons), evaluation, the numbers and the figures (`docs/paper_to_code.md` lists each figure's) |
 | `env/deep.yml` | the four segmentation models (`linc-segment`) and the synthesis of the missing caudal tissue (`linc-complete`), the synthesis numbers and the LGN/STN budget, and their three supplementary figures |
-| `env/anatomix.yml` | the deformable registration engine (anatomix features + FireANTs), called by `linc-register` |
+| `env/anatomix.yml` | the deformable registration (anatomix features + FireANTs), called by `linc-register` |
 | `env/tirl.yml` | `linc-reconstruct` (its Python steps and the `zarr2nii` / `nii2zarr` exports), `linc-histology`, `linc-labels push` (TIRL 3.6.3, installed from source) |
 | `env/nnunet.yml` | optional (`--with-nnunet`), only to reproduce the masks of record: the three earlier blockface networks (nnU-Net 2.5.1), run by `linc-reconstruct` with the `nnunet` engine |
 | `env/viz3d.yml` | optional (`--with-figures-3d`): the 3D tracer scene (pyvista 0.44.2 on a headless VTK) |
@@ -80,8 +81,8 @@ results are then not the paper's.
 them:
 
 ```bash
-python models/verify_weights.py models/segmentation.sha256 --root $LINC_MODELS/segment
-python models/verify_weights.py models/completion_public.sha256 --root $LINC_MODELS/completion
+$PY models/verify_weights.py models/segmentation.sha256 --root $LINC_MODELS/segment
+$PY models/verify_weights.py models/completion_public.sha256 --root $LINC_MODELS/completion
 ```
 
 **5. Where your data live.** Set the roots once per shell (`docs/data_layout.md` explains each one):

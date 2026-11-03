@@ -46,7 +46,7 @@ models/        model cards, checksums and a checker for the trained networks (th
 env/           the Python environments
 tests/         tests of the package
 docs/          one page per stage (install, mri, reconstruct, register, complete, histology, labels, reproduce,
-               build_everything) and for the segmentation models, a walkthrough of three brains, the paper → code map, the
+               build_everything) and for the segmentation models, a walkthrough of four brains, the paper → code map, the
                data layout, FAQ
 CONVENTIONS.md brains and names, data layout, spaces and transforms, provenance
 ```
@@ -55,10 +55,11 @@ Start with `docs/paper_to_code.md` to find where a part of the paper lives in th
 
 ## Install
 
-1. **Python environments.** One script builds them all into `envs/` in your clone (about 40 minutes):
+1. **Python environments.** One script builds them all into `envs/` in your clone (about 20–25 minutes):
 
    ```bash
-   bash env/install.sh --tirl-src <folder with the TIRL sources>
+   export LINC_TIRL_SRC=<folder with the TIRL sources>
+   bash env/install.sh
    source envs/linc_envs.sh      # in every new shell
    ```
 

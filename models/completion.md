@@ -6,9 +6,9 @@ Availability promises their weights.
 
 **The weights are not in git.**
 - Put each network's folder (`last.pt`, `config.json`, `train_log.jsonl`) under `$LINC_MODELS/completion/<name>/`.
-- Check them with `python models/verify_weights.py models/completion_public.sha256 --root $LINC_MODELS/completion`.
+- Check them with `$PY models/verify_weights.py models/completion_public.sha256 --root $LINC_MODELS/completion`.
 - Download location: with the data release.
-- **The released files are copies without machine paths or host names** (`models/scrub_completion_weights.py`). The weights are
+- **The released files are copies without machine paths or host names.** The weights are
   those of record, tensor for tensor; only the configuration's folder paths (re-rooted to `$LINC_PRODUCTS`), its quoted design
   notes (`author_*`, dropped) and the training log's host field changed. `models/completion_checksum_map.tsv` maps each file of record (`models/completion.sha256`) to its copy.
   Checked: `cli/linc-complete` from the copies is bitwise identical to the volumes of record (MF278, own b0; MR248,

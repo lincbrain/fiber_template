@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
-"""Direct placement against the route through each brain's own MRI, for the 13 brains with MRI (linc/evaluation/direct_placement.py).
-Paper: Methods and Results, direct placement (the held-out median of per-brain median distances, and the median p95). The direct
-placements of record: configs/products_blockface.yaml `direct_placement`; R1: the registry entries of the R1 manifest of record; R5: each
-brain's own b0 -> MRI template entry of record. Tuning brains (used to choose the smoothing): MF278, MR250, MR252.
--> $LINC_NUMBERS/d2_s2_validation_prod_s125.json
+"""How accurate the cross-modal alignment is, for the 13 brains with MRI: compared with their MRI-based alignment (Methods and
+Results; linc/evaluation/direct_placement.py).
+
     python reproduce/numbers/d2_s2_validation_prod_s125.py
+
+You need
+  the cross-modal alignments of record (configs/products_blockface.yaml `direct_placement`), the blockface-to-b0 registrations of
+  record (the registry entries of the manifest of record) and each brain's b0 -> MRI template registration of record.
+What it does
+  linc/evaluation/direct_placement.py per brain, then the summary with the tuning brains (used to choose the smoothing: MF278,
+  MR250, MR252) apart.
+You get
+  $LINC_NUMBERS/d2_s2_validation_prod_s125.json: per brain the distances, and the held-out median of the per-brain median distances
+  and the median 95th percentile.
 """
 import json
 import sys

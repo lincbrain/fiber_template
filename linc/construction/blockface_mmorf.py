@@ -1,13 +1,19 @@
-"""The MMORF configuration of the blockface template's construction: one .ini per nonlinear step, written by `step_ini` from a
-resolution ladder (knot spacing, bending-energy weights, Gaussian smoothing per level), with each modality's smoothing floored at its
-own measured bandwidth (`fwhm_floor_mm`). The ladders are read from configs/blockface_template.yaml (mmorf.ladders); the record's two:
-7 steps / 8 levels for the plan-A build (knots 16, 16, 16, 8, 4, 2, 1, 0.5 mm) and 8 steps / 9 levels for step 8 (down to 0.25 mm). The
-callers set the ladder (`set_ladder`) and the modality table (MODALITIES, NATIVE_MM) before writing the configs
-(linc/construction/blockface_build.py).
+"""The MMORF settings of the blockface template's construction: one .ini file per nonlinear step (MMORF, FSL's MultiMOdal
+Registration Framework, makes the template's groupwise nonlinear steps).
 
-Ported unchanged from the analysis project: mri/code/build_template_run.py (`step_ini`, `fwhm_floor_mm`, the constants they read;
-The MRI port, linc/construction/mmorf_run.py, writes the MRI runs without the smoothing floor, which the blockface build applies) and
-bftemplate/build_bf_run.py (`LADDERS`, `set_ladder`, `link_or_copy`).
+You need
+  configs/blockface_template.yaml (mmorf.ladders: per level, the knot spacing's scaling, the bending-energy weight and the Gaussian
+  smoothing); the caller (blockface_build.py) sets the ladder (`set_ladder`) and the channel table (MODALITIES, NATIVE_MM) first.
+What it does
+  step_ini writes one step's .ini from the ladder, with each channel's smoothing floored at its own measured resolution
+  (`fwhm_floor_mm`). The record's two ladders: 7 steps / 8 levels for the first stage (knots 16, 16, 16, 8, 4, 2, 1, 0.5 mm) and 8
+  steps / 9 levels for the eighth step (down to 0.25 mm).
+You get
+  the .ini files, written into the run folders.
+
+Ported unchanged from the analysis project: mri/code/build_template_run.py (`step_ini`, `fwhm_floor_mm` and the constants they
+read; the MRI build, linc/construction/mmorf_run.py, writes its runs without the smoothing floor) and bftemplate/build_bf_run.py
+(`LADDERS`, `set_ladder`, `link_or_copy`).
 """
 import errno
 import os

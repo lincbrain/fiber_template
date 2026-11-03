@@ -14,7 +14,7 @@ build_mri_channels.py` (`--plan` to list every step, `--step` / `--from --to` to
 - Python environment `env/mri.yml` (`PY_MRI` in `reproduce/Makefile`): the environment the MRI channels, their numbers and figures were
   made in (MMORF 1.0.1 from the FSL conda channel), with this repository installed (`pip install -e .`).
 - External programs, found from the environment and version-checked by `linc/construction/tools.py`
-  (`tools:` in the config): `FSLDIR` = FSL 6.0.7.4; `ANTSPATH` = ANTs 2.5.4; `MRTRIX` = MRtrix3 3.0.2 (D9 tensor only);
+  (`tools:` in the config): `FSLDIR` = FSL 6.0.7.4; `ANTSPATH` = ANTs 2.5.4; `MRTRIX` = MRtrix3 3.0.2 (the tensor only);
   MMORF 1.0.1 for step 4.
 - `LINC_DATA` (per-brain data), `LINC_TEMPLATE` (output), `LINC_WORK` (runs), as in `linc/paths.py`.
 
@@ -30,7 +30,7 @@ Per brain, under `$LINC_DATA/sub-<ID>/` (file names: `prep.layout` in the config
 | hand-drawn masks: dwi, T2, micro (one per session) | released with the data |
 | the **final** hand-edited brain mask on the b0 grid (values exactly {0, 1}) | released with the data (`<ID>_mask_EDIT`) |
 | `xfm/t2-native__to__b0-native/`, `xfm/micro-native__to__b0-native/` (one ITK displacement field each; the initial affine is inside it) | `linc.registration` (anatomix + FireANTs) |
-| the subject → NMT_v2.0_sym ITK affine and the SARM level-6 labels carried onto the b0 grid | `linc.registration` (NMT registered to the b0) |
+| the brain → NMT_v2.0_sym ITK affine and the SARM level-6 labels transformed to the b0 grid | `linc.registration` (NMT registered to the b0) |
 
 ## 2. Per-brain preparation (`linc/construction/mri_prep.py`, `linc/construction/canonical.py`)
 
@@ -44,11 +44,11 @@ b = P.Brain("$ID")                       # $LINC_DATA/sub-$ID/mri and .../xfm
 P.stage_raw(b, dwi_series, dwi_tensor, msme, micro_series, dwi_mask, t2_mask, micro_mask)
 P.stage_dwi(b); P.stage_t2(b); P.stage_micro(b, sandi_fracs_mean, sandi_fracs_std)
 EOF
-# D9 tensor (config prep.tensor_bmax): dtifit on the eddy-corrected b <= 4800 volumes, rotated + gradient-checked b-vectors
+# the tensor (config prep.tensor_bmax): dtifit on the eddy-corrected b <= 4800 volumes, rotated + gradient-checked b-vectors
 python -m linc.construction.mri_prep tensor --eddy-series <dwi_eddycorrect.nii.gz> --ecclog <dwi_eddycorrect.ecclog> \
     --bvecs <dwi_orig.bvecs> --bvals <dwi_orig.bvals> --fit-mask <fit brain_mask> \
     --dwi-mask $LINC_DATA/sub-$ID/mri/masks/dwi_brain_mask.nii.gz --out $LINC_WORK/tensor_d9/$ID --threads 8
-# canonical frame (config `canonical`): AC/PC from the carried SARM labels, then the rigid map into the NMT v2 frame
+# canonical frame (config `canonical`): AC/PC from the transformed SARM labels, then the rigid map into the NMT v2 frame
 M=$LINC_DATA/sub-$ID/mri
 python -m linc.construction.canonical landmarks --sarm $M/landmarks/SARM6_in_subject.nii.gz \
     --b0 $M/dwi/b0_brain_n4.nii.gz --mask $M/masks/dwi_brain_mask.nii.gz --out $M/landmarks/landmarks.json --subject $ID
@@ -110,7 +110,7 @@ From the logs of the run of record (`rb_final`):
 
 | Stage | Wall time | Hardware |
 |---|---|---|
-| D9 tensor, per brain | 8 min (481 s for MF283, 8 threads) | CPU |
+| the tensor, per brain | 8 min (481 s for MF283, 8 threads) | CPU |
 | construction inputs (`prepare`), per brain | 2.5 min (145 s for MF283, re-measured 21 Oct 2026) | CPU |
 | run assembly | 17 s | CPU |
 | MMORF construction, 30 Sep 14:39:51 → 4 Oct 02:59:43 | **3 d 12 h 20 min** | one RTX 6000 Ada (48 GB) |

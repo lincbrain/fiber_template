@@ -2,11 +2,11 @@
 """The four tracer cases in the template, in one summary (Fig. 10; Supplementary S2).
 
 You need (configs/products_mri.yaml)
-  numbers_of_record: the two carry records of the labels of record (tracer_template_v2, tracer_template_v2_mf191) and the earlier
+  numbers_of_record: the two records of the transformation of the labels of record (tracer_template_v2, tracer_template_v2_mf191) and the earlier
   summary (tracer_template_r058d_all, for its audit block).
 
 What it does
-  combines the two carry records: the cases, brains, routes, sections per case, whether an injection site was charted, the classes;
+  combines the two records: the cases, brains, alignments (blockface-based or MRI-based), sections per case, whether an injection site was charted, the classes;
   carries over the audit of the two re-matched sections unchanged.
 
 You get
@@ -26,7 +26,7 @@ NAME = "tracer_template_v2_all"
 MF8 = "MF191"                                                      # LINC ID of MF8, the route-A case
 ROUTE_MF8 = "A (2b member: d2bs8 member warp + the link d2bs8_s5sym)"   # the record's own route text for MF8, verbatim
 LABEL_SOURCE = ("labels/tracer_v2 (histo_interp_v2.py on the sheets of record labels/push_tracer_r058d: the grades of a group interpolated as one label, "
-                "per-hemisphere pairing, ends extended to mid-gap), carried by the chain of record")
+                "per-hemisphere pairing, ends extended to mid-gap), transformed by the registrations of record")
 V2 = dict(interpolation="labels/histo_interp_v2.py", carries=["labels/tracer_v2/carry_v2_B.py", "labels/tracer_v2/carry_v2_A.py"],
           solid_rules=["density > 0.5 (the _mri-template files)", "connected: > 0.5 seeds grown through >= 0.25 (the _solid2 files)"],
           predecessor="tracer_template_r058d_all")
@@ -35,6 +35,7 @@ V2 = dict(interpolation="labels/histo_interp_v2.py", carries=["labels/tracer_v2/
 def neutral(block):
     """The audit block of record with its decision note in neutral words (the record names the day's decision maker)."""
     block = dict(block)
+    block["rule"] = block["rule"].replace("(found despite", "(detected despite")
     block["rule"] = re.sub(r"; [^;]*: move only where the tissue outline agrees$", "; decided 30 Oct 2026: move only where the tissue outline agrees", block["rule"])
     return block
 

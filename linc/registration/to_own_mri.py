@@ -1,29 +1,33 @@
-"""Registration of a brain's blockface volume to its own b0 image (paper: Methods, "Registration to the brain's own MRI"; the
-registration of record, R1 v3).
+"""Registration of a brain's blockface volume to its own b0 image, the first step of the MRI-based alignment (Methods, "Blockface to
+MRI registration and synthesis of missing sections").
 
-The chain, per brain (every input brain-masked; parameters in configs/registration.yaml `to_own_mri`):
-  0. the b0 is placed rigidly in the template frame (`place_b0`: FLIRT 6 dof, correlation ratio, +-90 deg search, onto the MRI
-     template's 0.5 mm grid); the blockface's isotropic pair (`iso_pair`: 0.15 mm grayscale luminance + mask);
-  1. the start pose: a rotation and a translation only (the brains of the paper: their pose of record, configs/subjects/<ID>.yaml;
-     a new brain: `initial_pose`, FLIRT 7 dof with a full-sphere search);
-  2. FLIRT on the masked inputs at 0.5 mm, correlation ratio, no search: 7 dof (3 iterations) and then 9 dof (rotation, translation and
-     a scale along each axis; up to 10 iterations), each with the cost restricted to the PHOTOGRAPHED slab (0.5 mm inside both end
-     faces of the photographed stack, re-derived from the current transform each iteration; iterated until the axis scales move
-     < 2e-3 and the translation < 0.05 mm). Without the slab weight a stack missing its caudal block is stretched to fill the b0;
-  3. the fixed image: the b0 x its brain mask inside the 9-dof photographed slab; the blockface extent in MRI space;
-  4. the working grid at 0.25 mm: the b0's 0.5 mm lattice with >= 4.5 mm of zeros on every side (never clipped), dimensions rounded up
-     to a multiple of 8; the masked blockface placed onto it through the 9-dof transform;
-  5. the feature-based deformable registration (linc/registration/featurereg.py: warp sigma 1.25, gradient sigma 1.5, Adam step 1.0,
-     the loss including the background, the features not gated by the masks);
-  6. the products by ONE resample from the native pyramid through 9-dof + warp, divided by the resampled photographed support (and
-     the brain's native end crop applied first; linc/registration/resample.py): grayscale, RGB and mask on the working grid; the
-     transform entry bf-native -> b0-native (linc/xfm.py), pull order b0-native -> placed b0 -> (warp) -> blockface.
+You need
+  the brain's reconstruction and mask, its b0 and b0 brain mask (every input brain-masked), FSL, the anatomix environment and a
+  GPU; parameters: configs/registration.yaml `to_own_mri`; per brain, configs/subjects/<ID>.yaml (the starting pose of record, the
+  native end crop).
+What it does
+  0. the b0 registered rigidly onto the MRI template's 0.5 mm grid (`place_b0`: FLIRT, 6 degrees of freedom, correlation ratio,
+     +-90 deg search); the blockface resampled isotropically (`iso_pair`: 0.15 mm grayscale luminance and mask);
+  1. the starting pose: a rotation and a translation only (the paper's brains: their pose of record; a new brain: `initial_pose`,
+     FLIRT with 7 degrees of freedom and a search over all rotations);
+  2. FLIRT on the masked inputs at 0.5 mm, correlation ratio, no search: 7 degrees of freedom (3 iterations), then 9 (rotation,
+     translation and a scale along each axis; up to 10 iterations). The cost is restricted to the photographed slab (0.5 mm inside
+     both end faces of the photographed stack, derived again from the current transform at each iteration; iterated until the axis
+     scales change by < 2e-3 and the translation by < 0.05 mm), because without it a stack missing its caudal block is stretched
+     to fill the b0;
+  3. the fixed image: the b0 x its brain mask inside that slab;
+  4. the working grid at 0.25 mm: the b0's 0.5 mm lattice with >= 4.5 mm of zeros on every side, dimensions rounded up to a
+     multiple of 8; the masked blockface resampled onto it through the 9-dof transform;
+  5. the feature-based deformable registration (featurereg.py: warp sigma 1.25, gradient sigma 1.5, Adam step 1.0, the loss
+     including the background, the features not multiplied by the masks);
+  6. the products by one resample from the native pyramid through the 9-dof transform and the warp, divided by the resampled
+     photographed support, the brain's native end crop applied first (resample.py).
+You get
+  the grayscale, RGB and mask on the working grid, and the registry entry bf-native -> b0-native (linc/xfm.py; resampling order
+  b0-native -> the b0 on the template grid -> (warp) -> blockface).
 
-Ported from the analysis project: featurereg/r1_redo_v3.py (`prep`, `go`, `slab_weight`, `slab_fit`), featurereg/r1_rewarp.py (`run`),
-code/register_mri.py (`prep_mri`, `prep_bf`, `flirt`, `_prep_fine` with the pad rule), featurereg/r1_dof9_test.py (`slab_keep`),
-code/masknorm.py (as synthesis/v2/v2b_env.sh switched it on for the runs of record: LT_MASKNORM=1, LT_NATIVE_CROP):
-the final path only, unchanged numerically. The automated QC gates of the analysis are not part of the release (the paper does not
-describe them).
+Ported from the analysis project: featurereg/r1_redo_v3.py, featurereg/r1_rewarp.py, code/register_mri.py,
+featurereg/r1_dof9_test.py and code/masknorm.py, the final settings only, unchanged numerically.
 """
 import json
 import os

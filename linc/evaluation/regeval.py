@@ -1,23 +1,28 @@
 #!/usr/bin/env python3
-"""Score a blockface -> MRI registration on its internal alignment, not the brain envelope.
-
-Reported per registration:
-
-  edge_mean     MEAN mm from each interior edge voxel to the nearest opposite-modality interior edge, worse direction (the paper's
-                "interior edge distance"). The median is quantised by the voxel lattice (a distance transform can only return
-                sqrt(i^2+j^2+k^2)*vox), and the lattice differs between resolutions, so medians cannot be compared across working
-                grids; the mean can.
-  edge_frac1mm  fraction of edge voxels more than 1 mm from their counterpart. Scale-free.
-  edge_bf2mri   median mm from each blockface INTERIOR edge voxel to the nearest MRI interior edge.
-  edge_mri2bf   the same in reverse (the forward direction alone is gameable: an over-flexible warp can squeeze blockface edges onto
-                whatever MRI edge is nearest while leaving MRI structures unmatched).
-  edge_sym      max of the two medians.
-  nmi_interior  normalised mutual information inside the eroded brain.
-  jac_std, folds_pct, jac_out   warp plausibility.
+"""How well a blockface -> MRI registration aligns the inside of the brain, not only its outline.
 
     python -m linc.evaluation.regeval --mri <fixed.nii.gz> --bf <moved.nii.gz> [--warp <warp.nii.gz>] [--tag NAME]
 
-Ported unchanged from the analysis project's featurereg/regeval.py (only this docstring is new).
+You need
+  the fixed MRI image and the moved blockface image on one grid; the warp, for its plausibility measures.
+What it does
+  It detects the interior edges of both images and measures:
+  edge_mean     the mean distance (mm) from each interior edge voxel to the nearest interior edge of the other image, in the worse
+                direction (the paper's "interior edge distance"). The median is quantized by the voxel lattice (a distance
+                transform can only return sqrt(i^2+j^2+k^2) x voxel size), and the lattice differs between resolutions, so medians
+                cannot be compared across working grids; the mean can.
+  edge_frac1mm  the fraction of edge voxels more than 1 mm from their counterpart (independent of scale).
+  edge_bf2mri   the median distance from each blockface interior edge voxel to the nearest MRI interior edge.
+  edge_mri2bf   the same in reverse (the forward direction alone can be gamed: an over-flexible warp can squeeze blockface edges
+                onto whatever MRI edge is nearest while leaving MRI structures unmatched).
+  edge_sym      the larger of the two medians.
+  nmi_interior  the normalized mutual information between the two images inside the eroded brain.
+  jac_std, folds_pct, jac_out_0p5_2   the warp's plausibility: the standard deviation of its Jacobian determinant, the percentage
+                of voxels where it is negative (folds), and where it is outside [0.5, 2].
+You get
+  the measures as JSON on stdout.
+
+Ported unchanged from the analysis project's featurereg/regeval.py.
 """
 import argparse
 import json

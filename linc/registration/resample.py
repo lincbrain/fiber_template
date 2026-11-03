@@ -1,19 +1,23 @@
-"""The registered blockface products, made by ONE resample from the native blockface pyramid through the composed map (grayscale,
-color and mask), and the anti-alias filter used wherever a finer image is pulled onto a coarser grid.
+"""The registered blockface products, made by one resample from the native blockface pyramid through the composed transform
+(grayscale, color and mask), and the anti-alias filter used wherever a finer image is resampled onto a coarser grid.
 
-Two options of the product step, both used by the registration to the brain's own MRI (the products of record were made with them;
-the direct routes use neither):
-  * support normalization (`norm=True`): the photographed support M (any channel > 0) is pulled through the SAME anti-alias filter
-    and map, and divides the pulled channels where it is >= 0.5 (elsewhere 0); the mask is restricted to that support. Without it,
-    every resample averages the last photographed tissue with the empty space beyond it (a dark rim at the photographed end and at
-    the brain surface). For a constant image the division is exact whatever the linear operator.
+You need
+  the brain's reconstruction (<ID>_blockface.ome.zarr) and mask, the composed transform (linear part and warp) and the target grid.
+What it does
+  bf_products resamples each channel once. Two options, both used by the registration to the brain's own MRI (its products of
+  record were made with them; the blockface-based and cross-modal alignments use neither):
+  * support normalization (`norm=True`): the photographed support M (any channel > 0) is resampled through the same anti-alias
+    filter and transform, and divides the resampled channels where it is >= 0.5 (elsewhere 0); the mask is restricted to that
+    support. Without it, every resample averages the last photographed tissue with the empty space beyond it (a dark rim at the
+    photographed end and at the brain surface). For a constant image the division is exact whatever the linear operator.
   * the native end crop (`crop_mm`): the last round(crop_mm / vz) photographed sections of a brain whose own last sections are
     darker are dropped before the resample (configs/subjects/<ID>.yaml `native_end_crop_mm`).
+You get
+  the grayscale, RGB and mask on the target grid.
 
 Ported from the analysis project: `antialias` = featurereg/r1_rewarp.py; `pull_rgb`, `divide`, `last_slice`, `crop_native`,
-`crop_slices` = code/masknorm.py; `bf_products` = the product step of featurereg/r1_rewarp.py `one_resample_products` (with norm and
-crop as its records were run: code/masknorm.py switched on by synthesis/v2/v2b_env.sh) and of bftemplate/direct/register_direct.py and
-featurereg/d2_s2_register.py (norm and crop off); unchanged.
+`crop_slices` = code/masknorm.py; `bf_products` = the product step of featurereg/r1_rewarp.py, bftemplate/direct/register_direct.py
+and featurereg/d2_s2_register.py; unchanged.
 """
 import numpy as np
 import nibabel as nib

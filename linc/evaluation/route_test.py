@@ -1,20 +1,27 @@
-"""The route test (paper: Methods and Results, direct and MRI routes). A brain that built an average cannot test it, and every brain
-built the blockface template, so the test uses design 1c, the earlier blockface-only average: its six pair folds (each built without one
-pair of brains with MRI) and its final average with the four test brains it never saw (MF8, MF9, MF6, MM14 = MF191, MF196, MF275,
-MR263).
+"""The comparison of the two ways of aligning a photographed brain to a template, the blockface-based and the MRI-based alignment, on
+brains the template being tested never saw (Methods, "Evaluation of the registration pipeline"; Results).
 
-Routes, each brain onto its target's 0.25 mm grid:
-  A (direct)  blockface -> the target in one feature-based registration (linc/registration/to_blockface_template.py, the settings of
-              design 1c's direct members: warp sigma 1.25, 4-8 mm padding, the brainstem flat cut at -2.0 mm)
-  B (MRI)     blockface -> own b0 (the registration of record) -> MRI template -> the target (its own mapping from the template = the
-              composition of its member warps, inverted onto the 0.5 mm 1c frame); the test brains without MRI go blockface -> MRI
-              template by their direct placement of record
-Evaluation (the pre-registered mask: template core & photographed & both routes' extent): pairwise NCC and brain-mask Dice among the
-brains placed together, with the pair as the unit; per brain edge_mean, env_dice, nmi and ncc_template. Paired values use only rows whose
-route-A QC passed and whose route-B links all passed QC.
+You need
+  the comparison's runs (the folders are arguments). A brain that helped build an average cannot test it, and every brain helped
+  build the blockface template, so the comparison uses an earlier blockface-only average (design 1c in the records): its six folds
+  (each built without one pair of brains with MRI) and its final average with the four test brains it never saw (MF8, MF9, MF6,
+  MM14 = MF191, MF196, MF275, MR263).
+What it does
+  Each brain is aligned to its target's 0.25 mm grid in two ways:
+    blockface-based  blockface -> the target in one feature-based registration (linc/registration/direct.py to_blockface_template;
+                     warp sigma 1.25, 4-8 mm padding, the brainstem cut flat at -2.0 mm)
+    MRI-based        blockface -> own b0 (the registration of record) -> MRI template -> the target (the target's own mapping from
+                     the template: the composition of its member warps, inverted onto its 0.5 mm frame); the test brains without
+                     MRI go blockface -> MRI template by their cross-modal alignment of record
+  Inside the pre-registered mask (the template's core, photographed, and inside both alignments' extent) it measures the
+  normalized cross-correlation (NCC) between the aligned blockface images of every two brains aligned to the same target, and the
+  Dice coefficient between their brain masks, with the pair as the unit; per brain, edge_mean (regeval.py), the envelope Dice,
+  the normalized mutual information and the NCC with the template. Paired values use only rows whose two alignments passed their
+  acceptance checks.
+You get
+  `summary`: the record's summary (its strings kept verbatim).
 
-This module holds the record's summary (`summary`). Ported from the analysis project's bftemplate/cv/route_test_1c.py (its `summary`
-stage, unchanged); the record's strings are kept verbatim.
+Ported from the analysis project's bftemplate/cv/route_test_1c.py (its `summary` stage, unchanged).
 """
 import json
 import os

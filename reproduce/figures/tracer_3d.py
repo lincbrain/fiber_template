@@ -16,8 +16,8 @@ What it does
 
 You get
   <out>_{oblique,lateral,dorsal,glass}.png (2400 x 1800), <out>_rotation.mp4 [+ <out>_rotation_glass.mp4] (10 s, 30 fps),
-  <out>.provenance.json, and $LINC_NUMBERS/<record>.json (the planes, the window, the cases, the share of each pathway left of the
-  midline). --for-composite renders the stills for Fig. 10 (no in-scene key or plane labels, letters at print size).
+  <out>.provenance.json, and $LINC_NUMBERS/<record>.json (the planes, the window, the cases, the fraction of each pathway left of
+  the midline). --for-composite renders the stills for Fig. 10 (no in-scene key or plane labels, letters at print size).
 
     $PY_VIZ3D reproduce/figures/tracer_3d.py [--out figures/tracer_3d] [--views ...] [--no-video] [--glass-video] [--for-composite]
 """

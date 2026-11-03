@@ -7,7 +7,7 @@
 # with which the paper's masks of record were made (models/blockface_segmentation.md); use it to reproduce those masks
 # (linc-reconstruct --engine nnunet). Either way a task's post-processing is applied once, by the pipeline, with the same rule
 # (linc/blockface/mask_rules.py: photos fill_photo_mask, mask largest_cc_fill, tubes tube_rule): linc-segment runs with
-# --postprocess none here, and its spec.json carries the same rule only for use outside the pipeline.
+# --postprocess none here, and its spec.json holds the same rule only for use outside the pipeline.
 segmentation:
   engine:                            # each task -> linc_segment once its network passes the gate (models wrap-up PLAN.md §2.7)
     photos: linc_segment             # T2 passed §2.7 (3 Nov 2026): weights $LINC_MODELS/segment/bf_mask2d (SHA256SUMS)

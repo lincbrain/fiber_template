@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
-"""Smoke test of cli/linc-reconstruct on a toy brain written on the fly (env/tirl.yml: TIRL importable, zarr2nii on PATH; no release
+"""Smoke test of cli/linc-reconstruct on a toy brain written on the fly, to check that the steps a new brain takes run (no release
 data, no network weights, no GPU; about a minute).
 
-Ten synthetic blockface photographs (a tan ellipsoid in blue-white ice, 20 um pixels, 400 um sections, no camera jumps) go through
-the steps a new brain takes, with the two segmentations given by hand, as a user's hand corrections would be: the photographs' masks
-are written into 01_brainmask/00_predict (where the 2D network's would go) and the 3D mask as curated/TOY1_mask_edited (which wins
-over the 3D network's). Steps: photos (ingest, normalize, finalize; in-process), `linc-reconstruct stack`, `prepare`, the 3D mask's
-input (segment3d.prep_mask), `volume` and `spacing`. Checks: the reconstruction, its pyramid and mask exist, the mask's volume and the
-reconstruction's spacing are those of the toy brain.
-
     python reproduce/smoke/reconstruct_toy.py [--keep]      # --keep: leave the temporary folder (printed) for inspection
+
+You need
+  env/tirl.yml (TIRL importable, zarr2nii beside its Python).
+What it does
+  Ten synthetic blockface photographs (a tan ellipsoid in blue-white ice, 20 um pixels, 400 um sections, no camera jumps) go through
+  the steps, with the two segmentations given by hand, as a user's hand corrections would be: the photographs' masks are written
+  into 01_brainmask/00_predict (where the 2D network's would go) and the 3D mask as curated/TOY1_mask_edited (which wins over the 3D
+  network's). Steps: photos (ingest, normalize, finalize; in-process), `linc-reconstruct stack`, `prepare`, the 3D mask's input
+  (segment3d.prep_mask), `volume` and `spacing`.
+You get
+  PASS when the reconstruction, its pyramid and its mask exist, and the mask's volume and the reconstruction's spacing are those of
+  the toy brain.
 """
 import argparse
 import os

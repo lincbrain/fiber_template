@@ -2,7 +2,7 @@
 # code/config.py + code/macaque_datasets.xlsx). Hand inputs: spacing (vx, vz um), camera jumps, missing sections and the
 # caudal cutoff (see linc/blockface/subject.py). `raw` is relative to $LINC_RAW.
 # registration_to_own_mri: the inputs of record of the registration to the brain's own b0 (R1 v3): the b0 mask (paths relative to
-# mri/), the fixed b0, and the start pose (world, blockface -> placed b0), recovered from the run's saved init matrix.
+# mri/), the fixed b0, and the start pose (world, blockface -> b0 on the template grid), recovered from the run's saved init matrix.
 subject: MR252
 raw: blockface_curated/MR252
 raw_glob: '*.JPG'

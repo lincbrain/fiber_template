@@ -1,18 +1,23 @@
-"""Run the anatomix registration CLI (neel-dey/anatomix `anatomix-register.py`, FireANTs backend) unmodified, inside its own environment.
+"""Run the anatomix registration program unmodified, inside its own environment. anatomix is a pretrained network that computes image
+features for registration; its program, `anatomix-register.py`, registers them with FireANTs.
 
     $ANATOMIX_PYTHON -m linc.registration.anatomix_runner <anatomix-register.py arguments ...>
 
-Added around the CLI, in-process only (the anatomix source is never edited):
-  1. --fused-ops is configured FIRST (anatomix requires it before anything imports FireANTs);
-  2. FireANTs' global /tmp/fireants_image_lock is redirected to a per-user file ($FIREANTS_LOCK), so another user's lock file on a
+You need
+  env/anatomix.yml's Python ($ANATOMIX_PYTHON) with anatomix installed; ANATOMIX_REGISTER names the program when it is not next to
+  the installed package (anatomix/registration/anatomix-register.py).
+What it does
+  It adds three things around the program, in this process only (the anatomix source is never edited):
+  1. --fused-ops is set first (anatomix needs it before anything imports FireANTs);
+  2. FireANTs' global /tmp/fireants_image_lock is moved to a per-user file ($FIREANTS_LOCK), so another user's lock file on a
      shared machine cannot block every image write;
-  3. with LINC_UNGATED_FEATURES=1 the anatomix feature channels are NOT multiplied by the masks (the masks still reach the CLI for the
+  3. with LINC_UNGATED_FEATURES=1 the feature channels are not multiplied by the masks (the masks still reach the program for the
      overlap score and the moved segmentation; with a masked loss the mask channel is still appended). The registration of each
-     blockface to its own b0 and direct placement ran this way ("no engine masks"); the route test's route A did not.
-The CLI is found next to the installed anatomix package (anatomix/registration/anatomix-register.py) unless ANATOMIX_REGISTER names it.
+     blockface to its own b0 and the cross-modal alignment ran this way; the blockface-based alignment did not.
+You get
+  the program's outputs, where its arguments say.
 
-Ported from the analysis project's code/anatomix_rt/run_upstream.py: the same three steps (that runner's other feature hooks were study
-switches, off for every product of record, and are not ported).
+Ported from the analysis project's code/anatomix_rt/run_upstream.py (the same three steps).
 """
 import os
 import sys

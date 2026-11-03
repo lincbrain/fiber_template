@@ -8,7 +8,7 @@
    "slices (a, b) is \"interpolated\" when a pair covered it in at least one hemisphere, \"adjacent\" when b - a = 1 (nothing to fill) and",
    "otherwise \"skipped: footprints differ (partial section)\" (the per-hemisphere footprint Dice < 0.8 in both hemispheres; no pair is",
    "skipped for its gap). The per-hemisphere statuses and the pairs gained over the earlier record (interpolated now, not before) are kept",
-   "beside. labeled_sections = sections whose sheets carry a bundle, terminal or injection-site label (the single-fiber class left out).",
+   "beside. labeled_sections = sections whose sheets hold a bundle, terminal-field or injection-site label (the single-fiber class left out).",
    "Inputs (products_mri): `tracer_v2_bfnative`/<S>/interp_v2.json (the interpolation's own record) and <S>_{Bundles,Terminals,Injection_site}",
    "_bfnative_L2.nii.gz (the group sheets on the blockface grid); `numbers_of_record`/tracer_interp_accounting_r058d.json (the earlier",
    "record, for slice_mm and the comparison)."

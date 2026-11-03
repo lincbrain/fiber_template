@@ -1,32 +1,38 @@
 #!/usr/bin/env python3
 """Where each tracer case's fiber bundles run inside the anterior limb of the internal capsule (ALIC), dorsoventrally, against its
-injection site's prefrontal region and the published topography (ventral prefrontal fibers ventral, dorsal ones dorsal: Lehman et al.
-2011; Safadi et al. 2018). Paper: Results, tracer labels; Fig. 9 (c).
+injection site's prefrontal region and the published topography (ventral prefrontal fibers ventral, dorsal ones dorsal: Lehman et
+al. 2011; Safadi et al. 2018). Results, tracer labels; Fig. 9 (c).
 
-Inputs:
+    python reproduce/numbers/tracer_alic_topography_r058d.py [--labels <products key>] [--name <record>]
+
+You need
   labels   the final tracer labels in the template (configs/products_blockface.yaml `tracer_template_r058d`):
            <S>/<S>_<class>_mri-template_density.nii.gz; bundles = Fiber_{light,moderate,dense}_bundle + Bundle (the "Fibers" strokes
            left out, as in Fig. 9); both rules: density >= 0.1 (the figure's) and > 0.5 (solid).
   capsule  SARM level 6 label 50 (ic) in the template (`atlas_nmt`/SARM_level6_in_template.nii.gz); also + 0.5 mm (2 dilations), as
            Fig. 9 (c) draws it.
-  region   the injection site (Injection_site, both rules) carried to NMT v2 by the template's atlas mapping of record (`atlas_nmt`/run;
-           linc/link/symreg.maps) and looked up in CHARM (CHARM_in_NMT_v2.0_sym, levels 1-6, nearest; key CHARM_key_all.txt): the
-           majority label per level. CHARM and its key are part of the public NMT v2.0 symmetric archive
-           (https://afni.nimh.nih.gov/pub/dist/atlases/macaque/nmt/NMT_v2.0_sym.tgz), read from the user's copy: the image under
+  region   CHARM in NMT v2 (CHARM_in_NMT_v2.0_sym, levels 1-6; key CHARM_key_all.txt), from your copy of the public NMT v2.0
+           symmetric archive (https://afni.nimh.nih.gov/pub/dist/atlases/macaque/nmt/NMT_v2.0_sym.tgz): the image under
            configs/link.yaml inputs.atlas_reference, the key from configs/products_blockface.yaml `nmt_label_keys` (the archive's
            tables_CHARM/ folder). Not redistributed here.
-Measure, per case and rule, in the injection's hemisphere (x > 0, right; MF191 x < 0, left), template world y in [20, 24] mm (Fig. 9 c's
-three planes, anterior of the AC at y = 19.6 mm):
+What it does
+  The injection site (Injection_site, both rules) is transformed to NMT v2 by the template's registration of record
+  (`atlas_nmt`/run; linc/link/symreg.maps) and looked up in CHARM (nearest; the majority label per level). Measures, per case and
+  rule, in the injection's hemisphere (x > 0, right; MF191 x < 0, left), template world y in [20, 24] mm (Fig. 9 c's three planes,
+  anterior of the AC at y = 19.6 mm):
   n            bundle voxels inside the capsule
-  rel_dv       mean over those voxels of (z - zmin) / (zmax - zmin), zmin/zmax = the capsule's ventral and dorsal ends in the voxel's
-               coronal plane (same side): 0 = the capsule's ventral end, 1 = its dorsal end
-  dz_mm        the voxels' mean z minus the mean z of the capsule itself (same side and y range): < 0 ventral of the capsule's middle
+  rel_dv       the mean over those voxels of (z - zmin) / (zmax - zmin), zmin / zmax = the capsule's ventral and dorsal ends in the
+               voxel's coronal plane (same side): 0 = the capsule's ventral end, 1 = its dorsal end
+  dz_mm        the voxels' mean z minus the mean z of the capsule itself (same side and y range): < 0 ventral of the capsule's
+               middle
   per_plane    the same at y = 20, 22, 24 mm (+- 0.75 mm, Fig. 9 c's slabs)
-Verdict rule (stated before the numbers): a site in CHARM's OFC or vmPFC groups (ventral prefrontal) is expected ventral (rel_dv < 0.5),
-a site in dorsal prefrontal, dorsal cingulate or medial motor areas (dlPFC, ACC dorsal, area 8, SMA/preSMA) dorsal (rel_dv > 0.5); and
-across cases the ventral-site bundles below the dorsal-site bundles. A case with no annotated site gets its position only.
--> $LINC_NUMBERS/tracer_alic_topography_r058d.json
-    python reproduce/numbers/tracer_alic_topography_r058d.py [--labels <products key>] [--name <record>]
+  The verdict rule (stated before the numbers): a site in CHARM's OFC or vmPFC groups (ventral prefrontal) is expected ventral
+  (rel_dv < 0.5), a site in dorsal prefrontal, dorsal cingulate or medial motor areas (dlPFC, ACC dorsal, area 8, SMA/preSMA)
+  dorsal (rel_dv > 0.5); and across cases the ventral-site bundles below the dorsal-site bundles. A case with no annotated site gets
+  its position only.
+You get
+  $LINC_NUMBERS/tracer_alic_topography_r058d.json.
+
 Ported from the analysis project's labels/tracer_alic_topography_r058.py (run there as --labels labels/tracer_template_r058d
 --name tracer_alic_topography_r058d).
 """

@@ -41,9 +41,9 @@ registered to the template needs one b0 or T2-weighted image (`linc-mri prep`).
 |---|---|---|
 | the template | `$LINC_TEMPLATE` (the data release) | `linc-register`, `linc-labels` |
 | network weights | `$LINC_MODELS/segment/<model>/` and `$LINC_MODELS/completion/<name>/` (the data release; `docs/models.md`) | `linc-mri`, `linc-reconstruct`, `linc-segment`, `linc-complete` |
-| anatomix's feature network | fetched from Hugging Face on the first registration, then cached | `linc-register`, the link |
-| NMT v2 (symmetric), with its SARM and CHARM labels | your own copy, laid out as `configs/targets.yaml` says, under `configs/link.yaml` `inputs.atlas_reference` | the MRI template's frame and landmarks, the mappings, the comparison of targets, the label tables |
-| CIVM-R, INIA19 | your own copies, the same way (CIVM-R's license does not allow redistribution) | the mappings, the comparison of targets |
+| anatomix's feature network | fetched from Hugging Face on the first registration, then cached | `linc-register`, the registration between the two templates |
+| NMT v2 (symmetric), with its SARM and CHARM labels | your own copy, laid out as `configs/targets.yaml` says, under `configs/link.yaml` `inputs.atlas_reference` | the MRI template's frame and landmarks, the registrations to published templates, the comparison of targets, the label tables |
+| CIVM-R, INIA19 | your own copies, the same way (CIVM-R's license does not allow redistribution) | the registrations to published templates, the comparison of targets |
 | the paper's products | `$LINC_PRODUCTS` (the data release) | `make numbers`, `make figures`, the template builds |
 
 A new brain's settings go in `configs/subjects/<ID>.yaml`, copied from `configs/subjects/TEMPLATE.yaml`.

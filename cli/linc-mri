@@ -26,6 +26,7 @@ You get, in $M = $LINC_DATA/sub-<ID>/mri (or --mri-root)
 Environment: env/linc.yml. Code: linc/construction/mri_new_brain.py (paper: Methods, "MRI preprocessing").
 """
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -54,4 +55,5 @@ def main():
 
 
 if __name__ == "__main__":
+    os.umask(0o002)                                                   # outputs readable by the group
     main()

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Carry the histology labels into the MRI template: onto the blockface, between sections, into the template.
+"""Transform the histology labels to the MRI template: register them onto the blockface, interpolate them between sections,
+and resample them into the template, so that labels drawn on sections can be read in template space.
 
 You need, per brain under $LINC_DATA/sub-<ID>/ (configs/labels.yaml `layout`)
   histology/annotations/<class>.ome.zarr (the annotators' masks), histology/section_map.tsv, histology/match_table.txt,
@@ -10,7 +11,7 @@ What it does
   push         moves each class through each piece's histology -> blockface registration onto its blockface slice (TIRL);
   interpolate  fills the slices between charted sections: the bundle grades as one group and the terminal grades as one, each density
                class kept as a part of its group, sections paired within each hemisphere, demons between each pair (SimpleITK);
-  carry        resamples the labels once into the MRI template (anti-aliased, linear), through the registry chain or the given route;
+  carry        resamples the labels once into the MRI template (anti-aliased, linear), through the registry's transforms or given ones;
   all          push, interpolate and carry in turn.
 
 You get, under $LINC_DATA/sub-<ID>/labels/
@@ -23,13 +24,14 @@ You get, under $LINC_DATA/sub-<ID>/labels/
     linc-labels interpolate --subject MR252 [--method v2|v1]
     linc-labels carry       --subject MR252 [--entry DIR ...]
     linc-labels all         --subject MR252
-Every path can be overridden. The route of `carry`, in PULL order (a template point goes first to last):
+Every path can be overridden. The transforms of `carry`, in PULL order (a template point goes first to last):
   --entry DIR [--entry DIR ...]     registry entries (linc.xfm), each '<dir>' or '<dir>:inv', in IMAGE order (bf-native first)
-  --map DIR:NAME / --warp FILE:CONV[:SRC_GRID] / --ras-pull FILE     a precomputed pull map route, in PULL order (template first)
-  (neither: the registry's own chain bf-native -> mri-template for the subject, every link with passing QC).
+  --map DIR:NAME / --warp FILE:CONV[:SRC_GRID] / --ras-pull FILE     a precomputed pull map, in PULL order (template first)
+  (neither: the registry's own chain bf-native -> mri-template for the brain, every link with passing QC).
 Environments: push in env/tirl.yml, interpolate and carry in env/linc.yml (paper: Methods, "Histology registration and label propagation").
 """
 import argparse
+import os
 import sys
 import time
 from glob import glob
@@ -193,4 +195,5 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
+    os.umask(0o002)                                                   # outputs readable by the group
     main()

@@ -1,21 +1,21 @@
 # Rebuilding the blockface channel of the template
 
-The blockface channel of the template (`$LINC_TEMPLATE/blockface/`; in the analysis project `bftemplate/d2b/final_s8`) is a symmetric
-groupwise construction of the 21 photographed brains, each entered twice (as reconstructed and exactly mirrored), with two channels
-per input, the blockface luminance and the b0, built with MMORF 1.0.1 through the patched template-construction driver (paper:
-Methods, "Blockface template"). A 43rd input, TPL, is the MRI template's b0 entered once as a b0-only member; its warp is the link
-from the MRI template to this template.
+The blockface channel of the template (`$LINC_TEMPLATE/blockface/`; in the analysis project `bftemplate/d2b/final_s8`) is a
+symmetric groupwise construction of the 21 photographed brains, each used twice (as reconstructed and exactly mirrored), with two
+channels per input, the blockface luminance and the b0, built with MMORF 1.0.1 through the patched template-construction driver
+(paper: Methods, "Blockface template"). A 43rd input, TPL, is the MRI template's b0, used once as a b0-only member; its warp is the
+registration from the MRI template to this template.
 
 **Driver.** `reproduce/templates/build_blockface_template.py` runs the commands below in order from the released products:
 `--plan` prints every step with its environment, estimated time, inputs and outputs and runs nothing; `--step NAME` (or `--from` /
 `--to`) runs steps; each step that runs writes `<work>/provenance/<NN>_<step>.json`, and a step whose outputs exist is not rerun
-without `--force`. Its one step the commands below leave implicit is `bf-view` (the step-8 run without TPL, which the blockface
-finish averages).
+without `--force`. Its one step the commands below leave implicit is `bf-view` (the step-8 run without TPL, which the final blockface
+average uses).
 
-The build has five stages: **members → plan A (7 steps at 0.5 mm) → step 8 (0.25 mm) → finish → publish.** MMORF runs on one GPU
-(48 GB for the batch of record); everything else runs on CPU. The code is `linc/construction/blockface_build.py`,
-`blockface_finish.py`, `blockface_mmorf.py` and `blockface_shim/`; every step below is
-`python -m linc.construction.blockface_build <step> ...` from the repository root.
+The build has five stages: **members → the first stage (7 steps at 0.5 mm) → step 8 (0.25 mm) → final average → publish.** MMORF
+runs on one GPU (48 GB for the batch of record); everything else runs on CPU. The code is `linc/construction/blockface_build.py`,
+`blockface_finish.py`, `blockface_mmorf.py` and `blockface_shim/`; every step below is `python -m linc.construction.blockface_build
+<step> ...` from the repository root.
 
 ## Environment
 
@@ -31,7 +31,7 @@ The build has five stages: **members → plan A (7 steps at 0.5 mm) → step 8 (
   The patched file is the driver the template of record was built with (md5 `fa7771595c86ef23e797a1bb5016c07f`) up to the author tag
   of the local changes (17 lines: comments, one `--help` text, one docstring; no code change; patched md5
   `fd775b9b9e8b615826bc48459d65ded2`).
-  The edits carry the lab's local changes of `mm-template-construction_v1_linc.edits.json` (the MRI build's) except the tensor
+  The edits include the lab's local changes of `mm-template-construction_v1_linc.edits.json` (the MRI build's) except the tensor
   `--rotwarp` change, which came later and has no effect here (no tensor channel), plus two changes of its own, both marked in
   the file and off unless `LINC_MASKWEIGHTED=1`:
   - **mask-weighted construction:** each input's cost mask weights its affine FLIRT cost (`-inweight`) and is its weight in
@@ -41,8 +41,9 @@ The build has five stages: **members → plan A (7 steps at 0.5 mm) → step 8 (
 - FSL 6.0.7.4 (`FSLDIR`); MMORF 1.0.1 (`LINC_MMORF_EXE` = the `mmorf_cuda` of env/mri.yml), and `linc/construction/blockface_shim` first on
   `PATH` when the driver runs: the shim rewrites TPL's MMORF call only (blockface weight 0, a stand-in image and a ones mask, and a
   ones blockface bias field afterwards), because MMORF's cost is undefined for an all-zero moving image or mask.
-- Inputs: each brain's completed volume and its completion records (`linc/completion`, `linc-complete`); the rigid placement of
-  the 8 brains without MRI (`linc-register direct-placement`, linear part); `$LINC_TEMPLATE/mri/linc_mri_b0` and its brain mask;
+- Inputs: each brain's volume with its missing sections synthesized and its synthesis records (`linc/completion`,
+  `linc-complete`); the rigid part of the cross-modal alignment of the 8 brains without MRI (`linc-register direct-placement`);
+  `$LINC_TEMPLATE/mri/linc_mri_b0` and its brain mask;
   the run-113 frame and the bridge to the canonical frame (`configs/products_blockface.yaml`).
 
 ## 1. Members
@@ -56,12 +57,12 @@ $B tpl-canon --vox 0.5 --source-canon canon --out canon_tpl        # TPL beside 
 $B tpl-costmask --canons canon_tpl --record tpl_costmask.json      # TPL's b0 cost: 0 below the brainstem plane + 1 mm, cosine over 2 mm
 ```
 
-Per brain and mirror: the completed luminance, color, photographed fraction and brain mask, resampled once onto the frame
-(anti-aliased); the b0 the completion saw, on one rule for all, clip(b0 / mhi, 0, 1) x brain; the blockface cost mask (1 for a
-brain with MRI; for one without, 1 on its kept sections, 0 within 1 mm of its caudal cut face and a cosine to 1 over 2 mm, through
-its rigid placement); the b0 cost mask 1 everywhere.
+Per brain and mirror: the luminance with synthesized tissue, color, photographed fraction and brain mask, resampled once onto the
+frame (anti-aliased); the b0 the synthesis used, on one rule for all, clip(b0 / mhi, 0, 1) x brain; the blockface cost mask (1 for a
+brain with MRI; for one without, 1 on its kept sections, 0 within 1 mm of its junction plane and a cosine to 1 over 2 mm, through
+the rigid part of its cross-modal alignment); the b0 cost mask 1 everywhere.
 
-## 2. Plan A: 7 steps at 0.5 mm
+## 2. The first stage: 7 steps at 0.5 mm
 
 ```bash
 $B run-plan-a --canon canon_tpl --root runs --name d2b              # data tree, configs (7 steps, lambda x10, smoothing floors), standardspace
@@ -73,7 +74,7 @@ LINC_MASKWEIGHTED=1 PATH=linc/construction/blockface_shim:$PATH \
 ```
 
 The affine stage of the 42 inputs is the one of design 2's build (the same inputs; its FLIRT weight is the blockface cost, so
-TPL is placed by its own affine above). The analysis copied this stage from design 2's build; its copy is a product of record
+TPL is aligned by its own affine above). The analysis copied this stage from design 2's build; its copy is a product of record
 (`bftemplate/d2b/plan_a_affine`).
 
 ## 3. Step 8: 0.25 mm
@@ -83,7 +84,7 @@ $B s8-frame --canon canon --out frame_canon_0p5.nii.gz
 $B s8-inputs --canon canon --frame frame_canon_0p5.nii.gz --out canon2 -j 6     # the members on the frame's exact 2x lattice
 $B tpl-canon --vox 0.25 --source-canon canon2 --out canon2_tpl && $B tpl-costmask --canons canon_tpl canon2_tpl --record tpl_costmask.json
 $B step8-weights --canon2 canon2_tpl --out canon2_s8w            # the author's step-8 rule (below)
-$B s8-box --template <plan A's two step-6 templates> --canon2 canon2 --out box_0p25.nii.gz   # plan A's support + 4 mm
+$B s8-box --template <the first stage's two step-6 templates> --canon2 canon2 --out box_0p25.nii.gz   # their support + 4 mm
 $B run-step8 --canon2 canon2_s8w --plan-a runs/d2b --box box_0p25.nii.gz --root runs --name d2bs8
 $B tpl-standins --run runs/d2bs8 --canon2 canon2_tpl
 $B s8-mats --affine-dir runs/d2b/out/affine_step2 --canon canon_tpl --canon2 canon2_s8w --box box_0p25.nii.gz --run runs/d2bs8 \
@@ -94,8 +95,8 @@ LINC_MASKWEIGHTED=1 PATH=linc/construction/blockface_shim:$PATH \
   $PY_MRI $($B driver-command --run runs/d2bs8 -aff False -nln True --resume_from 8:1 -nres 8 -nit 3 -b 12)
 ```
 
-MMORF takes no warp input: step 8 re-registers every input from its plan-A affine against the step-7 template, at 0.25 mm knots
-(9 levels; smoothing floored at each channel's own bandwidth: blockface 0.281 mm, b0 0.562 mm). **The step-8 rule** (the author):
+MMORF takes no warp input: step 8 registers every input again, from its first-stage affine, to the step-7 template, at 0.25 mm knots
+(9 levels; smoothing floored at each channel's own bandwidth: blockface 0.281 mm, b0 0.562 mm). **The b0 weight of step 8:**
 at step 8 only, the 8 brains without MRI count less in never-photographed tissue, the same way their synthetic blockface already
 does: their b0 cost mask equals their blockface cost mask wherever they were not fully photographed.
 
@@ -109,11 +110,11 @@ $B finish-b0 --run runs/d2bs8 --arm d2bs8 --canon canon2_tpl --iteration runs/d2
 $B embed --run runs/d2bs8 --src final --dst final_run113
 ```
 
-The published template is not MMORF's average: every input is pulled once from its 0.25 mm completed volume through its step-8 warp
-and averaged with precision weights, w = 1/(tau^2 + sigma^2) per member and part (photographed, interpolated, synthesized; the
-synthesis of a brain without MRI has weight 0; tau^2 and the depth curve sigma^2_syn(d) from `reproduce/numbers/precision_weights_b1_d2b_s8.py`),
-then symmetrized exactly, 0.5 (V + M(V)). The b0 channel uses the same warps (TPL through the bridge). `-j 6` reproduces the products
-of record bit for bit (the partial sums are chunked by input).
+The published template is not MMORF's average: every input is resampled once from its 0.25 mm volume (photographed and synthesized
+tissue) through its step-8 warp and averaged with precision weights, w = 1/(tau^2 + sigma^2) per member and part (photographed,
+interpolated, synthesized; the synthesis of a brain without MRI has weight 0; tau^2 and the depth curve sigma^2_syn(d) from
+`reproduce/numbers/precision_weights_b1_d2b_s8.py`), then symmetrized exactly, 0.5 (V + M(V)). The b0 channel uses the same warps
+(TPL through the bridge). `-j 6` reproduces the products of record bit for bit (the partial sums are chunked by input).
 
 ## Validation (22 Oct 2026; piecewise, MMORF not rerun)
 
@@ -130,7 +131,7 @@ of the record).
 | members, 0.25 mm | MF6 and MF10 on the step-8 lattice | 14/14 files each identical |
 | TPL | its 0.25 mm member and its b0 cost mask | 8/8 files identical |
 | step-8 rule | the b0 cost masks of MF8, MF10, MM14 (both mirrors) | identical |
-| run trees | plan A (7 steps) and step 8: every MMORF .ini and .tree, standardspace, subject list, the 172 linked inputs | identical |
-| plan A's affine stage | TPL's 12-dof FLIRT affine (2 .mat) and its 4 resampled images; the 6 affine templates (the driver's averaging, in the MMORF environment) | identical |
+| run folders | the first stage (7 steps) and step 8: every MMORF .ini and .tree, standardspace, subject list, the 172 linked inputs | identical |
+| the first stage's affine part | TPL's 12-dof FLIRT affine (2 .mat) and its 4 resampled images; the 6 affine templates (the driver's averaging, in the MMORF environment) | identical |
 | step 8's start | the 86 rewritten affines; the 43 inputs' step-7 pulls (258 files); the 6 step-7 templates and the standardspace (the driver's averaging) | identical |
 | finish | the blockface and b0 channels from the step-8 warps, and the embed: the 15 published files and the 15 box products | identical |

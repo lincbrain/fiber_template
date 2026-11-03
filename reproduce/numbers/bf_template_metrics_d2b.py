@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
-"""The blockface template's numbers (design 2b), read from its saved products only (no template recomputed): per template (step 8,
-the template of record; step 7 = plan A, beside it) the members, grid, brain / photographed / predicted volume and the predicted share
-(predicted = brain & photographed share < 0.5), the shell rule's footprint, coverage (median over the brain; the core = the share of
-the brain where every brain overlaps), symmetry (max |V - mirror(V)| of the b0, grayscale and color channels; brain-mask mirror Dice;
-grayscale asymmetry before the final symmetrization) and the construction det J record (% of brain voxels with det J outside
-[0.5, 2] per member; folded voxels). Paper: Results, the blockface template. Products: configs/products_blockface.yaml `bftemplate_*`.
--> $LINC_NUMBERS/bf_template_metrics_d2b.json
+"""The blockface template's numbers (Results, the blockface template), read from its saved products only (no template recomputed).
+
     python reproduce/numbers/bf_template_metrics_d2b.py
+
+You need
+  the template's products (configs/products_blockface.yaml `bftemplate_*`; design 2b in the records).
+What it does
+  Per template (the template of record after step 8, and after step 7 beside it): the members, the grid, the brain, photographed
+  and predicted volumes and the predicted fraction (predicted = brain with a photographed fraction < 0.5), the shell rule's
+  footprint, the coverage (median over the brain; the core = the part of the brain that every brain covers), the symmetry (max |V -
+  mirror(V)| of the b0, grayscale and color channels; the Dice coefficient between the brain mask and its mirror image; the
+  grayscale asymmetry before the final symmetrization), and the construction's Jacobian determinants (% of brain voxels with det J
+  outside [0.5, 2] per member; folded voxels).
+You get
+  $LINC_NUMBERS/bf_template_metrics_d2b.json.
 """
 import json
 import sys

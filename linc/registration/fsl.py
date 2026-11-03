@@ -1,7 +1,13 @@
-"""FSL FLIRT, called as an external program, and the conversions between FLIRT matrices and world transforms.
+"""FSL FLIRT (linear registration), called as an external program, and the conversions between FLIRT matrices and world transforms.
 
-FSL is not redistributed: set FSLDIR to an FSL 6.0.7.4 installation (the version used for the paper; `check_version` warns on any
-other). World transforms are 4 x 4 RAS matrices, moving world -> fixed world (mm).
+You need
+  FSL 6.0.7.4 (FSLDIR; the version used for the paper; check_version warns on any other). FSL is not redistributed.
+What it does
+  run                         an FSL program
+  fsl_to_world, world_to_fsl  a FLIRT matrix <-> a world transform
+  decompose, euler_xyz        a linear transform's scales, shears and rotations
+You get
+  world transforms as 4 x 4 RAS matrices, moving world -> fixed world (mm).
 
 Ported from the analysis project: `fsl_to_world` = code/register_mri.py `_fsl_to_world` (= code/regqc.py `fsl_to_world`),
 `world_to_fsl` = featurereg/r1_redo_v3.py `fsl_mat_from_world` (= bftemplate/direct/register_direct.py `_world_to_fsl`),

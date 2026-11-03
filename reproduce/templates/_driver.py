@@ -1,13 +1,17 @@
-"""The small framework the template build drivers share (reproduce/templates/build_*.py): a build is an ordered list of steps; each
-step is one command of the recipe of record (reproduce/templates/*.md) with its environment, inputs, outputs and an estimated time.
+"""The small framework the template build drivers share (reproduce/templates/build_*.py), so every build runs, resumes and records its
+steps the same way.
 
-    --plan              print every step (environment, estimated time, command, inputs, outputs); runs nothing
-    --step NAME [...]   run these steps, in recipe order
-    --from A --to B     run the steps from A through B, in recipe order
-    --force             run a step whose outputs already exist (by default it refuses: products are never overwritten silently)
-
-A step that ran writes <work>/provenance/<NN>_<name>.json (command, environment variables it needs, start / end / wall time, the
-repository commit, every input and output with its size and, for files, md5; linc/provenance.py's record).
+You need
+  a build's ordered list of steps: each one command of the recipe of record (reproduce/templates/*.md) with its environment,
+  inputs, outputs and estimated time.
+What it does
+  --plan              prints every step (environment, estimated time, command, inputs, outputs) and runs nothing
+  --step NAME [...]   runs these steps, in recipe order
+  --from A --to B     runs the steps from A through B, in recipe order
+  --force             runs a step whose outputs already exist (by default it refuses: products are never overwritten silently)
+You get
+  for each step that ran, <work>/provenance/<NN>_<name>.json (the command, the environment variables it needs, start, end and wall
+  time, the repository commit, every input and output with its size and, for files, md5; linc/provenance.py's record).
 """
 import argparse
 import datetime

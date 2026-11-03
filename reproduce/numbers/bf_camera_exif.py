@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
-"""The blockface camera of record, read from the raw photographs' EXIF (every 25th photograph of each of the 21 brains): camera make
-and model, image size, focal length, f-number, exposure time, ISO and flash. The lighting set-up itself is not in the files (EXIF
-says only whether the flash fired). Paper: Methods, the brains (the camera sentence).
-The raw photographs: $LINC_RAW/<configs/subjects/<ID>.yaml raw>. The record lists each brain's folder as it was read, so it
-regenerates identically only with LINC_RAW set as for the paper.
--> $LINC_NUMBERS/bf_camera_exif.json
+"""The blockface camera of record, for the camera sentence of Methods ("Brains"), read from the raw photographs' EXIF.
+
     python reproduce/numbers/bf_camera_exif.py [--raw $LINC_RAW]
+
+You need
+  the raw photographs ($LINC_RAW/<configs/subjects/<ID>.yaml raw>).
+What it does
+  It reads every 25th photograph of each of the 21 brains: camera make and model, image size, focal length, f-number, exposure
+  time, ISO and flash. The lighting set-up itself is not in the files (EXIF says only whether the flash fired).
+You get
+  $LINC_NUMBERS/bf_camera_exif.json. The record lists each brain's folder as it was read, so it regenerates identically only with
+  LINC_RAW set as for the paper.
 """
 import argparse
 import glob

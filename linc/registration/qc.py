@@ -1,26 +1,32 @@
-"""The paper's registration QC for one registration (Methods, "Evaluation of the pathway"; `linc-register qc`): the measures on the
-fixed grid, the gate, a three-plane PNG, a JSON row, and the outcome in the transform's registry entry.
+"""The paper's acceptance checks of one registration (Methods, "Evaluation of the registration pipeline"; `linc-register qc`).
 
-    measure(fixed, moved, ...)        the gate measures of the analysis project's code/regqc.py run_qc (unchanged formulas):
-        linear part     polar decomposition of the world matrix (linc/registration/fsl.py decompose): principal scales in [0.9, 1.1]
-                        (cross-animal: anisotropy <= 1.10 and isotropic scale in [0.80, 1.25]; anisotropy only reported with
-                        aniso_report_only, the blockface -> MRI template placements), |rot y|, |rot z| < 30 deg after the optional
-                        180-degree absorption, no reflection
-        NCC             inside the evaluation mask (the 1 mm interior of the fixed and moved masks); -NCC >= 0.25 for an
-                        inverted-contrast pair (blockface vs b0), NCC >= 0.6 otherwise; optionally at a matched bandwidth
-        NMI, envelope Dice (reported, never gated), the interior edge distance (linc/evaluation/regeval.py, edge_mean)
-        warp            signed Jacobian folds inside the fixed brain mask: 0 allowed; the displacement's p95 inside it (drift)
-                        flagged above 6 mm, failed above 8 mm
-    outline(moved_mask, target, ...)  the outline check (linc/link/qc.py outline_regions / outline_gate, configs/link.yaml
-                        `outline`): fail at p99 > 3.5 mm or max > 5 mm in any pole, warn at p99 > 2.5 mm
-    photographed_slab(...)            the blockface -> own b0 registrations' outline target is the b0 brain mask inside the
-                        photographed slab (the end faces of the blockface mapped by the 9-dof linear stage; to_own_mri.slab_keep)
-    render_png(...)                   regqc's three-plane figure (checkerboard; fixed with the moved image's interior edges and both
-                        envelopes)
+You need
+  the fixed image, the moved image (or the moving image with its warp and linear transform), both brain masks, and the outline
+  target; the limits: configs/registration.yaml `qc`.
+What it does
+    measure(fixed, moved, ...)        on the fixed grid (the formulas of the analysis project's code/regqc.py run_qc, unchanged):
+        linear part     the world matrix's polar decomposition (fsl.py decompose): principal scales in [0.9, 1.1] (between
+                        animals: anisotropy <= 1.10 and isotropic scale in [0.80, 1.25]; for the cross-modal alignments the
+                        anisotropy is only reported), |rot y|, |rot z| < 30 deg after an optional 180-degree turn is taken out, no
+                        reflection
+        NCC             the normalized cross-correlation between the fixed and moved images inside the evaluation mask (the 1 mm
+                        interior of both masks): -NCC >= 0.25 for an inverted-contrast pair (blockface against b0), NCC >= 0.6
+                        otherwise; optionally at a matched bandwidth
+        reported only   the normalized mutual information (NMI); the Dice coefficient between the fixed and moved brain
+                        envelopes; the mean distance between their interior edges (linc/evaluation/regeval.py, edge_mean)
+        warp            folds (negative Jacobian determinants) inside the fixed brain mask: none allowed; the displacement's 95th
+                        percentile inside it, flagged above 6 mm and failed above 8 mm
+    outline(moved_mask, target, ...)  the distance from the moved brain's outline to the target's at each pole (linc/link/qc.py,
+                        configs/link.yaml `outline`): fail at p99 > 3.5 mm or max > 5 mm, warn at p99 > 2.5 mm
+    photographed_slab(...)            for a blockface -> own b0 registration, the outline target is the b0 brain mask inside the
+                        photographed part of the brain (the end faces of the blockface mapped by the 9-dof linear stage)
+    render_png(...)                   a three-plane figure (checkerboard; the fixed image with the moved image's interior edges and
+                        both envelopes)
+You get
+  a JSON row with every measure and pass / fail, the PNG, and, given a registry entry, the outcome recorded in it.
 
-Ported from the analysis project's code/regqc.py (run_qc's measures and gate, render_png; the global QC store, its montages,
-freeview lists and visual-verdict bookkeeping are not part of a user's QC and are not ported) and the R1 outline scan
-(bftemplate/d1b/outline_scan_bf.py, slab-limited target). Gate constants: configs/registration.yaml `qc`.
+Ported from the analysis project's code/regqc.py (run_qc's measures and limits, render_png) and its outline scan of the
+blockface -> own b0 registrations (bftemplate/d1b/outline_scan_bf.py).
 """
 import os
 import tempfile

@@ -1,21 +1,29 @@
 #!/usr/bin/env python3
-"""The per-brain table of the blockface brains (paper: Supplementary S1.5, the blockface columns): per sectioned brain, the
-photographed sections, the interpolated (never-photographed or unusable) sections, the camera and the spacing.
+"""The per-brain table of the blockface brains (Supplementary S1.5, the blockface columns).
 
-Every value is read from a regenerated record in $LINC_NUMBERS (run bf_cohort, bf_camera_exif and bf_spacing_used first):
-  photographed_sections, interpolated_sections, missing_intervals   bf_cohort.rows (native_slices; interpolated_sections; missing_intervals)
-  camera                                                           bf_camera_exif.by_camera (model, or "no EXIF (<frame size>)")
-  pixel_um, section_step_um (the calibrated spacing of record)   bf_spacing_used.per_brain, asserted equal to configs/subjects/<ID>.yaml
-                                                                   vx, vz
-  nominal_pixel_um, nominal_section_step_um (the spacing each volume was reconstructed at, before calibration)
-                                                                   configs/subjects/<ID>.yaml reconstruction_spacing_um (else vx, vz);
-                                                                   bf_spacing_used's "nominal" fields are not used: for MF8 and MF9
-                                                                   they hold the 26 Sep calibrated step (750 / 870 um), not the 600 um
-  name                                                             docs/specimen_labels.json (paper names)
--> $LINC_NUMBERS/s1_perbrain_r057.json
     python reproduce/numbers/s1_perbrain_r057.py
-Ported from the analysis project's paper/r057_l1/s1_perbrain_r057.py, which read the same three records of record (the fields read
-here are identical in the regenerated records).
+
+You need
+  the regenerated records in $LINC_NUMBERS (run bf_cohort, bf_camera_exif and bf_spacing_used first), configs/subjects/<ID>.yaml and
+  docs/specimen_labels.json.
+What it does
+  It reads, per sectioned brain:
+  photographed_sections, interpolated_sections, missing_intervals
+      bf_cohort.rows (native_slices; interpolated_sections; missing_intervals)
+  camera
+      bf_camera_exif.by_camera (model, or "no EXIF (<frame size>)")
+  pixel_um, section_step_um (the calibrated spacing of record)
+      bf_spacing_used.per_brain, asserted equal to configs/subjects/<ID>.yaml vx, vz
+  nominal_pixel_um, nominal_section_step_um (the spacing each volume was reconstructed at, before calibration)
+      configs/subjects/<ID>.yaml reconstruction_spacing_um (else vx, vz); bf_spacing_used's "nominal" fields are not used: for MF8
+      and MF9 they hold the calibrated step of 26 Sep (750 / 870 um), not 600 um
+  name
+      docs/specimen_labels.json (the paper's names)
+You get
+  $LINC_NUMBERS/s1_perbrain_r057.json.
+
+Ported from the analysis project's paper/r057_l1/s1_perbrain_r057.py, which read the same three records (the fields read here are
+identical in the regenerated records).
 """
 import json
 import sys

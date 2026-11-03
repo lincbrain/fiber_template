@@ -14,7 +14,7 @@ What it does
 
 You get
   <out>.png + <out>.provenance.json, and $LINC_NUMBERS/fig_tracer_pathways.json (composite) or fig_tracer_pathways_panels.json
-  (the layout, the stills' md5, per case the pathway voxels drawn, the inferred share and the longest join, the capsule counts)
+  (the layout, the stills' md5, per case the pathway voxels drawn, the inferred fraction and the longest join, the capsule counts)
 
     python reproduce/figures/tracer_pathways.py [--stills OBLIQUE LATERAL GLASS] [--out figures/tracer_pathways.png]
     python reproduce/figures/tracer_pathways.py --layout panels [--out figures/tracer_pathways_panels.png]

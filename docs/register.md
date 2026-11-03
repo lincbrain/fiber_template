@@ -51,7 +51,7 @@ image correlation, the folds and the drift of its warp, the overlap of the two b
 brain's outline and its target's. It writes a three-plane PNG and a JSON row (`--out`, by default `$LINC_WORK/qc`), and with
 `--entry` it records pass or fail in the registration's registry entry, which then stops the warning. A preset sets the paper's
 settings for each kind of registration: `bf2b0` (blockface to its own b0), `direct` (blockface to the MRI template), `b02template`
-(b0 to the MRI template) and `template2template` (the link). `--help` lists the inputs; the thresholds are in
+(b0 to the MRI template) and `template2template` (the blockface template to the MRI template). `--help` lists the inputs; the thresholds are in
 `configs/registration.yaml` (`qc`). On three of the paper's registrations, its measures equal the paper's to 1e-6, with the same
 outcome.
 

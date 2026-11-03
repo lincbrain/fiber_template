@@ -1,20 +1,27 @@
 #!/usr/bin/env python3
-"""The blockface segmentation networks (paper: Supplementary S1.1): their training data, the human-in-the-loop rounds of the two 3D
+"""The blockface segmentation networks (Supplementary S1.1): their training data, the human-in-the-loop rounds of the two 3D
 networks, and their performance. Cards: models/blockface_segmentation.md.
 
-Recomputed from the files of record:
-  2D brain mask (Dataset500_SLICE, used for every photograph): numTraining from its dataset.json (the released weights' copy,
-     $LINC_MODELS/nnUNet_results/...; trained 26 Dec 2024, before this project, on 149 photographs whose source brains are not
-     recorded); performance from the model-card record bf_models_card.json (products: numbers_of_record) `mask2d` (Dice of the
-     network's photograph masks against the hand-corrected masks of 14 brains; not cross-validated).
+    python reproduce/numbers/s1_segmentation_r057.py
+
+You need
+  the networks' files of record ($LINC_MODELS/nnUNet_results; products: nnunet_raw) and the model-card record bf_models_card.json
+  (products: numbers_of_record).
+What it does
+  It recomputes:
+  2D brain mask (Dataset500_SLICE, used for every photograph): numTraining from its dataset.json (the released weights' copy;
+     trained 26 Dec 2024, before this project, on 149 photographs whose source brains are not recorded); performance from
+     bf_models_card `mask2d` (the Dice coefficient between the network's photograph masks and the hand-corrected masks of 14
+     brains; not cross-validated).
   3D brain mask, round 5 (Dataset506_BFmask5, the network of record): its training cases (the training set's imagesTr: one case per
-     brain + one validation slab; products: nnunet_raw), validation Dice (bf_models_card `dataset506_bfmask3d`).
+     brain + one validation slab), its validation Dice (bf_models_card `dataset506_bfmask3d`).
   3D marker tubes, rounds 2 and 3 (Dataset507_holes2, Dataset508_holes3 = the network of record): training cases, validation Dice
      (bf_models_card `dataset508_holes`).
-Documented, not recomputable (their training folders were deleted after round 5): the brain-mask rounds 1-4 and the tubes' round 1,
-entered below with their source (the QC report made for each round at the time, and the project log), not as measurements.
--> $LINC_NUMBERS/s1_segmentation_r057.json
-    python reproduce/numbers/s1_segmentation_r057.py
+  The brain-mask rounds 1-4 and the tubes' round 1 cannot be recomputed (their training folders were deleted after round 5): they
+  are listed with their source (the QC report made for each round at the time, and the project log), not as measurements.
+You get
+  $LINC_NUMBERS/s1_segmentation_r057.json.
+
 Ported from the analysis project's paper/r057_l1/s1_segmentation_r057.py (inputs re-rooted; values unchanged).
 """
 import json

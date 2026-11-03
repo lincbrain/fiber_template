@@ -1,13 +1,20 @@
-"""Direct placement checked against the route through the brain's own MRI (paper: Methods and Results, direct placement).
+"""How accurate the cross-modal alignment is: for each brain with MRI, it is compared with the MRI-based alignment (Methods,
+"Blockface to MRI registration and synthesis of missing sections"; Results).
 
-For each brain with MRI, its direct placement onto the MRI template's b0 (linc/registration/direct_placement.py) and the path through its
-own MRI (blockface -> own b0, the registration of record (R1); then own b0 -> MRI template (R5)) both pull template points inside the
-brain (the direct placement's moved mask, every 1 mm) back into blockface native space; their distance (mm) is the direct placement's
-error relative to that path. Per brain: median / p95 / p99 / max mm, the linear scales and their anisotropy, the gates. The brains used
-to choose the smoothing are summarized apart from the others (held out); the expected error for the brains without MRI comes from the
-held-out brains only.
+You need
+  for each brain with MRI, its cross-modal alignment (linc/registration/direct.py) and its MRI-based alignment: blockface -> own b0
+  (the registration of record) composed with own b0 -> MRI template (registry entries); the folders are arguments.
+What it does
+  one()      template points inside the brain (the cross-modal alignment's moved mask, every 1 mm) are transformed back into
+             blockface native space by both alignments; their distance (mm) is the cross-modal alignment's error relative to the
+             MRI-based alignment. Per brain: the median, 95th and 99th percentile and maximum distance, the linear scales and their
+             anisotropy, the acceptance checks.
+  summary()  the brains used to choose the smoothing are summarized apart from the others (held out); the expected error for the
+             brains without MRI comes from the held-out brains only.
+You get
+  one row per brain and the summary (dicts, written by the caller).
 
-Ported unchanged from the analysis project's featurereg/d2_s2_validate.py (`one`, `summary`, `r5_guard`); folders are arguments.
+Ported unchanged from the analysis project's featurereg/d2_s2_validate.py (`one`, `summary`, `r5_guard`).
 """
 import json
 import os

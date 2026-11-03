@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
-"""Compare a reconstruction with another (e.g. yours with the paper's): every level of the OME-Zarr stores (arrays and their scale /
-translation), the NIfTI products (arrays and affines) and <ID>.info. Prints one line per item; exit status 0 when all are identical.
+"""Compare a reconstruction with another (e.g. yours with the paper's), to check that a rerun reproduces it.
 
     $PY tools/compare_reconstruction.py <ID> <your sub-<ID>/blockface> <the other sub-<ID>/blockface>
     e.g. $PY tools/compare_reconstruction.py MR252 $LINC_REBUILD_DATA/sub-MR252/blockface $LINC_RECORDS/data/sub-MR252/blockface
+
+You need
+  the two blockface folders.
+What it does
+  It compares every level of the OME-Zarr stores (the arrays and their scale and translation), the NIfTI products (arrays and
+  affines) and <ID>.info.
+You get
+  one line per item (whether the arrays are identical and the transforms or affines equal, or which side is missing); exit status 0
+  when all are identical.
 """
 import os
 import sys

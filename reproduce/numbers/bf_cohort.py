@@ -1,21 +1,29 @@
 #!/usr/bin/env python3
-"""The blockface cohort: one row per photographed brain, every field read from its source of record, never typed.
+"""The blockface cohort for Table 1 and Methods: one row per photographed brain, every field read from its source of record, never
+typed.
 
-  configs/subjects/<ID>.yaml      vx, vz, rotate180, jumps, missing, jump_mode, the raw photographs' folder and pattern
-  <ID>.info                       native slices, output slices, interpolated sections, exposure steps, hole voxels, L1 shape,
-                                  orientation correlation (written by the reconstruction)
-  curated/                        hand-curated mask / holes (the _edited overrides)
-  <ID>_holes.nii.gz               number of marker tubes (3D components >= 3 voxels on the L4 grid)
-  the raw photographs             raw photo count, zero-byte JPGs (original data loss)
-  mri/<ID>_mri.info, the b0       MRI modality used for the registration to the brain's own MRI (b0), its voxel size, T2 availability
-  registration_qc.json            the registration QC store's production rows (bf2b0; route-A direct, tag to_bf_syn_t3_tstep)
-  folds_v2.json                   each brain's role in the template builds of the time
-  06_histo2bf/tirl                histology pieces registered (this tree; and the final histology arm, its products of record)
-  participants.tsv                species of record (LINC dandiset 000003)
-Native z spacing caps the resolution any isotropic product of that brain can claim (stated per row). Paper: Table 1 and Methods.
-Products: configs/products_blockface.yaml (`data`, `mri_src`, `registration_qc_store`, `folds`, `histo_arm_final`).
--> $LINC_NUMBERS/bf_cohort.json
     python reproduce/numbers/bf_cohort.py [--raw $LINC_RAW] [--participants $LINC_PARTICIPANTS]
+
+You need
+  the products in configs/products_blockface.yaml (`data`, `mri_src`, `registration_qc_store`, `folds`, `histo_arm_final`), the raw
+  photographs and the participants table.
+What it does
+  It reads, per brain:
+  configs/subjects/<ID>.yaml      vx, vz, rotate180, jumps, missing, jump_mode, the raw photographs' folder and pattern
+  <ID>.info                       native sections, output sections, interpolated sections, exposure steps, tube voxels, L1 shape,
+                                  orientation correlation (written by the reconstruction)
+  curated/                        the hand-corrected mask and tubes (the _edited files)
+  <ID>_holes.nii.gz               the number of marker tubes (3D connected components >= 3 voxels on the L4 grid)
+  the raw photographs             the photograph count, zero-byte JPEGs (data lost at acquisition)
+  mri/<ID>_mri.info, the b0       the MRI used for the registration to the brain's own MRI (b0), its voxel size, whether a T2 exists
+  registration_qc.json            the registration QC store's production rows (blockface to b0; the blockface-based alignment,
+                                  tag to_bf_syn_t3_tstep)
+  folds_v2.json                   each brain's role in the template builds of the time
+  06_histo2bf/tirl                the histology components registered (this tree, and the final histology registration of record)
+  participants.tsv                the species of record (LINC dataset 000003)
+  The native section step caps the resolution any isotropic product of the brain can claim (stated per row).
+You get
+  $LINC_NUMBERS/bf_cohort.json (the rows' text fields are the record's, kept verbatim).
 """
 import argparse
 import glob

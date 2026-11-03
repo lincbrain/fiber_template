@@ -1,31 +1,43 @@
-"""The blockface template's construction, except MMORF itself (reproduce/templates/blockface.md; Methods, "Blockface template"):
-the members, their frames, the TPL member, the step-8 weights, the averages the driver's own code computes, and the two run trees.
+"""The blockface template's construction, apart from MMORF itself (reproduce/templates/blockface.md; Methods, "Blockface template"):
+the members, their frames, the MRI template's member, the weights of the eighth step, the averages computed by the driver's own
+code, and the two run folders.
 
-The build had two stages: plan A, 7 nonlinear steps at 0.5 mm, then step 8 at 0.25 mm. Its 43 inputs are the 21 brains, each with its
-exact mirror, plus TPL, the MRI template's b0 entered once as a b0-only member (its warp is the link from the MRI template to the
-blockface template). Each input has two channels, the blockface luminance (BF) and the b0 (B0), each with a cost mask that is also its
-averaging weight (the patched driver, LINC_MASKWEIGHTED=1):
-  members      (cmd_members, 0.5 mm; cmd_s8_inputs, 0.25 mm) every brain's completed volume (linc/completion) placed in the run-113
-               frame and resampled once (anti-aliased), with its photographed fraction, color, brain mask and b0 (one rule:
-               clip(b0 / mhi, 0, 1) x brain); cost masks: BF 1 for a brain with MRI, and for a brain without MRI 1 on its kept native
-               sections with a cosine ramp from 1 mm before its caudal cut face (slab_cost); B0 1 everywhere. Mirrors are exact (the
-               grids are symmetric about x = 0).
-  frames       the prep frame (frame1c grown 8 mm), the build frame (the union of the members + 4 mm, x-symmetric, x4 voxels), its exact
-               2x lattice for step 8, and the step-8 box (plan A's template support + 4 mm).
-  TPL          (cmd_tpl_canon, cmd_tpl_costmask, cmd_tpl_affine) the MRI template's b0 in the run-113 frame through the bridge; its b0 cost
-               0 below the brainstem plane (+ 1 mm, cosine over 2 mm); its affine a 12-dof FLIRT to plan A's affine b0 template,
+You need
+  each brain's volume with its missing sections synthesized (linc/completion), with its photographed fraction, color, brain mask
+  and b0; the MRI template's b0; the patched template construction driver (LINC_TEMPLATE_DRIVER: the template_construction_v1
+  folder of an mm-template-construction checkout at f4907f4, edited with
+  linc/construction/patches/mm-template-construction_v1_blockface.edits.json by apply_edits.py); members, grids and parameters:
+  configs/blockface_template.yaml.
+What it does
+  The build has two stages: the first seven nonlinear steps at 0.5 mm, then the eighth at 0.25 mm. Its 43 inputs are the 21
+  brains, each also mirrored left-right so the template is symmetric, plus the MRI template's b0 as one b0-only member (TPL; its
+  warp is the registration from the MRI template to the blockface template). Each input has two channels, the blockface luminance
+  (BF) and the b0 (B0), each with a cost mask that is also its averaging weight (the patched driver, LINC_MASKWEIGHTED=1):
+  members      (cmd_members, 0.5 mm; cmd_s8_inputs, 0.25 mm) each brain's volume resampled once (anti-aliased) onto the frame of
+               record (the MRI template's 0.5 mm frame, run 113 in the records), with one b0 rule (clip(b0 / mhi, 0, 1) x brain);
+               cost masks: BF 1 for a brain with MRI, and for a brain without MRI 1 on its kept native sections with a cosine ramp
+               from 1 mm before its junction plane (slab_cost); B0 1 everywhere. The mirror images are exact (the grids are
+               symmetric about x = 0).
+  frames       the preparation frame (the frame of record grown by 8 mm), the build frame (the union of the members + 4 mm,
+               symmetric in x, dimensions a multiple of 4 voxels), its exact 2x lattice for the eighth step, and that step's box
+               (the template's support after seven steps + 4 mm).
+  TPL          (cmd_tpl_canon, cmd_tpl_costmask, cmd_tpl_affine) the MRI template's b0 on the frame of record, through the bridge
+               (the rigid transform between that frame and the template's stereotaxic frame); its b0 cost 0 below the brainstem
+               plane (+ 1 mm, a cosine over 2 mm); its affine a 12-dof FLIRT registration to the first stage's affine b0 template,
                symmetrized.
-  step-8 rule  (cmd_step8_weights) the 8 brains without MRI: b0 cost = their blockface cost wherever not fully photographed.
-  run trees    (cmd_assemble_plan_a, cmd_assemble_step8) the driver's data tree, configs (linc/construction/blockface_mmorf.py) and
-               standardspace; plan A's affine stage is the copied design-2 stage + TPL (cmd_copy_affine, cmd_affine_templates); step 8
-               starts from plan A's affines (cmd_s8_mats) and step-7 state (cmd_s8_step7, cmd_step7_templates).
-The averages call the patched driver's own functions: set LINC_TEMPLATE_DRIVER to the template_construction_v1 folder of an
-mm-template-construction checkout at f4907f4 edited with linc/construction/patches/mm-template-construction_v1_blockface.edits.json
-(apply_edits.py).
+  eighth step  (cmd_step8_weights) for the 8 brains without MRI, the b0 cost = their blockface cost wherever not fully
+               photographed.
+  run folders  (cmd_assemble_plan_a, cmd_assemble_step8) the driver's data folder, configs (blockface_mmorf.py) and standard
+               space; the first stage's affine part is the copied affine stage of the earlier build (design 2 in the records) plus
+               TPL (cmd_copy_affine, cmd_affine_templates); the eighth step starts from the first stage's affines and step-7 state
+               (cmd_s8_mats, cmd_s8_step7, cmd_step7_templates).
+You get
+  the members' inputs and the two run folders, ready for MMORF (reproduce/templates/build_blockface_template.py runs it all).
 
-Ported unchanged (function bodies) from the analysis project: bftemplate/prep_t1.py, bftemplate/d2/{prep_d2, make_frame_d2, prep_d2s8,
-build_d2s8_run}.py, bftemplate/d2b/{prep_d2b, prep_d2b_tplfix, prep_d2bs8_weights, prep_d2b_affavg, prep_d2bs8_avg, build_d2b_run}.py.
-Paths recorded inside the products are re-rooted (linc.paths.rerooted); the template's own files come from configs/products_blockface.yaml.
+Ported unchanged (function bodies) from the analysis project: bftemplate/prep_t1.py, bftemplate/d2/{prep_d2, make_frame_d2,
+prep_d2s8, build_d2s8_run}.py, bftemplate/d2b/{prep_d2b, prep_d2b_tplfix, prep_d2bs8_weights, prep_d2b_affavg, prep_d2bs8_avg,
+build_d2b_run}.py. Paths recorded inside the products are re-rooted (linc.paths.rerooted); the template's own files come from
+configs/products_blockface.yaml.
 """
 import datetime as dt
 import glob

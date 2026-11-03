@@ -2,10 +2,10 @@
 """Map how much the template's inputs differ from the template, voxel by voxel (the variability figure and its text).
 
 You need (configs/products_mri.yaml)
-  crossmodal_cache: the four-channel variant's warped inputs; template_mri: the deliverable T2 core, its white matter, the T2 grid.
+  crossmodal_cache: the four-channel template's warped inputs; template_mri: the deliverable T2 core, its white matter, the T2 grid.
 
 What it does
-  1. measures each input's deviation from the variant's mean template: T2 |dz|, soma and neurite fraction |d|, principal-eigenvector angle;
+  1. measures each input's deviation from the four-channel template: T2 |dz|, soma and neurite fraction |d|, angular error between principal eigenvectors;
   2. averages the deviations over the inputs;
   3. reports each map's mean in the core and in its white matter, with the two voxel counts.
 

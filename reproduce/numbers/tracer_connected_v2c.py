@@ -6,15 +6,15 @@ You need (configs/products_mri.yaml)
   and the white matter (FA > 0.25).
 
 What it does, per case
-  1. splits the connected solid into its pieces and keeps the largest as the pathway;
-  2. attaches every other piece along the cheapest path inside the brain (cheap where the density is high, cheaper in white matter),
-     the cheapest piece first, the path widened to a 1 mm tube; drops only specks smaller than 8 voxels;
+  1. splits the connected solid into its connected components and keeps the largest as the pathway;
+  2. joins every other component along the cheapest path inside the brain (cheap where the density is high, cheaper in white
+     matter), the cheapest component first, the path widened to a 1 mm tube; drops only specks smaller than 8 voxels;
   3. marks the join voxels that were not in the solid as inferred.
 
 You get
   $LINC_WORK/tracer_v2c/<ID>/<ID>_Bundles_mri-template_connected.nii.gz (uint8: 1 = charted, 2 = inferred), _solid_v2c.nii.gz
-  (the pathway, 0/1), _bridges.nii.gz (each join's piece number), <ID>_connect_v2c.json; and $LINC_NUMBERS/tracer_connected_v2c.json
-  (per case: the pieces, every join with its length, the inferred share, the longest join)
+  (the pathway, 0/1), _bridges.nii.gz (each join's component number), <ID>_connect_v2c.json; and
+  $LINC_NUMBERS/tracer_connected_v2c.json (per case: the components, every join with its length, the inferred fraction, the longest join)
 
     python reproduce/numbers/tracer_connected_v2c.py [--cases MR243 ...]
 """
@@ -40,16 +40,16 @@ VOX, EPS, LONG_MM, MIN_VOX, TUBE_R, PAD = 0.25, 0.05, 10.0, 8, 2, 40
 S26 = np.ones((3, 3, 3), bool)
 # the record's method text, fixed (it was this script's docstring when the record was made; the docstring may change)
 METHOD = [
-    'One connected pathway per tracer case (paper: Results, tracer labels; Fig. 9; Supplementary S2): the interpolated bundle label of each',
-    'case joined into a single piece, the joins marked as inferred.',
+    'One connected pathway per tracer case (paper: Results, tracer labels; Fig. 10; Supplementary S2): the interpolated bundle label of each',
+    'case joined into a single component, the joins marked as inferred.',
     '',
-    'Inputs (products_mri `tracer_template_v2`): <S>/<S>_Bundles_mri-template_density.nii.gz (the carried density of the interpolated bundle',
+    'Inputs (products_mri `tracer_template_v2`): <S>/<S>_Bundles_mri-template_density.nii.gz (the transformed density of the interpolated bundle',
     'label, 0-1 on the 0.25 mm template grid) and <S>_Bundles_mri-template_solid2.nii.gz (its connected solid: density > 0.5 grown through',
     'connected voxels of density >= 0.25); the template brain mask and white matter (template_mri: linc_mri_brainmask, linc_mri_wm_fa025).',
-    'Rule: the 26-connected pieces of the connected solid, largest first; every other piece is attached to the pathway along the cheapest',
+    'Rule: the 26-connected components of the connected solid, largest first; every other component is joined to the pathway along the cheapest',
     'path inside the template brain mask (voxel cost 1 / (density + EPS), halved in white matter and inside the footprint, density >= 0.1;',
-    '6-connected graph; multi-source Dijkstra from the current pathway, the cheapest piece first, so chains of pieces connect through each',
-    'other), the path dilated to a tube of TUBE_R voxels; pieces smaller than MIN_VOX voxels are dropped (listed), no piece is dropped for',
+    '6-connected graph; multi-source Dijkstra from the current pathway, the cheapest component first, so chains of components connect through each',
+    'other), the path dilated to a tube of TUBE_R voxels; components smaller than MIN_VOX voxels are dropped (listed), no component is dropped for',
     'distance; every join is recorded with its length and voxel count and flagged when longer than LONG_MM. Join voxels that were not in',
     'the solid are inferred: label 2 in the written label (1 = the solid).',
 ]
@@ -88,8 +88,8 @@ def connect(S, lab_dir, tpl, out_dir, log=print):
     main_id = int(order[0]); main = lab == main_id
     rec = dict(case=CASES[S], subject=S, params=dict(vox_mm=VOX, cost="1/(density + eps), x0.5 in white matter (FA > 0.25) or the footprint (density >= 0.1)",
                                                      eps=EPS, long_bridge_flag_mm=LONG_MM, min_piece_vox=MIN_VOX, tube_radius_vox=TUBE_R, graph="6-connected, inside the template brain mask",
-                                                     drop="specks only (no distance cap: every charted piece is joined)",
-                                                     pieces="26-connected pieces of v2's connected solid (density > 0.5 grown through >= 0.25)"),
+                                                     drop="specks only (no distance cap: every charted component is joined)",
+                                                     pieces="26-connected components of v2's connected solid (density > 0.5 grown through >= 0.25)"),
                v2_solid=dict(voxels=int(S0.sum()), pieces=int(n), largest_share=round(float(sizes.max() / S0.sum()), 4), piece_voxels=sorted(sizes.tolist(), reverse=True)),
                attached=[], dropped=[])
     remaining = [int(c) for c in order[1:]]

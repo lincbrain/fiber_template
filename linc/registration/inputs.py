@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
-"""Fail-closed input check for every registration: every input is brain-masked first (the author's standing rule of 2 Oct 2026, "every
-possible input to any registration ... should always be masked out (so only brain tissue present)").
+"""The input check of every registration: every input must be brain-masked, so tissue outside the brain (skull, dura, neck) cannot
+affect a registration.
 
-check_masked(image, mask) raises InputNotMasked when real signal lies away from the mask: voxels farther than DIST_MM (2 mm) from the
-mask whose |value| exceeds REL (1 %) of the in-brain median |value|, over more than `tol` (0.1 %) of the image's nonzero voxels.
-Partial-volume shells of a once-resampled masked image (<= ~1.5 mm) and float residue pass; background tissue (skull, dura, neck)
-fails. Tensors / multi-channel images: a voxel is nonzero if any component is. Same grid required. An override needs an explicit,
-logged reason (allow_reason=...).
     from linc.registration.inputs import check_masked
-    check_masked("A.nii.gz", "Amask.nii.gz", label="A")       # -> dict(nonzero=..., out_dilated=...) or raises
+    check_masked("A.nii.gz", "Amask.nii.gz", label="A")
 
-Ported unchanged from the analysis project's code/input_mask_check.py (only this docstring is new).
+You need
+  an image and its brain mask, on the same grid.
+What it does
+  check_masked(image, mask) raises InputNotMasked when real signal lies away from the mask: voxels farther than DIST_MM (2 mm) from
+  the mask whose |value| exceeds REL (1 %) of the median |value| inside the brain, over more than `tol` (0.1 %) of the image's
+  nonzero voxels. The thin partial-volume shell of a masked image resampled once (<= ~1.5 mm) and float residue pass; tissue
+  outside the brain fails. For tensors and multi-channel images a voxel is nonzero if any component is. An override needs an
+  explicit, logged reason (allow_reason=...).
+You get
+  dict(nonzero=..., out_dilated=...), or the InputNotMasked error.
+
+Ported unchanged from the analysis project's code/input_mask_check.py.
 """
 import sys
 

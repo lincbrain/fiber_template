@@ -1,41 +1,49 @@
 #!/usr/bin/env python3
-"""Our MRI template as a registration target for ex vivo brains, against NMT v2 (symmetric, in vivo T1w) and CIVM-R (ex vivo b0), with
-ONE engine and ONE setting for all three targets (paper: Methods, sec:m-target; Results, Table 3). Settings: configs/targets.yaml.
-
-The engine is the paper's: linc/link/symreg.py (anatomix + MIND-SSC features, FireANTs fork, symmetric, halfway space) with the
-settings of the template <-> atlas mappings (0.25 mm, warp smoothing 1.25 voxels), from an ANTs MI rigid + affine start
-(linc/link/ants.py). This module is only the driver around it:
-  prep      every target channel and every brain image multiplied by its brain mask (registration inputs are always masked). Template
-            brains: T2 pulled to b0-native by the within-brain registration of record, FA from the tensor fit.
-  place     upright P0 (rigid, native b0 world -> the canonical NMT-v2-stereotaxic frame of our template), as the paper's b0 -> template
-            step places a b0: sectioned brains = the frame bridge @ their FLIRT 6-dof placement of record; template brains =
-            canonical.json T_subject_to_canonical. Needed because ANTs starts from the centers of mass without a rotation search, and
-            five b0 headers are 34-56 deg from upright.
-  affine    the two ANTs registrations of the upright b0 (header P0 @ affine): target fixed (fwd) and brain fixed (bwd).
-  choose    the start S' (upright brain world -> target world) = the best of fwd, bwd and their log-Euclidean mean by the Dice of the
-            brain mask carried by the candidate with the target's mask (target grid, every 2nd voxel). The mean alone fails where the two
-            directions disagree. The multi arm reuses its pair's b0-arm start.
-  grid      the upright images resampled ONCE onto an axis-aligned 0.25 mm grid (mask box + 4 mm; images cubic, clipped at 0 (FA also at
-            1) and masked; masks linear > 0.5): the engine sizes its halfway grid from the corners of each mask's voxel box, so a tilted
-            voxel grid inflates it (out of GPU memory on 48 GB cards for the tilted brains).
-  solve     the engine: A = target, B = upright brain on its grid, S' (GPU).
-  registry  linc.xfm entries b0-native -> {atlas:NMT_v2.0_sym, atlas:CIVM-R, mri-template} = [affine Hinv, warp F, affine Hinv,
-            affine P0^-1] (the engine's a2b, then upright -> native), checked against the engine's own map.
-  measure   each brain's b0 (cubic) and mask (linear > 0.5) pulled onto each target's grid; per pair of different brains: Pearson r of
-            the two b0 inside both masks minus a 1.5 mm rim, and the Dice of the two masks; both over the whole masks and inside the
-            target's own brain mask (the targets' brains end at different levels of the brainstem). Per target and group: median and
-            IQR; per pair whether ours is higher than nmt / civmr. Groups: the 13 sectioned brains (78 pairs, the headline), the 4
-            template brains (6 pairs, in sample for ours). Reference beside ours: the sectioned brains through the paper's own b0 ->
-            template registration (registry b0-native -> mri-template). -> $LINC_NUMBERS/r060_target_comparison.json
-Work folder (default $LINC_WORK/r060): targets/, inputs/ (prep); place/, start/, b0/, multi/, xfm/ (the runs); warped/ (measure).
-The targets' intensities and anything derived from them (targets/, the runs' mid_A* images, warped/) stay local: CIVM-R's license does
-not allow redistribution.
+"""How good our MRI template is as a registration target for ex vivo brains, against NMT v2 (symmetric, in vivo T1w) and CIVM-R
+(ex vivo b0), with one registration method and one setting for all three targets (Methods, "Relation to published templates";
+Results, Table 3). Settings: configs/targets.yaml.
 
     python -m linc.evaluation.targets prep | place | grid | choose | registry [--work DIR]
     python -m linc.evaluation.targets affine <ID> <tgt> [--work DIR]              (CPU, ANTs)
     python -m linc.evaluation.targets solve <arm> <tgt> <ID> [--chunk N] [--device cuda:0] [--work DIR]   (GPU)
     python -m linc.evaluation.targets measure [--runs DIR] [--jobs N] [--work DIR]    (CPU; --runs = the runs' folder, default --work)
-Ported from the analysis project's mri/code/r060_targets.py (the measure, starts and registry entries regenerate identically).
+
+You need
+  the targets' images and brain masks (configs/targets.yaml; NMT v2 and CIVM-R downloaded from their publishers, URLs there),
+  each brain's b0 and brain mask, the registry entries of record, ANTs, and a GPU for `solve`.
+What it does
+  The registration is the paper's (linc/link/symreg.py: anatomix and MIND-SSC features, FireANTs, symmetric, in a halfway space)
+  with the settings of the template-to-atlas registrations (0.25 mm, warp smoothing 1.25 voxels), from an ANTs rigid + affine
+  start (mutual information; linc/link/ants.py). This module drives it:
+  prep      every target channel and every brain image multiplied by its brain mask (registration inputs are always masked);
+            for the template brains, the T2 transformed to b0-native by the within-brain registration of record and the FA from
+            the tensor fit
+  place     the b0 turned upright (P0: a rigid transform from native b0 world to the template's NMT-v2-stereotaxic frame), as the
+            paper's b0 -> template registration does: for the sectioned brains, the frame bridge @ their FLIRT 6-dof registration
+            of record; for the template brains, canonical.json T_subject_to_canonical. Needed because ANTs starts from the centers
+            of mass without a rotation search, and five b0 headers are 34-56 deg from upright.
+  affine    the two ANTs registrations of the upright b0: target fixed (forward) and brain fixed (backward)
+  choose    the start: the best of forward, backward and their log-Euclidean mean, by the Dice coefficient between the brain mask
+            transformed by each candidate and the target's mask (target grid, every 2nd voxel); the mean alone fails where the
+            two directions disagree. The multichannel runs reuse the start of their b0 run.
+  grid      the upright images resampled once onto an axis-aligned 0.25 mm grid (mask box + 4 mm; images cubic, clipped at 0, FA
+            also at 1, and masked; masks linear > 0.5): the registration sizes its halfway grid from the corners of each mask's
+            voxel box, so a tilted voxel grid inflates it (out of memory on 48 GB GPUs for the tilted brains)
+  solve     the registration: A = the target, B = the upright brain on its grid, from the start (GPU)
+  registry  the linc.xfm entries b0-native -> {atlas:NMT_v2.0_sym, atlas:CIVM-R, mri-template}, checked against the registration's
+            own map
+  measure   each brain's b0 (cubic) and mask (linear > 0.5) resampled onto each target's grid; for every two different brains, the
+            Pearson correlation between their b0 images inside both masks minus a 1.5 mm rim, and the Dice coefficient between
+            their masks, over the whole masks and inside the target's own brain mask (the targets' brains end at different levels
+            of the brainstem). Per target and group: the median and interquartile range, and per pair whether ours is higher than
+            NMT v2 / CIVM-R. Groups: the 13 sectioned brains (78 pairs) and the 4 template brains (6 pairs, which built ours).
+            Beside ours, for reference: the sectioned brains through the paper's own b0 -> template registration.
+You get
+  $LINC_NUMBERS/r060_target_comparison.json; in the work folder (default $LINC_WORK/r060): targets/, inputs/ (prep); place/, start/,
+  b0/, multi/, xfm/ (the runs); warped/ (measure). The targets' intensities and anything made from them (targets/, the runs' mid_A*
+  images, warped/) stay local: CIVM-R's license does not allow redistribution.
+
+Ported from the analysis project's mri/code/r060_targets.py (the measures, starts and registry entries are reproduced identically).
 """
 import argparse
 import json

@@ -43,7 +43,7 @@ cce: 0                     #   and the last; 0 and 0 when there is no such range
 native_end_crop_mm: 0.0    # optional (default 0). Drops the last round(mm / vz) photographed sections before the registered products are
                            #   resampled, for a brain whose own last sections are darker (the paper: MF7 3.0 mm, MF10 1.62 mm).
 # registration_to_own_mri: the paper's brains only (their b0 mask, fixed b0 and start pose of record). A new brain leaves it out;
-#   `linc-register mri` then uses the placed b0 and its mask and estimates the start pose (or pass --new-brain).
+#   `linc-register mri` then uses the b0 registered onto the template grid, and its mask, and estimates the start pose (or pass --new-brain).
 
 # ---------------------------------------------------------------------------------------------------- the paper's brains only
 # masks_of_record (which masks were corrected by hand), series_alignment (MF8 and MF9: their recorded alignment to an external series,

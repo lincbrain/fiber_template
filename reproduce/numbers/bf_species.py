@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
-"""Species by the ID-PREFIX RULE (MF = Macaca fascicularis, MR = Macaca mulatta; a naming rule, not a specimen record; the species of
-record from LINC dandiset 000003 stays in the cohort record), for the 21 blockface brains of the cohort record ($LINC_NUMBERS/bf_cohort.json,
-written by reproduce/numbers/bf_cohort.py): per brain, and counted. Paper: Table 1 and Methods (the species of each brain).
-The record of record also counted two groups of a superseded template build (its `blockface_template` and `utility` blocks); the paper
-does not read them, so they are not regenerated (configs/numbers_exceptions.yaml).
--> $LINC_NUMBERS/bf_species.json
+"""The species of the 21 blockface brains by the ID prefix (MF = Macaca fascicularis, MR = Macaca mulatta), per brain and counted
+(Table 1 and Methods).
+
     python reproduce/numbers/bf_species.py
+
+You need
+  the cohort record $LINC_NUMBERS/bf_cohort.json (reproduce/numbers/bf_cohort.py).
+What it does
+  It applies the prefix rule (a naming rule, not a specimen record; the species of record from LINC dataset 000003 stays in the
+  cohort record) and counts.
+You get
+  $LINC_NUMBERS/bf_species.json. The record of record also counted two groups of a superseded template build (its
+  `blockface_template` and `utility` blocks); the paper does not read them, so they are not regenerated
+  (configs/numbers_exceptions.yaml).
 """
 import json
 import sys

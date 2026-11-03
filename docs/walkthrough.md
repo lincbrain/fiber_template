@@ -1,4 +1,4 @@
-# Walkthrough: three brains of the paper
+# Walkthrough: four brains of the paper
 
 This page runs the pipeline on brains of the paper, one for each way through the pipeline, with the commands exactly as they ran from a fresh
 clone. Each step's results can be compared with the paper's own. The times are from one cluster node with an NVIDIA RTX 6000 Ada
@@ -13,11 +13,11 @@ GPU, shared with other jobs.
 
 ## Before you start
 
-- Install the environments (`docs/install.md`) and, in every new shell, `source envs/linc_envs.sh`.
-- Set the data roots (`docs/install.md`, step 5). `LINC_DATA` holds the brains' products, in a folder you can write to; every
-  command below writes its results there or under `LINC_WORK`. `LINC_REBUILD_DATA` is a second data folder holding only the
-  brains' hand-made inputs, so that the reconstruction starts from the photographs (`tools/make_local_data.sh --help`).
+- The setup in `docs/install.md` (on the lab cluster, `source env/lab.sh`).
 - A GPU, for the networks and the deformable registrations.
+
+Every command below writes its results under `LINC_DATA` or `LINC_WORK`. The reconstruction reads `LINC_REBUILD_DATA`, a data folder
+that holds only the brains' hand-made inputs, so that it starts from the photographs.
 
 ## 1. Prepare a brain's MRI (MF1)
 
@@ -49,7 +49,7 @@ It runs its steps in order and prints each as it starts: `=== <ID>: photos`, the
 `spacing`. In `photos`, the photographs are read and the network makes their brain masks, one line per photograph; `volume` ends with
 `=== DONE <ID> in <s>s`. On one node, reading the photographs took about 1.5 s each, their masks 0.8 to 4 s each on a shared GPU, and
 `prepare` about 30 minutes for about 1,400 photographs. The whole reconstruction of MM2 (1,440 photographs) or MM14 (1,401) takes
-about 2.5 hours; MF8's 77 photographs took 9 minutes in all.
+about 2.5 hours.
 
 Compare a volume with the paper's (here MM2's):
 

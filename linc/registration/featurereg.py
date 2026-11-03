@@ -1,23 +1,26 @@
-"""Feature-based deformable registration (moving -> fixed): anatomix feature maps + FireANTs, the method of every pairwise registration
-in the paper (Methods, "Image registration").
+"""Feature-based deformable registration (moving -> fixed), the method of every pairwise deformable registration in the paper
+(Methods, "Image registration"): features from a pretrained network (anatomix) and self-similarity context descriptors
+(MIND-SSC, which encode how each voxel's neighborhood resembles its surroundings), registered with FireANTs.
 
-The engine is the general anatomix repository at a pinned commit (neel-dey/anatomix@4c86aee, its registration CLI
-`anatomix-register.py`, FireANTs backend) with the FireANTs fork neel-dey/FireANTs@21ae072, installed in their own environment and
-run through `linc/registration/anatomix_runner.py` (set ANATOMIX_PYTHON to that environment's python).
+You need
+  the fixed and moving images and their brain masks (every input brain-masked: inputs.py checks it and stops otherwise); the
+  anatomix environment ($ANATOMIX_PYTHON, env/anatomix.yml: neel-dey/anatomix@4c86aee with neel-dey/FireANTs@21ae072, run through
+  anatomix_runner.py) and a GPU.
+What it does
+  register(fixed, moving, fmask, mmask, outdir, **kw):
+  * puts the fixed image (and its mask) on an isotropic `resolution` grid when it is not on one; the moving image is passed as it
+    is (the program resamples it once, by the final transform); both are clipped at 0 before normalization;
+  * registers all 32 anatomix channels and 12 MIND-SSC channels, the loss evaluated `channel_chunk` channels at a time and
+    including the background by default (`loss="cc"`, local cross-correlation); two deformable stages (the second computes the
+    moving image's features again);
+  * `gate_features_by_mask=False` leaves the feature channels unmultiplied by the masks (the masks still score the overlap);
+  * fused CUDA kernels off and a fixed seed, for reproducibility.
+You get
+  in `outdir`: `mri_in_psoct_workres.nii.gz` (the moving image on the fixed working grid), `warp_mri_to_psoct.nii.gz` (the ITK/ANTs
+  LPS displacement field on that grid, fixed -> moving; the file names are historical and the code downstream reads them),
+  `metrics.json`, and the program's own files (`reg-*`).
 
-One entry point, `register(fixed, moving, fmask, mmask, outdir, **kw)`:
-  * the fixed image (and its mask) are put on a `resolution` iso grid when they are not on one already; the MOVING image is passed
-    as is (the CLI resamples it once, by the final transform); both are clipped at 0 before normalization;
-  * the inputs must be brain-masked (linc/registration/inputs.py, fail-closed);
-  * all 32 anatomix channels + 12 MIND-SSC channels are registered, the loss evaluated `channel_chunk` channels at a time; the loss
-    includes the background by default (`loss="cc"`); two deformable stages (the second re-extracts the moving features);
-  * `gate_features_by_mask=False` leaves the feature channels ungated by the masks (the masks still score the overlap);
-  * fused CUDA kernels off and a fixed seed (reproducibility);
-  * outputs in `outdir`: `mri_in_psoct_workres.nii.gz` (moving on the fixed working grid), `warp_mri_to_psoct.nii.gz` (ITK/ANTs LPS
-    displacement field on that grid, fixed -> moving pull; the historical names are kept because downstream code reads them),
-    `metrics.json`; the CLI's own files (`reg-*`) beside them.
-
-Ported from the analysis project's code/featurereg.py (its `upstream` engine, unchanged; the legacy engine is not ported).
+Ported from the analysis project's code/featurereg.py (its `upstream` engine, unchanged).
 """
 import csv
 import json

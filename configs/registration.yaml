@@ -1,9 +1,9 @@
-# Parameters of the paper's registrations (Methods, "Image registration" and "Registration to the brain's own MRI and caudal
-# completion"; the route test's direct route). Read by linc/registration/ and cli/linc-register.
+# Parameters of the paper's registrations (Methods, "Image registration" and "Blockface to MRI registration and synthesis of missing
+# sections"; the blockface-based alignment of the alignment comparison). Read by linc/registration/ and cli/linc-register.
 
 # The registration of a brain's blockface to its own b0 (R1 v3, linc/registration/to_own_mri.py)
 to_own_mri:
-  b0_placement_search_deg: 90      # the b0 placed rigidly on the MRI template's 0.5 mm grid: FLIRT 6 dof, correlation ratio, +-90 deg
+  b0_placement_search_deg: 90      # the b0 registered rigidly onto the MRI template's 0.5 mm grid: FLIRT 6 dof, correlation ratio, +-90 deg
   iso_mm: 0.15                     # the blockface's isotropic pair (luminance + mask) read by the linear stage
   linear_resolution_mm: 0.5        # the linear fits run on the masked blockface anti-aliased to 0.5 mm
   slab_inset_mm: 0.5               # the cost is restricted to the photographed slab, this far inside both end faces
@@ -23,8 +23,8 @@ to_own_mri:
 
 # A brain's blockface registered directly into a template (linc/registration/direct.py)
 direct:
-  to_blockface_template:           # route A of the route test: onto a blockface template (given at 0.5 mm; refined 2x for the deformable)
-    cut_margin_mm: -1.0            # the template cut to the placed brain's A-P extent, 1 mm inside both faces
+  to_blockface_template:           # the blockface-based alignment: to a blockface template (given at 0.5 mm; refined 2x for the deformable)
+    cut_margin_mm: -1.0            # the template cut to the aligned brain's A-P extent, 1 mm inside both faces
     flat_cut_mm: -2.0              # the template's flat brainstem cut (canonical z, through the run-113 -> canonical bridge), on both inputs
     pad_rule: "4:8"                # >= 4 mm of zeros on every side of the 0.25 mm registration grid, dims a multiple of 8
     resolution_mm: 0.25

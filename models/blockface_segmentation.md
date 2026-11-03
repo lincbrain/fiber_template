@@ -5,7 +5,7 @@ Three nnU-Net v2 networks (nnU-Net 2.5.1) segment the blockface photographs and 
 
 **The weights are not in git.**
 - Put the three nnU-Net results folders under `$LINC_MODELS/nnUNet_results/`.
-- Check them with `python models/verify_weights.py models/blockface_segmentation.sha256`.
+- Check them with `$PY models/verify_weights.py models/blockface_segmentation.sha256`.
 - Download location: with the data release.
 
 In the pipeline, every automatic mask is only a starting point: a hand-corrected mask, when present, is used instead

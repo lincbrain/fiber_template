@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
-"""Smoke test of cli/linc-register on toy volumes written on the fly (env/linc.yml; no release data, no network weights, no GPU;
-seconds; FSL optional).
-
-    qc         `linc-register qc` on a good toy registration (a b0-like ellipsoid and the same, moved 0.25 mm, a zero warp, an identity
-               linear part): PASS, the JSON row and PNG written, pass recorded in a toy registry entry; then on a bad one (the linear
-               part rotated 45 degrees about z): FAIL, with the rotation named
-    place-b0   with FSLDIR set: the b0 placement step of `linc-register mri --place-b0` (FLIRT 6 dof) on the toy b0 and its mask;
-               skipped without FSL (the deformable stage needs the anatomix engine and a GPU, and is not part of the smoke)
+"""Smoke test of cli/linc-register on toy volumes written on the fly, to check the acceptance checks and the b0 step (no release data,
+no network weights, no GPU; seconds).
 
     python reproduce/smoke/register_toy.py
+
+You need
+  env/linc.yml; FSL (FSLDIR) for the b0 step, which is skipped without it.
+What it does
+  qc         `linc-register qc` on a good toy registration (a b0-like ellipsoid and the same, moved 0.25 mm, a zero warp, an
+             identity linear part), then on a bad one (the linear part rotated 45 degrees about z)
+  place-b0   the b0 step of `linc-register mri --place-b0` (a rigid FLIRT registration onto the template grid, 6 degrees of
+             freedom) on the toy b0 and its mask; the deformable stage needs the anatomix environment and a GPU, and is not part
+             of the smoke test
+You get
+  PASS when the good registration passes (the JSON row and PNG written, pass recorded in a toy registry entry), the bad one fails
+  with the rotation named, and the b0 step writes its outputs.
 """
 import json
 import os

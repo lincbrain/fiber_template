@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
-"""The blockface spacing AS USED by the reconstructions, per brain and as ranges over the 21 photographed brains: the photograph pixel
-size and the section step that each brain's reconstruction carries in its own store header (02_blockface.ome.zarr level 0:
-z = rows = the in-plane pixel, y = slices = the section step; um), checked against the brain's config (configs/subjects/<ID>.yaml
-vx, vz) and set beside the nominal values recorded before the 2 Oct 2026 spacing calibration (the cohort record of 28 Sep,
-shipped as reproduce/reference/bf_cohort.json). Paper: Methods, the brains.
--> $LINC_NUMBERS/bf_spacing_used.json
+"""The blockface spacing as used by the reconstructions, per brain and as ranges over the 21 photographed brains (Methods, "Brains").
+
     python reproduce/numbers/bf_spacing_used.py
+
+You need
+  each brain's 02_blockface.ome.zarr and configs/subjects/<ID>.yaml; the cohort record of 28 Sep 2026
+  (reproduce/reference/bf_cohort.json) for the nominal values.
+What it does
+  It reads the photograph pixel size and the section step from each reconstruction's own store header (level 0: z = rows = the
+  in-plane pixel, y = sections = the section step; um), checks them against the brain's config (vx, vz), and sets them beside the
+  nominal values recorded before the spacing calibration of 2 Oct 2026.
+You get
+  $LINC_NUMBERS/bf_spacing_used.json.
 """
 import json
 import sys

@@ -4,7 +4,7 @@
 You need, for every brain of configs/mri_construction.yaml `inputs`, under $LINC_DATA/sub-<ID>/ (the config's `prep.layout`)
   mri/dwi/raw/: the denoised, eddy-corrected diffusion series with its .ecclog, b-vectors, b-values and fit mask;
   mri/dwi/, t2/, micro/: the staged b0, the 32-echo MSME and the SANDI fractions; mri/masks/: the hand masks of each session and the
-  final hand-edited brain mask; mri/landmarks/: the SARM labels and the subject -> NMT v2 affine on the b0 grid;
+  final hand-edited brain mask; mri/landmarks/: the SARM labels and the brain -> NMT v2 affine on the b0 grid;
   xfm/t2-native__to__b0-native and xfm/micro-native__to__b0-native: the within-brain registrations;
   FSL (FSLDIR), ANTs (ANTSPATH), MRtrix (MRTRIX), and for the mmorf step MMORF (LINC_MMORF_EXE), the patched template-construction
   driver (LINC_TEMPLATE_DRIVER, linc/construction/patches/README.md) and one 48 GB GPU.
@@ -114,4 +114,5 @@ def make_steps(W, paths):
 
 
 if __name__ == "__main__":
+    os.umask(0o002)                                                   # outputs readable by the group
     D.main("Build the MRI channels of the template (reproduce/templates/mri_channels.md)", make_steps, "build_mri_channels")

@@ -2,27 +2,30 @@
 """Build the blockface template: the brains, grids and MMORF schedule come from configs/blockface_template.yaml (the record's values).
 
 You need
-  the environments env/linc.yml (most steps) and env/mri.yml ($PY_MRI, the [mri] steps); a GPU with MMORF 1.0.1 (48 GB for the batch
-  of record) for the two [driver] steps, and the edited template-construction driver (LINC_TEMPLATE_DRIVER, linc/construction/patches);
-  LINC_MMORF_EXE and FSLDIR;
-  under $LINC_PRODUCTS (configs/products_blockface.yaml, products_completion.yaml): every member brain's completed volume and the
-  completion's cache, the MRI template's frames, b0 and mask, the bridge to the canonical frame, the affine stage of record
-  (bf_plan_a_affine) and the finish's precision rule.
+  the environments env/linc.yml (most steps) and env/mri.yml ($PY_MRI, the [mri] steps); a GPU with MMORF 1.0.1 (FSL's MultiMOdal
+  Registration Framework; 48 GB for the batch of record) for the two [driver] steps, and the edited template construction driver
+  (LINC_TEMPLATE_DRIVER, linc/construction/patches); LINC_MMORF_EXE and FSLDIR;
+  under $LINC_PRODUCTS (configs/products_blockface.yaml, products_completion.yaml): every member brain's volume with its missing
+  sections synthesized, and the synthesis cache; the MRI template's frames, b0 and mask; the bridge (the rigid transform between
+  the frame of record and the template's stereotaxic frame); the affine stage of record (bf_plan_a_affine) and the final average's
+  precision rule.
 What it does (one line per stage; --plan lists every step with its command, inputs, outputs and time)
-  1. members: every brain and its mirror on the prep frame, cropped to the build frame; the MRI template's b0 as one more member
-  2. plan A: the run tree, the affine stage, then MMORF's nonlinear steps on the plan-A grid
-  3. step 8: the members on the final grid, plan A's state carried over, then MMORF's eighth step
-  4. finish: every input pulled once through its final warp and averaged (precision-weighted, symmetrized); the b0 channel; the
-     products embedded on the MRI template's grid
+  1. members: every brain and its mirror image on the preparation frame, cropped to the build frame; the MRI template's b0 as one
+     more member
+  2. the first stage: the run folder, the affine stage, then MMORF's first seven nonlinear steps at 0.5 mm
+  3. the eighth step: the members on the 0.25 mm grid, the first stage's state taken over, then MMORF's eighth step
+  4. the final average: every input resampled once through its final warp and averaged (weighted by expected error, symmetrized);
+     the b0 channel; the products embedded on the MRI template's grid
 You get
-  under --work (default $LINC_WORK/build_blockface_template): the member folders (canon*), the frames and the step-8 box, the two run
-  trees (runs/), and the template in final/ (on the step-8 box) and final_run113/ (the published files: grey, RGB, b0, masks, NIfTI).
+  under --work (default $LINC_WORK/build_blockface_template): the member folders (canon*), the frames and the eighth step's box, the
+  two run folders (runs/), and the template in final/ (on the eighth step's box) and final_run113/ (the published files: grayscale,
+  RGB, b0, masks, NIfTI).
 
     python reproduce/templates/build_blockface_template.py --plan                 every step, its environment, time, inputs, outputs
     python reproduce/templates/build_blockface_template.py --step prep-frame      one step (or several, in order)
     python reproduce/templates/build_blockface_template.py --from members --to affine-templates
 
-Times: the two MMORF stages and the finish from the record's file times (4-5 Oct 2026); the CPU steps are estimates.
+Times: the two MMORF stages and the final average from the record's file times (4-5 Oct 2026); the CPU steps are estimates.
 """
 import json
 import os
@@ -54,7 +57,7 @@ def make_steps(W, paths):
     run_a, run_8, view = w("runs", ra), w("runs", r8), w("runs", f"{r8}_bfview")
     it7, it8 = run_a / "out" / f"nln_step_{na:02d}" / f"iteration_{ni:02d}", run_8 / "out" / f"nln_step_{s8:02d}" / f"iteration_{ni8:02d}"
     s6 = run_a / "out" / f"nln_step_{na - 1:02d}" / f"iteration_{ni:02d}"
-    pa_lbl, s8_lbl = f"2. plan A ({va:g} mm)", f"3. step {s8} ({v8:g} mm)"
+    pa_lbl, s8_lbl = f"2. the first stage ({va:g} mm)", f"3. step {s8} ({v8:g} mm)"
     drv = {"LINC_MASKWEIGHTED": "1", "PATH": f"{SHIM}:$PATH"}
 
     def driver(run, *extra):
@@ -125,7 +128,7 @@ def make_steps(W, paths):
         S("s8-box", s8_lbl, "linc", [*B, "s8-box", "--template", s6 / f"nln_template_{na - 1:02d}_{ni:02d}_scalar_mod_01_brain.nii.gz",
                                       s6 / f"nln_template_{na - 1:02d}_{ni:02d}_scalar_mod_02_brain.nii.gz", "--canon2", w("canon2"), "--out",
                                       w(f"box_{t8}.nii.gz")], [w(f"box_{t8}.nii.gz")], [s6, w("canon2")], "1 min",
-          f"plan A's support + {G['step8_box']['pad_mm']:g} mm"),
+          f"the first stage's support + {G['step8_box']['pad_mm']:g} mm"),
         S("run-step8", s8_lbl, "linc", [*B, "run-step8", "--canon2", w("canon2_s8w"), "--plan-a", run_a, "--box",
                                          w(f"box_{t8}.nii.gz"), "--root", w("runs"), "--name", r8],
           [run_8], [w("canon2_s8w"), run_a, w(f"box_{t8}.nii.gz")], "5 min"),

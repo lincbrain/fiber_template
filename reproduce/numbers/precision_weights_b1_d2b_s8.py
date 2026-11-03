@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
-"""The precision rule's inputs for the blockface template of record (design 2b, step 8), read from the measurements only:
-  tau2       the between-brain variance of photographed tissue, measured on the build's members with MRI
-             (configs/products_blockface.yaml `bftemplate_step8_state`: precision_d2bs8/tau2.json, `tau2_used`)
-  s2_syn(D)  the completion network's prediction error against depth past the clean cut face, and s2_interp, the error of an
-             interpolated section (the completion's record d3_A_sigma2_pred_flat.json)
-and what they imply: the weight of predicted tissue relative to photographed tissue at 0.5, 2 and 8 mm (1/(tau2 + s2) over 1/tau2),
-and of an interpolated section (tau2 / (tau2 + s2_interp)). Paper: Methods, the blockface template's final average.
--> $LINC_NUMBERS/precision_weights_b1_d2b_s8.json
+"""The inputs of the precision weights of the blockface template of record (Methods, the blockface template's final average), read from
+the measurements only.
+
     python reproduce/numbers/precision_weights_b1_d2b_s8.py
 
-Note: the record's `sources` and `units` name the input files as they were read (absolute paths), so the record regenerates identically
-only with LINC_PRODUCTS set to the analysis project.
+You need
+  tau2       the variance between brains of photographed tissue, measured on the build's members with MRI
+             (configs/products_blockface.yaml `bftemplate_step8_state`: precision_d2bs8/tau2.json, `tau2_used`)
+  s2_syn(D)  the synthesis network's prediction error against the depth past the junction plane, and s2_interp, the error of an
+             interpolated section (the synthesis record d3_A_sigma2_pred_flat.json)
+What it does
+  It computes what they imply: the weight of synthesized tissue relative to photographed tissue at 0.5, 2 and 8 mm (1/(tau2 + s2)
+  over 1/tau2), and that of an interpolated section (tau2 / (tau2 + s2_interp)).
+You get
+  $LINC_NUMBERS/precision_weights_b1_d2b_s8.json. The record's `sources` and `units` name the input files as they were read
+  (absolute paths), so the record regenerates identically only with LINC_PRODUCTS set to the analysis project.
 """
 import json
 import os

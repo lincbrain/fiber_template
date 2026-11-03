@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
-"""The route test on design 1c (paper: Results, direct and MRI routes): the summary of the per-target evaluation rows
-(configs/products_blockface.yaml `route_test`: <target>/rows.json and <target>/link/), by linc/evaluation/route_test.py.
--> $LINC_NUMBERS/route_test_1c.json
+"""The comparison of the blockface-based and the MRI-based alignment (Results, "Blockface-based versus MRI-based alignment").
+
     python reproduce/numbers/route_test_1c.py
+
+You need
+  the per-target evaluation rows (configs/products_blockface.yaml `route_test`: <target>/rows.json and <target>/link/).
+What it does
+  linc/evaluation/route_test.py `summary` on them.
+You get
+  $LINC_NUMBERS/route_test_1c.json.
 """
 import sys
 from pathlib import Path

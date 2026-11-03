@@ -1,5 +1,5 @@
 # The completion networks' files: sha256 of the files of record (models/completion.sha256) -> sha256 of the copies
-# without machine paths (models/scrub_completion_weights.py; weights identical). The data
+# without machine paths (weights identical). The data
 # release ships the copies; models/completion_public.sha256 checks them. The md5 columns let records that name
 # a network by its md5 (d3_methods, the completed volumes' summaries) recognize a copy.
 file	sha256_of_record	sha256_public	md5_of_record	md5_public	change

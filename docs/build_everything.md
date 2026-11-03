@@ -11,7 +11,7 @@ The whole method, from the raw data to the paper's numbers and figures.
 4. aligns each blockface volume to the MRI template, through the brain's own MRI or, without MRI, directly;
 5. synthesizes each volume's missing caudal tissue;
 6. builds the blockface template from the 21 volumes with their synthesized tissue;
-7. registers the blockface template into the MRI template (the link) and maps the template to NMT v2, INIA19 and CIVM-R;
+7. registers the blockface template to the MRI template and registers the template to NMT v2, INIA19 and CIVM-R;
 8. registers each brain's histology to its photographs and transforms its labels into the template;
 9. writes the numbers and figures of the paper, which hold the evaluation.
 
@@ -28,7 +28,7 @@ and numbers records to `$LINC_NUMBERS`.
 | a brain without MRI in the MRI template | `cli/linc-register direct-placement` | `registration.yaml` | linc, GPU | 5 minutes |
 | the blockface volume with its synthesized tissue | `cli/linc-complete prepare`, then `cli/linc-complete` | `completion.yaml` | deep, GPU | 3 minutes |
 | the blockface template | `reproduce/templates/build_blockface_template.py` | `blockface_template.yaml` | linc; MMORF on a 48 GB GPU | 13 hours on the GPU, about 3 hours on a CPU |
-| the link, and the mappings to published templates | `reproduce/templates/build_link.py` | `link.yaml` | linc, GPU | about 1 hour |
+| the blockface template registered to the MRI template, and its registrations to published templates | `reproduce/templates/build_link.py` | `link.yaml` | linc, GPU | about 1 hour |
 | a brain's histology, registered to its photographs | `cli/linc-histology all` | `histology.yaml` | tirl | about 2 hours |
 | a brain's labels in the template | `cli/linc-labels push`, `interpolate`, `carry` | `labels.yaml` | tirl, then linc | about 40 minutes |
 | a segmentation network, trained on the hand-drawn and hand-corrected masks | `cli/linc-segment train --task configs/segment/<model>.json --fold all` | `segment/<model>.json` | deep, GPU | about 2 hours per network |
@@ -54,7 +54,7 @@ one step, and `--from` and `--to` run a range. Each step writes a provenance JSO
 Outputs go to `--work`, by default under `$LINC_WORK`.
 
 The MMORF steps run through the template-construction driver (`LINC_TEMPLATE_DRIVER`, `linc/construction/patches/README.md`) and
-`LINC_MMORF_EXE`. The MRI build also needs FSL, ANTs and MRtrix3 (`FSLDIR`, `ANTSPATH`, `MRTRIX`). The link needs `ANATOMIX_PYTHON`.
+`LINC_MMORF_EXE`. The MRI build also needs FSL, ANTs and MRtrix3 (`FSLDIR`, `ANTSPATH`, `MRTRIX`). The registration between the two templates needs `ANATOMIX_PYTHON`.
 
 The CPU steps of each build were rerun for this release, and they reproduce the paper's files. The GPU steps were not rerun.
 
@@ -63,6 +63,6 @@ The CPU steps of each build were rerun for this release, and they reproduce the 
 Each build reads its brains, grids and parameters from its config:
 - `configs/mri_construction.yaml`: `inputs` lists the MRI template's brains, and `canonical` gives its grid;
 - `configs/blockface_template.yaml`: `members` lists the blockface template's brains, with and without MRI, and `grids` gives its grids;
-- `configs/link.yaml`: the link's inputs and its grid.
+- `configs/link.yaml`: the inputs and the grid of the registration between the two templates.
 
 Edit the list or the grid, then run the driver with `--plan` to see the steps and the inputs it will read before anything runs.

@@ -1,14 +1,17 @@
-"""A brain mask for a new brain's b0, made by the MRI brain-mask network (linc-segment's `mri_brainmask`; models/segmentation.md), so
-`linc-register mri --place-b0 B0_NATIVE` needs no hand mask. The paper's brains keep their masks of record (configs/subjects/<ID>.yaml).
+"""A brain mask for a new brain's b0, made by the MRI brain-mask network, so `linc-register mri --place-b0 B0_NATIVE` needs no
+hand-made mask.
 
-    segment_b0(b0_native, out_mask)   `linc-segment predict --model mri_brainmask --out <out_mask> <b0_native> --postprocess none`
-                                      (the model ships with no post-processing), run with $LINC_SEGMENT_PYTHON (env/deep.yml's
-                                      python, which has torch); the mask is written on the b0's own grid, uint8 0/1, and a provenance
-                                      file <out_mask without .nii.gz>.json next to it (model folder, model.pt and spec.json SHA256,
-                                      the input's SHA256, the command, the time)
-
-There is one MRI brain-mask network, so there is no engine switch here (unlike the blockface steps, configs/blockface.yaml
-`segmentation.engine`). The weights are checked against the model folder's SHA256SUMS when it has one.
+You need
+  the b0 image, the network's weights ($LINC_MODELS/segment/mri_brainmask; models/segmentation.md) and $LINC_SEGMENT_PYTHON
+  (env/deep.yml's Python, which has torch).
+What it does
+  segment_b0(b0_native, out_mask) runs `linc-segment predict --model mri_brainmask --out <out_mask> <b0_native> --postprocess none`
+  (the model ships with no post-processing) and checks the weights against the model folder's SHA256SUMS when it has one. The
+  paper's brains keep their masks of record (configs/subjects/<ID>.yaml); there is one MRI brain-mask network, so there is no
+  engine choice here (unlike the blockface steps).
+You get
+  the mask on the b0's own grid (uint8 0/1) and a provenance file <out_mask without .nii.gz>.json beside it (the model folder, the
+  SHA256 of model.pt, spec.json and the input, the command, the time).
 """
 import datetime
 import hashlib
