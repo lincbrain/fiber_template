@@ -1,5 +1,14 @@
 # Reproduce the paper
 
+**You need** the paper's products (`$LINC_PRODUCTS`, with the data release) and the environments.
+
+**What it does**
+1. rewrites every numbers record the paper reads;
+2. draws every figure;
+3. compares the rewritten records with the paper's.
+
+**You get** the records in `$LINC_NUMBERS`, the figures in `outputs/figures/`, and the comparison's report.
+
 The paper's text and tables read numbers records, each rewritten by one script, and each figure has one script. To reproduce them
 you need the paper's intermediate products (`$LINC_PRODUCTS`), which come with the data release. `reproduce/Makefile` runs them all:
 
@@ -69,7 +78,7 @@ Three settings decide whether a rerun matches the paper's products bit for bit:
 
   Whether two models agree depends on the registration: MF6's registration to its own MRI, made on an RTX 4000 Ada, reproduced bit
   for bit on an RTX 6000 Ada.
-- **TIRL threads.** Histology registration depends on the thread count; use 12 threads per piece (the default).
+- **TIRL threads.** Histology registration depends on the thread count; use 12 threads per component (the default).
 - **Software versions.** The versions in each environment file. With another matplotlib version, a figure's text can be laid out
   slightly differently; the data drawn are the same.
   The figures `reconstruction`, `bf_template` and `alignment_comparison` were made with matplotlib 3.10.8; under `env/linc.yml`'s

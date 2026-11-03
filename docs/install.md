@@ -26,7 +26,7 @@ The environments, because their packages conflict (TIRL needs numpy 1.x; nnU-Net
 | Environment | Used by |
 |---|---|
 | `env/linc.yml` | `linc-register` (its linear stages and products) and `linc-register mri-template`, `linc-mri prep`, the MRI channels' construction (MMORF 1.0.1), `linc-labels carry` and `linc-labels interpolate` (SimpleITK demons), evaluation, the numbers and the figures (`docs/paper_to_code.md` lists each figure's) |
-| `env/deep.yml` | the four segmentation models (`linc-segment`) and the caudal completion (`linc-complete`), the synthesis numbers and the LGN/STN budget, and their three supplementary figures |
+| `env/deep.yml` | the four segmentation models (`linc-segment`) and the synthesis of the missing caudal tissue (`linc-complete`), the synthesis numbers and the LGN/STN budget, and their three supplementary figures |
 | `env/anatomix.yml` | the deformable registration engine (anatomix features + FireANTs), called by `linc-register` |
 | `env/tirl.yml` | `linc-reconstruct` (its Python steps and the `zarr2nii` / `nii2zarr` exports), `linc-histology`, `linc-labels push` (TIRL 3.6.3, installed from source) |
 | `env/nnunet.yml` | optional (`--with-nnunet`), only to reproduce the masks of record: the three earlier blockface networks (nnU-Net 2.5.1), run by `linc-reconstruct` with the `nnunet` engine |
@@ -54,7 +54,7 @@ Two engines are not on PyPI at the paper's versions and are installed from their
 `env/nnunet.yml` installs in three steps, as its header shows:
 1. create the environment;
 2. `pip install --no-deps seaborn==0.13.2`;
-3. apply `env/nnunetv2-2.5.1_record.patch`, the local edits that nnU-Net carried in the paper's runs.
+3. apply `env/nnunetv2-2.5.1_record.patch`, the local edits that nnU-Net had in the paper's runs.
 
 **2. External programs**, at the paper's versions. Set the variables below so the pipeline can find them, or put the programs on
 `PATH`.
@@ -64,7 +64,7 @@ Two engines are not on PyPI at the paper's versions and are installed from their
 | FSL | 6.0.7.4 | `FSLDIR` |
 | MMORF | 1.0.1, installed with the environments (`fsl-mmorf`, from the FSL conda channel); `envs/linc_envs.sh` sets its path | `MMORF` (the `mmorf` executable) |
 | ANTs | 2.5.4 | `ANTSPATH` |
-| MRtrix3 | 3.0.2, for the tensor step of the MRI channels' build only (`docs/build_templates.md`) | `MRTRIX` |
+| MRtrix3 | 3.0.2, for the tensor step of the MRI channels' build only (`docs/build_everything.md`) | `MRTRIX` |
 | the anatomix environment's Python | see `env/anatomix.yml` | `ANATOMIX_PYTHON` |
 | the deep-learning environment's Python, for the segmentation models | see `env/deep.yml` | `LINC_SEGMENT_PYTHON` |
 | nnU-Net | 2.5.1 (`env/nnunet.yml`), optional: only to reproduce the paper's masks (`linc-reconstruct --engine nnunet`) | `NNUNET_BIN` (that environment's `bin/`) |
@@ -76,11 +76,11 @@ results are then not the paper's.
 
 **3. Fonts** (figures only). Liberation Sans, from the `fonts-liberation` package.
 
-**4. Network weights.** Download them with the data release. Place them under `$LINC_MODELS`, as `models/*.md` describes, and check
+**4. Network weights.** Download them with the data release. Put them under `$LINC_MODELS`, as `models/*.md` describes, and check
 them:
 
 ```bash
-python models/verify_weights.py models/blockface_segmentation.sha256 --root $LINC_MODELS/nnUNet_results
+python models/verify_weights.py models/segmentation.sha256 --root $LINC_MODELS/segment
 python models/verify_weights.py models/completion_public.sha256 --root $LINC_MODELS/completion
 ```
 
@@ -101,7 +101,7 @@ that maps them (the `reproduce/` scripts, `linc-labels carry`), copy `configs/pa
 `configs/path_placeholders.local.yaml` (not in git) and set each left-hand side to the prefix your products record; the example file
 explains how.
 
-Brains are named in files by their LINC identifier (`sub-MR252`). The paper's names (MF1–MF10, MM1–MM15) map to them in
+Brains are named in files by their Specimen ID (`sub-MR252`). The paper's names (MF1–MF10, MM1–MM15) map to them in
 `docs/specimen_labels.json`.
 
 **6. Check the install.** `cli/linc-info` prints what the installation runs with: the repository's commit, this Python and its

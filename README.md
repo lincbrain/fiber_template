@@ -1,8 +1,14 @@
 # fiber_template: code for a multimodal macaque template
 
-Code for *A multimodal macaque template for aligning ex vivo MRI and microscopy* (Gonzales et al.). Use it to:
-- bring your own blockface photographs, MRI and histology into the template;
-- reproduce every number and figure of the paper.
+Code for *A multimodal macaque template for aligning ex vivo MRI and microscopy* (Gonzales et al.). It runs the method from the
+blockface photographs and the preprocessed MRI (`docs/inputs.md`):
+- builds the MRI template from four brains and the blockface template from 21;
+- registers the blockface template into the MRI template;
+- aligns each brain's histology and its labels to the template;
+- evaluates every registration step and writes the paper's numbers and figures;
+- brings new brains into the template.
+
+`docs/build_everything.md` runs it from start to end, and `docs/inputs.md` lists every input it assumes.
 
 > **Status: release in preparation.** This repository holds the analysis code of the paper, ported and checked against the
 > paper's products; it will be public on GitHub. The template, the paper's products and the network weights are a separate data
@@ -40,7 +46,7 @@ models/        model cards, checksums and a checker for the trained networks (th
 env/           the Python environments
 tests/         tests of the package
 docs/          one page per stage (install, mri, reconstruct, register, complete, histology, labels, reproduce,
-               build_templates) and for the segmentation models, a walkthrough of three brains, the paper → code map, the
+               build_everything) and for the segmentation models, a walkthrough of three brains, the paper → code map, the
                data layout, FAQ
 CONVENTIONS.md brains and names, data layout, spaces and transforms, provenance
 ```
@@ -80,11 +86,16 @@ command's page in `docs/` gives its inputs and options, and `--help` lists every
    $PY cli/linc-mri prep --subject <ID> --image <b0.nii.gz>
    ```
 
+   In: a b0 or T2-weighted image. Out: `sub-<ID>/mri/masks/dwi_brain_mask.nii.gz` and `sub-<ID>/mri/dwi/b0_brain_n4.nii.gz`.
+
 2. **Reconstruct the blockface volume** from the photographs [`env/tirl.yml`] (`docs/reconstruct.md`):
 
    ```bash
    $PY_TIRL cli/linc-reconstruct all --subject <ID>
    ```
+
+   In: the photographs and `configs/subjects/<ID>.yaml`. Out: `sub-<ID>/blockface/<ID>_blockface.ome.zarr`, with its brain mask and
+   marker tubes.
 
 3. **Register the brain into the template's frame** (`docs/register.md`). For a brain with MRI, first to its own b0 [`env/linc.yml`],
    with the files of step 1, then its b0 to the MRI template [`env/linc.yml`]:
@@ -96,7 +107,11 @@ command's page in `docs/` gives its inputs and options, and `--help` lists every
        --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
    ```
 
-   A brain without MRI is registered once, onto the MRI template's b0, with `cli/linc-register direct-placement`.
+   In: the blockface volume and the prepared b0. Out: `sub-<ID>/xfm/bf-native__to__b0-native/` and
+   `sub-<ID>/xfm/b0-native__to__mri-template/`.
+
+   A brain without MRI is registered once, onto the MRI template's b0, with `cli/linc-register direct-placement`. Out:
+   `sub-<ID>/xfm/bf-native__to__mri-template/`.
 
 4. **Synthesize the missing caudal tissue** [`env/deep.yml`] (`docs/complete.md`):
 
@@ -104,6 +119,8 @@ command's page in `docs/` gives its inputs and options, and `--help` lists every
    $PY_DEEP cli/linc-complete prepare --subject <ID> --out $LINC_WORK/prepared
    $PY_DEEP cli/linc-complete --brain $LINC_WORK/prepared/<ID> --out $LINC_WORK/complete
    ```
+
+   In: the blockface volume and its registration. Out: `$LINC_WORK/complete/<ID>/<ID>_bf_completed.nii.gz` and its color version.
 
 5. **Register the histology** to its blockface photographs [`env/tirl.yml`] (`docs/histology.md`):
 
@@ -113,13 +130,19 @@ command's page in `docs/` gives its inputs and options, and `--help` lists every
        --out $LINC_DATA/sub-<ID>/histology/registration --threads 12
    ```
 
-6. **Carry the labels into the template** (`docs/labels.md`):
+   In: the section images, the match table and the regions volume (`docs/inputs.md`). Out: each section's registration, under
+   `sub-<ID>/histology/registration/`.
+
+6. **Transform the labels into the template** (`docs/labels.md`):
 
    ```bash
    $PY_TIRL cli/linc-labels push        --subject <ID>   # [env/tirl.yml] the annotations onto the blockface
    $PY      cli/linc-labels interpolate --subject <ID>   # [env/linc.yml] between the sections
-   $PY      cli/linc-labels carry       --subject <ID>   # [env/linc.yml] into the template
+   $PY      cli/linc-labels carry       --subject <ID>   # [env/linc.yml] transformed into the template
    ```
+
+   In: the annotations and the section map, with the histology registration. Out: `sub-<ID>/labels/blockface/` and
+   `sub-<ID>/labels/template/`.
 
 The segmentation networks can also be run on their own (`cli/linc-segment`, [`env/deep.yml`]).
 
@@ -136,7 +159,7 @@ make check          # compare the rewritten records with the paper's
 ```
 
 `docs/reproduce.md` gives the Python of each target, the records that need a GPU or raw data, and what decides whether a rerun
-matches the paper bit for bit. `docs/build_templates.md` rebuilds the templates themselves, step by step. `docs/paper_to_code.md`
+matches the paper bit for bit. `docs/build_everything.md` builds the whole method, the templates included, step by step. `docs/paper_to_code.md`
 lists which records and scripts belong to each part of the paper.
 
 ## Data

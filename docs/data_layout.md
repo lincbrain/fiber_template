@@ -1,6 +1,6 @@
 # Data layout
 
-Nothing in this repository holds a path to a machine. Every input and output is found through seven folders ("roots"), each set
+Nothing in this repository holds a path to a machine. Every input and output is located through seven folders ("roots"), each set
 by an environment variable. `linc/paths.py` resolves them; `CONVENTIONS.md` gives the rules for spaces, transforms and provenance.
 
 | Variable | Holds | Needed for |
@@ -8,7 +8,7 @@ by an environment variable. `linc/paths.py` resolves them; `CONVENTIONS.md` give
 | `LINC_RAW` | the blockface photographs as taken, one folder per brain (`configs/subjects/<ID>.yaml` names it); for a few records, the raw MRI (`macaque_mri`, `mri_mm`), the microstructure fits' source series (`microstructure`, read by `r057_mri_facts_b` only) and the LINC dataset (`linc_000003`: histology, participants) | reconstruction; those records |
 | `LINC_DATA` | per-brain data: `$LINC_DATA/sub-<ID>/{blockface,mri,histology,labels,xfm}/` | using the template on your own brains |
 | `LINC_TEMPLATE` | the released template: `mri/` (MRI channels), `blockface/` (blockface channel and template), `xfm/`, `frames/` | registering into the template |
-| `LINC_MODELS` | the trained networks: `nnUNet_results/` (blockface segmentation) and `completion/<name>/` (`models/*.md`) | reconstruction, synthesis of missing tissue |
+| `LINC_MODELS` | the trained networks: `segment/<model>/` (the segmentation networks) and `completion/<name>/` (`docs/models.md`) | reconstruction, synthesis of missing tissue |
 | `LINC_PRODUCTS` | intermediate products of the paper (reconstructions, registrations, template builds) | reproducing figures and numbers |
 | `LINC_NUMBERS` | the numbers records (`<record>.json`); default `./numbers` | reproducing the paper |
 | `LINC_WORK` | scratch for intermediate files; default `./work` | every pipeline |
@@ -27,7 +27,7 @@ export LINC_WORK=$PWD/work
 
 ## Per-brain data (`LINC_DATA`)
 
-One folder per brain, named by its LINC identifier (`sub-MR252`). `docs/specimen_labels.json` maps the identifiers to the paper's
+One folder per brain, named by its Specimen ID (`sub-MR252`). `docs/specimen_labels.json` maps the identifiers to the paper's
 names (MM2 = MR252). The layout inside each folder is in `CONVENTIONS.md` (Data layout); transforms live in `xfm/<src>__to__<dst>/`
 with a `meta.json`.
 
@@ -45,7 +45,7 @@ Every number in the paper's text and tables comes from a record, `<record>.json`
 - `reproduce/numbers/<record>.py` writes it;
 - `reproduce/check_numbers.py` compares it with the paper's copy (counts exact, floats to 1e-9).
 
-Each record carries provenance: inputs with size, modification time and md5, the command and the host. Figures carry the same
+Each record holds its provenance: inputs with size, modification time and md5, the command and the host. Figures carry the same
 in `<figure>.provenance.json`.
 
 ## Outputs
@@ -56,7 +56,7 @@ in `<figure>.provenance.json`.
 
 ## Preparing the data release (notes for the release, not for users)
 
-- **The atlas-region volumes** that the histology pieces were cut from (`labels/regions_t2_final/<ID>_regions.nii.gz` in the
+- **The atlas-region volumes** by which the histology sections were divided into components (`labels/regions_t2_final/<ID>_regions.nii.gz` in the
   analysis project) are still in the blockface spacing frame used before 2 Oct 2026. `linc-histology --regions` needs them in the
   store's world frame. Before release, rescale each brain's header along the section axis (axis 1), about the world origin, without
   resampling: new affine = diag(1, f, 1, 1) · old affine.

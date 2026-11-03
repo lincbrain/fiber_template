@@ -1,17 +1,23 @@
 #!/usr/bin/env python3
-"""Leave one brain out for the MRI template: does a brain the template never saw align as well as the brains it was built from?
-(paper: Results "MRI template", out-of-sample check; Methods, "Leave one brain out").
+"""Leave one brain out: does a brain the template never saw align as well as the brains it was built from? (the out-of-sample check)
 
-Four folds, one per MRI brain. In each fold the held-out brain + its mirror and the fold's six included inputs are registered the same
-way (T2 only, the fold's step-8 schedule) to the same target (the fold's step-8 iteration-01 T2 template); linc/evaluation/lobo.py
-composes each map (affine + MMORF warp), warps each input's T2 and brain mask, and scores it against the target inside the target's
-brain mask (r, nmad, dice, Jacobian percentiles and % outside [0.5, 2]). Per fold: the per-input rows, the held-out and included means
-(r, nmad, dice; 5 decimals) and their difference (all six metrics; 5 decimals). Pooled: the mean of the four per-fold differences.
-The composed warps and warped images go to $LINC_WORK/lobo_t2/<fold>/ (about 6 GB). Needs FSL ($FSLDIR).
-Inputs (products_mri): mri_runs (rb_lobo_<ID>/ fold runs with their out/heldout_t2/ registrations, rb_final/data for the held-out
-inputs).
--> $LINC_NUMBERS/lobo_t2_rebuild.json
-    python reproduce/numbers/lobo_t2_rebuild.py [--workers 4]"""
+You need (configs/products_mri.yaml)
+  mri_runs: one fold run per brain of configs/mri_construction.yaml `inputs` (rb_lobo_<ID>/, with its held-out registrations in
+  out/heldout_t2/) and rb_final/data (the held-out inputs); FSL (FSLDIR).
+
+What it does, per fold
+  1. composes each input's map to the fold's final T2 template (affine + MMORF warp);
+  2. warps each input's T2 and brain mask once;
+  3. scores it against the template inside the template's mask (r, nmad, Dice, Jacobian percentiles, % outside [0.5, 2]);
+  4. compares the held-out brain (and its mirror) with the included inputs; then pools the folds.
+
+You get
+  $LINC_NUMBERS/lobo_t2_rebuild.json, and the composed warps and warped images in $LINC_WORK/lobo_t2/<fold>/ (about 6 GB)
+
+    python reproduce/numbers/lobo_t2_rebuild.py [--workers 4] [--plan]
+
+Paper: Methods, "Leave one brain out".
+"""
 import argparse
 import sys
 from concurrent.futures import ThreadPoolExecutor
@@ -24,7 +30,9 @@ from linc import paths, provenance  # noqa: E402
 from linc.evaluation import lobo as LB  # noqa: E402
 
 NAME = "lobo_t2_rebuild"
-FOLDS = ["rb_lobo_MF283", "rb_lobo_MF284", "rb_lobo_MF285", "rb_lobo_MF286"]
+from linc.construction.tools import recipe  # noqa: E402
+
+FOLDS = [f"rb_lobo_{S}" for S in recipe()["inputs"]]       # one fold per brain of configs/mri_construction.yaml `inputs`
 STEP, IT = "08", "01"                   # the target: step 8, iteration 01 of each fold
 KEYS = ("r", "nmad", "dice", "jac_p1", "jac_p99", "jac_outside")
 MEAN_KEYS = ("r", "nmad", "dice")

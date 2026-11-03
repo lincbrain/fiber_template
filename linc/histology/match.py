@@ -1,12 +1,17 @@
-"""Histology <-> blockface section matching (paper Methods, "Histology registration and label propagation").
+"""Histology to blockface section matching: which blockface photograph each histology section was cut at (Methods, "Histology
+registration and label propagation").
 
-The match table (one per brain and series) maps a histology section number to the raw blockface photograph index of each
-piece of that section: the whole section, its left and right hemispheres, and the cerebellum. Rows are
-    lower, upper, m_whole, a_whole, m_left, a_left, m_right, a_right, m_cere, a_cere
-and a section n with lower <= n <= upper ("inf" allowed as upper) matches photograph m * n + a for each piece (-1 = no match).
-
-match_photos() saves, for every histology section, the reconstructed blockface slice matched to each of its pieces, upright
-(rows and columns reversed from the store's (c, rows, slices, cols) order), as <section><suffix>_0000.png.
+You need
+  the brain's reconstruction store, the raw index of its first section (idx_range[0], configs/subjects/<ID>.yaml), and the match
+  table (one per brain and series): a histology section number -> the raw photograph index of each of its components (the whole
+  section, the left and right hemispheres, the cerebellum). Rows are
+      lower, upper, m_whole, a_whole, m_left, a_left, m_right, a_right, m_cere, a_cere
+  and a section n with lower <= n <= upper ("inf" allowed as upper) matches photograph m * n + a for each component (-1: no match).
+What it does
+  match_photos() reads, for every histology section, the reconstructed blockface section matched to each of its components,
+  upright (rows and columns reversed from the store's (c, rows, sections, columns) order).
+You get
+  <section><suffix>_0000.png per matched component.
 
 Ported from the analysis project's code/histo.py (_match_table, match_b2h).
 """

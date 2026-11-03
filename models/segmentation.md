@@ -8,10 +8,10 @@ nnU-Net models (`models/blockface_segmentation.md`) and the MRI brain-mask netwo
 | `mri_brainmask` | one scalar ex vivo MRI (b0 or T2), resampled to 0.5 mm and back | brain mask | none | 31,195,594 |
 | `bf_mask2d` | one blockface photograph (RGB); native photographs with `--native` (4 × 4 block means first) | brain mask | enclosed holes filled, at native size | 20,619,658 |
 | `bf_mask3d` | the background-intact RGB blockface volume (three channel files), resampled to the median spacing and back | brain mask | largest 26-connected component, holes filled | 31,197,322 |
-| `bf_holes` | the masked color blockface volume, same spacing | marker tubes | left hemisphere only, inside the brain mask, pieces under 3 voxels dropped (needs the brain mask) | 31,197,322 |
+| `bf_holes` | the masked color blockface volume, same spacing | marker tubes | left hemisphere only, inside the brain mask, parts under 3 voxels dropped (needs the brain mask) | 31,197,322 |
 
 **The weights are not in git.**
-- Place each model's folder (`model.pt`, `spec.json`, `card.md`, `SHA256SUMS`) under `$LINC_MODELS/segment/<model>/`.
+- Put each model's folder (`model.pt`, `spec.json`, `card.md`, `SHA256SUMS`) under `$LINC_MODELS/segment/<model>/`.
 - Check them with `python models/verify_weights.py models/segmentation.sha256 --root $LINC_MODELS/segment`.
 - Download location: with the data release (`derivatives/models/segment/<model>/`).
 - `cli/linc-segment predict --model <model> ...` then finds them by name; `linc-reconstruct` and `linc-register` call it through

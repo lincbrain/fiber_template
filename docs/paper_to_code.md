@@ -9,7 +9,7 @@ for aligning ex vivo MRI and microscopy*). Paths are relative to the repository 
 - `reproduce/numbers/<record>.py`: each script rewrites one numbers record of the paper, `<record>.json`, which the paper's text and
   tables read. `reproduce/check_numbers.py` compares a rewritten record with the paper's.
 - `reproduce/figures/<name>.py`: one script per figure, named by what the figure shows (the table below gives the paper's number).
-  `reproduce/templates/`: how the templates were built, and a build driver for each (`docs/build_templates.md`).
+  `reproduce/templates/`: how the templates were built, and a build driver for each (`docs/build_everything.md`).
 
 Parts marked *(not in this snapshot)* are still being ported.
 
@@ -17,7 +17,7 @@ Parts marked *(not in this snapshot)* are still being ported.
 
 | Paper (Methods) | Code | Parameters | Entry point | External tools |
 |---|---|---|---|---|
-| Brains | `docs/specimen_labels.json` (paper names ↔ LINC identifiers) | `configs/subjects/<ID>.yaml` | — | — |
+| Brains | `docs/specimen_labels.json` (paper names ↔ Specimen IDs) | `configs/subjects/<ID>.yaml` | — | — |
 | MRI template: preprocessing | `linc/construction/mri_prep.py`, `linc/construction/canonical.py` | `configs/mri_construction.yaml` | — | MP-PCA denoising, N4, FSL `dtifit`, Microstructure.jl (SANDIdot), TORTOISE |
 | MRI template: image registration | `linc/registration/featurereg.py` (anatomix features + FireANTs, run in `env/anatomix.yml` through `anatomix_runner.py`); pull maps in `xfmtools.py` | `configs/registration.yaml` | `cli/linc-register` | FireANTs 1.5.1, anatomix |
 | MRI template: symmetric groupwise construction | `linc/construction/mmorf_run.py`, `tools.py`; our change to the FSL template driver as a patch (`linc/construction/patches/`) | `configs/mri_construction.yaml` | `reproduce/templates/build_mri_channels.py` (recipe: `reproduce/templates/mri_channels.md`) | MMORF 1.0.1, FSL 6.0.7.4, ANTs 2.5.4 |
@@ -52,7 +52,7 @@ the paper reports.
 | Histology registered to the blockface | `tube_offsets_r054`, `histo_tube_landmarks`, `tube_mf8_check_r054`, `registration_qc_histo2bf_20261001`, `fig_histology_simple` | Table 4 |
 | Agreement of LGN and STN labels across brains | `lgnstn_geometry_current`, `labels_overlap_current` | Table 5 |
 | Blockface-based versus MRI-based alignment | `route_test_1c`, `fig_routes_1c_section` (written by `alignment_comparison.py`) | — |
-| Tracer labels in the template | `tracer_template_v2_all`, `tracer_connected_v2c` (the connected pathway of each case and its inferred share), `tracer_alic_topography_v2c`, `tracer_placement_v2c`, `fig_tracer_3d_stills` (written by `tracer_3d.py --for-composite`: Fig. 10's three 3D stills, their planes, window, translucent shell and each pathway's share left of the midline), `fig_tracer_3d` (the same scene rendered whole, with both rotation videos), `fig_tracer_pathways` (written by `tracer_pathways.py`: the composite of Fig. 10, its slabs, the pathway voxels drawn per case with the inferred share and the longest join, the capsule counts of panel e), `fig_tracer_pathways_panels` (the four-panel form drawn without `PY_VIZ3D`); `tracer_sections_v2` (reference only until its script is ported: `configs/numbers_exceptions.yaml`); `tracer_side_check_r058d`, `tracer_fix_validation_r058` (reference only: the paper reads its check numbers from them, and the audit's registration arms are not release products) | — |
+| Tracer labels in the template | `tracer_template_v2_all`, `tracer_connected_v2c` (the connected pathway of each case and its inferred fraction), `tracer_alic_topography_v2c`, `tracer_placement_v2c`, `fig_tracer_3d_stills` (written by `tracer_3d.py --for-composite`: Fig. 10's three 3D stills, their planes, window, translucent shell and each pathway's share left of the midline), `fig_tracer_3d` (the same scene rendered whole, with both rotation videos), `fig_tracer_pathways` (written by `tracer_pathways.py`: the composite of Fig. 10, its slabs, the pathway voxels drawn per case with the inferred fraction and the longest join, the capsule counts of panel e), `fig_tracer_pathways_panels` (the four-panel form drawn without `PY_VIZ3D`); `tracer_sections_v2` (reference only until its script is ported: `configs/numbers_exceptions.yaml`); `tracer_side_check_r058d`, `tracer_fix_validation_r058` (reference only: the paper reads its check numbers from them, and the audit's registration arms are not release products) | — |
 | Construction parameters (Methods) | `mri_recipe` | — |
 | Supplementary S1: deep learning models of the blockface pipeline | `s1_segmentation_r057` (S1.1); `r057_s1_synthesis`, `d3p_vs_d3_pseudo`, `d3_methods`, `d3_predicted_share`, `d3_domain_shift` (S1.2–S1.4); `r057_missing_extent`, `s1_perbrain_r057` (S1.5) | Tables S1–S3 |
 | Supplementary S2: tracer labels, checks | `tracer_label_volumes_v2c`, `tracer_interp_accounting_v2`, `tracer_connected_v2c`, `tracer_alic_topography_v2c`, `tracer_placement_v2c`; `tracer_match_audit_r058`, `tracer_side_check_r058d` (reference only, as above) | Tables S4–S5 |
@@ -61,7 +61,7 @@ the paper reports.
 | Supplementary S5: segmentation models | `segmodels_mri_brainmask_2026-11`, `segmodels_bf_mask2d_2026-11`, `segmodels_bf_mask3d_2026-11`, `segmodels_bf_holes_2026-11` (from the training runs' records, on a CPU in `env/deep.yml`; the networks are not retrained) | Table S8 |
 
 Table numbers follow the paper's current version. The incremental version numbers them 1 (brains), 2 (histology), 3 (LGN and STN
-labels) and 4 (variants), and has no table of the registration targets. Two facts records the Methods read,
+labels) and 4 (the seven templates), and has no table of the registration targets. Two facts records the Methods read,
 `histo_pixel_sizes_r057` and `r057_mri_facts_b`, read raw data (`$LINC_RAW`).
 
 ### Figures
@@ -82,7 +82,7 @@ draft) numbers six of them differently (in bold in the last column).
 | 9 Blockface-based and MRI-based alignment | `alignment_comparison.py` (ported from the analysis project's `fig9_routes_1c_r061.py`, the script of record since panel (a) shows each alignment's values per pair; its predecessor `fig9_routes_1c_r057.py` is kept unchanged) | `alignment_comparison` | `env/linc.yml` | **8** |
 | 10 Tracer pathways of three cases in the template | `tracer_3d.py --for-composite` (a–c: the 3D scene from the front, above and right, from the right, and from the right with the brain as a translucent shell), `tracer_pathways.py` (d, e, the key and the composite) | `tracer_pathways` (renders the three stills, then the composite; without `PY_VIZ3D`, the four-panel form only) | `env/viz3d.yml` (a–c; optional, `PY_VIZ3D`), `env/linc.yml` (d, e) | 10 |
 | S1 Synthesis of withheld slabs | `s_synthesis_depth.py` | `s_synthesis_depth` | `env/deep.yml` | S1 |
-| S2 Completed blockface volumes | `s_synthesis_gallery.py` | `s_synthesis_gallery` | `env/deep.yml` | S2 |
+| S2 Blockface volumes with their synthesized tissue | `s_synthesis_gallery.py` | `s_synthesis_gallery` | `env/deep.yml` | S2 |
 | S3 From the chart to the template, one section per case | *(not in this snapshot: made by the analysis project's `paper/fig_tracer_fidelity_v2_r058.py`; its port will need the histology images of the data release)* | — | — | S3 |
 | S4 Two rules for drawing a label | `s_tracer_rules.py` (runs `tracer.py --figure rules`) | `s_tracer_rules` | `env/linc.yml` | S4 |
 | Supplementary videos: the tracer pathways' 3D scene, one turn each (10 s), with the template's planes and with the brain as a translucent shell | `tracer_3d.py` | `tracer_3d` (optional, not part of `make figures`) | `env/viz3d.yml` (optional; `PY_VIZ3D`) | videos |

@@ -1,5 +1,19 @@
 # Reconstruct a blockface volume from the photographs
 
+**You need** the brain's photographs and its settings, `configs/subjects/<ID>.yaml`, with its hand-made inputs (`docs/inputs.md`).
+
+**What it does**
+1. `photos`: copies the photographs in cutting order and makes their brain masks with the network;
+2. `stack`: stacks the photographs and their masks;
+3. `prepare`: corrects the camera jumps (TIRL), marks and fills the missing sections, and evens the illumination;
+4. `mask`: makes the 3D brain mask;
+5. `volume`: writes the volume;
+6. `tubes`: detects the marker tubes;
+7. `spacing`: writes the pixel size and section step into the headers.
+
+**You get**, under `$LINC_DATA/sub-<ID>/blockface/`: the volume, `<ID>_blockface.ome.zarr`, with its brain mask (`<ID>_mask.nii.gz`)
+and marker tubes (`<ID>_holes.nii.gz`).
+
 Run each entry point from the repository root, in the environment its page names. `--help` lists every option.
 
 A brain's own settings live in `configs/subjects/<ID>.yaml`: its photographs, pixel size and section step, camera jumps, missing

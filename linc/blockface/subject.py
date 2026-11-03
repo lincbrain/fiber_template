@@ -1,6 +1,7 @@
 """One brain's blockface inputs and folder layout, read from configs/subjects/<ID>.yaml and configs/blockface.yaml.
 
-The hand inputs of a reconstruction, per brain:
+You need
+  configs/subjects/<ID>.yaml, the hand inputs of a reconstruction:
   raw, raw_glob, raw_regex, idx_range   the photographs ($LINC_RAW/<raw>/<files>, numbered by the regex' group 1, in this range)
   rotate180                             photographs taken upside down
   vx, vz                                the pixel size and section step (um) written into the products' headers
@@ -8,23 +9,28 @@ The hand inputs of a reconstruction, per brain:
                                         paper's brains, the spacing before the calibration against each brain's MRI)
   jumps                                 camera jumps (before, after), listed by hand
   missing                               missing or damaged sections: (before, after) brackets of sections to interpolate;
-                                        (-1, k) drops the leading non-brain frames 0..k-1; (n, -1) is the caudal cutoff (keep 0..n)
-  stack_pad                             canvas margin (px per side) of the stacks; 0 = the default (zarrio.STACK_PAD)
-  curation_f                            native sections per curated slice of the hand-edit grid (pinned)
+                                        (-1, k) drops the leading frames 0..k-1 without brain; (n, -1) is the caudal cutoff
+                                        (keep 0..n)
+  stack_pad                             the stacks' margin (px per side); 0 = the default (zarrio.STACK_PAD)
+  curation_f                            native sections per curated section of the hand-edit grid (fixed per brain)
   masks_of_record                       which masks were corrected by hand (they win over the models' outputs)
+What it does
+  Subject(<ID>) reads both files and names every folder and file of the brain's blockface steps.
+You get
+  the layout under $LINC_DATA/sub-<ID>/blockface/:
+  00_slices/                 the photographs, renamed and turned upright (step 1)
+  01_brainmask/00_predict/   the 2D network's masks (x50 PNGs); 01_final/ the accepted masks (hand corrections survive reruns)
+  _work/                     working stores: the raw and mask stacks, the camera-jump registrations, the 3D network's inputs
+  02_blockface*.ome.zarr     the aligned, cropped stack and its mask (stage 3; also read by the histology steps)
+  nii/                       stage 3's NIfTI exports (the volume with its background kept, read by the 3D brain-mask network)
+  curated/                   the hand-edit grid (L4 in-plane, 0.40 mm sections): <ID>_bg (the network's input), <ID>_mask and
+                             <ID>_holes (the networks' outputs), <ID>_mask_edited and <ID>_holes_edited (the hand
+                             corrections, which win)
+  <ID>_blockface.ome.zarr    the reconstruction (L1 .. L4), <ID>_mask and <ID>_holes (L4), <ID>.info, steps/ (before the tubes are
+                             filled)
 
-Folder layout ($LINC_DATA/sub-<ID>/blockface/, the analysis project's layout):
-  00_slices/                 the photographs, renamed and rotated (step 1 input)
-  01_brainmask/00_predict/   the 2D nnU-Net masks (x50 PNGs); 01_final/ the accepted masks (hand corrections survive re-runs)
-  _work/                     transient stores: the raw and mask stacks, the camera-jump registrations, the 3D nnU-Net staging
-  02_blockface*.ome.zarr     the aligned, cropped stack and its mask (stage 3; also read by the histology pipeline)
-  nii/                       exports of stage 3 (the background-intact volume the 3D brain-mask model reads, its mask)
-  curated/                   the hand-edit grid (L4 in-plane, 0.40 mm sections): <ID>_bg (the model input), <ID>_mask / _holes
-                             (the models' outputs) and <ID>_mask_edited / _holes_edited (hand corrections, which win)
-  <ID>_blockface.ome.zarr    the reconstruction (L1 .. L4), <ID>_mask / <ID>_holes (L4), <ID>.info, steps/ (pre-inpaint store)
-
-Ported from the analysis project's code/config.py (Config: the fields and the path properties used by the final pipeline) and
-code/bf_geometry.py (curation_f).
+Ported from the analysis project's code/config.py (the fields and paths the final pipeline uses) and code/bf_geometry.py
+(curation_f).
 """
 import os
 from pathlib import Path

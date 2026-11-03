@@ -134,8 +134,9 @@ def run_step(i, step, work, force=False):
     print(f"  done in {wall} s -> {pd / f'{i:02d}_{step.name}.json'}", flush=True)
 
 
-def main(title, make_steps, default_work, argv=None):
-    ap = argparse.ArgumentParser(description=title + "\n\n" + __doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+def main(title, make_steps, default_work, argv=None, doc=None):
+    """doc: the build's own docstring for --help (else the title and this framework's description)."""
+    ap = argparse.ArgumentParser(description=doc or (title + "\n\n" + __doc__), formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--work", default=None, help=f"the build's folder (default {default_work})")
     ap.add_argument("--plan", action="store_true"); ap.add_argument("--step", nargs="+", default=[])
     ap.add_argument("--from", dest="frm"); ap.add_argument("--to"); ap.add_argument("--force", action="store_true")

@@ -3,7 +3,8 @@
 
 The networks of record are not changed: each folder <src>/<name>/{last.pt, config.json, train_log.jsonl} is copied to <dst>/<name>/
 with
-  last.pt          cfg's strings re-rooted with linc.paths.placeholder_table() (cfg["root"], cfg["canon_root"]["source_root"]);
+  last.pt          cfg's strings re-rooted with linc.paths.placeholder_table() (cfg["root"], cfg["canon_root"]["source_root"]),
+                   and its author_* fields (design requests quoted from the project's notes) dropped;
                    the weights G and the epoch are copied unchanged (every tensor checked equal, dtype and values)
   config.json      the same configuration, the same scrub (written as before: indent 1)
   train_log.jsonl  every epoch's row without its "host" field (the training machine's name; a release names no machine), the
@@ -29,7 +30,7 @@ from linc import paths  # noqa: E402
 
 NETS = ["d3_full_A_s0", "d3p_full_A_s0", "d3_lso_A_s0", "d3p_lso_A_s0"]
 FILES = ["last.pt", "config.json", "train_log.jsonl"]
-LEAK = re.compile(r'/autofs|/space/|/homes/|rg116|"/')                  # "/ = any absolute path left in a JSON string
+LEAK = re.compile(r'/autofs|/space/|/homes/|rg116|"/|ORCH')             # "/ = any absolute path left in a JSON string
 
 
 def digest(p, algo="sha256"):
@@ -51,7 +52,7 @@ def scrubber():
         if isinstance(o, list):
             return [scrub(x) for x in o]
         if isinstance(o, dict):
-            return {scrub(k): scrub(v) for k, v in o.items()}
+            return {scrub(k): scrub(v) for k, v in o.items() if not str(k).startswith("author_")}
         return o
     return scrub
 
@@ -93,7 +94,8 @@ def main():
                        ("train_log.jsonl", (d / "train_log.jsonl").read_text())):
             m = LEAK.search(txt)
             assert not m, f"{n}/{f}: still holds {m.group(0)!r}"
-        changed = dict(zip(FILES, ["cfg paths re-rooted ($LINC_PRODUCTS); weights and epoch unchanged", "paths re-rooted ($LINC_PRODUCTS)",
+        changed = dict(zip(FILES, ["cfg paths re-rooted ($LINC_PRODUCTS), author_* notes dropped; weights and epoch unchanged",
+                                   "paths re-rooted ($LINC_PRODUCTS), author_* notes dropped",
                                    "the host field of every row removed"]))
         for f in FILES:
             old, nw = digest(s / f), digest(d / f)

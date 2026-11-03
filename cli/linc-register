@@ -1,44 +1,46 @@
 #!/usr/bin/env python3
-"""Register a brain's blockface volume into the template's frame.
+"""Register a brain's blockface volume to its own MRI or to the template, and check a registration.
 
-    linc-register mri --subject <ID> [--out DIR] [--device cuda:0] [--linear-only] [--new-brain] [--registry DIR] [--overwrite]
-        the MRI route: the blockface -> the brain's own b0 (Methods, "Registration to the brain's own MRI"). The b0 is placed in the
-        template frame first (--place-b0, or the placed b0 already in the data folder); the b0 -> MRI template registration is
-        `linc-register mri-template`. `--place-b0 B0_NATIVE` without a mask segments the b0 with the MRI brain-mask network
-        (linc-segment's mri_brainmask, $LINC_MODELS/segment/mri_brainmask, run with $LINC_SEGMENT_PYTHON; linc/registration/mri_mask.py),
-        so a new brain needs no hand mask; there is one such network, so no engine switch. A paper brain keeps its masks of record:
-        without --new-brain it needs MASK_NATIVE.
-    linc-register mri-template --subject <ID> --template-b0 B0 --template-mask M [...]
-        the MRI route's second registration: the brain's own b0 -> the MRI template's b0 (linc/link/b0_to_template.py, which defines
-        its options: `linc-register mri-template -h`; reproduce/templates/b0_to_template.md). Its environment of record is env/mri.yml.
-    linc-register blockface-template --subject <ID> --template-grey G --template-coverage C --frame F05 --bridge B [--out DIR]
-        the direct route onto a blockface template (route A of the route test): G and C at 0.25 mm on the 2x refinement of the 0.5 mm
-        frame F05; the flat brainstem cut through the bridge B (run-113 -> canonical) when the template lives in the run-113 frame
-    linc-register direct-placement --subject <ID> --template-b0 B0 --template-mask M [--out DIR] [--registry DIR] [--overwrite]
-        direct placement onto the MRI template's b0 (the brains without MRI)
-    linc-register qc --preset bf2b0|direct|b02template|template2template --fixed F --moved M [--warp W] [--mat A --mat-kind fsl|world|itk
-                     [--mat-src S --mat-ref R]] [--fixed-mask FM] [--moved-mask MM] [--outline-target T [--slab-iso-mask I]]
-                     [--ncc-fwhm-mm X] [--entry <registry dir>] [--out DIR] [--name NAME]
-        the paper's registration QC of one registration (linc/registration/qc.py; Methods, "Evaluation of the pathway"): the gate
-        measures on the fixed grid (linear part, NCC, folds, drift, envelope Dice, interior edge distance), the outline check
-        against --outline-target (for a blockface -> own b0 registration: the b0 brain mask inside the photographed slab, with
-        --slab-iso-mask = the blockface's isotropic mask and --mat the 9-dof matrix), a three-plane PNG and a JSON row in --out
-        (default $LINC_WORK/qc); with --entry, pass / fail is recorded in that registry entry (linc/xfm.py set_qc), so chains through
-        it stop warning. The preset sets the paper's flags for that kind of registration (inverted contrast, 180-degree absorption,
-        cross-animal scale rule).
+You need
+  the brain's reconstruction in $LINC_DATA/sub-<ID>/blockface/ (cli/linc-reconstruct: <ID>_blockface.ome.zarr, <ID>_mask.nii.gz);
+  for the MRI-based alignment, the brain's own b0 and its brain mask (mri/; `--place-b0 B0 [MASK]` first registers them rigidly onto
+  the template's grid, and with no MASK the MRI brain-mask network makes one); for a brain without MRI, the MRI template's b0 and
+  mask ($LINC_TEMPLATE/mri/); env/linc.yml ($PY); env/anatomix.yml ($ANATOMIX_PYTHON) and a GPU for the deformable stage (the
+  feature network, anatomix, is downloaded from Hugging Face on first use); FSL ($FSLDIR) for the linear stage.
+What it does
+  mri                 the blockface volume registered to the brain's own b0: a linear start (FLIRT), then a deformable
+                      registration (FireANTs) of features computed from both images by a pretrained network (anatomix)
+  mri-template        the brain's own b0 registered to the MRI template's b0 (linc/link/b0_to_template.py; `linc-register
+                      mri-template -h`)
+  direct-placement    the cross-modal alignment, for a brain without MRI: the blockface volume registered directly to the MRI
+                      template's b0
+  blockface-template  the blockface-based alignment: the blockface volume registered to the blockface template (the paper compares
+                      it with the MRI-based alignment)
+  qc                  the paper's acceptance checks of one registration, on the fixed grid: the linear part (scales, rotations, no
+                      reflection); the normalized cross-correlation (NCC) between the fixed and moved images inside both brain
+                      masks; folds of the warp (negative Jacobian determinants) and its 95th-percentile displacement; the Dice
+                      coefficient between the fixed and moved brain envelopes and the distance between their interior edges
+                      (reported); the outline check (the distance from the moved brain's outline to the target's, per pole). It
+                      writes a three-plane PNG and a JSON row, and with --entry records pass or fail in that entry.
+You get
+  the transform's registry entry, $LINC_DATA/sub-<ID>/xfm/<src>__to__<dst>/ (meta.json, the warp and the linear transforms, NIfTI
+  and text): bf-native__to__b0-native (mri), b0-native__to__mri-template (mri-template), bf-native__to__mri-template
+  (direct-placement); `python -m linc.xfm chain|apply` composes and applies them. In --out (default $LINC_WORK/register/<ID>), the
+  products on the working grid: the moved blockface, the warp, the measures (JSON). For qc, <out>/<name>.json and .png (default
+  $LINC_WORK/qc).
 
-Inputs (CONVENTIONS.md data layout, $LINC_DATA/sub-<ID>/):
-    blockface/<ID>_blockface.ome.zarr, <ID>_mask.nii.gz          the reconstruction (cli/linc-reconstruct)
-    blockface/<ID>_blockface_iso_grey.nii.gz, <ID>_mask_iso.nii.gz   its isotropic pair (made here when missing)
-    mri/<ID>_mri.nii.gz, <ID>_mri_mask.nii.gz, <ID>_mri2template.mat, <ID>_mri_b0_native.nii.gz   the placed b0 (--place-b0 makes them)
-    mri/<ID>_mri_mask_native_linc_segment.nii.gz (+ .json provenance)   the network's b0 mask, when --place-b0 is given no mask
-configs/subjects/<ID>.yaml `registration_to_own_mri` gives the paper's brains their masks of record and start pose; --new-brain (or a
-brain without that entry) estimates the start pose instead. Parameters: configs/registration.yaml.
-Outputs: <out>/ (default $LINC_WORK/register/<ID>): the linear stage and the products on the working grid. The transform goes to the
-registry (linc/xfm.py), $LINC_DATA/sub-<ID>/xfm/bf-native__to__b0-native (mri-template: b0-native__to__mri-template; direct
-placement: bf-native__to__mri-template), where `python -m linc.xfm chain|apply` finds it, e.g. the MRI route's two entries chain
-bf-native -> mri-template; --registry DIR writes the entry under DIR instead. An existing entry is not replaced unless --overwrite
-is given (linc/xfm.py backs the old one up); the check runs before the registration.
+    $PY cli/linc-register mri --subject <ID> [--place-b0 B0 [MASK]] [--new-brain]
+    $PY cli/linc-register direct-placement --subject <ID> --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz \
+        --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
+    $PY cli/linc-register qc --preset bf2b0|direct|b02template|template2template --fixed F --moved M [--warp W] [--mat A ...] [--entry DIR]
+
+Details. The paper's brains keep their masks and starting pose of record (configs/subjects/<ID>.yaml registration_to_own_mri); a
+new brain (no such entry, or --new-brain) gets an estimated starting pose. An existing registry entry is not replaced unless
+--overwrite (the old one is backed up); --registry DIR writes the entry elsewhere. qc's presets set the paper's settings for each
+kind of registration: whether the contrasts are inverted (blockface against b0), whether a 180-degree rotation is allowed for in the
+rotation limits, and the wider scale limits between animals. For a blockface -> own b0 registration the outline is compared with
+the b0 brain mask inside the photographed part of the brain (--slab-iso-mask, with --mat the 9-dof matrix). Parameters:
+configs/registration.yaml.
 """
 import argparse
 import os

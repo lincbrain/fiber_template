@@ -1,0 +1,687 @@
+{
+ "task": "mri_brainmask",
+ "dim": 3,
+ "classes": {
+  "0": "background",
+  "1": "brain"
+ },
+ "folds": {
+  "0": [
+   "MF278",
+   "MF283",
+   "MR251",
+   "MR256",
+   "MR293"
+  ],
+  "1": [
+   "MF275",
+   "MF284",
+   "MR253",
+   "MR261",
+   "MR292"
+  ],
+  "2": [
+   "MF277",
+   "MF281",
+   "MF285",
+   "MR254",
+   "MR259"
+  ],
+  "3": [
+   "MF282",
+   "MF286",
+   "MR243",
+   "MR252"
+  ],
+  "4": [
+   "MN276",
+   "MR249",
+   "MR250",
+   "MR257"
+  ]
+ },
+ "cases": [
+  {
+   "id": "MF275_b0",
+   "subject": "MF275",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF275/dwi_b0.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF275/dtifit_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "ff381c0503b29d762db45067f3c408f2"
+  },
+  {
+   "id": "MF275_t2",
+   "subject": "MF275",
+   "modality": "t2",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF275/msme_denoised_las_echo.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF275/msme_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "6ed3d7847c4c2181b5c702a8e91332bf"
+  },
+  {
+   "id": "MF275_t2d",
+   "subject": "MF275",
+   "modality": "t2d",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF275/msme_echo_denoised_debiased.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF275/msme_brain_mask.nii.gz",
+   "counted": false,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "6ed3d7847c4c2181b5c702a8e91332bf"
+  },
+  {
+   "id": "MF277_b0",
+   "subject": "MF277",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF277/dwi_b0.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF277/dtifit_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "389d18b85f30d3914a71e59bd1bf37a8"
+  },
+  {
+   "id": "MF277_t2",
+   "subject": "MF277",
+   "modality": "t2",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF277/msme_denoised_las_echo.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF277/msme_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "43b0f62b7ddeed5974e862095a9d3175"
+  },
+  {
+   "id": "MF277_t2d",
+   "subject": "MF277",
+   "modality": "t2d",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF277/msme_echo_denoised_debiased.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF277/msme_brain_mask.nii.gz",
+   "counted": false,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "43b0f62b7ddeed5974e862095a9d3175"
+  },
+  {
+   "id": "MF278_b0",
+   "subject": "MF278",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF278/dwi_b0.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF278/dtifit_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "fe235954b9b414ba48bdc32978c1ebff"
+  },
+  {
+   "id": "MF278_t2",
+   "subject": "MF278",
+   "modality": "t2",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF278/msme_denoised_las_echo.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF278/msme_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "86d99aa47a3b18aff499df730e08d9c1"
+  },
+  {
+   "id": "MF278_t2d",
+   "subject": "MF278",
+   "modality": "t2d",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF278/msme_echo_denoised_debiased.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF278/msme_brain_mask.nii.gz",
+   "counted": false,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "86d99aa47a3b18aff499df730e08d9c1"
+  },
+  {
+   "id": "MF281_b0",
+   "subject": "MF281",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF281/dwi_b0.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF281/dtifit_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "a7dc83e89c2e45aec96c59fde5ce28ae"
+  },
+  {
+   "id": "MF281_t2",
+   "subject": "MF281",
+   "modality": "t2",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF281/msme_denoised_las_echo.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF281/msme_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "7c4f551961f69183315da75f82450c31"
+  },
+  {
+   "id": "MF281_t2d",
+   "subject": "MF281",
+   "modality": "t2d",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF281/msme_echo_denoised_debiased.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF281/msme_brain_mask.nii.gz",
+   "counted": false,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "7c4f551961f69183315da75f82450c31"
+  },
+  {
+   "id": "MF282_b0",
+   "subject": "MF282",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF282/dwi_b0.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF282/dtifit_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "cad6c8c2643a4d44d12e7c149b9645e0"
+  },
+  {
+   "id": "MF282_t2",
+   "subject": "MF282",
+   "modality": "t2",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF282/msme_denoised_las_echo.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF282/msme_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "d454e894e4d3a00dfbe41cb1385f0ffb"
+  },
+  {
+   "id": "MF282_t2d",
+   "subject": "MF282",
+   "modality": "t2d",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF282/msme_echo_denoised_debiased.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF282/msme_brain_mask.nii.gz",
+   "counted": false,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "d454e894e4d3a00dfbe41cb1385f0ffb"
+  },
+  {
+   "id": "MF283_b0",
+   "subject": "MF283",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF283/dwi_b0.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/mri/masks_manual_edit_2026-09-30_v3/MF283/MF283_mask_EDIT.nii.gz",
+   "counted": true,
+   "mm": 0.25,
+   "label_kind": "author_final_edit",
+   "label_md5": "0d58667cad3803e58b8c93ba4fa99aea"
+  },
+  {
+   "id": "MF283_t2",
+   "subject": "MF283",
+   "modality": "t2",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF283/msme_denoised_las_echo.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF283/msme_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "3b6abaed145eb568573b370bc273d349"
+  },
+  {
+   "id": "MF283_t2d",
+   "subject": "MF283",
+   "modality": "t2d",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF283/msme_echo_denoised_debiased.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF283/msme_brain_mask.nii.gz",
+   "counted": false,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "3b6abaed145eb568573b370bc273d349"
+  },
+  {
+   "id": "MF283_b0m",
+   "subject": "MF283",
+   "modality": "b0m",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF283/microstructure/dwi_b0.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF283/microstructure/fracs_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "2075872748c5d1141dee795f3f78d216"
+  },
+  {
+   "id": "MF284_b0",
+   "subject": "MF284",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF284/dwi_b0.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/mri/masks_manual_edit_2026-09-30_v3/MF284/MF284_mask_EDIT.nii.gz",
+   "counted": true,
+   "mm": 0.25,
+   "label_kind": "author_final_edit",
+   "label_md5": "815c6a80d43e32821be1baa16731c00e"
+  },
+  {
+   "id": "MF284_t2",
+   "subject": "MF284",
+   "modality": "t2",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF284/msme_denoised_las_echo.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF284/msme_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "afddbff42cbee3dadc8194e565c3b385"
+  },
+  {
+   "id": "MF284_t2d",
+   "subject": "MF284",
+   "modality": "t2d",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF284/msme_echo_denoised_debiased.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF284/msme_brain_mask.nii.gz",
+   "counted": false,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "afddbff42cbee3dadc8194e565c3b385"
+  },
+  {
+   "id": "MF284_b0m",
+   "subject": "MF284",
+   "modality": "b0m",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF284/microstructure/dwi_b0.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF284/microstructure/fracs_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "9d293f5bbc11dc42cb858fbda806aa59"
+  },
+  {
+   "id": "MF285_b0",
+   "subject": "MF285",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF285/dwi_b0.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/mri/masks_manual_edit_2026-09-30_v3/MF285/MF285_mask_EDIT.nii.gz",
+   "counted": true,
+   "mm": 0.25,
+   "label_kind": "author_final_edit",
+   "label_md5": "8e80a494b8f1c493d9b68e833fa8fa15"
+  },
+  {
+   "id": "MF285_t2",
+   "subject": "MF285",
+   "modality": "t2",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF285/msme_denoised_las_echo.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF285/msme_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "094108c9afc1371b822aa4b99baaa607"
+  },
+  {
+   "id": "MF285_t2d",
+   "subject": "MF285",
+   "modality": "t2d",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF285/msme_echo_denoised_debiased.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF285/msme_brain_mask.nii.gz",
+   "counted": false,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "094108c9afc1371b822aa4b99baaa607"
+  },
+  {
+   "id": "MF285_b0m",
+   "subject": "MF285",
+   "modality": "b0m",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF285/microstructure/dwi_b0.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF285/microstructure/fracs_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "2acfde8cc11ba7df01a2bc3022f9bad3"
+  },
+  {
+   "id": "MF286_b0",
+   "subject": "MF286",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF286/dwi_b0.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/mri/masks_manual_edit_2026-09-30_v3/MF286/MF286_mask_EDIT.nii.gz",
+   "counted": true,
+   "mm": 0.25,
+   "label_kind": "author_final_edit",
+   "label_md5": "ba4c8aacdf249660279f8369a0ffd434"
+  },
+  {
+   "id": "MF286_t2",
+   "subject": "MF286",
+   "modality": "t2",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF286/msme_denoised_las_echo.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF286/msme_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "108a501b3be412f7fc04283c96bf1df7"
+  },
+  {
+   "id": "MF286_t2d",
+   "subject": "MF286",
+   "modality": "t2d",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF286/msme_echo_denoised_debiased.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF286/msme_brain_mask.nii.gz",
+   "counted": false,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "108a501b3be412f7fc04283c96bf1df7"
+  },
+  {
+   "id": "MF286_b0m",
+   "subject": "MF286",
+   "modality": "b0m",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF286/microstructure/dwi_b0.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF286/microstructure/fracs_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "3343a3c4116f08984d41047625f9b7f1"
+  },
+  {
+   "id": "MN276_t2",
+   "subject": "MN276",
+   "modality": "t2",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MN276/msme_denoised_las_echo.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MN276/msme_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "a425c99eb26f7e12c22bb72cc5a46ec5"
+  },
+  {
+   "id": "MR243_b0",
+   "subject": "MR243",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR243/dwi_b0_las.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR243/dtifit_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.7,
+   "label_kind": "hand",
+   "label_md5": "9690e2905067f4a1fdd1cb5f688f2107"
+  },
+  {
+   "id": "MR249_b0",
+   "subject": "MR249",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR249/dwi_b0_las.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR249/dtifit_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.7,
+   "label_kind": "hand",
+   "label_md5": "fd04d95e1b637b050f926b253cfdd854"
+  },
+  {
+   "id": "MR250_b0",
+   "subject": "MR250",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR250/dwi_b0_las.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR250/dtifit_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.7,
+   "label_kind": "hand",
+   "label_md5": "3f49376de730d1b4d550c51f3b674103"
+  },
+  {
+   "id": "MR251_b0",
+   "subject": "MR251",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR251/dwi_b0_las.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR251/dtifit_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.7,
+   "label_kind": "hand",
+   "label_md5": "919a20883dcf4eb2c7b88932fe8413e6"
+  },
+  {
+   "id": "MR252_b0",
+   "subject": "MR252",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR252/dwi_b0_las.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR252/dtifit_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.7,
+   "label_kind": "hand",
+   "label_md5": "df87ff231faa83ddf5c607dc68369116"
+  },
+  {
+   "id": "MR253_b0",
+   "subject": "MR253",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR253/dwi_b0_las.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR253/dtifit_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.7,
+   "label_kind": "hand",
+   "label_md5": "8adf25420528634cf61254ccdfeb9365"
+  },
+  {
+   "id": "MR254_b0",
+   "subject": "MR254",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR254/dwi_b0_las.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/sub-MR254/mri/MR254_mri_mask_native.nii.gz",
+   "counted": true,
+   "mm": 0.7,
+   "label_kind": "author_round2_edit",
+   "label_md5": "0616bf69bce0cf2bf79e10c45ccac223"
+  },
+  {
+   "id": "MR256_b0",
+   "subject": "MR256",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR256/dwi_b0_las.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR256/dtifit_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.7,
+   "label_kind": "hand",
+   "label_md5": "821a9753a4075dba049349c7e287bfcb"
+  },
+  {
+   "id": "MR257_b0",
+   "subject": "MR257",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR257/dwi_b0_las.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/sub-MR257/mri/MR257_mri_mask_native.nii.gz",
+   "counted": true,
+   "mm": 0.7,
+   "label_kind": "author_round2_edit",
+   "label_md5": "da54e3999969966b4de79db26f34c10d"
+  },
+  {
+   "id": "MR259_b0",
+   "subject": "MR259",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR259/dwi_b0_reoriented.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR259/dtifit_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.7,
+   "label_kind": "hand",
+   "label_md5": "230de0cb09babc830800c4979d4353df"
+  },
+  {
+   "id": "MR261_b0",
+   "subject": "MR261",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR261/dwi_b0_las.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR261/dtifit_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.7,
+   "label_kind": "hand",
+   "label_md5": "e65aec81536dcec7edd8987e7341d0ec"
+  },
+  {
+   "id": "MR292_b0",
+   "subject": "MR292",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR292/dwi_b0_reoriented.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR292/dtifit_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "4592b3e2955a7f44b303c4c55766fbb4"
+  },
+  {
+   "id": "MR292_t2",
+   "subject": "MR292",
+   "modality": "t2",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR292/msme_denoised_las_echo_reoriented.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR292/msme_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "6f0f524021463f11e69c16ee3fc11fa2"
+  },
+  {
+   "id": "MR293_b0",
+   "subject": "MR293",
+   "modality": "b0",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR293/dwi_b0_reoriented.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR293/dtifit_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "09b4cd3226161006c81c07c6ec684388"
+  },
+  {
+   "id": "MR293_t2",
+   "subject": "MR293",
+   "modality": "t2",
+   "image": [
+    "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR293/msme_denoised_las_echo_reoriented.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR293/msme_brain_mask.nii.gz",
+   "counted": true,
+   "mm": 0.5,
+   "label_kind": "hand",
+   "label_md5": "64e1e239a29e2fc5b4fb09846b7da0ee"
+  }
+ ],
+ "target_spacing": [
+  0.5,
+  0.5,
+  0.5
+ ],
+ "record_runs": {
+  "0": {
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "hours": 2.09
+  },
+  "1": {
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "hours": 1.94
+  },
+  "2": {
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "hours": 2.02
+  },
+  "3": {
+   "gpu": "NVIDIA RTX 4000 Ada Generation",
+   "hours": 4.77
+  },
+  "4": {
+   "gpu": "NVIDIA RTX A4000",
+   "hours": 4.98
+  },
+  "all": {
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "hours": 2.08
+  }
+ }
+}

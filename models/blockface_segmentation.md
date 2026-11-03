@@ -4,7 +4,7 @@ Three nnU-Net v2 networks (nnU-Net 2.5.1) segment the blockface photographs and 
 (paper: Methods, "Blockface reconstruction", steps 1, 4 and 6). The paper's Data and Code Availability promises their weights.
 
 **The weights are not in git.**
-- Place the three nnU-Net results folders under `$LINC_MODELS/nnUNet_results/`.
+- Put the three nnU-Net results folders under `$LINC_MODELS/nnUNet_results/`.
 - Check them with `python models/verify_weights.py models/blockface_segmentation.sha256`.
 - Download location: with the data release.
 
@@ -24,7 +24,7 @@ In the pipeline, every automatic mask is only a starting point: a hand-corrected
   It was used unchanged (paper: Supplementary S1.1).
 - **Accuracy.**
   - Dice against the hand-curated masks of 14 brains: mean of the per-brain medians 0.974 (SD 0.015), lowest brain 0.923.
-  - Record: `s1_segmentation_r057.json` `mask2d` (`reproduce/numbers/s1_segmentation_r057.py`, which carries the model-card record
+  - Record: `s1_segmentation_r057.json` `mask2d` (`reproduce/numbers/s1_segmentation_r057.py`, which holds the model-card record
     `bf_models_card.json` `mask2d` of the analysis project).
   - These scores are **not cross-validated**: the curated masks were corrected from this network's own output.
 - **Files.** `fold_{0..4}/checkpoint_final.pth` (453 MB each; the pipeline loads fold 0 only), `plans.json`, `dataset.json`,
@@ -61,6 +61,6 @@ In the pipeline, every automatic mask is only a starting point: a hand-corrected
 ## Provenance
 
 - The numbers above are the paper's record `s1_segmentation_r057.json` (Supplementary S1.1; `reproduce/numbers/s1_segmentation_r057.py`
-  recomputes it: training sets and rounds from the networks' files, accuracy carried from the analysis project's model-card record
+  recomputes it: training sets and rounds from the networks' files, accuracy taken from the analysis project's model-card record
   `bf_models_card.json`, written by `code/bf_models_card.py`) and each network's own `dataset.json` and `plans.json`.
 - Checksums: `models/blockface_segmentation.sha256` (sha256 of the files as used for the paper, 21 Oct 2026).

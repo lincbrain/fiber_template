@@ -1,17 +1,24 @@
 """The external tools of the blockface reconstruction, each behind a small wrapper that checks its version first.
 
-  linc-segment          `cli/linc-segment predict` (linc/segment, env/deep.yml): the models wrap-up's networks (models/
-                        segmentation.md; weights under $LINC_MODELS/segment/<task>), `segmentation.engine.<task>: linc_segment`
-  nnU-Net v2 2.5.1      `nnUNetv2_predict`, `nnUNetv2_apply_postprocessing` (the three networks the paper's masks of record were made
-                        with: models/blockface_segmentation.md; weights under $LINC_MODELS/nnUNet_results), `segmentation.engine.<task>: nnunet`
-  TIRL 3.6.2 (or 3.6.3) `tirl linc.h2b` (script package tirlscripts-mgh-linc 1.0.1): the camera-jump registrations; the
-                        reconstruction also imports `tirl` to read them back (linc/blockface/jumps.py)
-  nifti-zarr 1.0.0rc6   `zarr2nii`: the stage-3 exports
+You need
+  linc-segment          `cli/linc-segment predict` (linc/segment), run with env/deep.yml's Python (it has torch) named by
+                        LINC_SEGMENT_PYTHON; weights under $LINC_MODELS/segment/<task> (models/segmentation.md). The engine of all
+                        three masks (configs/blockface.yaml `segmentation.engine`)
+  nnU-Net v2 2.5.1      only for the engine `nnunet`: the networks the paper's masks of record were made with
+                        (models/blockface_segmentation.md; weights under $LINC_MODELS/nnUNet_results)
+  TIRL 3.6.3 (or 3.6.2) with tirlscripts-mgh-linc 1.0.1 (env/tirl.yml): the camera-jump registrations; the reconstruction also
+                        imports `tirl` to read them back (jumps.py)
+  nifti-zarr 1.0.0rc6   zarr2nii, nii2zarr (env/tirl.yml)
+  Each tool is taken from the folder its variable names (NNUNET_BIN, TIRL_BIN, ZARR2NII_BIN), else beside the running Python, else
+  from PATH (beside the Python comes first because FSL puts its own older `tirl` on PATH).
+What it does
+  segment, predict_2d, predict_3d   the mask networks
+  tirl_h2b                          one camera-jump registration (`linc.h2b`, run by path: tirl_script)
+  check_tirl_import                 tirl importable here, at the same version
+  zarr2nii, nii2zarr                the conversions
+You get
+  each tool's outputs where the caller asks; a RuntimeError naming the tool when it is missing or at another version.
 
-Each tool is found on PATH, or through an environment variable naming its bin folder (NNUNET_BIN, TIRL_BIN, ZARR2NII_BIN), so
-they can live in separate environments (as they did for the paper; zarr2nii is now in env/tirl.yml, on PATH there, and
-ZARR2NII_BIN is needed only to point at another installation); linc-segment runs with the Python named by LINC_SEGMENT_PYTHON
-(env/deep.yml's, which has torch; the reconstruction's environment needs none). The version is read from the Python next to the tool.
 The commands are those of the analysis project's code/run.py (`_nnunet`, `_nnunet3d`, `_export`) and code/recon.py (`tirl_jumps`).
 """
 import os

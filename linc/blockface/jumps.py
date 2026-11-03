@@ -1,15 +1,20 @@
-"""Step 2: the camera jumps. Each listed jump (before, after) is corrected by a 2D TIRL registration of the masked frames on
-either side of it (rotation -> rigid -> affine; configs/tirl/camera_jumps.yml), and every section up to the jump is resampled
-through the composed transforms, so the sub-stack lines up with the rest (Methods, "Blockface reconstruction", second step).
+"""Step 2: the camera jumps. The camera moved between some photographs; each such jump is corrected so the whole stack lines up
+(Methods, "Blockface reconstruction", second step).
 
-    cut_jumps        raw stack      -> _work/camera_jumps/*.png  (masked, upright frames: TIRL input)
-    tirl_jumps       camera_jumps   -> _work/tirl_jumps/SLICE_*/ (one registration per jump)
-    register_jumps   the composed transforms applied to the raw (linear) and mask (nearest) stacks, in place
-
-Not idempotent: re-stack (photos.stack_blockface / stack_masks) to reset.
+You need
+  the raw and mask stacks (_work/blockface_raw.ome.zarr, _work/brainmask.ome.zarr, photos.py), the jumps listed by hand
+  (configs/subjects/<ID>.yaml `jumps`: before, after) and TIRL (external.py).
+What it does
+  Each jump is corrected by a 2D TIRL registration of the masked frames on either side of it (rotation, rigid, affine;
+  configs/tirl/camera_jumps.yml), and every section up to the jump is resampled through the composed transforms, so the sub-stack
+  lines up with the rest.
+    cut_jumps        the raw stack     -> _work/camera_jumps/*.png (masked, upright frames: TIRL's input)
+    tirl_jumps       camera_jumps      -> _work/tirl_jumps/SLICE_*/ (one registration per jump)
+    register_jumps   the composed transforms applied to the raw (linear) and mask (nearest) stacks
+You get
+  the two stacks corrected in place. Not idempotent: re-stack (photos.stack_blockface, stack_masks) to start again.
 
 Ported unchanged from the analysis project's code/recon.py: the affine mode, the one every listed jump of the paper's brains used.
-The translation and rigid modes (MF8, before its photographs were aligned to an external series instead) are not part of the release.
 """
 import copy
 import os

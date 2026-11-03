@@ -1,18 +1,23 @@
-"""Histology -> blockface registration per piece (paper Methods, "Histology registration and label propagation").
+"""Histology to blockface registration, one component at a time (Methods, "Histology registration and label propagation").
 
-    tissue_masks   each JPEG 2000 section (green band, low resolution) -> Otsu tissue mask per piece  -> <masks>/<section>_<tag>.png
-    moving_images  blue band masked by the piece's tissue mask, scaled into the blockface piece's box -> <moving>/<piece>.png
-    fixed_images   blockface piece, contrast x1.6, grayscale                                         -> <fixed>/<piece>.png
-    run_tirl       TIRL 3.6.2 `tirl linc.h2b` (by the script's path) per piece (rotation -> rigid -> affine -> nonlinear)   -> <tirl>/<piece>/
-    registered_rgb the fitted TIRL chain applied to all three JPEG 2000 bands                        -> <tirl>/<piece>/moving4_nonlinear_rgb.png
-
-The moving and fixed images share the blockface piece's pixel grid, so TIRL registers them at one fixed pixel size
-(configs/histology.yaml tirl.resolution_mm). Piece tags: 0000 whole, 0001 left, 0002 right, 0003 cerebellum.
-TIRL is an external program; run_tirl checks its version first. registered_rgb imports tirl, so it runs under the TIRL
-environment's Python (one subprocess per piece: TIRL 3.6.2's evaluate can corrupt the heap).
+You need
+  the histology sections (JPEG 2000), the blockface components (pieces.cut_pieces) and TIRL 3.6.3 or 3.6.2 (the registration
+  library; env/tirl.yml); parameters: configs/histology.yaml.
+What it does
+    tissue_masks    each section (green band, low resolution) -> an Otsu tissue mask per component
+    moving_images   the blue band masked by the component's tissue mask, scaled into the blockface component's box
+    fixed_images    the blockface component, contrast x1.6, grayscale
+    run_tirl        `linc.h2b` (run by the script's path) per component: rotation, rigid, affine, nonlinear
+    registered_rgb  the fitted TIRL transforms applied to all three JPEG 2000 bands
+  The moving and fixed images share the blockface component's pixel grid, so TIRL registers them at one pixel size
+  (configs/histology.yaml tirl.resolution_mm). run_tirl checks TIRL's version first; registered_rgb imports tirl, so it runs under
+  the TIRL environment's Python, one process per component (TIRL's evaluate can corrupt the heap).
+You get
+  <masks>/<section>_<tag>.png, <moving>/<component>.png, <fixed>/<component>.png, <tirl>/<component>/ (the transforms and the
+  registered images) and <tirl>/<component>/moving4_nonlinear_rgb.png. Tags: 0000 whole, 0001 left, 0002 right, 0003 cerebellum.
 
 Ported from the analysis project's code/register.py (histo_masks, histo_moving, bf_fixed, tirl_h2b), labels/histo_masks_par.py,
-labels/tirl_worker.py and labels/histo_rgb.py, the path of the products of record.
+labels/tirl_worker.py and labels/histo_rgb.py, the code of the products of record.
 """
 import copy
 import json

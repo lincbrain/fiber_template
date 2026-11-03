@@ -1,8 +1,9 @@
 """The MMORF configuration of the blockface template's construction: one .ini per nonlinear step, written by `step_ini` from a
 resolution ladder (knot spacing, bending-energy weights, Gaussian smoothing per level), with each modality's smoothing floored at its
-own measured bandwidth (`fwhm_floor_mm`). Two ladders: 7 steps / 8 levels for the 0.5 mm plan-A build (knots 16, 16, 16, 8, 4, 2, 1,
-0.5 mm; the finest = 1 voxel) and 8 steps / 9 levels for the 0.25 mm step 8 (the MRI recipe's: down to 0.25 mm). The callers set the
-ladder (`set_ladder`) and the modality table (MODALITIES, NATIVE_MM) before writing the configs (linc/construction/blockface_build.py).
+own measured bandwidth (`fwhm_floor_mm`). The ladders are read from configs/blockface_template.yaml (mmorf.ladders); the record's two:
+7 steps / 8 levels for the plan-A build (knots 16, 16, 16, 8, 4, 2, 1, 0.5 mm) and 8 steps / 9 levels for step 8 (down to 0.25 mm). The
+callers set the ladder (`set_ladder`) and the modality table (MODALITIES, NATIVE_MM) before writing the configs
+(linc/construction/blockface_build.py).
 
 Ported unchanged from the analysis project: mri/code/build_template_run.py (`step_ini`, `fwhm_floor_mm`, the constants they read;
 The MRI port, linc/construction/mmorf_run.py, writes the MRI runs without the smoothing floor, which the blockface build applies) and
@@ -11,11 +12,15 @@ bftemplate/build_bf_run.py (`LADDERS`, `set_ladder`, `link_or_copy`).
 import errno
 import os
 import shutil
+from pathlib import Path
 
-WARP_RES_INIT = 16
-SCALING  = ["1", "1", "1"] + ["2"] * 6
-LAMBDA   = ["4.0e5", "3.7e-1", "3.1e-1", "2.6e-1", "2.2e-1", "1.8e-1", "1.5e-1", "1.2e-1", "1.0e-1"]
-FWHM     = ["4.0", "2.0", "1.0", "0.5", "0.25", "0.125", "0.0625", "0.05", "0.05"]
+import yaml
+
+# the ladders come from configs/blockface_template.yaml (mmorf.ladders, mmorf.warp_res_init_mm): the build reads its parameters from the
+# configuration; set_ladder(n) selects one before the configs are written
+_CFG = yaml.safe_load((Path(__file__).resolve().parents[2] / "configs" / "blockface_template.yaml").read_text())["mmorf"]
+WARP_RES_INIT = _CFG["warp_res_init_mm"]
+SCALING, LAMBDA, FWHM = (list(_CFG["ladders"][max(_CFG["ladders"])][k]) for k in ("warp_scaling", "lambda_reg", "fwhm_mm"))
 
 NATIVE_MM = {}                    # per-modality native resolution (mm), set by the caller
 MODALITIES = {}                   # per-modality {brain, mask, quant}, set by the caller
@@ -117,14 +122,9 @@ ext_txt=.txt
 """
 
 
-LADDERS = {
-    7: dict(N_STEPS=7, WARP_RES_INIT=16, SCALING=["1", "1", "1"] + ["2"] * 5,
-            LAMBDA=["4.0e5", "3.7e-1", "3.1e-1", "2.6e-1", "2.2e-1", "1.8e-1", "1.5e-1", "1.2e-1"],
-            FWHM=["4.0", "2.0", "1.0", "0.5", "0.25", "0.125", "0.0625", "0.05"]),
-    8: dict(N_STEPS=8, WARP_RES_INIT=16, SCALING=["1", "1", "1"] + ["2"] * 6,
-            LAMBDA=["4.0e5", "3.7e-1", "3.1e-1", "2.6e-1", "2.2e-1", "1.8e-1", "1.5e-1", "1.2e-1", "1.0e-1"],
-            FWHM=["4.0", "2.0", "1.0", "0.5", "0.25", "0.125", "0.0625", "0.05", "0.05"]),
-}
+LADDERS = {int(n): dict(N_STEPS=int(n), WARP_RES_INIT=_CFG["warp_res_init_mm"], SCALING=list(v["warp_scaling"]),
+                       LAMBDA=list(v["lambda_reg"]), FWHM=list(v["fwhm_mm"]))
+           for n, v in _CFG["ladders"].items()}
 
 
 def link_or_copy(src, dst):

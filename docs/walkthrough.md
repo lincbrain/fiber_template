@@ -1,14 +1,14 @@
 # Walkthrough: three brains of the paper
 
-This page runs the pipeline on brains of the paper, one for each route, with the commands exactly as they ran from a fresh
+This page runs the pipeline on brains of the paper, one for each way through the pipeline, with the commands exactly as they ran from a fresh
 clone. Each step's results can be compared with the paper's own. The times are from one cluster node with an NVIDIA RTX 6000 Ada
 GPU, shared with other jobs.
 
-| Brain | Files | Route |
+| Brain | Files | What it shows |
 |---|---|---|
 | MF1 | `sub-MF283` | the preparation of a brain's MRI |
-| MM2 | `sub-MR252` | the MRI-based route: reconstruction, registration to its own MRI and to the MRI template, completion, histology, labels |
-| MF8 | `sub-MF191` | a brain without MRI: the cross-modal alignment, completion with a stand-in b0, histology |
+| MM2 | `sub-MR252` | the MRI-based alignment: reconstruction, registration to its own MRI and to the MRI template, synthesis, histology, labels |
+| MF8 | `sub-MF191` | a brain without MRI: the cross-modal alignment, synthesis from a stand-in b0, histology |
 | MM14 | `sub-MR263` | the reconstruction of a brain without MRI |
 
 ## Before you start
@@ -151,15 +151,15 @@ $PY_DEEP cli/linc-complete --brain $LINC_WORK/prepared/MF191 --stand-in --out $L
 About 40 s, then 27 s. Keep the single quotes: `{mri}` stands for `$LINC_DATA/sub-<ID>/mri`, `{nonlin}` for the `--nonlin` folder and
 `{ID}` for the brain, and the command fills them in.
 
-Each brain's results are in `$LINC_WORK/complete/<ID>/`: the completed volume (`<ID>_bf_completed.nii.gz`, and `_rgb` in color), the
+Each brain's results are in `$LINC_WORK/complete/<ID>/`: the volume with its synthesized tissue (`<ID>_bf_completed.nii.gz`, and `_rgb` in color), the
 synthesized and the photographed parts (`_bf_synth`, `_bf_real`), the junction (`_seam_ramp`, `_seam_depth`), the photographed
 fraction of each voxel (`_photo_fraction`), the synthesized mask, the b0 used, the color model (`<ID>_chroma.json`) and the
-provenance. Every completed volume of both brains is identical, voxel for voxel, to the volumes the paper used.
+provenance. Every output volume of both brains is identical, voxel for voxel, to the volumes the paper used.
 
 ## 5. Register the histology (MM2, MF8)
 
-Each section of histology is matched to its blockface photograph, cut into its pieces (the hemispheres, the cerebellum with the
-brainstem), masked, and registered to the photograph with TIRL:
+Each section of histology is matched to its blockface photograph, divided into its components (the hemispheres, the cerebellum
+with the brainstem), masked, and registered to the photograph with TIRL:
 
 ```bash
 $PY_TIRL cli/linc-histology all --subject MR252 --store $LINC_DATA/sub-MR252/blockface/MR252_blockface.ome.zarr \
@@ -170,18 +170,18 @@ $PY_TIRL cli/linc-histology all --subject MR252 --store $LINC_DATA/sub-MR252/blo
 
 For MF8, the same command with `MF191` in place of `MR252` and the match table `num_MF191.txt`.
 
-It prints each step as it starts and ends (`match`, `pieces`, `masks`, `prepare`, `register`, `rgb`), one line per piece while it
-registers, and at the end, for MM2, `TIRL histology -> blockface: 47 ok, 0 failed`. On a shared 48-core node, MM2's 47 pieces took
+It prints each step as it starts and ends (`match`, `pieces`, `masks`, `prepare`, `register`, `rgb`), one line per component while it
+registers, and at the end, for MM2, `TIRL histology -> blockface: 47 ok, 0 failed`. On a shared 48-core node, MM2's 47 components took
 about 40 minutes for the masks, 6 minutes to prepare, 80 minutes to register two at a time and 5 minutes for the color images:
-about 2 hours 10 minutes in all. MF8's 58 pieces took about 45, 5, 75 and 7 minutes. Each piece uses 12 threads, so `--jobs 2` needs 24 cores, and the masks about 12 GB of memory per job. The
+about 2 hours 10 minutes in all. MF8's 58 components took about 45, 5, 75 and 7 minutes. Each component uses 12 threads, so `--jobs 2` needs 24 cores, and the masks about 12 GB of memory per job. The
 thread count is what makes the result reproducible: run with 12 threads, as the paper did.
 
 A run that stops resumes from its failed step, keeping the earlier steps' outputs: `$PY_TIRL cli/linc-histology register` with the
 same arguments, then `rgb`. The pipeline always uses the TIRL of its environment, even where FSL, which brings an older TIRL of its own, is set up; to call
 TIRL yourself, use `$(dirname $PY_TIRL)/tirl`.
 
-The results are in `$LINC_DATA/sub-<ID>/histology/registration/`: the matched sections, the pieces and their tissue masks, and per
-piece in `tirl/<piece>/` the registered section (`moving4_nonlinear.png`, in color `moving4_nonlinear_rgb.png`) and TIRL's final
+The results are in `$LINC_DATA/sub-<ID>/histology/registration/`: the matched sections, the components and their tissue masks,
+and per component in `tirl/<piece>/` the registered section (`moving4_nonlinear.png`, in color `moving4_nonlinear_rgb.png`) and TIRL's final
 transform (`fixed4_nonlinear.timg`).
 
 Compare MM2's registered sections with the paper's:
@@ -193,23 +193,23 @@ for p in $(ls $LINC_DATA/sub-MR252/histology/registration/tirl); do
 done
 ```
 
-All 47 of MM2's pieces were identical, byte for byte, at every stage.
+All 47 of MM2's components were identical, byte for byte, at every stage.
 
 For MF8, the paper's registration divided its sections with an earlier regions volume, made before MF8's section step was corrected.
 That volume ships as the product `hidden_arm_regions` (`configs/products_blockface.yaml`). Run with it, at the spacing it was made at,
-all 58 of MF8's pieces are identical to the paper's, byte for byte:
+all 58 of MF8's components are identical to the paper's, byte for byte:
 
 ```bash
 $PY_TIRL cli/linc-histology all --subject MF191 <the other arguments, as for MM2> \
     --regions <the hidden_arm_regions file> --regions-spacing-um 23.75 600
 ```
 
-This took 18 minutes for the masks, 5 minutes to prepare and 27 minutes to register the 31 pieces it divides, two at a time.
+This took 18 minutes for the masks, 5 minutes to prepare and 27 minutes to register the 31 components it divides, two at a time.
 
-## 6. Carry the labels into the template (MM2)
+## 6. Transform the labels into the template (MM2)
 
 Three steps, each with the Python of its environment: the labels go through each section's registration onto the blockface, are
-interpolated between the sections, and are carried into the template.
+interpolated between the sections, and are transformed into the template.
 
 ```bash
 $PY_TIRL cli/linc-labels push        --subject MR252
@@ -221,4 +221,4 @@ $PY      cli/linc-labels carry       --subject MR252 \
 About 3 minutes, half an hour and 3 minutes. `carry`, as written, goes through the paper's registrations of MM2 (`xfm_record/`);
 without `--entry` it goes through your own, from section 3 (`xfm/`). The interpolation writes the interpolated labels under
 `$LINC_DATA/sub-MR252/labels/blockface/tracer/`. Each step reproduces the paper's labels: the pushed sections and the interpolated
-labels byte for byte, and the carried densities in the template identical.
+labels byte for byte, and the densities in the template identical.

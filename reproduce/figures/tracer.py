@@ -76,9 +76,12 @@ def load(p):
     return np.asanyarray(nib.load(str(p)).dataobj)
 
 
+PALETTE = None                                                               # the rules figure (S4) sets the tracer palette (figstyle.TRACER)
+
+
 def color(S):
     import matplotlib.colors as mc
-    return tuple(mc.to_rgb(FS.brain_color(S)))
+    return tuple(mc.to_rgb(PALETTE[S] if PALETTE else FS.brain_color(S)))
 
 
 def tint(c, w=0.5):
@@ -203,6 +206,8 @@ def main(argv=None):
     ap.add_argument("--out", default=None, help="default figures/tracer.png (main) or figures/s_tracer_rules.png (rules)")
     a = ap.parse_args(argv)
     out_png = a.out or ("figures/tracer.png" if a.figure == "main" else "figures/s_tracer_rules.png")
+    global PALETTE
+    PALETTE = FS.TRACER if a.figure == "rules" else None          # S4 in the tracer cases' colors; the 30 Oct main figure keeps its own
     Path(out_png).parent.mkdir(parents=True, exist_ok=True)
     cmd = " ".join(["reproduce/figures/tracer.py"] + (argv if argv is not None else sys.argv[1:]))
     CASES = ALL_CASES

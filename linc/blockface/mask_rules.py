@@ -1,14 +1,17 @@
-"""The post-processing rules of the blockface masks, as pure numpy / scipy functions (no zarr, no torch), so both engines and the tests
-share one copy.
+"""The post-processing rules of the blockface masks, as plain numpy / scipy functions, so both engines and the tests share one copy.
 
+You need
+  a predicted mask (a boolean array).
+What it does
     fill_photo_mask   step 1: a photograph's brain mask with its interior holes filled (photos.normalize_masks)
     largest_cc_fill   step 4: the largest 26-connected component of the 3D brain mask, interior holes filled (segment3d.post_mask)
-    tube_rule         step 6: marker tubes kept left of the brain's x-centroid + a tolerance, clamped to the brain, components
-                      smaller than min_vox dropped (segment3d.post_holes)
-
-They are the rules the paper's masks were made with (the analysis project's code/tasks.py normalize_masks and code/segment.py), and
-each linc-segment model's spec.json carries the same rule for use outside the pipeline (tests/test_blockface_rules.py checks that they
-agree). Within linc-reconstruct a rule is applied once, here, whichever engine predicted the mask.
+    tube_rule         step 6: marker tubes kept left of the brain's x-centroid + a tolerance, inside the brain, components smaller
+                      than min_vox dropped (segment3d.post_holes)
+  These are the rules the paper's masks were made with (the analysis project's code/tasks.py normalize_masks and code/segment.py).
+  Within linc-reconstruct each is applied once, here, whichever engine predicted the mask; each linc-segment model's spec.json
+  holds the same rule for use outside the pipeline (tests/test_blockface_rules.py checks that they agree).
+You get
+  the post-processed mask (the same shape).
 """
 import numpy as np
 from scipy import ndimage as ndi

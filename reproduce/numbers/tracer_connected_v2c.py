@@ -1,21 +1,22 @@
 #!/usr/bin/env python3
-"""One connected pathway per tracer case (paper: Results, tracer labels; Fig. 9; Supplementary S2): the interpolated bundle label of each
-case joined into a single piece, the joins marked as inferred.
+"""Join each tracer case's bundle label into one connected pathway, marking the joins as inferred (Fig. 10; Supplementary S2).
 
-Inputs (products_mri `tracer_template_v2`): <S>/<S>_Bundles_mri-template_density.nii.gz (the carried density of the interpolated bundle
-label, 0-1 on the 0.25 mm template grid) and <S>_Bundles_mri-template_solid2.nii.gz (its connected solid: density > 0.5 grown through
-connected voxels of density >= 0.25); the template brain mask and white matter (template_mri: linc_mri_brainmask, linc_mri_wm_fa025).
-Rule: the 26-connected pieces of the connected solid, largest first; every other piece is attached to the pathway along the cheapest
-path inside the template brain mask (voxel cost 1 / (density + EPS), halved in white matter and inside the footprint, density >= 0.1;
-6-connected graph; multi-source Dijkstra from the current pathway, the cheapest piece first, so chains of pieces connect through each
-other), the path dilated to a tube of TUBE_R voxels; pieces smaller than MIN_VOX voxels are dropped (listed), no piece is dropped for
-distance; every join is recorded with its length and voxel count and flagged when longer than LONG_MM. Join voxels that were not in
-the solid are inferred: label 2 in the written label (1 = the solid).
-Outputs: $LINC_WORK/tracer_v2c/<S>/<S>_Bundles_mri-template_{connected,solid_v2c,bridges}.nii.gz (what the released labels
-`tracer_template_v2c` hold) and $LINC_NUMBERS/tracer_connected_v2c.json (per case: the solid's pieces and largest share, every join,
-the dropped specks, the inferred voxels and share, the longest join).
+You need (configs/products_mri.yaml)
+  tracer_template_v2: each case's interpolated bundle density and its connected solid in the template; template_mri: the brain mask
+  and the white matter (FA > 0.25).
+
+What it does, per case
+  1. splits the connected solid into its pieces and keeps the largest as the pathway;
+  2. attaches every other piece along the cheapest path inside the brain (cheap where the density is high, cheaper in white matter),
+     the cheapest piece first, the path widened to a 1 mm tube; drops only specks smaller than 8 voxels;
+  3. marks the join voxels that were not in the solid as inferred.
+
+You get
+  $LINC_WORK/tracer_v2c/<ID>/<ID>_Bundles_mri-template_connected.nii.gz (uint8: 1 = charted, 2 = inferred), _solid_v2c.nii.gz
+  (the pathway, 0/1), _bridges.nii.gz (each join's piece number), <ID>_connect_v2c.json; and $LINC_NUMBERS/tracer_connected_v2c.json
+  (per case: the pieces, every join with its length, the inferred share, the longest join)
+
     python reproduce/numbers/tracer_connected_v2c.py [--cases MR243 ...]
-Ported from the analysis project's labels/tracer_v2/connect_v2c.py (3 Nov 2026), unchanged numerically.
 """
 import argparse
 import json
@@ -37,6 +38,21 @@ CASES = {"MR243": "MM1", "MR252": "MM2", "MR256": "MM3", "MF191": "MF8"}
 GROUP = "Bundles"
 VOX, EPS, LONG_MM, MIN_VOX, TUBE_R, PAD = 0.25, 0.05, 10.0, 8, 2, 40
 S26 = np.ones((3, 3, 3), bool)
+# the record's method text, fixed (it was this script's docstring when the record was made; the docstring may change)
+METHOD = [
+    'One connected pathway per tracer case (paper: Results, tracer labels; Fig. 9; Supplementary S2): the interpolated bundle label of each',
+    'case joined into a single piece, the joins marked as inferred.',
+    '',
+    'Inputs (products_mri `tracer_template_v2`): <S>/<S>_Bundles_mri-template_density.nii.gz (the carried density of the interpolated bundle',
+    'label, 0-1 on the 0.25 mm template grid) and <S>_Bundles_mri-template_solid2.nii.gz (its connected solid: density > 0.5 grown through',
+    'connected voxels of density >= 0.25); the template brain mask and white matter (template_mri: linc_mri_brainmask, linc_mri_wm_fa025).',
+    'Rule: the 26-connected pieces of the connected solid, largest first; every other piece is attached to the pathway along the cheapest',
+    'path inside the template brain mask (voxel cost 1 / (density + EPS), halved in white matter and inside the footprint, density >= 0.1;',
+    '6-connected graph; multi-source Dijkstra from the current pathway, the cheapest piece first, so chains of pieces connect through each',
+    'other), the path dilated to a tube of TUBE_R voxels; pieces smaller than MIN_VOX voxels are dropped (listed), no piece is dropped for',
+    'distance; every join is recorded with its length and voxel count and flagged when longer than LONG_MM. Join voxels that were not in',
+    'the solid are inferred: label 2 in the written label (1 = the solid).',
+]
 
 
 def load(p):
@@ -139,7 +155,7 @@ def main():
     ap.add_argument("--cases", nargs="+", default=list(CASES)); ap.add_argument("--labels", default="tracer_template_v2", help="products_mri key of the interpolated labels")
     a = ap.parse_args()
     P = paths.products("products_mri"); lab_dir, tpl = P[a.labels], P["template_mri"]; out_dir = paths.work_root() / "tracer_v2c"
-    rec = dict(method=__doc__.split("Outputs:")[0].strip().split("\n"), cases={}); inputs = []
+    rec = dict(method=METHOD, cases={}); inputs = []
     for S in a.cases:
         rec["cases"][S] = connect(S, lab_dir, tpl, out_dir)
         inputs += [lab_dir / S / f"{S}_{GROUP}_mri-template_density.nii.gz", lab_dir / S / f"{S}_{GROUP}_mri-template_solid2.nii.gz"]

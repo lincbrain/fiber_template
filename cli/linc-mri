@@ -1,32 +1,29 @@
 #!/usr/bin/env python3
-"""Prepare a new brain's MRI for the template (the step before `linc-register mri --place-b0`).
+"""Prepare a new brain's MRI for registration to the template.
 
-    linc-mri prep --subject <ID> --image <b0 or T2-weighted NIfTI> [--modality b0|t2] [--mask MASK] [--volume N] [--denoise] [--no-n4]
-                  [--mri-root DIR] [--device cuda]
+You need
+  one MRI image of the brain as NIfTI: a b0 (or a T2-weighted image with --modality t2), 3-D or a 4-D series (--volume N picks one);
+  optionally its brain mask on the same grid (--mask; else the MRI brain-mask network under $LINC_MODELS makes one);
+  ANTs (ANTSPATH) for N4; for the network, $LINC_SEGMENT_PYTHON (env/deep.yml) and, by default, a GPU.
 
-From one NIfTI (3-D, or a 4-D series of which --volume N is taken, default 0) to the files the paper's brains have under
-$LINC_DATA/sub-<ID>/mri/ (configs/mri_construction.yaml `prep.layout`), by the paper's preprocessing steps (linc/construction/
-mri_new_brain.py; Methods, "MRI preprocessing"):
-    stage      the volume under its own header (nothing is resampled; the registration resamples onto the template's 0.5 mm frame)
-    denoise    optional (--denoise): ANTs DenoiseImage, Rician. The paper's images were denoised upstream, so this is off by default.
-    mask       --mask MASK (on the image's grid, values 0/1), or else the MRI brain-mask network: linc-segment `mri_brainmask`
-               ($LINC_MODELS/segment/mri_brainmask, run with $LINC_SEGMENT_PYTHON = env/deep.yml's python; GPU by default;
-               --device cpu runs it on the CPU: 40 s for a 0.25 mm b0, 14 voxels different from the GPU's mask on MF283).
-               A mask is required; the network needs the weights of the data release.
-    N4         ANTs N4BiasFieldCorrection inside the mask, the recipe's parameters (--no-n4 to skip).
-    normalize  x mask, 1-99 percentile inside the mask rescaled to (0, 4095].
-External programs are optional except for the mask: a missing ANTs prints "not found, skipped" and the step is left out (recorded
-in the provenance). Versions are checked against the paper's (LINC_SKIP_VERSION_CHECK=1 to run with another ANTs).
+What it does
+  1. stages the image under its own header (nothing is resampled);
+  2. denoises it, only with --denoise (ANTs DenoiseImage; the paper's images were denoised by the scanner-side pipeline);
+  3. takes the given mask or predicts one;
+  4. corrects the intensity bias inside the mask (ANTs N4, the paper's parameters; --no-n4 skips it);
+  5. masks the image and rescales its 1-99 percentile range to (0, 4095].
 
-Outputs ($M = $LINC_DATA/sub-<ID>/mri, or --mri-root):
-    b0:  $M/dwi/b0.nii.gz, $M/masks/dwi_brain_mask.nii.gz (+ .json when the network made it), $M/dwi/b0_brain.nii.gz,
-         $M/dwi/b0_brain_n4.nii.gz (+ _bias), $M/dwi/b0_brain_n4.provenance.json
-    t2:  $M/t2/echo.nii.gz, $M/masks/t2_brain_mask.nii.gz, $M/t2/echo_n4.nii.gz (+ _bias), $M/t2/echo_n4_brain.nii.gz (+ .provenance.json)
-Then (printed at the end):
-    cli/linc-register mri --subject <ID> --place-b0 $M/dwi/b0_brain_n4.nii.gz $M/masks/dwi_brain_mask.nii.gz --new-brain
-For a T2-weighted image, give $M/t2/echo_n4_brain.nii.gz and $M/masks/t2_brain_mask.nii.gz there, and the template's T2 channel
-as --template-b0 of `linc-register mri-template`.
-Environment: env/linc.yml (python, nibabel, numpy, pyyaml); ANTSPATH (ANTs 2.5.4) for N4 and denoising; the mask network as above.
+You get, in $M = $LINC_DATA/sub-<ID>/mri (or --mri-root)
+  b0: $M/dwi/b0.nii.gz, $M/masks/dwi_brain_mask.nii.gz (+ .json when predicted), $M/dwi/b0_brain.nii.gz,
+      $M/dwi/b0_brain_n4.nii.gz (+ _bias) and $M/dwi/b0_brain_n4.provenance.json
+  t2: $M/t2/echo.nii.gz, $M/masks/t2_brain_mask.nii.gz, $M/t2/echo_n4.nii.gz (+ _bias), $M/t2/echo_n4_brain.nii.gz (+ .provenance.json)
+  and the next command, printed at the end:
+      cli/linc-register mri --subject <ID> --place-b0 $M/dwi/b0_brain_n4.nii.gz $M/masks/dwi_brain_mask.nii.gz --new-brain
+
+    linc-mri prep --subject <ID> --image <NIfTI> [--modality b0|t2] [--mask MASK] [--volume N] [--denoise] [--no-n4]
+                  [--mri-root DIR] [--device cuda|cpu]
+
+Environment: env/linc.yml. Code: linc/construction/mri_new_brain.py (paper: Methods, "MRI preprocessing").
 """
 import argparse
 import sys

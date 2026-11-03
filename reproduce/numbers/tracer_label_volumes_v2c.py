@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
-"""The tracer labels' volumes in the MRI template with the connected pathways (paper: Results, tracer labels; Supplementary S2):
-tracer_label_volumes_r058d.py on the interpolated labels of record (products_mri `tracer_template_v2`: the groups Bundles / Terminals /
-Injection_site carried as one label each, with their per-grade partition) and, for the bundles, the "connected" rule = the connected
-pathway (products_mri `tracer_template_v2c`, or the one tracer_connected_v2c.py regenerates under $LINC_WORK/tracer_v2c with
---connected-from work) with its inferred share from tracer_connected_v2c's per-case JSON.
-Differences from the r058d record, both recorded: groups.bundles / terminals are the carried density of the GROUP (not the union of
-the per-grade masks, kept beside as groups_union_of_grades); the rules are footprint (>= 0.1), solid (> 0.5) and connected.
--> $LINC_NUMBERS/tracer_label_volumes_v2c.json
+"""The tracer labels' volumes in the MRI template, including the connected pathways (Supplementary S2).
+
+You need (configs/products_mri.yaml)
+  tracer_template_v2: the interpolated labels (bundle, terminal-field and injection-site groups with their density classes);
+  tracer_template_v2c: the connected pathways (or --connected-from work: the ones tracer_connected_v2c.py writes in $LINC_WORK).
+
+What it does
+  measures every label's volume under three rules: footprint (density >= 0.1), solid (density > 0.5) and, for the bundles, the
+  connected pathway with its inferred share; groups are measured on the group's own density (the union of the classes is kept beside).
+
+You get
+  $LINC_NUMBERS/tracer_label_volumes_v2c.json
+
     python reproduce/numbers/tracer_label_volumes_v2c.py [--labels tracer_template_v2] [--connected-from products|work]
-Ported from the analysis project's labels/tracer_v2/label_volumes_v2c.py (a wrapper of the same shape over its r058 script).
 """
 import os
 import sys

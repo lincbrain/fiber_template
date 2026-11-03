@@ -1,16 +1,21 @@
-"""One sanity pass over reconstructed blockface volumes: is each oriented, consistent and sane? It checks what has actually gone wrong:
-
-  ORIENT   the store's slice axis must run anterior -> posterior (negative step, slice 0 frontal).
-  MIRROR   the isotropic grayscale volume must agree with its own brain mask in WORLD space (a stray A-P flip of one but not the
-           other is invisible in any single volume and ruins every registration that uses the grayscale).
-  CHIRAL   the drill holes are in the LEFT hemisphere, so their centroid must sit at NEGATIVE world x relative to the brain's.
-  SIZE     L-R and D-V extent against the cohort median (more than 18 % off is a voxel-size error, not a brain). A-P is not checked:
-           the brains are cut caudally by varying amounts.
-  ALIGN    the frame-to-frame brain-centroid step through the stack: what the camera-jump correction exists to deliver.
+"""A sanity check of reconstructed blockface volumes: is each one oriented, consistent and sane?
 
     python -m linc.blockface.sanity --data $LINC_DATA MR252 [...]
 
-Ported from the analysis project's code/qc_bf_sanity.py (the checks unchanged; the subject folder is an argument).
+You need
+  the reconstructions under <data>/sub-<ID>/blockface (<ID>_blockface.ome.zarr, <ID>_mask, <ID>_holes).
+What it does
+  ORIENT   the store's section axis must run anterior to posterior (negative step, section 0 frontal).
+  MIRROR   the grayscale volume must agree with its own brain mask in world space (an A-P flip of one but not the other cannot be
+           seen in either volume alone, and ruins every registration that uses the grayscale).
+  CHIRAL   the marker tubes are in the LEFT hemisphere, so their centroid must sit at negative world x relative to the brain's.
+  SIZE     the L-R and D-V extent against the cohort's median (more than 18 % off is a voxel-size error, not a brain); A-P is not
+           checked, since the brains were cut caudally by different amounts.
+  ALIGN    the brain-centroid step from section to section: what the camera-jump correction is there to deliver.
+You get
+  JSON on stdout: one row per brain with each check's numbers and its findings (empty when all pass), and the cohort medians.
+
+Ported from the analysis project's code/qc_bf_sanity.py (the checks unchanged; the data folder is an argument).
 """
 import argparse
 import json

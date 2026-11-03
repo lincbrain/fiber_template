@@ -1,5 +1,15 @@
 # Register histology to its blockface photographs
 
+**You need** the brain's blockface volume, its histology sections, its match table and its regions volume (`docs/inputs.md`).
+
+**What it does**
+1. matches each section to its photograph;
+2. divides each section into components (the hemispheres, the cerebellum and brainstem) by the regions volume;
+3. masks the components;
+4. registers each component to its photograph (TIRL).
+
+**You get**, under the `--out` folder: each component's registration, with the registered images.
+
 Environment: `env/tirl.yml`.
 
 
@@ -9,14 +19,14 @@ $PY_TIRL cli/linc-histology all --subject MR252 --store $LINC_DATA/sub-MR252/blo
     --out $LINC_DATA/sub-MR252/histology/registration --threads 12
 ```
 
-The steps run in order: match each section to its photograph, cut the pieces, mask them, then register them with TIRL. TIRL's
-result depends on the thread count; with 12 threads per piece (the default), the paper's registrations are reproduced exactly.
+The steps run in order: match each section to its photograph, divide it into components, mask them, then register them with TIRL. TIRL's
+result depends on the thread count; with 12 threads per component (the default), the paper's registrations are reproduced exactly.
 
 Two per-brain inputs are prepared before this step:
-- **The match table** maps each histology section to the blockface photograph of each of its pieces. It is made by hand, once
+- **The match table** maps each histology section to the blockface photograph of each of its components. It is made by hand, once
   per brain and series; its format is in `linc/histology/match.py`.
-- **The regions volume** (`<ID>_regions.nii.gz`: 1 left, 2 right, 3 cerebellum + brainstem, 4 marker tubes) gives the pieces the
-  sections were cut into. It is the atlas regions carried from the template into the brain's blockface volume.
+- **The regions volume** (`<ID>_regions.nii.gz`: 1 left, 2 right, 3 cerebellum + brainstem, 4 marker tubes) gives the components the
+  sections were cut into. It is the atlas regions transformed from the template into the brain's blockface volume.
   [`linc/histology/README.md`](../linc/histology/README.md) explains how the paper's volumes were made and how to make one for a new
   brain (then pass `--regions-frame current`).
 
@@ -25,4 +35,4 @@ Write the output to `$LINC_DATA/sub-<ID>/histology/registration`, as above: the 
 A regions volume made at another spacing than the brain's current one is given with that spacing, `--regions-spacing-um VX VZ`
 (in-plane and between sections, in µm). For MF8 (`sub-MF191`), the paper's registration used an earlier regions volume, made before
 its section step was corrected; it ships as the product `hidden_arm_regions` (`configs/products_blockface.yaml`), and
-`--regions <that file> --regions-spacing-um 23.75 600` reproduces all 58 of its pieces byte for byte.
+`--regions <that file> --regions-spacing-um 23.75 600` reproduces all 58 of its components byte for byte.

@@ -1,4 +1,14 @@
-# Carry labels into the template
+# Transform labels into the template
+
+**You need** the brain's annotations and section map (`docs/inputs.md`), its histology registration (`docs/histology.md`) and the
+template.
+
+**What it does**
+1. `push`: transforms the annotations through each section's registration onto the blockface;
+2. `interpolate`: fills the labels between sections;
+3. `carry`: transforms them into the template, in one resampling.
+
+**You get** the labels on the blockface, `$LINC_DATA/sub-<ID>/labels/blockface/`, and in the template, `labels/template/`.
 
 The label steps read and write under `$LINC_DATA/sub-<ID>/`, as `configs/labels.yaml` lists:
 - the annotations (one OME-Zarr per class), the section map, the match table and the atlas regions on the blockface frame

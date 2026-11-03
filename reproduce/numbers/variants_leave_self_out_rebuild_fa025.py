@@ -1,25 +1,26 @@
 #!/usr/bin/env python3
-"""The template-variant measures with the two in-sample biases removed (paper: Results "MRI template", Table 1 and the Supplementary
-variant tables; Methods, "Comparing template variants").
+"""Compare the seven MRI template variants without their two in-sample biases (Table 1 and the supplementary variant tables).
 
-The seven variants (T2, SANDI, tensor, T2 + SANDI, T2 + tensor, tensor + SANDI, four-channel) are built from the same eight inputs
-(four brains + their exact mirrors). Two biases affect the plain measures:
-  (i)  template-referenced measures (T2 NMI, fraction MAE, tensor OVL) compare each input with a mean that contains that input and its
-       own mirror (2 of 8);
-  (ii) pairwise measures (fiber angle, b0 r, mask Dice) average 28 pairs, 4 of which are a brain against its own mirror.
-From the cached warped inputs of every variant (linc/evaluation/variants.py), this script computes
-  1. the template-referenced measures in sample and leave self out (reference = the six inputs of the other three brains);
-  2. the pairwise measures on all 28 pairs and on the 24 distinct-brain pairs; the fiber angle in white matter = FA > 0.25 in the
-     final template inside the deliverable core (the same white-matter threshold as every other white-matter measure);
-  3. four-channel minus T2 + tensor, per brain, with an exact paired bootstrap over the four brains (all 4^4 = 256 resamples);
-  4. the rankings of the variants before and after the correction.
-It first reproduces the in-sample values of the evaluators' records (template-referenced measures per input; b0 r and mask Dice
-28-pair means) to 1e-9 and records the deviations; the fiber angle of those records used FA > 0.4 and is recorded, not asserted.
-Inputs (products_mri): crossmodal_cache (the warped inputs), template_mri (supports and FA), mri_runs (the four-channel run's coverage
-mask, the evaluators' records), numbers_of_record (the old-metrics records).
-CPU only, about 30 minutes with 4 threads.
--> $LINC_NUMBERS/variants_leave_self_out_rebuild_fa025.json
-    OMP_NUM_THREADS=4 python reproduce/numbers/variants_leave_self_out_rebuild_fa025.py"""
+You need (configs/products_mri.yaml)
+  crossmodal_cache: every variant's warped inputs; template_mri: the template's supports and FA; mri_runs: the four-channel run's
+  coverage mask and the evaluators' records; numbers_of_record: the old-metrics records.
+
+What it does
+  1. checks that it reproduces the evaluators' in-sample values (to 1e-9) before changing anything;
+  2. computes the template-referenced measures (T2 NMI, fraction MAE, tensor overlap) in sample and leaving each brain out of its
+     own reference;
+  3. computes the pairwise measures (fiber angle in white matter = FA > 0.25, b0 r, mask Dice) on all pairs and on the pairs of
+     distinct brains (a brain against its own mirror is left out);
+  4. compares four-channel with T2 + tensor per brain, with an exact paired bootstrap over the brains;
+  5. ranks the variants before and after the correction.
+
+You get
+  $LINC_NUMBERS/variants_leave_self_out_rebuild_fa025.json
+
+    OMP_NUM_THREADS=4 python reproduce/numbers/variants_leave_self_out_rebuild_fa025.py [--plan]
+
+CPU only, about 30 minutes with 4 threads (paper: Methods, "Comparing template variants").
+"""
 import os
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
     os.environ[_v] = "4"

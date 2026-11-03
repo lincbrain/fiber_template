@@ -1,16 +1,20 @@
-"""Steps 4 and 6: the 3D nnU-Nets (models/blockface_segmentation.md), so a brain is masked automatically.
+"""Steps 4 and 6: the 3D brain mask and the marker tubes, predicted so a brain is masked automatically.
 
-    prep_mask / post_mask    the background-intact volume (uncropped L4, 0.40 mm sections, RGB) -> Dataset506 -> curated/<S>_mask
-                             (largest 3D component, holes filled)
-    prep_holes / post_holes  the masked color volume (steps/<S>_03_color, tight crop, 0.40 mm sections) -> Dataset508 ->
-                             curated/<S>_holes (left hemisphere only; specks dropped)
+You need
+  for the mask, the volume with its background kept (nii/02_blockface_bg_L4: prepare.py); for the tubes, the masked color volume
+  (steps/<S>_03_color.ome.zarr: reconstruct.py); the networks (configs/blockface.yaml `segmentation`: bf_mask3d and bf_holes,
+  models/segmentation.md) run in between by external.py.
+What it does
+    prep_mask, post_mask     the uncropped L4 volume at 0.40 mm sections, RGB -> the network -> the largest 3D connected
+                             component, holes filled
+    prep_holes, post_holes   the tight-cropped color volume at 0.40 mm sections -> the network -> tubes in the left hemisphere
+                             only, inside the brain, specks dropped
+  The two rules are mask_rules.largest_cc_fill and tube_rule, applied once here whichever engine predicted.
+You get
+  curated/<S>_bg (the mask network's input), curated/<S>_mask and curated/<S>_holes on the curated grid. They are a starting point:
+  a hand correction saved as <S>_mask_edited or <S>_holes_edited wins in the reconstruction, and is never overwritten here.
 
-Each model reads the RGB volume as three nnU-Net channels; linc/blockface/external.py runs the prediction in between. The models'
-outputs are only the starting point: a hand correction saved as <S>_mask_edited / <S>_holes_edited wins in the reconstruction.
-
-Ported unchanged from the analysis project's code/segment.py; parameters from configs/blockface.yaml `volume_segmentation`. The two
-post-processing rules (largest_cc_fill, tube_rule) are in linc/blockface/mask_rules.py, the same code, applied once here for either
-engine (configs/blockface.yaml `segmentation.engine`).
+Ported unchanged from the analysis project's code/segment.py; parameters from configs/blockface.yaml `volume_segmentation`.
 """
 import os
 import shutil

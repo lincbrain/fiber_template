@@ -1,27 +1,30 @@
 #!/bin/bash
-# Make a writable data tree for one user from the project's read-only products: tools/make_local_data.sh <dest> [ID ...]
-# Every folder is a real folder of yours and every file a link to the record, so whatever you run writes beside the record, never into it.
-# Set LINC_RECORDS first (env/lab.sh does); then point LINC_DATA, LINC_TEMPLATE and LINC_RAW at <dest>/data, <dest>/template, <dest>/raw.
+# Make your own writable data tree from the project's data of record (read only), so what you run never writes into the record.
+#     tools/make_local_data.sh <dest> [ID ...] [--rebuild ID] [--raw NAME=PATH] [--link ID:PATH=TARGET]
 #
-# Details:
-#   <dest>/data/sub-<ID>/   (LINC_DATA)   from $LINC_RECORDS/data/sub-<ID>/: the folders blockface/, mri/, histology/ and labels/
-#                                         re-created as real folders; files inside are links; an OME-Zarr store is one link (read
-#                                         only). xfm/ (the registry your runs write) starts EMPTY; xfm_record/ holds the registry
-#                                         entries of record (R1 of record, direct placement of record), each entry's meta.json a
-#                                         copy and its transform files links. A brain without products of record gets empty
-#                                         folders. Default IDs: MR252 MF191 (the walkthrough brains).
-#   --rebuild ID          for a brain you will reconstruct yourself: its blockface/ gets only the hand inputs, as copies
+# You need
+#   LINC_RECORDS: the project folder holding data/ and template/ (env/lab.sh sets it, and runs this script for you).
+# What it does
+#   For each brain (default MR252 MF191, the walkthrough brains) it re-creates $LINC_RECORDS/data/sub-<ID>/ under <dest>/data as
+#   real folders of yours, with every file inside a link to the record (an OME-Zarr store is one link). Safe to rerun: what exists
+#   is left alone, missing parts are added; nothing is deleted or overwritten.
+#   --rebuild ID          for a brain you will reconstruct yourself: blockface/ gets only the hand inputs, as copies
 #                         (curated/<ID>_*_edited.*, 01_brainmask/01_final/, and for MF8 / MF9 the recorded series alignment that
 #                         configs/subjects/<ID>.yaml series_alignment names), and no reconstruction of record
-#   <dest>/template/        (LINC_TEMPLATE) links to $LINC_RECORDS/template/*, plus frames/mri_template_0p5.nii.gz (the frame
-#                                         linc-register --place-b0 reads)
-#   <dest>/raw/             (LINC_RAW)    a link NAME -> PATH for every --raw NAME=PATH (the photographs: blockface_curated,
-#                                         blockface_segmentation; the MRI and histology sources; env/lab.sh passes them)
-#   --link ID:PATH=TARGET  <dest>/data/sub-ID/PATH links to TARGET: an input of record kept outside data/sub-ID (e.g. the label
-#                          steps' histology/annotations, section_map.tsv, match_table.txt; env/lab.sh passes them)
-# Safe to rerun: what exists is left alone, missing parts are added; nothing is ever deleted or overwritten.
+#   --raw NAME=PATH       <dest>/raw/NAME links to PATH (the photographs, the MRI and histology sources)
+#   --link ID:PATH=TARGET <dest>/data/sub-ID/PATH links to TARGET (an input of record kept outside data/sub-ID, e.g. the label
+#                         steps' histology/annotations, section_map.tsv, match_table.txt)
+# You get
+#   <dest>/data/sub-<ID>/  (point LINC_DATA here)      blockface/, mri/, histology/, labels/ as above; xfm/ (the registry your
+#                          runs write) EMPTY; xfm_record/ the registry entries of record (the blockface-to-b0 registration; for a
+#                          brain without MRI, the cross-modal alignment), each meta.json a copy, the transform files
+#                          links. A brain without products of record gets
+#                          empty folders.
+#   <dest>/template/       (point LINC_TEMPLATE here)  links to $LINC_RECORDS/template/*, plus frames/mri_template_0p5.nii.gz (the
+#                          frame linc-register --place-b0 reads)
+#   <dest>/raw/            (point LINC_RAW here)       the --raw links
 set -eu
-[ $# -ge 1 ] && [ "$1" != "-h" ] && [ "$1" != "--help" ] || { sed -n '2,4p' "$0"; exit 0; }
+[ $# -ge 1 ] && [ "$1" != "-h" ] && [ "$1" != "--help" ] || { sed -n '2,25p' "$0" | cut -c3-; exit 0; }
 DEST=$1; shift
 REC=${LINC_RECORDS:?set LINC_RECORDS to the project folder holding data/ and template/ (env/lab.sh sets it)}
 REPO=$(cd "$(dirname "$0")/.." && pwd)

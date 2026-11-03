@@ -1,0 +1,33 @@
+# The blockface template's construction: which brains, on which grids, with which MMORF schedule. The build reads its brains, grids
+# and parameters from this file (reproduce/templates/build_blockface_template.py, linc/construction/blockface_build.py and
+# blockface_mmorf.py); the values below are those of the template of record (reproduce/templates/blockface.md).
+
+members:
+  with_mri: [MF275, MF278, MF282, MR243, MR249, MR250, MR251, MR252, MR253, MR254, MR256, MR257, MR261]   # b0 channel: their own b0
+  without_mri: [MF191, MF196, MF204, MR244, MR247, MR248, MR263, MR273]   # b0 channel: the completion's stand-in b0 (linc/completion)
+  mirrors: true                    # each brain enters twice, as cut and mirrored left-right: the template is symmetric
+  template_member: TPL             # one more member: the MRI template's b0, in the b0 channel only (left out of the blockface finish)
+
+grids:
+  prep_frame_grow_mm: 8.0          # the members are prepared on the MRI template's frame grown by this, so none can be clipped
+  build_frame: {pad_mm: 4.0, multiple_vox: 4}   # the build frame: the members' union + pad_mm, x-symmetric, dimensions a multiple of this
+  plan_a_voxel_mm: 0.5             # plan A: the grid of the first seven nonlinear steps
+  step8_voxel_mm: 0.25             # step 8: the final grid, the plan-A frame's exact 2x lattice
+  step8_box: {pad_mm: 4.0, threshold: 0.01}   # step 8's box: plan A's template support (> threshold x p99) + pad_mm
+  native_mm: {BF: 0.25, B0: 0.5}   # each channel's own resolution: the smoothing floors of step 8
+
+mmorf:
+  lambda_scale: 10.0               # multiplies every bending-energy weight but the first (near-rigid) level
+  plan_a: {steps: 7, iterations: 3, batch: 24}  # 7 nonlinear steps x 3 template iterations; batch = MMORF tasks at a time
+  step8: {step: 8, iterations: 3, batch: 12}    # the eighth step alone, from plan A's step-7 state
+  warp_res_init_mm: 16             # knot spacing of the coarsest level
+  # per-level ladders (level count = step + 1), as strings: they are written into MMORF's .ini files verbatim
+  ladders:
+    7:
+      warp_scaling: ["1", "1", "1", "2", "2", "2", "2", "2"]
+      lambda_reg: ["4.0e5", "3.7e-1", "3.1e-1", "2.6e-1", "2.2e-1", "1.8e-1", "1.5e-1", "1.2e-1"]
+      fwhm_mm: ["4.0", "2.0", "1.0", "0.5", "0.25", "0.125", "0.0625", "0.05"]
+    8:
+      warp_scaling: ["1", "1", "1", "2", "2", "2", "2", "2", "2"]
+      lambda_reg: ["4.0e5", "3.7e-1", "3.1e-1", "2.6e-1", "2.2e-1", "1.8e-1", "1.5e-1", "1.2e-1", "1.0e-1"]
+      fwhm_mm: ["4.0", "2.0", "1.0", "0.5", "0.25", "0.125", "0.0625", "0.05", "0.05"]

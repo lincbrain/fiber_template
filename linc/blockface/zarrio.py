@@ -1,16 +1,15 @@
-"""OME-Zarr I/O for the blockface pipeline.
+"""OME-Zarr input and output for the blockface steps: the one place that says how the blockface and mask stores are written.
 
-Convention: store data in canonical (c, z, y, x) order with z=rows, y=slices,
-x=cols and POSITIVE scales, so the zarr opens in neuroglancer and zarr2nii
-gives the correct orientation at ANY pyramid level. Rows & cols are reversed
-(lossless) at write time for an upright, correctly-lateralised volume; the
-slice axis (y) is never downsampled. This module is the single source of truth
-for how blockface/mask zarrs are written.
-
-Each store keeps a shallow standard pyramid: level L is level 0 downsampled in-plane by 2**L
-(consistent with the OME convention). We keep NLEVELS levels: L0 = full resolution (what you
-edit / process), L1 = /2, L2 = /4 (the light QC-nifti / browse level). Export L0 for full-res
-editing, L2 for QC. Deeper levels are dropped (regenerable); the slice axis is never downsampled.
+You need
+  per-section arrays (photographs, masks) or an existing store.
+What it does
+  Stores hold (c, z, y, x) with z = rows, y = sections, x = columns and positive scales, so a store opens upright and correctly
+  lateralized in neuroglancer and in zarr2nii at any level (rows and columns are reversed, losslessly, when written). Each store
+  keeps a short pyramid: level L is level 0 reduced 2**L in-plane (L0 full resolution, L1 /2, L2 /4); the section axis is never
+  reduced. Masks as PNGs are stored x50 (0, 50, 100, ...) so they can be seen; load_mask undoes it.
+You get
+  write_stack, add_pyramid, rebuild_pyramid, write_metadata (stores); read_level (one level as an array and its affine);
+  load_image, load_mask, save_mask (PNGs).
 
 Ported unchanged from the analysis project's code/zarrio.py.
 """

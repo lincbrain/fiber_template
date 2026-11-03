@@ -1,0 +1,173 @@
+{
+ "task": "bf_mask2d",
+ "dim": 2,
+ "channels": 3,
+ "classes": {
+  "0": "background",
+  "1": "brain"
+ },
+ "normalization": "zscore",
+ "patch": [
+  736,
+  992
+ ],
+ "features": [
+  32,
+  64,
+  128,
+  256,
+  512,
+  512
+ ],
+ "whole_image": true,
+ "native_downsample": 4,
+ "nnunet_raw": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask2d_v2",
+ "subject_regex": "^(M[FR]\\d+)_",
+ "spacing_by_subject": {
+  "MF191": [
+   0.095,
+   0.095
+  ],
+  "MF196": [
+   0.086,
+   0.086
+  ],
+  "MF275": [
+   0.108,
+   0.108
+  ],
+  "MF278": [
+   0.108,
+   0.108
+  ],
+  "MF282": [
+   0.108,
+   0.108
+  ],
+  "MR243": [
+   0.08,
+   0.08
+  ],
+  "MR244": [
+   0.08,
+   0.08
+  ],
+  "MR247": [
+   0.08,
+   0.08
+  ],
+  "MR248": [
+   0.08,
+   0.08
+  ],
+  "MR249": [
+   0.08,
+   0.08
+  ],
+  "MR250": [
+   0.08,
+   0.08
+  ],
+  "MR251": [
+   0.08,
+   0.08
+  ],
+  "MR252": [
+   0.08,
+   0.08
+  ],
+  "MR253": [
+   0.08,
+   0.08
+  ],
+  "MR254": [
+   0.08,
+   0.08
+  ],
+  "MR256": [
+   0.08,
+   0.08
+  ],
+  "MR257": [
+   0.08,
+   0.08
+  ],
+  "MR261": [
+   0.08,
+   0.08
+  ],
+  "MR263": [
+   0.08,
+   0.08
+  ]
+ },
+ "folds": {
+  "0": [
+   "MR248",
+   "MR253",
+   "MR254",
+   "MR263"
+  ],
+  "1": [
+   "MF191",
+   "MF275",
+   "MR247",
+   "MR257"
+  ],
+  "2": [
+   "MF282",
+   "MR244",
+   "MR256",
+   "MR261"
+  ],
+  "3": [
+   "MF278",
+   "MR249",
+   "MR250",
+   "MR251"
+  ],
+  "4": [
+   "MF196",
+   "MR243",
+   "MR252"
+  ]
+ },
+ "fold_rule": "19 subjects, 16078 cases; 5 folds: subjects in numpy default_rng(2026).permutation order (from the sorted list), dealt round-robin; a subject's cases are all in one fold",
+ "postprocess": {
+  "kind": "fill_holes"
+ },
+ "excluded_brains": [
+  "MF204",
+  "MR273"
+ ],
+ "train": {
+  "batch": 4,
+  "workers": 8
+ },
+ "record_runs": {
+  "0": {
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "hours": 1.69
+  },
+  "1": {
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "hours": 1.75
+  },
+  "2": {
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "hours": 1.71
+  },
+  "3": {
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "hours": 1.69
+  },
+  "4": {
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "hours": 1.7
+  },
+  "all": {
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "hours": 1.65
+  }
+ }
+}

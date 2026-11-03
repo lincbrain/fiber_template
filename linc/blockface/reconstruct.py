@@ -1,20 +1,21 @@
-"""The reconstruction itself, off the curated brain mask and marker tubes (hand-corrected where needed): Methods, "Blockface
-reconstruction", steps 3, 5 and 6, and the final volume (Fig. 3).
+"""The reconstruction itself (Methods, "Blockface reconstruction", steps 3, 5 and 6, and the final volume, Fig. 3).
 
-    Phase A  the L4 grid: aligned to the curated mask by world coordinates, tight-cropped around its footprint; the L4 mask and
-             tube finals (<S>_mask, <S>_holes; label 2 marks interpolated sections).
-    Phase B  the L1 pixels: the background-intact stack rebuilt at L1 and matched to that grid; the missing sections re-interpolated
-             by multi-resolution demons; the brain masked; a per-section degree-2 illumination field divided out; brightness steps
-             between imaging sessions removed (destep.py) and each section's color matched to a global reference (per-channel gain);
-             the marker tubes filled (their dark halo grown at L1, a biharmonic solve at L4, feathered in); written as the OME-Zarr
-             pyramid <S>_blockface.ome.zarr (L1 .. L4), with steps/<S>_03_color.ome.zarr (before the tube filling), <S>.info,
-             <S>_brightness.png and <S>_anterior10.png.
+You need
+  stage 3 (the jump-corrected _work stacks, nii/02_blockface_bg_L2: prepare.py) and the curated brain mask and marker tubes
+  (curated/: a hand-edited <S>_mask_edited or <S>_holes_edited wins over the models' <S>_mask, <S>_holes); parameters:
+  configs/blockface.yaml `reconstruction`.
+What it does (L1 .. L4: the photographs reduced 2, 4, 8 and 16 times in-plane)
+  First    the L4 grid: aligned to the curated mask by world coordinates and cropped tight around it; the L4 mask and tubes
+           (label 2 marks interpolated sections).
+  Then     the L1 pixels: the stack with its background rebuilt at L1 and matched to that grid; the missing sections
+           interpolated again by multi-resolution demons; the brain masked; a per-section degree-2 illumination field divided
+           out; the brightness steps between sessions removed (destep.py) and each section's color matched to one reference
+           (a gain per channel); the marker tubes filled (their dark halo grown at L1, a biharmonic fill at L4, feathered in).
+You get
+  <S>_blockface.ome.zarr (L1 .. L4), <S>_mask and <S>_holes (L4 NIfTI), <S>.info, steps/<S>_03_color.ome.zarr (before the tubes
+  are filled), <S>_brightness.png and <S>_anterior10.png.
 
-Inputs: stage 3 (the jump-corrected _work stacks, nii/02_blockface_bg_L2), the curated mask and tubes (curated/: the hand-edited
-<S>_mask_edited / <S>_holes_edited win over the models' outputs).
-
-Ported unchanged from the analysis project's code/recon.py (reconstruct and its helpers); parameters from configs/blockface.yaml
-`reconstruction`. The zref illumination variants (off for every brain) are not part of the release.
+Ported unchanged from the analysis project's code/recon.py (reconstruct and its helpers).
 """
 import copy
 import os

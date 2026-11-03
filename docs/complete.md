@@ -1,5 +1,18 @@
 # Synthesize the missing caudal tissue
 
+**You need** the brain's blockface volume and its registration (`docs/register.md`); for a brain without MRI, the stand-in b0 its
+registration makes.
+
+**What it does**
+1. `prepare`: resamples the registered photographs onto the b0's frame and detects the junction plane, caudal to which the
+   photographs no longer cover the brain;
+2. predicts the blockface over the whole brain from the b0;
+3. matches the prediction's brightness to the photographs near the cut and blends the two over 2 mm;
+4. adds color.
+
+**You get**, under the `--out` folder: `<ID>/<ID>_bf_completed.nii.gz`, its color version and the maps of what was predicted, as
+NIfTI on the brain's 0.25 mm grid, with a provenance JSON.
+
 Environment: `env/deep.yml`.
 
 No brain was photographed to its caudal end. `cli/linc-complete` synthesizes the missing tissue from the brain's b0, or from a

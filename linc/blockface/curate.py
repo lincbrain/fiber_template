@@ -1,12 +1,16 @@
-"""The hand-edit round trip of the curated masks, and the fast tube re-fill (Methods, "Blockface reconstruction": all masks
-were corrected by hand where needed).
+"""Hand corrections of the curated masks, folded back onto their grid, and the quick tube re-fill (Methods, "Blockface
+reconstruction": the masks were corrected by hand where needed).
 
-    fold_edits(cfg, "mask"|"holes")  a hand-edited FINAL <S>_mask / <S>_holes (L4, native sections, tight crop) folded back onto
-                                     the curated grid (L4, 0.40 mm sections, uncropped) as <S>_mask_edited / <S>_holes_edited
-    clamp_holes                      tubes kept inside the brain mask
-    reinpaint                        the tubes re-filled on steps/<S>_03_color after a tubes-only edit (no full reconstruction)
-
-The grid contract (factor, kept sections, crop) is read from <S>.info.
+You need
+  a hand-edited final <S>_mask or <S>_holes (L4, native sections, tight crop), and the brain's <S>.info (the grid: factor, kept
+  sections, crop).
+What it does
+  fold_edits(cfg, "mask"|"holes")  folds the edit back onto the curated grid (L4, 0.40 mm sections, uncropped)
+  clamp_holes                      keeps every tube voxel inside the brain mask
+  reinpaint                        re-fills the tubes on steps/<S>_03_color after a tubes-only edit (no full reconstruction)
+You get
+  curated/<S>_mask_edited or <S>_holes_edited (the hand corrections, which win over the models' outputs); after reinpaint, the
+  reconstruction <S>_blockface.ome.zarr, <S>_holes and <S>.info rewritten.
 
 Ported unchanged from the analysis project's code/curate.py (the one-off migration helpers are not part of the release).
 """

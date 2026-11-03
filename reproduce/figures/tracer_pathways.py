@@ -1,34 +1,23 @@
 #!/usr/bin/env python3
-"""The paper's tracer figure (Fig. 10): panels a, b, c = three stills of the 3D scene (reproduce/figures/tracer_3d.py: the oblique view,
-the lateral view, the lateral view with the brain's surface as a translucent shell), d = the dorsal projection, e = the capsule sections
-(--layout composite, the default); --layout panels draws instead the earlier four-panel form (a, b = the lateral projections on T2 and on
-the blockface channel, c = dorsal, d = capsule). The 2D panels:
-the tracer pathways of three cases in the MRI template, drawn from the CONNECTED pathways of record (products_mri `tracer_template_v2c`),
-the interpolated densities (`tracer_template_v2`) and the per-section sheets carried without interpolation (`tracer_sections_v2`).
+"""The paper's tracer figure, Fig. 10.
 
-    python reproduce/figures/tracer_pathways.py [--stills figures/tracer_3d_oblique.png figures/tracer_3d_lateral.png figures/tracer_3d_glass.png] [--out figures/tracer_pathways.png]
+You need (configs/products_*.yaml)
+  template_t2 / template_mask / template_fa and sarm_level6 (products_figures); template_link: the blockface template in the MRI
+  template (products_blockface); tracer_sections_v2, tracer_template_v2, tracer_template_v2c (products_mri); for the composite, the
+  three stills of reproduce/figures/tracer_3d.py --for-composite (oblique, lateral, glass).
+
+What it does
+  composite (the paper's figure): a-c = the three 3D stills, cropped to the brain; d = the dorsal projection of the right hemisphere
+  on T2; e = the anterior limb of the internal capsule on three coronal slabs of FA; one key;
+  panels (the earlier four-panel form): a, b = the lateral projections on T2 and on the blockface channel, c = dorsal, d = capsule.
+  The connected pathway is drawn filled, its inferred joins under a dotted edge, the density footprint as a light fill.
+
+You get
+  <out>.png + <out>.provenance.json, and $LINC_NUMBERS/fig_tracer_pathways.json (composite) or fig_tracer_pathways_panels.json
+  (the layout, the stills' md5, per case the pathway voxels drawn, the inferred share and the longest join, the capsule counts)
+
+    python reproduce/figures/tracer_pathways.py [--stills OBLIQUE LATERAL GLASS] [--out figures/tracer_pathways.png]
     python reproduce/figures/tracer_pathways.py --layout panels [--out figures/tracer_pathways_panels.png]
-
-Three cases: MM1 (MR243, area 10) and MF8 (MF191, area 13m) are the similar pair, in two warm colors; MM2 (MR252, supplementary motor
-area) is the different one, in green. MM3 (no injection site charted) is in Supplementary S2 only.
-  a  lateral projection over a parasagittal slab of the right hemisphere (x in SLAB_X), on the template's T2 at the slab's middle plane
-     (anterior right): the connected pathway filled with a thin dark edge, its inferred joins under a dotted white edge, the footprint
-     of the interpolated density (>= 0.1) as a light fill; the slab's maximum along x; gray: the projected brain outline
-  b  the same over the template's blockface channel (the blockface template pulled into the MRI template by the link of record)
-  c  dorsal projection of the right hemisphere, on the template's T2 at z = Z_AXIAL (anterior up)
-  d  the anterior limb of the right internal capsule: 0.5 mm coronal slabs of the template's FA at ALIC_Y, the connected pathway inside
-     the atlas capsule in full color, outside faded; dotted, the internal capsule of the SARM atlas (level 6, label 50)
-Injection sites: the projected per-section Injection_site marks, closed over the gaps between sections (binary closing, radius CLOSE_MM),
-filled in the case's color with a thin white edge. MF8's left-hemisphere case is mirrored onto the right for display (x -> -x; the
-template is symmetric about x = 0); its data are unmirrored. The key gives each case's inferred share and longest join.
-Each panel is a function (composite = the stills, lateral, dorsal, alic, key) over one loaded scene; main() draws either layout.
-Conventions: figstyle (true scale, nothing printed over images, scale bars below). Outputs: <out> (+ .provenance.json); the record
-$LINC_NUMBERS/fig_tracer_pathways.json (the layout, the stills' files and md5, the slabs, per case the pathway voxels drawn, the inferred
-share and the longest join, the sections and their spacing, the capsule counts of (d)); the panels layout writes fig_tracer_pathways_panels.
-Reads (products): products_figures template_t2 / template_mask / template_fa / sarm_level6; products_blockface template_link (the blockface
-template in the MRI template); products_mri tracer_sections_v2, tracer_template_v2, tracer_template_v2c.
-Ported from the analysis project's paper/fig_tracer_v2c_fig9.py over paper/scripts/fig_tracer_r061.py (3 Nov 2026); it renders the
-paper's file byte for byte with the same matplotlib.
 """
 import argparse
 import csv
@@ -50,7 +39,7 @@ IC_LABEL = 50
 CASES = ["MR243", "MF191", "MR252"]                       # MM1, MF8, MM2
 DRAW_ORDER = ["MF191", "MR243", "MR252"]                  # bottom to top
 MIRROR = {"MF191"}
-COLOR = {"MR243": FS.OKABE["vermilion"], "MF191": FS.OKABE["yellow"], "MR252": FS.OKABE["green"]}   # the similar pair warm
+COLOR = {S: FS.TRACER[S] for S in CASES}                  # the tracer cases' colors (figstyle.TRACER): the similar pair warm
 AREA = {"MR243": "area 10", "MF191": "area 13m", "MR252": "SMA"}
 SLAB_X = (0.0, 8.0)                                      # mm, right hemisphere, the parasagittal slab of (a)/(b)
 Z_AXIAL = 18.0                                           # mm, the background plane of (c)

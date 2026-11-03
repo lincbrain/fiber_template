@@ -1,13 +1,18 @@
-"""The histology parameters with one setting of the registration test applied (paper: Supplementary S4, Table S7).
-
-configs/histology_sweep.yaml gives each setting (C0-C6, C8, C9) as dotted keys into configs/histology.yaml; every key must exist.
-The result goes to `cli/linc-histology register --config`:
+"""The histology parameters with one setting of the registration parameter test applied (Supplementary S4, Table S7).
 
     python -m linc.histology.sweep C2 > histology_C2.yaml
-    cli/linc-histology register --config histology_C2.yaml --pieces <piece> --out <folder> ...
+    cli/linc-histology register --config histology_C2.yaml --pieces <component> --out <folder> ...
 
-The test's scoring (the hidden-tube offset and tissue Dice per piece, then the fixed decision rule) is not part of this release;
-its results are the reference records tirl_sweep_r058 and tirl_sweep_r058b (configs/numbers_exceptions.yaml).
+You need
+  configs/histology_sweep.yaml: each setting (C0-C6, C8, C9) as dotted keys into configs/histology.yaml (every key must exist).
+What it does
+  It applies one setting's keys to configs/histology.yaml.
+You get
+  the parameters on stdout (YAML), for `cli/linc-histology register --config`.
+
+The test's scoring is not part of this release: the offset of the inpainted marker tubes and the Dice coefficient between the
+registered histology tissue mask and the blockface component's, per component, then the fixed decision rule. Its results are the
+reference records tirl_sweep_r058 and tirl_sweep_r058b (configs/numbers_exceptions.yaml).
 """
 import argparse
 import copy

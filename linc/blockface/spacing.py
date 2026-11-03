@@ -1,20 +1,22 @@
-"""The calibrated spacing written into a reconstruction's headers: pixels untouched.
+"""The calibrated spacing written into a reconstruction's headers; the pixels are untouched.
 
-The paper's brains were reconstructed at their nominal pixel size and section step (configs/subjects/<ID>.yaml
-`reconstruction_spacing_um`) and then given the spacing calibrated against each brain's own MRI (`vx`, `vz`; the pixel sizes and
-section steps reported in Methods) by rescaling the headers. A pure world scaling about the origin is exact: in-plane world =
-vx * (voxel + 0.5 + offset), with offsets in voxels, and along the sections y(j) = y0 - vz * j with y0 = vz * (photo count - 0.5).
-A new (vx', vz') therefore maps every product's world by diag(fx, fz, fx), fx = vx'/vx, fz = vz'/vz: exactly what a rebuild at
-(vx', vz') writes for these header quantities.
+You need
+  a reconstruction made at the brain's `reconstruction_spacing_um` and its calibrated `vx`, `vz` (configs/subjects/<ID>.yaml: the
+  pixel sizes and section steps reported in Methods, calibrated against each brain's own MRI).
+What it does
+  The paper's brains were reconstructed at their nominal spacing and then given the calibrated one by rescaling the headers. A
+  pure scaling of world coordinates about the origin is exact: in-plane world = vx * (voxel + 0.5 + offset), offsets in voxels,
+  and along the sections y(j) = y0 - vz * j with y0 = vz * (photo count - 0.5). A new (vx', vz') therefore maps every product's
+  world by diag(fx, fz, fx), fx = vx'/vx, fz = vz'/vz, which is what a rebuild at (vx', vz') writes for these header quantities.
+    OME-Zarr stores (<S>_*.ome.zarr, 02_*.ome.zarr, steps/, _work/): every level's scale (rows and columns x fx, sections x fz;
+        the translations are in voxels and do not change)
+    NIfTIs (<S>_blockface_L2, <S>_mask, <S>_holes, nii/, curated/, steps/): affine <- diag(fx, fz, fx, 1) @ affine
+  A file already at the calibrated spacing (e.g. a hand edit of record that already has it) is left as it is. For a new brain the
+  two spacings are equal and nothing changes.
+You get
+  the headers rewritten in place; respace returns a log of every file (old and new scale, or already calibrated).
 
-  OME-Zarr stores (<S>_*.ome.zarr, 02_*.ome.zarr, steps/, _work/): every dataset's scale (rows and columns x fx, sections x fz;
-      the translations are in voxels and do not change);
-  NIfTIs (<S>_blockface_L2, <S>_mask, <S>_holes, nii/, curated/, steps/): affine <- diag(fx, fz, fx, 1) @ affine.
-A file already at the calibrated spacing (e.g. a hand edit of record that carries it) is left as is. For a new brain the two
-spacings are equal and nothing changes.
-
-Ported from the analysis project's code/respace_bf.py (the D9 calibration, 2 Oct 2026) and code/respace_vz.py (MF8, MF9, 26 Sep):
-the header operations, unchanged; their backups and bookkeeping of the analysis project's curation tools are not part of the release.
+Ported from the analysis project's code/respace_bf.py and code/respace_vz.py (the header operations unchanged).
 """
 import glob
 import json

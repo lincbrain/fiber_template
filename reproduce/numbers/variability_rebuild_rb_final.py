@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
-"""Between-input variability of the four-channel MRI template (paper: Results "MRI template", the variability figure and its text).
+"""Map how much the template's inputs differ from the template, voxel by voxel (the variability figure and its text).
 
-For the four-channel variant, the voxelwise deviation of each of the eight inputs from the variant's own mean template, averaged over
-the inputs (linc/evaluation/variability.py): T2 |Δz| (z-units), soma and neurite fraction |Δ| (percentage points), and the angle
-between principal eigenvectors (degrees). Reported: the mean of each map in the deliverable T2 core (template linc_mri_core_t2) and
-in its white matter (linc_mri_wm_fa025 inside the core), and the two voxel counts.
-The maps are written to $LINC_WORK/variability/rb_final__<metric>.nii.gz for the figure script.
-Inputs (products_mri): crossmodal_cache (the warped inputs), template_mri (core, white matter, the T2 grid).
--> $LINC_NUMBERS/variability_rebuild_rb_final.json
-    python reproduce/numbers/variability_rebuild_rb_final.py"""
+You need (configs/products_mri.yaml)
+  crossmodal_cache: the four-channel variant's warped inputs; template_mri: the deliverable T2 core, its white matter, the T2 grid.
+
+What it does
+  1. measures each input's deviation from the variant's mean template: T2 |dz|, soma and neurite fraction |d|, principal-eigenvector angle;
+  2. averages the deviations over the inputs;
+  3. reports each map's mean in the core and in its white matter, with the two voxel counts.
+
+You get
+  $LINC_NUMBERS/variability_rebuild_rb_final.json, and the maps $LINC_WORK/variability/rb_final__<metric>.nii.gz for the figure
+
+    python reproduce/numbers/variability_rebuild_rb_final.py [--plan]
+"""
 import sys
 from pathlib import Path
 

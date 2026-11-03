@@ -1,32 +1,34 @@
 #!/usr/bin/env python3
-"""Build the MRI channels of the template from the released per-brain products: the recipe of record (reproduce/templates/
-mri_channels.md; paper Methods, "MRI preprocessing", "Symmetric groupwise construction", "Template channels"), one step per command,
-with the parameters of configs/mri_construction.yaml (nothing is restated here).
+"""Build the MRI channels of the template.
 
-    python reproduce/templates/build_mri_channels.py --plan                     every step, its environment, time, inputs, outputs
-    python reproduce/templates/build_mri_channels.py --step prepare-MF283       one step (or several, in recipe order)
+You need, for every brain of configs/mri_construction.yaml `inputs`, under $LINC_DATA/sub-<ID>/ (the config's `prep.layout`)
+  mri/dwi/raw/: the denoised, eddy-corrected diffusion series with its .ecclog, b-vectors, b-values and fit mask;
+  mri/dwi/, t2/, micro/: the staged b0, the 32-echo MSME and the SANDI fractions; mri/masks/: the hand masks of each session and the
+  final hand-edited brain mask; mri/landmarks/: the SARM labels and the subject -> NMT v2 affine on the b0 grid;
+  xfm/t2-native__to__b0-native and xfm/micro-native__to__b0-native: the within-brain registrations;
+  FSL (FSLDIR), ANTs (ANTSPATH), MRtrix (MRTRIX), and for the mmorf step MMORF (LINC_MMORF_EXE), the patched template-construction
+  driver (LINC_TEMPLATE_DRIVER, linc/construction/patches/README.md) and one 48 GB GPU.
+
+What it does, one step per brain, then together (each step one command; --plan prints them all)
+  tensor-<ID>     fits the diffusion tensor on the b <= 4800 volumes
+  landmarks-<ID>  finds the AC and PC from the SARM labels on the b0
+  frames-<ID>     maps the brain rigidly into the canonical frame (its own mid-sagittal plane, NMT's orientation, the AC)
+  prepare-<ID>    resamples every channel once onto the canonical grid, cuts it to the final mask, and writes its exact mirror
+  assemble        writes the MMORF run folder: the inputs, the standard space and one parameter file per step
+  mmorf           runs the groupwise construction (the config's schedule; the record: 8 steps x 3 iterations, 3 d 12 h on one GPU)
+  channels        makes the template channels from the final step's warps
+
+You get, under --work (default $LINC_WORK/build_mri_channels); nothing is written into $LINC_DATA
+  tensor_d9/<ID>/tensor_d9_dwigrid.nii.gz, frames/<ID>/{landmarks,canonical}.json, prep/<ID>/ (the construction inputs and their
+  _flip mirrors, NIfTI on the 0.25 mm canonical grid), runs/<run>/ (the MMORF run), channels/linc_mri_*.nii.gz + provenance.json
+  (T2, b0, fractions, tensor and its scalars, masks: the template's mri folder)
+
+    python reproduce/templates/build_mri_channels.py --plan
+    python reproduce/templates/build_mri_channels.py --step prepare-MF283
     python reproduce/templates/build_mri_channels.py --from assemble --to channels
 
-Stages, per brain (MF1-MF4 = MF283-MF286) then together:
-    tensor-<ID>      the D9 tensor: dtifit on the eddy-corrected b <= 4800 volumes, b-vectors rotated and gradient-checked [FSL, MRtrix]
-    landmarks-<ID>   AC and PC from the SARM labels carried onto the brain's b0 grid
-    frames-<ID>      the brain's rigid map into the canonical (NMT v2) frame: its own mid-sagittal plane, NMT's orientation, the AC
-    prepare-<ID>     the construction inputs on the canonical grid, cut to the final hand-edited mask, with their exact mirrors [ANTs, FSL]
-    assemble         the MMORF run folder (inputs, standard space, one .ini per step) and the driver's command line
-    mmorf            MMORF 1.0.1 through the patched template-construction driver: 8 steps x 3 iterations [GPU, 3 d 12 h of record]
-    channels         the template channels from the step-8 warps: T2, b0, fractions, tensor and its scalars, masks [FSL]
-Every step runs with $PY_MRI (env/mri.yml: MMORF from the FSL channel, fsl-sub, fslpy, file-tree), with FSLDIR (FSL 6.0.7.4), ANTSPATH
-(ANTs 2.5.4, prepare) and MRTRIX (MRtrix3 3.0.2, tensor) set; the mmorf step also needs LINC_TEMPLATE_DRIVER (the patched
-template_construction_v1 folder: linc/construction/patches/README.md) and LINC_MMORF_EXE (mmorf_cuda), run on one 48 GB GPU for the
-batch of record (`run_assembly.batch_of_record`; scheduling only).
-Inputs, per brain under $LINC_DATA/sub-<ID>/ (configs/mri_construction.yaml prep.layout, relative to mri/; the within-MRI warps under
-xfm/): the staged session images and hand masks (dwi/, t2/, micro/, masks/), the raw diffusion files of the tensor (dwi/raw/), the
-final hand-edited mask (masks/final_brain_mask.nii.gz), the SARM labels carried onto the b0 and the subject -> NMT affine (landmarks/),
-and the T2 -> b0 and micro -> b0 registrations (xfm/t2-native__to__b0-native, xfm/micro-native__to__b0-native).
-Outputs under --work (default $LINC_WORK/build_mri_channels): tensor_d9/<ID>/, frames/<ID>/{landmarks,canonical}.json, prep/<ID>/
-(the construction inputs), runs/rb_final/ (the MMORF run), channels/ (linc_mri_*.nii.gz + provenance.json: the template's mri folder).
-Nothing is written into $LINC_DATA. Estimated times are the run of record's (mri_channels.md, "How long it takes").
-Validated 3 Nov 2026 on MF283 (landmarks, frames, prepare against the products of record: see mri_channels.md "Validation").
+Environment: env/linc.yml. Steps and parameters: reproduce/templates/mri_channels.md and configs/mri_construction.yaml (paper: Methods,
+"MRI preprocessing", "Symmetric groupwise construction", "Template channels"). Validated on MF283 (mri_channels.md, "Validation").
 """
 import os
 import sys
@@ -40,7 +42,12 @@ SHIM = str(D.REPO / "linc" / "construction" / "blockface_shim")          # `mmor
 
 def make_steps(W, paths):
     from linc.construction.tools import recipe
-    R = recipe(); L = R["prep"]["layout"]; ids = list(R["inputs"])
+    R = recipe(); L = R["prep"]["layout"]; ids = list(R["inputs"])               # the brains, grids and schedule all come from the config
+    mirror = R["run_assembly"].get("mirror", True); n_in = len(ids) * (2 if mirror else 1)
+    last = Path("out") / f"nln_step_{R['n_steps']:02d}" / f"iteration_{R['iterations_per_step']:02d}"            # the final step's warps
+    read = Path("out") / f"nln_step_{R['channels']['step']:02d}" / f"iteration_{R['channels']['iteration']:02d}"   # the warps the channels read
+    scal = [m["name"] for m in R["scalar_modalities"]]; quant = [str(i) for i, m in enumerate(R["scalar_modalities"], start=1) if m.get("quantitative")]
+    tens = [m["name"] for m in R["tensor_modalities"]]; batch = " ".join(str(b) for b in R["run_assembly"]["batch_of_record"])
     w = lambda *p: W.joinpath(*p)                                                     # noqa: E731
     sub = lambda S: paths.subject_dir(S)                                              # noqa: E731
     m = lambda S, k: sub(S) / "mri" / L[k]                                            # noqa: E731
@@ -82,7 +89,7 @@ def make_steps(W, paths):
                ["-m", "linc.construction.mmorf_run", "--upstream", str(Path(drv_dir).parent), "--out", run, "--prep", prep_pat,
                 "--driver", driver_py],
                outputs=[run / "run_spec.json", run / "standardspace.nii.gz", run / "config"], inputs=[w("prep", S) for S in ids],
-               est="17 s (CPU)", note="links the 8 inputs (4 brains + mirrors), writes one MMORF .ini per step and prints the driver's command"),
+               est="17 s (CPU)", note=f"links the {n_in} inputs ({len(ids)} brains{' + mirrors' if mirror else ''}), writes one MMORF .ini per step and prints the driver's command"),
     ]
 
     def mmorf_argv():
@@ -91,16 +98,16 @@ def make_steps(W, paths):
 
     steps += [
         D.Step("mmorf", "construction", "driver", mmorf_argv,
-               outputs=[run / "out" / "nln_step_08" / "iteration_03"], inputs=[run / "run_spec.json", run / "standardspace.nii.gz"],
+               outputs=[run / last], inputs=[run / "run_spec.json", run / "standardspace.nii.gz"],
                est="3 d 12 h (record: one RTX 6000 Ada 48 GB; affine 7 min, steps 1-5 1.2-2.3 h, step 6 13.6 h, step 7 21.6 h, step 8 40.7 h)",
-               gpu=True, setenv={"PATH": f"{SHIM}:$PATH"}, plan_argv=[driver_py, "--input_scalar", f"{run}/data/T2M/", f"{run}/data/FRAC1M/",
-                                                                        f"{run}/data/FRAC2M/", "--quant_scalar_mods", "2", "3", "--input_tensor",
-                                                                        f"{run}/data/DTIV/", "--config", f"{run}/config/", "...", "-b", "8 8 8 8 8 4 4 3"],
+               gpu=True, setenv={"PATH": f"{SHIM}:$PATH"},
+               plan_argv=[driver_py, "--input_scalar"] + [f"{run}/data/{m}/" for m in scal] + (["--quant_scalar_mods"] + quant if quant else [])
+                         + (["--input_tensor"] + [f"{run}/data/{m}/" for m in tens] if tens else []) + ["--config", f"{run}/config/", "...", "-b", batch],
                note="resume after an interruption with -aff False -resume <step>:<iteration> (LINC_SKIP_DONE_MMORF=1 keeps finished tasks)"),
         D.Step("channels", "channels", "mri",
                ["-m", "linc.construction.channels", "--run", run, "--out", w("channels"), "--prep", prep_pat, "-j", "8"],
                outputs=[w("channels", f"{R['channels']['prefix']}_T2.nii.gz"), w("channels", "provenance.json")],
-               inputs=[run / "out" / "nln_step_08" / "iteration_03"] + [w("prep", S) for S in ids],
+               inputs=[run / read] + [w("prep", S) for S in ids],
                est="10.5 min (CPU, 8 threads)", note="acceptance (T2 r, V1 angle, FA range, symmetry) is written to channels/provenance.json"),
     ]
     return steps

@@ -49,11 +49,15 @@ from . import qc
 from .common import bridge, config
 
 SRC, DST = "b0-native", "mri-template"
-ENGINE = "featurereg upstream anatomix+MIND-SSC (R5 D22: guarded canon-xa, 0.35 mm, 8 mm centered margin, D11 crop)"
-
-
 def cfg():
     return config()["b0_to_template"]
+
+
+def engine_text(c=None):
+    """The registry entry's engine field, from the configuration (configs/link.yaml b0_to_template)."""
+    c = c or cfg()
+    return (f"featurereg (anatomix + MIND-SSC), guarded start, {float(c['grid_res_mm']):g} mm grid, "
+            f"{float(c['grid_margin_mm']):g} mm centered margin, brainstem crop")
 
 
 # ------------------------------------------------------------------------------------------------ input QC (N4)
@@ -203,8 +207,8 @@ def run(subject, b0_path, mask_path, template_b0, template_mask, placement_mat, 
         os.remove(P[k])
     # the registry entry (PULL order: the warp on the working grid, then the start)
     e = xfm.register(SRC, DST, [("warp", "itk_lps_disp", warp), ("affine", "ras_pull", start)], subject=S, dst_grid=template_b0,
-                     src_grid=b0_path, engine=ENGINE,
-                     config=dict(recipe="D22", guard=lin["guard"], margin_mm=ginfo["margin_mm"], res=ginfo["res"], mask=str(mask_path)),
+                     src_grid=b0_path, engine=engine_text(c),
+                     config=dict(recipe="configs/link.yaml b0_to_template", guard=lin["guard"], margin_mm=ginfo["margin_mm"], res=ginfo["res"], mask=str(mask_path)),
                      root=registry, overwrite=overwrite)
     xfm.set_qc(e.dir, "pass" if st in ("PASS", "WARN") else "fail", outline=st, outline_reasons=why,
                source="linc.link.b0_to_template (outline check of the uncropped moved mask)")

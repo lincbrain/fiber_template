@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
-"""Where the carried tracer labels sit in the template (paper: Results, tracer labels; Supplementary S2): per case and group (bundles,
-terminals), for the section labels (no interpolation between sections; products_mri `tracer_sections_v2`), the interpolated labels of
-the earlier chain (products_blockface `tracer_template_r058d`, per-class densities combined by their maximum, as the classes overlap), the
-interpolated labels of record (products_mri `tracer_template_v2`) and the connected pathways (products_mri `tracer_template_v2c`, bundles
-only; a 0/1 label, so its solid and footprint rules coincide), under both rules (solid: density > 0.5; footprint: density >= 0.1):
-  share outside the template brain mask; tissue breakdown of the label voxels: white matter (template FA > 0.25), other brain tissue
-  (brain mask minus white matter: gray matter, but also the ventricles, which the template has no mask for), outside the brain;
-  for bundle voxels outside white matter: the distance to the nearest white-matter voxel (mm; median, p90, share within one voxel =
-  0.25 mm, the partial-volume rim, and share beyond 0.5 mm = misplacement).
-Report only (no visual verdict). -> $LINC_NUMBERS/tracer_placement_v2c.json
+"""Where the carried tracer labels sit in the template: in the brain, in white matter, how far from it (Supplementary S2).
+
+You need (configs/products_mri.yaml, configs/products_blockface.yaml)
+  tracer_sections_v2: the charted sections carried without interpolation; tracer_template_r058d: the earlier interpolated labels;
+  tracer_template_v2 and tracer_template_v2c: the interpolated labels and the connected pathways of record; template_mri: the brain
+  mask and the white matter (FA > 0.25).
+
+What it does
+  for every case, group and label source, under both rules (density > 0.5, density >= 0.1): the share outside the brain, the shares
+  in white matter and other tissue, and for bundles outside white matter the distance to it.
+
+You get
+  $LINC_NUMBERS/tracer_placement_v2c.json
+
     python reproduce/numbers/tracer_placement_v2c.py
-Ported from the analysis project's labels/tracer_v2/placement_v2c.py (placement_v2.py + the connected source), unchanged in rule."""
+"""
 import sys
 from pathlib import Path
 
@@ -26,7 +30,19 @@ CASES = ["MR243", "MR252", "MR256", "MF191"]
 GROUPS = {"Bundles": ["Fiber_light_bundle", "Fiber_moderate_bundle", "Fiber_dense_bundle", "Bundle"],
           "Terminals": ["Terminal_light", "Terminal_moderate", "Terminal_dense"]}
 TV = 0.25
-METHOD = __doc__.split("->")[0].strip().split("\n")
+# the record's method text, fixed (it was this script's docstring when the record was made; the docstring may change)
+METHOD = [
+    'Where the carried tracer labels sit in the template (paper: Results, tracer labels; Supplementary S2): per case and group (bundles,',
+    'terminals), for the section labels (no interpolation between sections; products_mri `tracer_sections_v2`), the interpolated labels of',
+    'the earlier chain (products_blockface `tracer_template_r058d`, per-class densities combined by their maximum, as the classes overlap), the',
+    'interpolated labels of record (products_mri `tracer_template_v2`) and the connected pathways (products_mri `tracer_template_v2c`, bundles',
+    'only; a 0/1 label, so its solid and footprint rules coincide), under both rules (solid: density > 0.5; footprint: density >= 0.1):',
+    '  share outside the template brain mask; tissue breakdown of the label voxels: white matter (template FA > 0.25), other brain tissue',
+    '  (brain mask minus white matter: gray matter, but also the ventricles, which the template has no mask for), outside the brain;',
+    '  for bundle voxels outside white matter: the distance to the nearest white-matter voxel (mm; median, p90, share within one voxel =',
+    '  0.25 mm, the partial-volume rim, and share beyond 0.5 mm = misplacement).',
+    'Report only (no visual verdict).',
+]
 
 
 def breakdown(m, bundles, B, W, DW):

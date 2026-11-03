@@ -1,21 +1,34 @@
 #!/usr/bin/env python3
-"""Histology -> blockface registration of one brain (paper Methods, "Histology registration and label propagation").
+"""Register a brain's histology sections to its blockface photographs, so their labels can be transformed to the template
+(Methods, "Histology registration and label propagation").
 
-    linc-histology <step> --subject MR252 --store <ID>_blockface.ome.zarr --histology <sections dir> --table <match table> \
-                   --regions <ID>_regions.nii.gz --out <dir> [--jobs 12] [--threads 12]
+You need
+  the brain's reconstruction (<ID>_blockface.ome.zarr, cli/linc-reconstruct); its histology sections (the Haber laboratory's
+  collection: JPEG 2000, *nDF.jp2; LINC dataset 000003, sourcedata/sub-<ID>/micr); the hand-made match table (section number ->
+  photograph number per component; format in linc/histology/match.py); the regions volume on the blockface (1 left, 2 right,
+  3 cerebellum + brainstem, 4 marker tubes; how to make one: linc/histology/README.md); configs/subjects/<ID>.yaml (idx_range,
+  ccs / cce); env/tirl.yml's Python ($PY_TIRL) with TIRL.
+What it does (`all` runs the steps in order; each can be run alone, and a run resumes where it stopped)
+  match     each section's blockface photograph
+  pieces    each photograph split into the section's components (hemispheres, cerebellum and brainstem: the regions volume)
+  masks     each histology component's tissue mask
+  prepare   TIRL's moving (histology) and fixed (blockface) images
+  register  each component registered with TIRL (the registration library): rotation, rigid, affine, nonlinear (12 threads per
+            component reproduce the paper's)
+  rgb       the registered sections in color
+You get
+  in --out (write it to $LINC_DATA/sub-<ID>/histology/registration, where the label steps read it): matched/, partition/, pieces/,
+  tissue_masks/, moving/, fixed/ (PNG) and tirl/<component>/ (TIRL's transforms, .timg, and the registered images, PNG), each step
+  with a provenance.json.
 
-Steps, in order (`all` runs them in order; parameters: configs/histology.yaml):
-    match      matched blockface photo per section piece           -> <out>/matched/<section><suffix>_0000.png
-    pieces     piece partition from the atlas regions, then pieces -> <out>/partition/, <out>/pieces/<section>_<tag>.png
-    masks      histology tissue masks per piece                    -> <out>/tissue_masks/<section>_<tag>.png
-    prepare    TIRL moving (histology) and fixed (blockface) images -> <out>/moving/, <out>/fixed/   (masks first if absent)
-    register   TIRL 3.6.3 (or 3.6.2) per piece (the `tirl` beside the running Python, else PATH; version checked) -> <out>/tirl/<piece>/
-    rgb        registered RGB sections                              -> <out>/tirl/<piece>/moving4_nonlinear_rgb.png
---subject reads idx_range[0] (the raw index of the store's first slice) and the corpus-callosum section range (ccs, cce)
-from configs/subjects/<ID>.yaml; --idx0 / --ccs / --cce override them. The regions volume is scaled into the store's calibrated frame by
-the brain's own factors (calibrated / made-at spacing per axis; configs/histology.yaml regions.made_at_spacing_um; pieces.regions_scale;
-1 for a brain not listed there); --regions-frame current skips that when the regions are known to be in the store's frame.
-Each step writes provenance.json into its product folder.
+    $PY_TIRL cli/linc-histology all --subject <ID> --store <ID>_blockface.ome.zarr --histology <sections dir> --table <match table> \
+        --regions <ID>_regions.nii.gz --out $LINC_DATA/sub-<ID>/histology/registration --threads 12 --jobs 2
+
+Details. Parameters: configs/histology.yaml. The regions volume is scaled into the store's calibrated frame by the brain's own
+factors (calibrated / made-at spacing per axis, configs/histology.yaml regions.made_at_spacing_um; 1 for a brain not listed);
+--regions-frame current skips that, and --regions-spacing-um gives the made-at spacing of another volume (MF8's registration of
+record with the tubes filled by inpainting: configs/products_blockface.yaml hidden_arm_regions). --idx0 / --ccs / --cce override
+the yaml's values. --jobs N registers N components at a time (12 N cores).
 """
 import argparse
 import os

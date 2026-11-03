@@ -1,5 +1,14 @@
 # Register a brain into the template's frame
 
+**You need** the brain's blockface volume (`docs/reconstruct.md`), its prepared b0 if it has MRI (`docs/mri.md`), and the template.
+
+**What it does**
+1. with MRI: registers the blockface volume to the brain's own b0, then the b0 to the MRI template;
+2. without MRI: registers the blockface volume directly onto the MRI template's b0.
+
+**You get** each registration as one entry, `$LINC_DATA/sub-<ID>/xfm/<from>__to__<to>/` (the warp, its matrices and `meta.json`),
+and its products and measures under `$LINC_WORK/`.
+
 A brain with MRI and a brain without MRI are registered differently:
 
 ```bash
@@ -15,12 +24,12 @@ $PY cli/linc-register direct-placement --subject MF191 --template-b0 $LINC_TEMPL
 
 The MRI template's b0 channel and brain mask come with the released template, under `$LINC_TEMPLATE/mri/`. For a brain that is not one of the
 paper's (`cli/linc-mri prep`, `docs/mri.md`, makes its b0 and brain mask):
-- place its b0 on the template's frame first, with `--place-b0 <b0>` on the first `linc-register mri` run. No hand mask is needed:
+- align its b0 to the template's frame first, with `--place-b0 <b0>` on the first `linc-register mri` run. No hand mask is needed:
   the MRI brain-mask network (`linc-segment`'s `mri_brainmask`, in `$LINC_MODELS/segment/mri_brainmask`) makes the b0's mask,
   run with `$LINC_SEGMENT_PYTHON`. To use your own mask instead, give `--place-b0 <b0> <brain mask>`;
 - add `--new-brain`, which estimates its starting pose.
 
-For the paper's brains, the placed b0 comes with the data release. The b0 → template step also reads the frame bridge named in
+For the paper's brains, the b0 on the template's frame comes with the data release. The b0 → template step also reads the frame bridge named in
 `configs/link.yaml` (`inputs.bridge`, under `$LINC_PRODUCTS`).
 
 Each registration records its transform in the brain's registry, `$LINC_DATA/sub-<ID>/xfm/`; `--registry` changes the folder. An
@@ -32,7 +41,7 @@ $PY -m linc.xfm chain --from bf-native --to mri-template --subject MR252   # the
 ```
 
 The registry warns "link without passing QC" for entries written by `linc-register`, and `--strict` refuses them: the
-registrations of a new brain are unchecked until they are checked. The released entries of the paper's 21 brains carry the result
+registrations of a new brain are unchecked until they are checked. The released entries of the paper's 21 brains hold the result
 of the paper's quality checks (all passed).
 
 ## Check a registration
@@ -59,7 +68,7 @@ $PY cli/linc-register qc --preset bf2b0 \
     --entry $LINC_DATA/sub-<ID>/xfm/bf-native__to__b0-native --name <ID>
 ```
 
-The outline target is the b0's brain mask: the placed one, as here, or, for one of the paper's brains, its mask of record. This
+The outline target is the b0's brain mask: the one on the template's frame, as here, or, for one of the paper's brains, its mask of record. This
 command ran on the paper's registration of MM9 (`sub-MR257`, from the folders of the paper's products), in 25 s on a CPU, and
 printed, in part (with the run's name shortened):
 

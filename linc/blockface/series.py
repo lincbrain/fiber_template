@@ -2,16 +2,17 @@
 reconstruction": "MF8 and MF9 were aligned instead by registering each photograph to its counterpart in an already aligned series
 of the same sections").
 
-The camera of these two old stacks moved on nearly every frame, and every estimate made from the stack itself was relative, so its
-errors accumulated. Each photograph was instead registered to its counterpart in the external series: a per-section translation,
-plus a scale and rotation constant per camera setup. That fit was a rescue step. It needs the external series and a 2D mask
-network for it (Dataset513), so it is not part of the general pipeline and not part of the release. What is released is its
-record (configs/subjects/<ID>.yaml `series_alignment`: the per-section transforms, sub-<ID>/blockface/wvig/align.json) and this
-step, which replays it: the original photographs and their 2D masks are warped into the series' frame (the originals are kept as
-00_slices_prealign / 01_final_prealign). Such a brain lists no camera jumps.
+You need
+  the brain's photographs and accepted 2D masks (00_slices, 01_brainmask/01_final: photos.py) and the record of the alignment
+  (configs/subjects/<ID>.yaml `series_alignment`: sub-<ID>/blockface/wvig/align.json, one transform per section).
+What it does
+  The camera of these two old stacks moved on nearly every frame, so each photograph was registered to its counterpart in the
+  external series (a translation per section, plus a scale and rotation per camera setup). That fit was made once; what is here
+  replays its record: apply() warps the photographs and their masks into the series' frame. Such a brain lists no camera jumps.
+You get
+  00_slices and 01_brainmask/01_final in the series' frame; the originals kept as 00_slices_prealign and 01_final_prealign.
 
-Ported from the analysis project's code/wvig_align.py `apply_` (the warp, unchanged; its bookkeeping for the analysis project's
-curation tools is not part of the release).
+Ported from the analysis project's code/wvig_align.py `apply_` (the warp unchanged).
 """
 import glob
 import json

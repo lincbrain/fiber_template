@@ -1,28 +1,22 @@
 #!/usr/bin/env python3
-"""Per-section tracer labels in the MRI template, WITHOUT any interpolation between sections (paper: Fig. 10's sections panel; the
-placement record's `sections` rows; Supplementary S2): the sheets of record (products_mri `push_tracer_r058d`: one blockface slice per
-charted section, per grade; `tracer_v2_bfnative`: the group unions Bundles / Terminals / Injection_site / Fibers) carried by the
-chain of record (MR243 / MR252 / MR256, route B: the blockface -> b0 registration of record named in the R1 manifest of
-`numbers_of_record`/r1_current_2026-10-03.json, then the b0 -> template entry $LINC_DATA/sub-<S>/xfm/b0-native__to__mri-template;
-MF191, route A: the blockface-template -> MRI-template pull map, MF8's member warp and the inverse of its rigid placement, products_figures
-`bft_pull_map`, `bft_member_warps`, `mf8_rigid`), with the carry rule of record (linc/histology/carry.py: crop, per-axis anti-aliasing,
-one linear resample; configs/labels.yaml carry).
-Outputs, $LINC_WORK/tracer_sections_v2/<S>/ (what the released volumes `tracer_sections_v2` hold):
-  <S>_<label>_mri-template_sections_density.nii.gz   float 0-1: the carried fraction of the sheet (a section = a ~0.25-0.4 mm slab)
-  <S>_<label>_mri-template_sections_footprint.nii.gz uint8: density >= foot
-  <S>_section_index_mri-template.nii.gz                uint16: the section number of record at every template voxel a charted section's
-      slice lands on (nearest neighbor through the same chain; the slice plane filled, then cut to the template brain). A slice that
-      holds pieces of two sections (a hemisphere piece of each) is indexed by the lower number; the JSON lists these slices
-  <S>_sections.json                                     per charted section: number, blockface slice, voxels in the template, plane centroid
-      (mm), unit normal (PCA), spacing to the previous section along the mean normal (mm)
-  <S>_sections_points.csv                               x_mm,y_mm,z_mm,group,grade,section: every footprint voxel of every grade (world RAS,
-      MF191 unmirrored), the section from the index volume (nearest filled)
-and the records $LINC_NUMBERS/tracer_sections_v2.json (MR243, MR252, MR256) and tracer_sections_v2_mf191.json (MF191), as the analysis wrote
-them (per case: route, links, per-label counts, sections, spacing: the absolute spacing between consecutive charted sections along their
-mean normal, median / p90 / max, point rows).
+"""Carry each charted histology section into the template on its own, without interpolation (Fig. 10's sections view; S2).
+
+You need (configs/products_mri.yaml, configs/products_figures.yaml)
+  push_tracer_r058d: the pushed sheets of record per class; tracer_v2_bfnative: the group sheets; numbers_of_record: the
+  blockface -> b0 registrations of record (r1_current_2026-10-03.json); $LINC_DATA/sub-<ID>/xfm/b0-native__to__mri-template;
+  for MF191 the blockface template link and its member warp (bft_pull_map, bft_member_warps, mf8_rigid).
+
+What it does, per case
+  1. carries each class sheet and group sheet with the carry rule of record (crop, anti-aliasing, one linear resample);
+  2. carries a section index (each charted slice filled with its section number) by nearest neighbor;
+  3. fits each section's plane and measures the spacing between consecutive sections; lists every footprint voxel with its section.
+
+You get
+  $LINC_WORK/tracer_sections_v2/<ID>/: <ID>_<label>_mri-template_sections_{density,footprint}.nii.gz,
+  <ID>_section_index_mri-template.nii.gz, <ID>_sections.json, <ID>_sections_points.csv; and $LINC_NUMBERS/tracer_sections_v2.json
+  (MR243, MR252, MR256) and tracer_sections_v2_mf191.json (MF191)
+
     python reproduce/numbers/tracer_sections_v2.py [--cases MR243 ...]
-Ported from the analysis project's labels/tracer_v2/sections_to_template.py (2 Nov 2026), unchanged in rule; the timing fields are not
-part of the record.
 """
 import argparse
 import csv
@@ -50,7 +44,30 @@ ROUTE = {"MR243": "B", "MR252": "B", "MR256": "B", "MF191": "A"}
 NOTE = ("a slice holding pieces of two sections is indexed by the lower section number Spacing = |(centroid_k - centroid_{k-1}) . mean normal|; "
         "section numbers increase toward the posterior (decreasing template y).")
 MF8 = "MF191"
-PROTOCOL = __doc__.split("    python reproduce")[0]
+# the record's method text, fixed (it was this script's docstring when the record was made; the docstring may change)
+PROTOCOL = (
+    "Per-section tracer labels in the MRI template, WITHOUT any interpolation between sections (paper: Fig. 10's sections panel; the\n"
+    "placement record's `sections` rows; Supplementary S2): the sheets of record (products_mri `push_tracer_r058d`: one blockface slice per\n"
+    'charted section, per grade; `tracer_v2_bfnative`: the group unions Bundles / Terminals / Injection_site / Fibers) carried by the\n'
+    'chain of record (MR243 / MR252 / MR256, route B: the blockface -> b0 registration of record named in the R1 manifest of\n'
+    '`numbers_of_record`/r1_current_2026-10-03.json, then the b0 -> template entry $LINC_DATA/sub-<S>/xfm/b0-native__to__mri-template;\n'
+    "MF191, route A: the blockface-template -> MRI-template pull map, MF8's member warp and the inverse of its rigid placement, products_figures\n"
+    '`bft_pull_map`, `bft_member_warps`, `mf8_rigid`), with the carry rule of record (linc/histology/carry.py: crop, per-axis anti-aliasing,\n'
+    'one linear resample; configs/labels.yaml carry).\n'
+    'Outputs, $LINC_WORK/tracer_sections_v2/<S>/ (what the released volumes `tracer_sections_v2` hold):\n'
+    '  <S>_<label>_mri-template_sections_density.nii.gz   float 0-1: the carried fraction of the sheet (a section = a ~0.25-0.4 mm slab)\n'
+    '  <S>_<label>_mri-template_sections_footprint.nii.gz uint8: density >= foot\n'
+    "  <S>_section_index_mri-template.nii.gz                uint16: the section number of record at every template voxel a charted section's\n"
+    '      slice lands on (nearest neighbor through the same chain; the slice plane filled, then cut to the template brain). A slice that\n'
+    '      holds pieces of two sections (a hemisphere piece of each) is indexed by the lower number; the JSON lists these slices\n'
+    '  <S>_sections.json                                     per charted section: number, blockface slice, voxels in the template, plane centroid\n'
+    '      (mm), unit normal (PCA), spacing to the previous section along the mean normal (mm)\n'
+    '  <S>_sections_points.csv                               x_mm,y_mm,z_mm,group,grade,section: every footprint voxel of every grade (world RAS,\n'
+    '      MF191 unmirrored), the section from the index volume (nearest filled)\n'
+    'and the records $LINC_NUMBERS/tracer_sections_v2.json (MR243, MR252, MR256) and tracer_sections_v2_mf191.json (MF191), as the analysis wrote\n'
+    'them (per case: route, links, per-label counts, sections, spacing: the absolute spacing between consecutive charted sections along their\n'
+    'mean normal, median / p90 / max, point rows).\n'
+)
 
 
 def mf8_pull(P3):

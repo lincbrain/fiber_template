@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
-"""De-step intensity harmonisation: model the per-slice brain level as
-    L[i] = T[i] (smooth tissue trend) * G[session(i)] (piecewise-constant exposure gain) * N[i] (flicker).
-Detect exposure DISCONTINUITIES (change-points), estimate the multiplicative OFFSET across each, divide it
-out (aligning every session to the first), then harmonise each slice to a median-smoothed reference of the
-DE-STEPPED level. Result: the big posterior jump is removed (offset), per-slice flicker is removed, and the
-gentle within-session anatomical gradient is preserved. Analogous to the camera-jump correction, in intensity.
+"""The brightness steps between imaging sessions, removed (Methods, "Blockface reconstruction"; used by reconstruct.py).
 
-detect_steps(L) -> sorted change-point indices p (level jumps between p-1 and p).
-destep_reference(L, smooth) -> (ref, steps, gains): ref[i] is the target level per slice.
+You need
+  L, the brain's brightness per section, in section order.
+What it does
+  It models L[i] = T[i] (a smooth tissue trend) x G[session(i)] (one exposure gain per session) x N[i] (flicker):
+  detect_steps(L)            the change-points p between sessions (a jump in level between sections p-1 and p)
+  destep_reference(L, ...)   each session's gain divided out (every session brought to the first), then smoothed
+You get
+  (ref, steps, gains): ref[i] is section i's target level, with the session jumps and the flicker removed and the gentle
+  anatomical trend kept.
 
-Ported unchanged from the analysis project's code/destep.py."""
+Ported unchanged from the analysis project's code/destep.py.
+"""
 import numpy as np
 from scipy.ndimage import median_filter, gaussian_filter1d
 

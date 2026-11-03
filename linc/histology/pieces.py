@@ -1,21 +1,24 @@
-"""Blockface pieces for histology registration (paper Methods, "Histology registration and label propagation").
+"""The blockface photographs split into the components the histology sections were cut into, so each component is registered on its
+own (Methods, "Histology registration and label propagation").
 
-Each matched blockface photograph is divided into the pieces the histology was cut into (left hemisphere, right hemisphere,
-cerebellum + brainstem; or the whole section where the hemispheres are joined) using the brain's ATLAS regions, a 3D label
-volume (1 left, 2 right, 3 cerebellum + brainstem, 4 punch holes) propagated atlas -> template -> this brain's blockface.
-
-partition(): for every matched photo (match.match_photos) the regions are sampled at the photo's world coordinates (through
-the world affine of the blockface store's level 1), restricted to the photo's tissue; unlabeled tissue gets the nearest label,
-and slices whose tissue is two physically separate side-by-side lobes take the geometric split. Anatomical left/right becomes
-the piece classes (1 = the image-left piece of the upright photo, as the histology tissue masks are ordered) once per brain,
-from the data. Writes <seg_dir>/<photo>.png (class * 50) and <seg_dir>/partition.json.
-
-cut_pieces(): splits each matched photo by its partition into <section>_<tag>.png pieces (0001 left, 0002 right, 0003
-cerebellum), except inside the corpus-callosum section range [ccs, cce], where the hemispheres are joined and a whole-section
-photo is kept whole (0000). A piece photo (matched for one hemisphere or the cerebellum) is never forced whole.
+You need
+  the matched photographs (match.match_photos) and the brain's regions volume on the blockface: a 3D label volume (1 left
+  hemisphere, 2 right hemisphere, 3 cerebellum + brainstem, 4 marker tubes) transformed from the atlas through the template to this
+  brain's blockface; the corpus-callosum section range [ccs, cce] (configs/subjects/<ID>.yaml).
+What it does
+  partition()   for every matched photograph, the regions are sampled at its world coordinates (the world affine of the store's
+                level 1) and restricted to its tissue; unlabeled tissue gets the nearest label, and sections whose tissue is two
+                separate lobes side by side take the geometric split. Anatomical left and right become the component classes
+                (1 = the image-left component of the upright photograph, the order of the histology tissue masks) once per brain,
+                from the data.
+  cut_pieces()  each matched photograph split by its partition into components: 0001 left, 0002 right, 0003 cerebellum. Inside
+                [ccs, cce] the hemispheres are joined and a whole-section photograph is kept whole (0000); a photograph matched for
+                one hemisphere or the cerebellum is never kept whole.
+You get
+  <seg_dir>/<photo>.png (class x 50) and <seg_dir>/partition.json; <section>_<tag>.png per component.
 
 Ported from the analysis project's labels/seg_from_regions.py (with labels/propose_reg.split_separate_hemispheres) and
-code/histo.py segment_bf, the path of the products of record.
+code/histo.py segment_bf, the code of the products of record.
 """
 import json
 import os

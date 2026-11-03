@@ -1,7 +1,8 @@
 # A new brain's configuration: copy this file to configs/subjects/<ID>.yaml, where <ID> is the brain's identifier (its data folder is
 # $LINC_DATA/sub-<ID>/), fill in the REQUIRED fields and delete the optional ones you do not need (their defaults are given). The
 # paper's 21 brains are worked examples (e.g. MR243.yaml: 400 um sections; MR252.yaml: 50 um sections with missing sections).
-# Read by cli/linc-reconstruct (linc/blockface/subject.py), cli/linc-register and cli/linc-histology.
+# Read by cli/linc-reconstruct (linc/blockface/subject.py), cli/linc-register and cli/linc-histology. Every input a brain needs, raw and
+# hand-made, is listed in docs/inputs.md.
 
 # ---------------------------------------------------------------------------------------------------- the photographs (photos)
 subject: NEWBRAIN          # REQUIRED. The identifier, exactly as in this file's name and in the data folder sub-<ID>.

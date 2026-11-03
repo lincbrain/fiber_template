@@ -1,42 +1,37 @@
 #!/usr/bin/env python3
-"""Reconstruct a brain's blockface photographs into a 3D volume (Methods, "Blockface reconstruction"; Fig. 3).
+"""Reconstruct a brain's blockface photographs into a 3D volume, to which its MRI and histology are then registered (Methods,
+"Blockface reconstruction"; Fig. 3).
 
-    linc-reconstruct all      --subject <ID>         every step below, in order
-    linc-reconstruct photos   --subject <ID>         step 1: the photographs renamed (00_slices) and segmented by the 2D network
-                                                     (01_brainmask/00_predict), accepted as 01_final (hand corrections there survive);
-                                                     MF8 and MF9: then warped into their external series' frame (series.py)
-    linc-reconstruct stack    --subject <ID>         the photographs and their masks stacked (_work/)
-    linc-reconstruct prepare  --subject <ID> [--reuse-jumps]
-                                                     step 2 (the camera jumps, TIRL) and the rest of stage 3: the masks finalized,
-                                                     missing sections marked and pre-filled, small 3D components dropped, the stack
-                                                     cropped (02_blockface*), its background-intact twin, illumination and brightness,
-                                                     the exports (nii/)
-    linc-reconstruct mask     --subject <ID>         step 4: the 3D brain mask -> curated/<ID>_mask (a hand-edited
-                                                     curated/<ID>_mask_edited wins)
-    linc-reconstruct volume   --subject <ID> [--keep-work]
-                                                     steps 3, 5 and 6 (the reconstruction): <ID>_blockface.ome.zarr, <ID>_mask, <ID>_holes
-    linc-reconstruct tubes    --subject <ID> [--keep-work]
-                                                     step 6: the 3D marker tubes -> curated/<ID>_holes (a hand-edited
-                                                     curated/<ID>_holes_edited wins) and the tubes re-filled when they changed
-    linc-reconstruct spacing  --subject <ID>         the calibrated spacing (configs/subjects vx, vz) written into the headers
-    linc-reconstruct edit-photo-masks export|import --subject <ID>
-                                                     optional: hand-correct the 2D masks on the stacked photographs (fsleyes), then
-                                                     import them back (01_final) before `prepare`
+You need
+  the photographs as taken, one JPEG per section, in $LINC_RAW/<raw> (docs/inputs.md); the brain's configs/subjects/<ID>.yaml (a new
+  brain: copy configs/subjects/TEMPLATE.yaml): the photographs' folder, pattern and numbering, pixel size and section step, and the
+  hand-made lists of camera jumps and missing sections; optional hand corrections (curated/<ID>_mask_edited.nii.gz,
+  curated/<ID>_holes_edited.nii.gz, corrected photograph masks in 01_brainmask/01_final); the network weights in $LINC_MODELS/segment;
+  env/tirl.yml's Python ($PY_TIRL) with TIRL and zarr2nii beside it, and env/deep.yml's ($LINC_SEGMENT_PYTHON) for the networks.
+What it does (`all` runs these steps in order; each can be run alone)
+  photos    the photographs renamed in cutting order (00_slices) and segmented by the photograph network (01_brainmask)
+  stack     the photographs and their masks stacked into a volume
+  prepare   each camera jump registered with TIRL (the registration library) and corrected; masks finalized, missing sections
+            filled in, the stack cropped, illumination and brightness corrected
+  mask      the 3D brain mask (the network's, or your curated/<ID>_mask_edited)
+  volume    the reconstruction: the brain on the reconstruction grid, the marker tubes filled
+  tubes     the 3D marker tubes (the network's, or your curated/<ID>_holes_edited)
+  spacing   the calibrated pixel size and section step written into the headers
+You get
+  in $LINC_DATA/sub-<ID>/blockface/: <ID>_blockface.ome.zarr (the reconstruction, OME-Zarr pyramid, RGB), <ID>_mask.nii.gz and
+  <ID>_holes.nii.gz (brain mask and marker tubes, NIfTI), <ID>_blockface_L2.nii.gz (a light NIfTI export), <ID>.info, QC images.
+  Compare two reconstructions (e.g. yours with the paper's): tools/compare_reconstruction.py.
 
-Hand corrections (all masks were corrected by hand where needed): after `prepare`, a brain mask edited on curated/<ID>_bg is saved
-as curated/<ID>_mask_edited.nii.gz; after `volume`, edited tubes as curated/<ID>_holes_edited.nii.gz (linc/blockface/curate.py folds
-edits made on the final grid back). configs/subjects/<ID>.yaml `masks_of_record` lists which masks of the paper's brains are hand edits.
+    $PY_TIRL cli/linc-reconstruct all --subject <ID>
+    $PY_TIRL cli/linc-reconstruct <step> --subject <ID>
+    $PY_TIRL cli/linc-reconstruct edit-photo-masks export|import --subject <ID>     optional: hand-correct the photograph masks
 
-Segmentation (steps 1, 4, 6): configs/blockface.yaml `segmentation.engine`, one switch per task (photos, mask, tubes), or --engine:
-`--engine linc_segment` (every task of the step) or `--engine photos=linc_segment,mask=nnunet`. nnunet: the three nnU-Nets the paper's
-masks of record were made with (models/blockface_segmentation.md); linc_segment: the models wrap-up's networks (models/segmentation.md),
-run by cli/linc-segment with $LINC_SEGMENT_PYTHON (env/deep.yml), a task's default once its network passes the gate. The
-post-processing is the pipeline's own on both engines (linc/blockface/mask_rules.py), applied once: linc-segment runs with
---postprocess none.
-Environment: LINC_DATA (outputs under $LINC_DATA/sub-<ID>/blockface/), LINC_RAW (the photographs), LINC_MODELS (segment/ and, for
-nnunet, nnUNet_results/), LINC_SEGMENT_PYTHON, and the external tools TIRL 3.6.3 (or 3.6.2, the paper's; beside the running Python), nifti-zarr 1.0.0rc6 and (for nnunet) nnU-Net 2.5.1
-(linc/blockface/external.py).
-Parameters: configs/blockface.yaml; per brain: configs/subjects/<ID>.yaml.
+Details. Hand corrections: after `prepare`, a brain mask edited on curated/<ID>_bg is saved as curated/<ID>_mask_edited.nii.gz;
+after `volume`, edited tubes as curated/<ID>_holes_edited.nii.gz (linc/blockface/curate.py folds edits made on the final grid back);
+configs/subjects/<ID>.yaml `masks_of_record` lists which of the paper's masks are hand edits. The networks: configs/blockface.yaml
+`segmentation.engine` (the released models for all three tasks; `--engine nnunet` reruns the earlier networks the paper's masks were
+made with, env/nnunet.yml); their post-processing is applied once by linc/blockface/mask_rules.py. MF8 and MF9 replay their recorded
+alignment to an external series in `photos`. Parameters: configs/blockface.yaml; per brain: configs/subjects/<ID>.yaml.
 """
 import argparse
 import os

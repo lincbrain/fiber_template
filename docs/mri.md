@@ -1,5 +1,15 @@
 # Prepare a brain's MRI
 
+**You need** one MRI volume of the brain, a b0 or a T2-weighted image (`docs/inputs.md`).
+
+**What it does**
+1. makes the brain mask with the MRI brain-mask network, or takes yours (`--mask`);
+2. masks the brain;
+3. corrects its bias field (N4).
+
+**You get**, under `$LINC_DATA/sub-<ID>/mri/`: the image, its brain mask, and the masked and the bias-corrected brain, as NIfTI,
+with a provenance JSON.
+
 For a brain that is not one of the paper's, `cli/linc-mri prep` turns one MRI volume, a b0 or a T2-weighted image, into the inputs
 of the registration (`docs/register.md`): the volume, its brain mask and the bias-corrected brain. It runs the paper's preprocessing
 steps (Methods, "MRI preprocessing"), except the resampling: `linc-register` resamples onto the template's 0.5 mm frame.

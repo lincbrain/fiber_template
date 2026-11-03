@@ -5,13 +5,14 @@ groupwise construction").
         [--prep '$LINC_DATA/sub-{id}/mri/construction_inputs'] [--leave-out MF283]
 
 Writes, under the run folder:
-  data/<MOD>/<ID>[f]/<MOD>/...   the 8 construction inputs per channel (4 brains + their exact mirrors), linked from the prep folders
+  data/<MOD>/<ID>[f]/<MOD>/...   the construction inputs per channel (each brain of `inputs` and, with run_assembly.mirror, its exact
+                                 mirror), linked from the prep folders
                                  written by linc.construction.mri_prep (scalar: <MOD>_unbiased_brain, <MOD>_brain_mask; tensor:
                                  <MOD>/dti_tensor, tensor_brain_mask). Brain images only: no head image, so the driver takes its
                                  brain-only path.
   subject_ids.csv                MF283, MF283f, ... (an "f" id is the mirror)
-  standardspace.nii.gz           the voxelwise mean of the 8 first-channel (T2) inputs: already in the canonical frame (the driver's
-                                 6-dof alignment to it cannot rotate the template out of the frame) and exactly symmetric
+  standardspace.nii.gz           the voxelwise mean of the first-channel (T2) inputs: already in the canonical frame (the driver's
+                                 6-dof alignment to it cannot rotate the template out of the frame), exactly symmetric with mirrors
   config/                        data_structure.tree (+ one .tree per channel), mmorf_params_stepNN.ini (one per step),
                                  affine_zero_warp_for_deltaWarp.nii.gz (zero displacement on the canonical grid)
   run_spec.json                  channels, weights, quantitative channels, steps, ids
@@ -119,6 +120,7 @@ def assemble(out, upstream, prep=None, name=None, leave_out=None, R=None):
             raise SystemExit(f"--leave-out {leave_out!r} not in {subjects}")
         subjects = [s for s in subjects if s != leave_out]
     files = R["run_assembly"]["input_files"]
+    versions = [("", "")] + ([("f", "_flip")] if R["run_assembly"].get("mirror", True) else [])   # the brain, then its mirror
     mods, tmods = _mods(R)
     pattern = prep or default_prep()
     prep = lambda s: Path(pattern.format(id=s))   # noqa: E731
@@ -130,7 +132,7 @@ def assemble(out, upstream, prep=None, name=None, leave_out=None, R=None):
     for mi, (mod, _w, _q) in enumerate(mods):
         spec = files[mod]
         for s in subjects:
-            for sid, suffix in [(s, ""), (s + "f", "_flip")]:
+            for sid, suffix in [(s + tag, sfx) for tag, sfx in versions]:
                 d = out / "data" / mod / sid / mod
                 d.mkdir(parents=True, exist_ok=True)
                 brain = prep(s) / f"{spec['brain']}{suffix}.nii.gz"
@@ -144,7 +146,7 @@ def assemble(out, upstream, prep=None, name=None, leave_out=None, R=None):
     for mod, _w in tmods:
         spec = files[mod]
         for s in subjects:
-            for sid, suffix in [(s, ""), (s + "f", "_flip")]:
+            for sid, suffix in [(s + tag, sfx) for tag, sfx in versions]:
                 d = out / "data" / mod / sid / mod / mod
                 d.mkdir(parents=True, exist_ok=True)
                 for fname, src in [("dti_tensor", prep(s) / f"{spec['tensor']}{suffix}.nii.gz"),

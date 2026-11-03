@@ -111,6 +111,7 @@ run_assembly:
              dir: template_construction_v1}  # the driver (patched: linc/construction/patches/) and its tempconfig/data_structure.tree
   driver_args: {dof: 6, n_resolutions: 8, n_iterations: 3, cpuq: cpu.q, gpuq: gpu.q}
   batch_of_record: [8, 8, 8, 8, 8, 4, 4, 3]   # concurrent MMORF tasks per step on one 48 GB card (scheduling only; no effect on results)
+  mirror: true                             # each brain enters with its exact left-right mirror (<ID>f, the _flip inputs): a symmetric template
 
 # --- template channels (linc/construction/channels.py) ---
 channels:

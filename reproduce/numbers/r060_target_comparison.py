@@ -1,15 +1,22 @@
 #!/usr/bin/env python3
-"""Our MRI template as a registration target, against NMT v2 and CIVM-R (paper: Methods, sec:m-target; Results, Table 3): the measures
-of the registrations of record (configs/products_blockface.yaml `r060_runs`), recomputed by linc/evaluation/targets.py.
+"""Our MRI template as a registration target, against NMT v2 and CIVM-R (Table 3).
 
-Steps: `prep` (the targets' channels and every brain's images, masked, into $LINC_WORK/r060; skipped when present), then `measure`
-(each brain's b0 and mask pulled onto each target's grid through its registration of record; pairwise b0 correlation and mask Dice;
-CPU, about 76 warps, --jobs in parallel). NMT v2 and CIVM-R are read from the user's own copies (configs/targets.yaml says where to get
-them); nothing derived from their intensities leaves $LINC_WORK.
--> $LINC_NUMBERS/r060_target_comparison.json
-    python reproduce/numbers/r060_target_comparison.py [--jobs 4]
-The record's free-text `method` field is kept verbatim from the analysis as it ran (its script's docstring, below as METHOD), as for
-every record (docs/paper_to_code.md); every other field is regenerated.
+You need
+  the registrations of record of every brain to the three targets (configs/products_blockface.yaml `r060_runs`), our template
+  (template_mri), and your own copies of NMT v2 and CIVM-R (configs/targets.yaml says where to get them and where to put them).
+
+What it does
+  1. prep: masks the targets' channels and every brain's images into $LINC_WORK/r060 (skipped when present);
+  2. measure: pulls each brain's b0 and mask onto each target's grid through its registration of record, then computes the pairwise
+     b0 correlation and mask Dice (CPU, about 76 warps, --jobs in parallel).
+
+You get
+  $LINC_NUMBERS/r060_target_comparison.json; nothing derived from the published templates' intensities leaves $LINC_WORK
+
+    python reproduce/numbers/r060_target_comparison.py [--jobs 4] [--plan]
+
+The record's free-text `method` field is kept verbatim from the analysis run (METHOD below); every other field is regenerated
+(paper: Methods, "The template as a registration target").
 """
 import argparse
 import sys

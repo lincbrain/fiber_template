@@ -58,6 +58,8 @@ COL = dict(direct="#1fb5c4",                 # direct route, cyan-teal (v2: #2fa
            outline=FG, annot=FG, without=WITHOUT, with_=FG)
 BRAIN = dict(MR243=OKABE["sky"], MR252=OKABE["purple"], MR256=OKABE["green"], MF191=OKABE["yellow"],
              MF282=OKABE["vermilion"])       # fixed per brain, every figure; extend only with unused hues
+TRACER = dict(MR243=OKABE["vermilion"], MR252=OKABE["green"], MF191=OKABE["yellow"], MR256=OKABE["blue"])   # the tracer cases' colors in
+                                             # every tracer figure (Fig. 10 and its 3D scene, Fig. S4): MM1, MM2, MF8, MM3
 COL.update(A=COL["direct"], B=COL["mri"], band=FG, b1=BRAIN["MR243"], b2=BRAIN["MR252"])    # v1 names
 COL.update(uncorrected="#8c9cff", corrected=FG)   # v2.2 (2 Oct, the reconstruction figure's (e) at the author's request): photographs before
                                                 # intensity correction, a light blue-violet distinct from every brain hue, the

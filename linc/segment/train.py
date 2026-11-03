@@ -1,19 +1,33 @@
-"""Train one model of a task: one fold (its held-out subjects scored at the end) or "all" (every case).
+"""Train one segmentation model of a task: one fold (its held-out brains predicted and scored at the end) or "all" (every brain;
+the shipped model). The recipe is nnU-Net's (Isensee et al. 2021), reimplemented with the augmentation on the GPU.
 
-Recipe (nnU-Net's, with the augmentation on the GPU; the record lists every value):
-  network        net.UNet, nnU-Net topology, deep supervision
-  input          resampled to the task's target spacing if it has one; per-image, per-channel z-score (the task's normalization:
-                 over the whole image, or over its nonzero voxels); patches cut from a context box 1.3x (3D) / 1.4x (2D) the patch, 1/3 centered on
-                 foreground; augmentation.augment on the GPU
-  loss           Dice + cross-entropy (losses.loss), deep-supervision weights 1, 1/2, 1/4, ...
-  optimizer      SGD, Nesterov momentum 0.99, weight decay 3e-5, lr 1e-2 with poly decay (1 - epoch/epochs)^0.9, gradient norm <= 12,
-                 bf16 autocast; a fixed budget of epochs x iterations x batch
-  per epoch      mean training loss; pseudo-Dice of the held-out fold on fixed patches (the context centers, no augmentation)
-  at the end     model.pt (state_dict) + spec.json; every held-out case predicted through predict.predict_case (the release's inference
-                 path) and scored (Dice, ASSD and HD95 in mm); record.json; DONE
-Checkpoint <out>/last.pt every 5 epochs and at the end (atomic): a stopped run resumes from it, on any host (record.json: every epoch).
+You need
+  a task file: the cases (each an image and its hand-made label), the five folds (the brains each fold holds out) and the task's
+  settings. The four of record are configs/segment/<model>.json (mri_brainmask, bf_mask2d, bf_mask3d, bf_holes); their images and
+  labels are read under $LINC_PRODUCTS. A CUDA GPU: about 2 h per run on an RTX 6000 Ada.
 
-    python -m linc.segment.train --task <spec.json> --fold <k|all> [--out <run folder>] [--epochs 250 --iters 250 --batch 2]
+What it does
+  1. resamples each image to the task's target spacing (if it has one) and normalizes each channel to zero mean, unit variance
+  2. cuts training patches, one in three centered on a labeled voxel, and augments them (rotation, scale, mirroring, noise, blur,
+     brightness, contrast, low resolution, gamma)
+  3. trains a U-Net (an encoder-decoder convolutional network with skip connections; nnU-Net's layout) for 200 epochs x 250
+     iterations, batch 2 unless the task file says otherwise: loss = Dice loss (one minus the overlap between prediction and label)
+     + cross-entropy, at every decoder level; SGD with Nesterov momentum 0.99, learning rate 1e-2 decaying polynomially to 0
+  4. keeps the final epoch's weights (no selection on held-out data)
+  5. predicts every held-out case with the release's inference (linc/segment/predict.py) and scores it against its label (Dice
+     coefficient, average symmetric surface distance, 95th-percentile Hausdorff distance, in mm)
+
+You get  ($LINC_WORK/segment/runs/<task>/fold_<k>/, or --out)
+  model.pt and spec.json (a model folder: `linc-segment predict --model <folder>` reads it), record.json (the recipe, every
+  epoch's loss, the held-out scores), val_pred/ (the held-out masks) and DONE. A stopped run resumes from its last.pt.
+
+    cli/linc-segment train --task configs/segment/<model>.json --fold <0-4|all>
+    cli/linc-segment train --task configs/segment/<model>.json --plan        # the cases, folds, missing files, GPU hours; no training
+
+The runs of record made the four shipped models (fold all; $LINC_MODELS/segment/<model>) and the held-out scores of their records
+(folds 0-4; reproduce/numbers/segmodels_<model>_2026-11.py). On one GPU the recipe is deterministic: two runs gave bitwise identical
+weights (mri_brainmask, 2 epochs, RTX 4000 Ada, 3 Nov 2026). Whether another GPU model gives the same bits has not been
+measured.
 """
 import argparse
 import datetime as dt
@@ -77,17 +91,44 @@ def dice_counts(logits, y, K):
     return np.array(out)
 
 
+def work_root():
+    from ..paths import work_root as w
+    return w()
+
+
+def plan(task, a, own):
+    """what a run would read and how long it took on the record's GPU, scaled by epochs x iterations x batch; trains nothing"""
+    files = [q for c in task["cases"] for q in (c["image"] if isinstance(c["image"], list) else [c["image"]]) + [c["label"]]
+             + ([c["mask"]] if "mask" in c else [])]
+    missing = [q for q in files if not os.path.exists(q)]
+    subs = sorted({c["subject"] for c in task["cases"]})
+    print(f"{task['task']}: {len(task['cases'])} cases from {len(subs)} brains ({task['dim']}D, {task.get('channels', 1)} channel(s)); "
+          f"target spacing {task.get('target_spacing') or 'the images own'}; {a.epochs} epochs x {a.iters} iterations x batch {a.batch}")
+    print(f"input files: {len(files) - len(missing)} of {len(files)} found" + (f"; missing, e.g. {missing[:3]}" if missing else ""))
+    ref = 200 * 250 * own.get("batch", 2)                               # the run of record's epochs x iterations x batch
+    scale = a.epochs * a.iters * a.batch / ref
+    for k in ([a.fold] if a.fold else list(task["folds"]) + ["all"]):
+        tr, va = data.split(task, k)
+        r = task.get("record_runs", {}).get(str(k))
+        est = f"run of record {r['hours']} h on one {r['gpu']}" + (f" (x {scale:.3g} here: {r['hours'] * scale:.1f} h)" if scale != 1 else "") \
+            if r else "no run of record: time one epoch"
+        held = f"held out {', '.join(task['folds'][str(k)])}" if k != "all" else "every brain"
+        print(f"  fold {k}: {len(tr)} training / {len(va)} held-out cases ({held}); {est}")
+    return 1 if missing else 0
+
+
 def main(argv=None):
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--task", required=True, type=Path); ap.add_argument("--fold", required=True)
+    ap = argparse.ArgumentParser(prog="linc-segment train", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--task", required=True, type=Path); ap.add_argument("--fold")
+    ap.add_argument("--plan", action="store_true", help="print the cases, folds, missing files and expected GPU hours; train nothing")
     ap.add_argument("--out", type=Path); ap.add_argument("--cache", type=Path)
-    ap.add_argument("--epochs", type=int, default=250); ap.add_argument("--iters", type=int, default=250)
-    ap.add_argument("--batch", type=int, default=2); ap.add_argument("--patch", type=int, nargs="+")
+    ap.add_argument("--epochs", type=int, default=200); ap.add_argument("--iters", type=int, default=250)
+    ap.add_argument("--batch", type=int); ap.add_argument("--patch", type=int, nargs="+")
     ap.add_argument("--features", type=int, nargs="+"); ap.add_argument("--no-deep-supervision", action="store_true")
     ap.add_argument("--lr", type=float, default=1e-2); ap.add_argument("--weight-decay", type=float, default=3e-5)
-    ap.add_argument("--seed", type=int, default=0); ap.add_argument("--workers", type=int, default=6)
+    ap.add_argument("--seed", type=int, default=0); ap.add_argument("--workers", type=int)
     ap.add_argument("--val-patches", type=int, default=64); ap.add_argument("--device", default="cuda")
-    ap.add_argument("--mirror", choices=("on", "off"), default="off", help="mirroring at inference (the model's spec default)")
+    ap.add_argument("--mirror", choices=("on", "off"), default="on", help="mirroring at inference (the model's spec default)")
     ap.add_argument("--mem-fraction", type=float, default=None, help="cap this process's share of the GPU memory (two jobs per card)")
     ap.add_argument("--postprocess", choices=("task", "none", "largest_component", "largest_cc_fill"), default="task",
                     help="task = the task's own postprocess block (none if it has none)")
@@ -98,8 +139,17 @@ def main(argv=None):
     ap.add_argument("--target-spacing", nargs="+", help="resample to this voxel size (mm) for training and prediction, or 'median' "
                     "(the per-axis median over the task's cases, nnU-Net's rule); overrides the task's target_spacing")
     a = ap.parse_args(argv)
+    if a.fold is None and not a.plan:
+        ap.error("give --fold <0-4|all> (or --plan)")
     pairs = [tuple(r.split("=", 1)) for r in a.remap]
-    task = data.load_task(a.task, pairs)
+    try:
+        task = data.load_task(a.task, pairs)
+    except (OSError, RuntimeError) as ex:
+        sys.exit(f"{a.task}: {ex}")
+    own = task.get("train", {})                                       # the task's own arguments where they differ from the defaults
+    a.batch = a.batch or own.get("batch", 2); a.workers = own.get("workers", 6) if a.workers is None else a.workers
+    if a.plan:
+        return plan(task, a, own)
     if a.target_spacing:
         task["target_spacing"] = "median" if a.target_spacing == ["median"] else [float(v) for v in a.target_spacing]
     if task.get("target_spacing") == "median":
@@ -108,14 +158,14 @@ def main(argv=None):
     if a.normalization:
         task["normalization"] = a.normalization
     name, dim, K = task["task"], int(task["dim"]), len(task["classes"])
-    out = a.out or ROOT / "work" / "segment" / "runs" / name / f"fold_{a.fold}"; out.mkdir(parents=True, exist_ok=True)
+    out = a.out or work_root() / "segment" / "runs" / name / f"fold_{a.fold}"; out.mkdir(parents=True, exist_ok=True)
     if (out / "DONE").exists():
         print(out, "is DONE"); return 0
     ts_tag = "native" if not task.get("target_spacing") else "ts_" + "_".join(f"{v:.4f}" for v in task["target_spacing"])
     ts_tag += "_lab2_" + hashlib.md5(json.dumps([[c["image"], c["label"]] for c in task["cases"]]).encode()).hexdigest()[:8]
     # _lab2: io.resample_label's rule (nearest-exact; block mean >= 0.5 at even integer reductions); the hash of the case files makes
     # a task repointed to restaged data build its own cache (cache_case keeps any case whose meta.json exists)
-    cache = a.cache or ROOT / "work" / "segment" / "cache" / name / ts_tag
+    cache = a.cache or work_root() / "segment" / "cache" / name / ts_tag
     patch = list(a.patch or task.get("patch") or PATCH[dim])
     feats = tuple(a.features or task.get("features") or FEATURES[dim])
     aug = dict(augment.DEFAULTS, **task.get("augment", {}))

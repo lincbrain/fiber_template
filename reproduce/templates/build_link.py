@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
-"""Build the link (the blockface template's b0 -> the MRI template's b0), its construction estimate and comparison, and the mappings
-to NMT v2, INIA19 and CIVM-R, from the released products: the recipe of record (reproduce/templates/link.md), one step per command,
-with configs/link.yaml's parameters (the commands read it; nothing is restated here).
+"""Build the link between the two templates and the mappings to published templates; every parameter comes from configs/link.yaml.
+
+You need
+  env/linc.yml; env/anatomix.yml ($ANATOMIX_PYTHON) and one GPU for the [anatomix] steps (about 5 GB for the link at 0.35 mm, more for
+  the 0.25 mm mappings); ANTs 2.5.4 on PATH or $ANTSPATH for the mappings' affine start;
+  under $LINC_PRODUCTS (configs/link.yaml inputs): the blockface template's b0 and mask, the MRI template's b0, mask and T2, the frame
+  bridge, the template's member warps, the one-way link of record (configs/products_blockface.yaml link_greedy); under $LINC_DATA the
+  per-brain registrations; your own copies of the published templates (configs/targets.yaml says where to get them).
+What it does (--plan lists every step with its command, inputs, outputs and time)
+  1. the link: the blockface template's b0 registered to the MRI template's b0 (affine start, then the symmetric feature-based engine)
+  2. the construction estimate: each member's own route into the MRI template composed, and compared with the link
+  3. the mappings: the MRI template registered to each published template in configs/link.yaml atlas.atlases, and scored
+You get
+  under --work (default $LINC_WORK/build_link): link/sym (the link), link/maps (its two pull maps), the estimate and its comparison
+  (link/s5_*), mri/tc/atlas_v2/<template>/ (the mappings); the numbers records in $LINC_NUMBERS.
 
     python reproduce/templates/build_link.py --plan                    every step, its environment, time, inputs, outputs
-    python reproduce/templates/build_link.py --step link-prepare       one step (or several, in recipe order)
+    python reproduce/templates/build_link.py --step link-prepare       one step (or several, in order)
     python reproduce/templates/build_link.py --from compose --to compare
-
-Run in env/linc.yml. The [anatomix] steps are the feature-based engine (`solve`), run with $ANATOMIX_PYTHON (env/anatomix.yml) on one
-GPU (about 5 GB for the link at 0.35 mm; more for the 0.25 mm atlas mappings); the atlas affines need ANTs 2.5.4 on PATH (or
-$ANTSPATH). Inputs: configs/link.yaml `inputs` under $LINC_PRODUCTS (the two templates, the frame bridge, the member warps; your own
-copies of CIVM-R and ONPRC18), the per-brain registrations under $LINC_DATA. Outputs under --work (default $LINC_WORK/build_link):
-link/sym (the link), link/maps (its two pull maps), link/s5_compose_d2bs8_r05_guard and link/s5_tpl_d2bs8_r05_guard (the
-construction estimate), link/s5_compare_d2bs8.json, mri/tc/atlas_v2/<atlas>/ (the mappings), and the numbers records written to
-$LINC_NUMBERS by `score` and the summary.
-One input the recipe does not rebuild: the one-way (greedy) link that `compare` reads beside the symmetric one; the greedy-link step
-links the product of record (configs/products_blockface.yaml link_greedy). Times: link.md's (CPU, 8 threads) where it gives them.
 """
 import os
 import sys
@@ -24,7 +26,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import _driver as D  # noqa: E402
 
-ATLASES = ["NMT_v2.0_sym", "INIA19", "CIVM-R"]                      # link.md's order (atlas_final_v2_summary.py's record order)
+ATLASES = list(__import__("yaml").safe_load((D.REPO / "configs" / "link.yaml").read_text())["atlas"]["atlases"])   # the mapped templates, in order
 
 
 def make_steps(W, paths):
@@ -72,10 +74,10 @@ def make_steps(W, paths):
         ]
     steps.append(S("atlas-summary", "3. mappings to published templates", "linc", ["reproduce/numbers/atlas_final_v2_summary.py"],
                    [Path(os.environ.get("LINC_NUMBERS", "numbers")) / "atlas_final_v2_summary.json"],
-                   [AT / a / "score.json" for a in ATLASES], "1 s", "reads the three score records under <work>/mri/tc/atlas_v2",
+                   [AT / a / "score.json" for a in ATLASES], "1 s", "reads each mapping's score record under <work>/mri/tc/atlas_v2",
                    setenv={"LINC_PRODUCTS": str(W)}))
     return steps
 
 
 if __name__ == "__main__":
-    D.main("Link and template mappings build (reproduce/templates/link.md)", make_steps, "build_link")
+    D.main("Link and template mappings build (reproduce/templates/link.md)", make_steps, "build_link", doc=__doc__)

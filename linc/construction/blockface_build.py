@@ -52,9 +52,12 @@ from linc.registration import xfmtools as X
 
 MODS = [("BF", "t1_grey", "t1_costmask"), ("B0", "d2_b0", "d2_b0_costmask")]           # the driver's two scalar channels
 MODS_K = [("01", "t1_grey", "t1_costmask"), ("02", "d2_b0", "d2_b0_costmask")]           # scalar_mod_01 = BF, scalar_mod_02 = B0
-NATIVE = {"BF": 0.25, "B0": 0.5}                    # the channels' own resolution (mm): the step-8 smoothing floors
-MRI13 = "MF275,MF278,MF282,MR243,MR249,MR250,MR251,MR252,MR253,MR254,MR256,MR257,MR261"
-NOMRI8 = "MF191,MF196,MF204,MR244,MR247,MR248,MR263,MR273"
+# the brains, grids and MMORF schedule: configs/blockface_template.yaml (the build reads them from the configuration)
+TCFG = __import__("yaml").safe_load((Path(__file__).resolve().parents[2] / "configs" / "blockface_template.yaml").read_text())
+NATIVE = dict(TCFG["grids"]["native_mm"])          # the channels' own resolution (mm): the step-8 smoothing floors
+MRI13 = ",".join(TCFG["members"]["with_mri"])      # the members with their own b0 (argparse defaults below)
+NOMRI8 = ",".join(TCFG["members"]["without_mri"])  # the members whose b0 channel is the completion's stand-in
+S8 = int(TCFG["mmorf"]["step8"]["step"])           # the step-8 run's step (its ladder has S8 steps)
 DRIVER_PATCHED = "mm-template-construction f4907f4 + linc/construction/patches/mm-template-construction_v1_blockface.edits.json"
 STEP8_RULE = dict(question="At step 8 only, should the 8 brains' stand-in b0 count less in never-photographed tissue, the same way their "
                            "synthetic blockface already does? Steps 1-7 keep full weight.",
@@ -345,7 +348,8 @@ def cmd_box(a):
         sup[t] = dict(world_lo=w0[:3].tolist(), world_hi=w1[:3].tolist(), voxel_mm=float(abs(im.affine[0, 0])))
     vox = np.abs(np.diag(A2)[:3]); assert np.all(np.diag(A2)[:3] > 0), "canon2 axes must be positive"
     # half a coarse voxel more on each side (the support is measured at voxel centres of the 0.5 mm template), then PAD
-    wlo = lo - a.pad - 0.25; whi = hi + a.pad + 0.25
+    hv = 0.5 * TCFG["grids"]["plan_a_voxel_mm"]                    # half a plan-A voxel
+    wlo = lo - a.pad - hv; whi = hi + a.pad + hv
     i0 = np.floor((wlo - A2[:3, 3]) / vox).astype(int); i1 = np.ceil((whi - A2[:3, 3]) / vox).astype(int)
     i0[0] = min(i0[0], s2[0] - 1 - i1[0]); i1[0] = s2[0] - 1 - i0[0]               # x-symmetric on canon2's symmetric lattice
     shp = tuple(int(x) for x in i1 - i0 + 1)
@@ -865,7 +869,7 @@ def cmd_assemble_step8(a):
     step 8 from the 8-step ladder; the driver resumes at 8:1."""
     B = M
     canon2, pa, box = Path(ab(a.canon2)), Path(ab(a.plan_a)), Path(ab(a.box))
-    M.set_ladder(8)
+    M.set_ladder(S8)
     for mod, payload, cmask in MODS:
         B.MODALITIES[mod] = {"brain": payload, "mask": cmask, "quant": False}
         B.NATIVE_MM[mod] = NATIVE[mod]
@@ -873,7 +877,7 @@ def cmd_assemble_step8(a):
     ids = [l.strip() for l in open(pa / "subject_ids.csv") if l.strip()]
     assert ids == spa["subject_ids"], "plan A's subject_ids.csv and run_spec disagree"
     assert [m["name"] for m in spa["modalities"]] == [m for m, _, _ in MODS], spa["modalities"]
-    assert spa["lambda_scale"] == 10.0 and spa["n_steps"] == 7, (spa["lambda_scale"], spa["n_steps"])
+    assert spa["lambda_scale"] == TCFG["mmorf"]["lambda_scale"] and spa["n_steps"] == TCFG["mmorf"]["plan_a"]["steps"], (spa["lambda_scale"], spa["n_steps"])
     w = {m["name"]: m["lambda_scalar"] for m in spa["modalities"]}
     subs = spa["subjects"]
     q2 = json.load(open(canon2 / "qc.json"))
@@ -916,27 +920,27 @@ def cmd_assemble_step8(a):
     for k, (mod, _, _) in enumerate(MODS, 1):
         tree += f"\n!{{scalar_mod_{k:02d}_dir}}\n    ->scalar_mod_{mod} (scalar_mod_{k:02d})\n"
     tree += "\n!{config_dir}\n"
-    tree += "".join(f"    mmorf_params_step{i:02d}{{ext_ini}} (mmorf_params_{i:02d})\n" for i in range(1, 9))
+    tree += "".join(f"    mmorf_params_step{i:02d}{{ext_ini}} (mmorf_params_{i:02d})\n" for i in range(1, S8 + 1))
     tree += "    affine_zero_warp_for_deltaWarp{ext_nii} (zero_warp_affine)\n\n"
     up = Path(_driver_dir()) / "tempconfig"
     tree += (up / "data_structure.tree").read_text().split("!{template_dir}", 1)[1].join(["!{template_dir}", ""])
     (cfg / "data_structure.tree").write_text(tree)
     for mod, _, _ in MODS:
         shutil.copy2(pa / "config" / f"scalar_mod_{mod}.tree", cfg / f"scalar_mod_{mod}.tree")
-    for i in range(1, 8):
+    for i in range(1, S8):
         shutil.copy2(pa / "config" / f"mmorf_params_step{i:02d}.ini", cfg / f"mmorf_params_step{i:02d}.ini")
     mods = [(mod, w[mod]) for mod, _, _ in MODS]
-    ini = B.step_ini(8, spa["lambda_scale"], mods, (), fwhm_floor=True)
+    ini = B.step_ini(S8, spa["lambda_scale"], mods, (), fwhm_floor=True)
     old = f"use_mask_mov_scalar     = {' '.join(['0'] * 9)}\n"
     assert ini.count(old) == len(MODS), f"step 8: {ini.count(old)} use_mask_mov_scalar lines, expected {len(MODS)}"
     ini = ini.replace(old, f"use_mask_mov_scalar     = {' '.join(['1'] * 9)}\n")
     assert ini.count(f"use_mask_ref_scalar     = {' '.join(['0'] * 9)}\n") == len(MODS)
     # steps 1-7 of the 8-step ladder must be plan A's own (same knots, lambdas, iterations) except the BF FWHM floor
-    p7 = (pa / "config" / "mmorf_params_step07.ini").read_text()
+    p7 = (pa / "config" / f"mmorf_params_step{S8 - 1:02d}.ini").read_text()
     head = lambda s: [l for l in s.splitlines() if l.split("=")[0].strip() in ("warp_res_init", "hires", "optimiser_max_it_lowres",
                                                                                "optimiser_max_it_hires")]
     assert head(p7) == head(ini), (head(p7), head(ini))
-    (cfg / "mmorf_params_step08.ini").write_text(ini)
+    (cfg / f"mmorf_params_step{S8:02d}.ini").write_text(ini)
     nib.save(nib.Nifti1Image(np.zeros(bimg.shape[:3] + (3,), np.float32), bA), str(cfg / "affine_zero_warp_for_deltaWarp.nii.gz"))
 
     spec = {"name": a.name, "payload": {m: p for m, p, _ in MODS},
@@ -944,7 +948,7 @@ def cmd_assemble_step8(a):
             "tensor_modalities": [], "quant_scalar_mods": [],
             "lambda_scale": spa["lambda_scale"], "fwhm_floor": True, "native_mm": dict(NATIVE),
             "fwhm_floor_mm": {m: B.fwhm_floor_mm(NATIVE[m]) for m, _, _ in MODS},
-            "n_steps": 8, "subject_ids": ids, "subjects": subs, "mirrors": spa["mirrors"],
+            "n_steps": S8, "subject_ids": ids, "subjects": subs, "mirrors": spa["mirrors"],
             "b1": dict(spa["b1"], canon=str(canon2), stage=2),
             "d2": spa["d2"],
             "s8": {"decision": "step 8 at 0.25 mm knots after plan A's step 7, -nit 3 as the MRI rebuild",
@@ -1012,30 +1016,34 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sp = ap.add_subparsers(dest="cmd", required=True)
     p = sp.add_parser("prep-frame", help="frame1c grown by whole voxels: the grid the 0.5 mm members are prepared on")
-    p.add_argument("--out", required=True); p.add_argument("--grow-mm", type=float, default=8.0)
+    p.add_argument("--out", required=True); p.add_argument("--grow-mm", type=float, default=TCFG["grids"]["prep_frame_grow_mm"])
     p = sp.add_parser("members", help="the 0.5 mm members (both mirrors) on --frame")
     p.add_argument("--frame", required=True); p.add_argument("--out", required=True)
     p.add_argument("--root", required=True, help="the completion's per-brain folders"); p.add_argument("--cache", required=True)
     p.add_argument("--mri-subjects", default=MRI13); p.add_argument("--nomri-subjects", default=NOMRI8)
     p.add_argument("--s2lin-suffix", default="prod"); p.add_argument("--k-mm", type=float, default=1.0); p.add_argument("--band-mm", type=float, default=2.0)
     p = sp.add_parser("crop", help="the build frame: the members' union + pad mm, x-symmetric, dims x mult; cut the canon")
-    p.add_argument("--canon", required=True); p.add_argument("--pad", type=float, default=4.0); p.add_argument("--mult", type=int, default=4)
+    p.add_argument("--canon", required=True); p.add_argument("--pad", type=float, default=TCFG["grids"]["build_frame"]["pad_mm"])
+    p.add_argument("--mult", type=int, default=TCFG["grids"]["build_frame"]["multiple_vox"])
     p.add_argument("--extra", nargs="*", default=[]); p.add_argument("--out", required=True)
     p = sp.add_parser("s8-frame", help="the 0.5 mm canon's grid as a NIfTI (its exact 2x lattice holds the 0.25 mm members)")
     p.add_argument("--canon", required=True); p.add_argument("--out", required=True)
     p = sp.add_parser("s8-inputs", help="the 0.25 mm members"); p.add_argument("--canon", required=True); p.add_argument("--frame", required=True)
     p.add_argument("--out", required=True); p.add_argument("-j", type=int, default=6); p.add_argument("--subjects", default="")
     p = sp.add_parser("s8-box", help="the step-8 grid"); p.add_argument("--template", nargs="+", required=True); p.add_argument("--canon2", required=True)
-    p.add_argument("--out", required=True); p.add_argument("--pad", type=float, default=4.0); p.add_argument("--thr", type=float, default=0.01)
+    p.add_argument("--out", required=True); p.add_argument("--pad", type=float, default=TCFG["grids"]["step8_box"]["pad_mm"])
+    p.add_argument("--thr", type=float, default=TCFG["grids"]["step8_box"]["threshold"])
     p = sp.add_parser("s8-boxcheck"); p.add_argument("--template", nargs="+", required=True); p.add_argument("--box", required=True)
     p.add_argument("--thr", type=float, default=0.01); p.add_argument("--min-mm", type=float, default=3.0)
     p = sp.add_parser("tpl-canon", help="TPL in a canon (0.5 or 0.25 mm) beside symlinks to the 21 members")
-    p.add_argument("--vox", type=float, required=True, choices=[0.5, 0.25]); p.add_argument("--source-canon", required=True); p.add_argument("--out", required=True)
+    p.add_argument("--vox", type=float, required=True, choices=[TCFG["grids"]["plan_a_voxel_mm"], TCFG["grids"]["step8_voxel_mm"]]); p.add_argument("--source-canon", required=True); p.add_argument("--out", required=True)
     p = sp.add_parser("tpl-costmask", help="TPL's b0 cost mask (the brainstem plane rule)"); p.add_argument("--canons", nargs="+", required=True)
     p.add_argument("--run", default=""); p.add_argument("--record", required=True)
     p = sp.add_parser("run-plan-a", help="the plan-A run tree"); p.add_argument("--canon", required=True); p.add_argument("--root", required=True)
-    p.add_argument("--name", required=True); p.add_argument("--steps", type=int, default=7, choices=[7]); p.add_argument("--subjects", default="all")
-    p.add_argument("--lambda-scale", type=float, default=10.0); p.add_argument("--bf-weight", type=float, default=1.0); p.add_argument("--b0-weight", type=float, default=1.0)
+    p.add_argument("--name", required=True); p.add_argument("--subjects", default="all")
+    p.add_argument("--steps", type=int, default=TCFG["mmorf"]["plan_a"]["steps"], choices=sorted(M.LADDERS))
+    p.add_argument("--lambda-scale", type=float, default=TCFG["mmorf"]["lambda_scale"])
+    p.add_argument("--bf-weight", type=float, default=1.0); p.add_argument("--b0-weight", type=float, default=1.0)
     p = sp.add_parser("copy-affine", help="plan A's affine stage: the design-2 affines of the 42 + TPL at the identity")
     p.add_argument("--plan-a-affine", required=True); p.add_argument("--run", required=True)
     p = sp.add_parser("tpl-affine", help="TPL's 12-dof affine to the affine b0 template, symmetrized"); p.add_argument("--run", required=True)

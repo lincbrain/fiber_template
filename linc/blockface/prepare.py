@@ -1,17 +1,22 @@
-"""Stage 3 after the camera jumps: the stacks made ready for the 3D brain mask and for the reconstruction (Methods, "Blockface
-reconstruction", steps 2-4).
+"""Stage 3: the stacks made ready for the 3D brain mask and for the reconstruction (Methods, "Blockface reconstruction", steps 2 to 4).
 
+You need
+  the jump-corrected working stacks (_work/blockface_raw.ome.zarr, _work/brainmask.ome.zarr: jumps.py) and the brain's `missing`
+  sections (configs/subjects/<ID>.yaml).
+What it does
     remove_background     the 2D masks hole-filled on every real section, emptied on black (missing) frames
-    interpolate_missing   the annotated missing sections, a first fill (full-field blend; label 2 marks them)
-    filter_components_3d  3D components smaller than 10 % of the largest dropped from the mask stack (wax, tray, card)
-    crop_and_mask         the tissue bounding box (caudal cutoff applied) -> 02_blockface + 02_blockface_mask
-    blockface_bg          the background-intact twin at L2 (the 3D brain-mask model's input, the reconstruction's reference)
-    correct_shading       a per-section degree-2 illumination field, divided out (02_blockface and its twin)
-    harmonize_intensity   one gain per section to a common brightness (02_blockface and its twin)
-    export_stage3         the L2 NIfTI exports (zarr2nii) and edit_niftis: the mask gently smoothed, the L4 twins written
+    interpolate_missing   a first fill of the missing sections (a full-field blend; label 2 marks them)
+    filter_components_3d  3D connected components smaller than 10 % of the largest dropped from the mask (wax, tray, card)
+    crop_and_mask         cropped to the tissue (caudal cutoff applied)
+    blockface_bg          the same stack with its background kept, at L2 (the 3D brain-mask network's input)
+    correct_shading       a per-section degree-2 illumination field, divided out
+    harmonize_intensity   one gain per section, to a common brightness
+    export_stage3         the NIfTI exports (zarr2nii), the mask gently smoothed, the L4 copies written
+You get
+  02_blockface.ome.zarr and 02_blockface_mask.ome.zarr (also read by the histology steps), and nii/02_blockface_{,bg_,mask_}L2 and
+  their _L4 copies.
 
-Ported unchanged from the analysis project's code/recon.py (+ the export block of code/run.py stage 3). straighten_midline (off
-for every brain) is not part of the release.
+Ported unchanged from the analysis project's code/recon.py (and the export block of its code/run.py stage 3).
 """
 import os
 

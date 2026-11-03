@@ -1,7 +1,7 @@
 """Measures that compare the seven MRI template variants (paper: Results "MRI template", Table 1, Supplementary Tables).
 
-Every variant ("arm") is built from the same eight inputs: four brains (MF1-MF4 = MF283..MF286) and their exact left-right mirrors
-(suffix f). Each input's canonical images were pushed through the arm's composed full warp once (one interpolation) and cached as
+Every variant ("arm") is built from the same inputs: the brains of configs/mri_construction.yaml `inputs` (the paper's four, MF1-MF4 =
+MF283..MF286) and their exact left-right mirrors (suffix f). Each input's canonical images were pushed through the arm's composed full warp once (one interpolation) and cached as
 <cache>/<arm>__<MOD>[_vr]__<id>.nii.gz, MOD in T2, FRAC1, FRAC2, DTI (tensors, vecreg-canonicalized, tag _vr), B0, MASK.
 
 Two families of measures:
@@ -19,8 +19,10 @@ import itertools
 import nibabel as nib
 import numpy as np
 
-IDS = ["MF283", "MF283f", "MF284", "MF284f", "MF285", "MF285f", "MF286", "MF286f"]   # the eight inputs, in build order
-BRAINS = ["MF283", "MF284", "MF285", "MF286"]                                        # the four independent brains
+from linc.construction.tools import recipe as _recipe
+
+BRAINS = list(_recipe()["inputs"])                                                   # the independent brains (configs/mri_construction.yaml)
+IDS = [s + m for s in BRAINS for m in ("", "f")]                                     # the inputs in build order: each brain, then its mirror
 TENSOR_TAG = "_vr"                     # cached tensors are the vecreg-canonicalized ones (Methods, tensor reorientation)
 
 NMI_BINS = 64                          # Parzen joint histogram bins (FSL-like NMI)

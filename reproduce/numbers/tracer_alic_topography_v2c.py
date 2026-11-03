@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
-"""The tracer bundles' position in the anterior limb of the internal capsule with the connected pathways (paper: Results, tracer labels;
-Supplementary S2): tracer_alic_topography_r058d.py on the interpolated labels of record (products_mri `tracer_template_v2`: the Bundles
-group carried as one label) under the footprint and solid rules, plus the "connected" rule = the connected pathway (products_mri
-`tracer_template_v2c`, or the one tracer_connected_v2c.py regenerates under $LINC_WORK/tracer_v2c with --connected-from work); the
-injection site keeps the two rules.
--> $LINC_NUMBERS/tracer_alic_topography_v2c.json
+"""Where the tracer bundles cross the anterior limb of the internal capsule (Supplementary S2).
+
+You need (configs/products_mri.yaml, configs/products_blockface.yaml)
+  tracer_template_v2: the interpolated labels; tracer_template_v2c: the connected pathways (or --connected-from work);
+  atlas_nmt: the SARM level-6 atlas carried into the template (its internal capsule).
+
+What it does
+  measures each case's position inside the capsule (dorsal-ventral and medial-lateral, over the whole limb and per coronal plane)
+  under the footprint and solid rules and, for the bundles, the connected pathway; the injection site under the first two rules.
+
+You get
+  $LINC_NUMBERS/tracer_alic_topography_v2c.json
+
     python reproduce/numbers/tracer_alic_topography_v2c.py [--labels tracer_template_v2] [--connected-from products|work]
-Ported from the analysis project's labels/tracer_v2/alic_topography_v2c.py (a wrapper of the same shape over its r058 script).
 """
 import sys
 from pathlib import Path

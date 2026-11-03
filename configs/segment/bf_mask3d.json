@@ -1,0 +1,360 @@
+{
+ "task": "bf_mask3d",
+ "dim": 3,
+ "channels": 3,
+ "classes": {
+  "0": "background",
+  "1": "brain"
+ },
+ "normalization": "zscore",
+ "postprocess": {
+  "kind": "largest_cc_fill",
+  "connectivity": 26
+ },
+ "folds": {
+  "0": [
+   "MF275",
+   "MR249",
+   "MR252",
+   "MR253",
+   "MR256"
+  ],
+  "1": [
+   "MF282",
+   "MR248",
+   "MR250",
+   "MR251"
+  ],
+  "2": [
+   "MF196",
+   "MR247",
+   "MR254",
+   "MR273"
+  ],
+  "3": [
+   "MF191",
+   "MR243",
+   "MR244",
+   "MR261"
+  ],
+  "4": [
+   "MF204",
+   "MF278",
+   "MR257",
+   "MR263"
+  ]
+ },
+ "fold_rule": "21 subjects, 21 cases; 5 folds: subjects in numpy default_rng(2026).permutation order (from the sorted list), dealt round-robin; a subject's cases are all in one fold",
+ "cases": [
+  {
+   "id": "MF191",
+   "subject": "MF191",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF191_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF191_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF191_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MF191.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "0b068ef262a90d97164fa546d896c711"
+  },
+  {
+   "id": "MF196",
+   "subject": "MF196",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF196_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF196_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF196_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MF196.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "8b9b834e9d2d257b3372f861804634c2"
+  },
+  {
+   "id": "MF204",
+   "subject": "MF204",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF204_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF204_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF204_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MF204.nii.gz",
+   "counted": true,
+   "label_kind": "hand-constrained",
+   "label_md5": "1dbae522d9d879cef95137cd46a3e2ca"
+  },
+  {
+   "id": "MF275",
+   "subject": "MF275",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF275_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF275_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF275_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MF275.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "3cf4c48a36bb56067798915ee18d6524",
+   "image_md5": [
+    "397aa1be24472828e0289ab55e8be6d3",
+    "937c99fce3b6cc2468e9426d7eadc530",
+    "b7d2daabc821ca4df28d52efb85eb36b"
+   ]
+  },
+  {
+   "id": "MF278",
+   "subject": "MF278",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF278_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF278_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF278_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MF278.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "cd4d2d929ebd94002ede9e739d6a02f2"
+  },
+  {
+   "id": "MF282",
+   "subject": "MF282",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF282_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF282_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MF282_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MF282.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "c1b739a95487236a63eb2256d73681b4"
+  },
+  {
+   "id": "MR243",
+   "subject": "MR243",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR243_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR243_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR243_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR243.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "3e7cb35ab3784c780acdd7d340181554"
+  },
+  {
+   "id": "MR244",
+   "subject": "MR244",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR244_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR244_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR244_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR244.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "45f72df87ab553a61b139f73ba609c1d"
+  },
+  {
+   "id": "MR247",
+   "subject": "MR247",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR247_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR247_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR247_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR247.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "5137e2166874688d9d8ed5bcbd031dfc"
+  },
+  {
+   "id": "MR248",
+   "subject": "MR248",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR248_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR248_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR248_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR248.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "c0610af7db8941e7b9fb91d368a428ad",
+   "image_md5": [
+    "53e0ee22c6b2885326ca4de3187f2c92",
+    "7e99cb01ac2d6cbe03a7bb29991fa887",
+    "7f7170855fb5a35e7880139903b77f3e"
+   ]
+  },
+  {
+   "id": "MR249",
+   "subject": "MR249",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR249_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR249_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR249_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR249.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "02a881b4c1f7a04dec95a59b4b678494"
+  },
+  {
+   "id": "MR250",
+   "subject": "MR250",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR250_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR250_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR250_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR250.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "2d3d5542f438c8d1f00c5940192162a3"
+  },
+  {
+   "id": "MR251",
+   "subject": "MR251",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR251_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR251_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR251_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR251.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "e0c7dce10ecc20e826cb0aea76811650"
+  },
+  {
+   "id": "MR252",
+   "subject": "MR252",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR252_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR252_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR252_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR252.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "0345c81d51829faa3b8d990add1042db"
+  },
+  {
+   "id": "MR253",
+   "subject": "MR253",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR253_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR253_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR253_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR253.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "c592e4ac8cbcd185a1f5e88ea5495ebe"
+  },
+  {
+   "id": "MR254",
+   "subject": "MR254",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR254_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR254_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR254_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR254.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "ed3e080abd5662b7e7f4e328048bdace"
+  },
+  {
+   "id": "MR256",
+   "subject": "MR256",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR256_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR256_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR256_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR256.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "fd6d1924d2e0d6b9ceef593c80982a38"
+  },
+  {
+   "id": "MR257",
+   "subject": "MR257",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR257_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR257_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR257_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR257.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "b114914518bf912aa6ac04ab18390859"
+  },
+  {
+   "id": "MR261",
+   "subject": "MR261",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR261_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR261_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR261_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR261.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "dd1b9331403a9da100e0153f4de2a113"
+  },
+  {
+   "id": "MR263",
+   "subject": "MR263",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR263_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR263_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR263_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR263.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "529538b87f9db2db04c88affa031c47c"
+  },
+  {
+   "id": "MR273",
+   "subject": "MR273",
+   "image": [
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR273_0000.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR273_0001.nii.gz",
+    "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR273_0002.nii.gz"
+   ],
+   "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR273.nii.gz",
+   "counted": true,
+   "label_kind": "hand",
+   "label_md5": "854c2f84279134f536c7c0f82bcb3381"
+  }
+ ],
+ "target_spacing": "median",
+ "record_runs": {
+  "0": {
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "hours": 2.04
+  },
+  "1": {
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "hours": 2.14
+  },
+  "2": {
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "hours": 2.07
+  },
+  "3": {
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "hours": 2.12
+  },
+  "4": {
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "hours": 2.08
+  },
+  "all": {
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "hours": 2.14
+  }
+ }
+}

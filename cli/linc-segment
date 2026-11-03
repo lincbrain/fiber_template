@@ -13,10 +13,11 @@ The models (--model; or a model folder of your own):
     bf_holes        the masked color volume -> marker tubes; needs the brain mask (--mask, or --masks with --in)
 A mask is written on the input's grid (uint8). `cli/linc-segment predict -h` lists the options.
 
-Advanced (training and evaluation, as the models were made):
-    cli/linc-segment train --task <spec.json> --fold <k|all> --out <run folder> [...]     (-h for the recipe's options)
-    cli/linc-segment score --task <spec.json> --pred <folder | map.json> --out <scores.json> [--fold k]
-    cli/linc-segment folds --task <spec.json>
+Training (the recipe of record; a CUDA GPU, about 2 h per run; `train -h` for what it needs, does and writes):
+    cli/linc-segment train --task configs/segment/<model>.json --fold <0-4|all>     # fold all = the shipped model
+    cli/linc-segment train --task configs/segment/<model>.json --plan               # cases, folds, missing files, GPU hours
+    cli/linc-segment score --task <task.json> --pred <folder | map.json> --out <scores.json> [--fold k]
+    cli/linc-segment folds --task <task.json>                                         # a new task's five folds, by brain
 """
 import argparse
 import sys

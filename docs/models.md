@@ -68,14 +68,14 @@ Each card lists them in full. In short:
 - **All four:** they were trained on this project's brains, camera setups and MRI acquisitions; a new setup, stain or contrast needs
   checking against a few hand-made masks.
 - **`mri_brainmask`:** it was trained on b0 and T2-weighted images only. Its masks are used as predicted, like the hand-made masks,
-  which leave the spaces inside the brain unfilled; a few held-out masks had small detached pieces, which `--postprocess
+  which leave the spaces inside the brain unfilled; a few held-out masks had small detached parts, which `--postprocess
   largest_component` removes.
 - **`bf_mask2d`:** its labels are the volumes' masks, one label section for several photographs, so they lag the photograph where
   the outline changes quickly, in the first photographs of a stack (the frontal pole); most of its low scores are there. Its mask
   fills holes, which the labels leave out (the ventricles and fissures).
 - **`bf_mask3d`:** at surfaces facing the front of the brain, where tissue below the cut surface shows through the ice, its mask
   reaches slightly beyond the masks of record, which follow the cut face.
-- **`bf_holes`:** the tubes are thin, so its Dice is low even when it finds the tubes. Its rule keeps tubes in the left hemisphere
+- **`bf_holes`:** the tubes are thin, so its Dice is low even when it detects the tubes. Its rule keeps tubes in the left hemisphere
   only, where they were drilled; a brain with tubes on the right is outside its scope.
 
 ## In the blockface reconstruction

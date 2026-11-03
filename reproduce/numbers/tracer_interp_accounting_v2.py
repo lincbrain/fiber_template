@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-"""The between-section interpolation of the tracer labels, accounted per case (paper: Results, tracer labels; Supplementary S2): the
-successor of tracer_interp_accounting_r058d for the chain of record since 3 Nov 2026 (the per-hemisphere demons interpolation,
-cli/linc-labels interpolate). Keys the paper reads: cases.<S>.{slice_mm, sections, labeled_sections, pairs_by_status.<status>.pairs}.
-The interpolation pairs section slices PER HEMISPHERE. For the whole-section view of this record, each pair of consecutive section
-slices (a, b) is "interpolated" when a pair covered it in at least one hemisphere, "adjacent" when b - a = 1 (nothing to fill) and
-otherwise "skipped: footprints differ (partial section)" (the per-hemisphere footprint Dice < 0.8 in both hemispheres; no pair is
-skipped for its gap). The per-hemisphere statuses and the pairs gained over the earlier record (interpolated now, not before) are kept
-beside. labeled_sections = sections whose sheets carry a bundle, terminal or injection-site label (the single-fiber class left out).
-Inputs (products_mri): `tracer_v2_bfnative`/<S>/interp_v2.json (the interpolation's own record) and <S>_{Bundles,Terminals,Injection_site}
-_bfnative_L2.nii.gz (the group sheets on the blockface grid); `numbers_of_record`/tracer_interp_accounting_r058d.json (the earlier
-record, for slice_mm and the comparison).
--> $LINC_NUMBERS/tracer_interp_accounting_v2.json
+"""Which section pairs the label interpolation filled, per tracer case (Supplementary S2).
+
+You need (configs/products_mri.yaml)
+  tracer_v2_bfnative: each case's interp_v2.json and its group sheets on the blockface grid; numbers_of_record: the earlier
+  accounting record (tracer_interp_accounting_r058d), for the comparison.
+
+What it does
+  sorts every pair of consecutive charted sections into interpolated, adjacent (nothing to fill) or skipped (footprints differ), counts
+  the labeled sections, and lists the pairs gained over the earlier interpolation.
+
+You get
+  $LINC_NUMBERS/tracer_interp_accounting_v2.json
+
     python reproduce/numbers/tracer_interp_accounting_v2.py
-Ported from the analysis project's labels/tracer_v2/interp_accounting_v2.py, unchanged in rule."""
+"""
 import json
 import sys
 from pathlib import Path
@@ -26,7 +27,20 @@ from linc import paths, provenance  # noqa: E402
 NAME = "tracer_interp_accounting_v2"
 CASES = ["MR243", "MR252", "MR256", "MF191"]
 SKIP = "skipped: footprints differ (partial section)"
-METHOD = __doc__.split("->")[0].strip().split("\n")
+# the record's method text, fixed (it was this script's docstring when the record was made; the docstring may change)
+METHOD = [
+    'The between-section interpolation of the tracer labels, accounted per case (paper: Results, tracer labels; Supplementary S2): the',
+    'successor of tracer_interp_accounting_r058d for the chain of record since 3 Nov 2026 (the per-hemisphere demons interpolation,',
+    'cli/linc-labels interpolate). Keys the paper reads: cases.<S>.{slice_mm, sections, labeled_sections, pairs_by_status.<status>.pairs}.',
+    'The interpolation pairs section slices PER HEMISPHERE. For the whole-section view of this record, each pair of consecutive section',
+    'slices (a, b) is "interpolated" when a pair covered it in at least one hemisphere, "adjacent" when b - a = 1 (nothing to fill) and',
+    'otherwise "skipped: footprints differ (partial section)" (the per-hemisphere footprint Dice < 0.8 in both hemispheres; no pair is',
+    'skipped for its gap). The per-hemisphere statuses and the pairs gained over the earlier record (interpolated now, not before) are kept',
+    'beside. labeled_sections = sections whose sheets carry a bundle, terminal or injection-site label (the single-fiber class left out).',
+    "Inputs (products_mri): `tracer_v2_bfnative`/<S>/interp_v2.json (the interpolation's own record) and <S>_{Bundles,Terminals,Injection_site}",
+    '_bfnative_L2.nii.gz (the group sheets on the blockface grid); `numbers_of_record`/tracer_interp_accounting_r058d.json (the earlier',
+    'record, for slice_mm and the comparison).',
+]
 
 
 def main():

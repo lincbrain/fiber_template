@@ -8,6 +8,8 @@ A task spec (JSON) lists the cases and the folds:
    prediction; the mask goes back to the input grid), "notes": "..."}
 "folds" is written once, before any training, by `python -m linc.segment.folds --task <spec>` (make_folds: seed 2026, grouped by subject).
 or, instead of "cases", "nnunet_raw": "<Dataset folder>" with "subject_regex" (its first group = the subject; default: the case id).
+A path may start with a root placeholder ($LINC_PRODUCTS/..., $LINC_DATA/..., ...; linc.paths), as the task files of record do.
+"train" (optional) holds the task's own training arguments where they differ from the trainer's defaults (batch, workers, ...).
 Training on fold k uses every case whose subject is not in folds[k]; fold "all" uses every case.
 
 The cache (<cache>/<case>.npz-like pair of .npy files) holds each image z-scored per channel as float16 (C, *S), its label as uint8,
@@ -32,10 +34,23 @@ def remap(p, pairs):
     return p
 
 
+def _root(p):
+    """a task path: a root placeholder ($LINC_PRODUCTS/...) expanded on this machine (linc.paths); any other path as written"""
+    if not str(p).startswith("$"):
+        return p
+    from ..paths import rerooted
+    return rerooted(p)
+
+
 def load_task(path, remap_pairs=None):
     spec = json.load(open(path))
+    for c in spec.get("cases", []):
+        c["image"] = [_root(q) for q in c["image"]] if isinstance(c["image"], list) else _root(c["image"])
+        for k in ("label", "mask"):
+            if k in c:
+                c[k] = _root(c[k])
     if "cases" not in spec:
-        root = Path(spec["nnunet_raw"]); ds = json.load(open(root / "dataset.json"))
+        root = Path(_root(spec["nnunet_raw"])); ds = json.load(open(root / "dataset.json"))
         ext = ds["file_ending"]; nch = len(ds["channel_names"])
         rx = re.compile(spec.get("subject_regex", r"(.*)"))
         cases = []

@@ -1,33 +1,25 @@
 #!/usr/bin/env python3
-"""The tracer pathways as a 3D scene in the MRI template (paper: Fig. 9 a-b and the supplementary rotation video). Built from the
-template's T2 channel (products_mri `template_mri`) and the connected tracer labels of record (`tracer_template_v2c`, `tracer_template_v2`),
-rendered headless with pyvista / VTK (OSMesa): env/viz3d.yml, PY_VIZ3D.
+"""The tracer pathways as a 3D scene in the MRI template (Fig. 10 a-c and the two supplementary videos).
 
-Scene (world = the template's RAS mm; the camera looks at the right hemisphere):
-  planes    three opaque T2 planes drawn to the brain's bounding box: the full mid-sagittal plane x = 0, a coronal backdrop at y = Y_BACK
-            just behind the pathways' posterior end (the bundles start at y = 0.2 mm), and an axial floor at the brain's inferior edge
-            (z = Z_FLOOR, the first tissue layer: the brainstem's cut face) on a dark gray base. Gray: a window from the brain's 5th to
-            its 99th T2 percentile with gamma GAMMA, top gray TOP (white matter reads darker than gray matter); RGB texture, no lighting;
-  pathways  each case's connected pathway as a smoothed isosurface of the interpolated density inside the connected label (graded) in the
-            case's color (MM1 vermilion, MF8 yellow, MM2 green; MF8 mirrored to the right as in Fig. 9), the inferred joins (label 2 of
-            <S>_Bundles_mri-template_connected) as separate surfaces in a lighter tint, the injection site (the interpolated solid) opaque;
-  marks     labels on the planes' edges ("midline", "y = -1 mm", "floor"), the orientation letters A / P / S / I / R (A / P / L / R from
-            above), a 5 mm bar on the backdrop's ventral edge, a key with the three case names in their colors;
-  rotation  one turn about the vertical axis (10 s, 30 fps) from the oblique view; while the camera is on the left side the mid-sagittal
-            plane is drawn at FADE opacity, and while it is behind the backdrop the backdrop likewise, so the pathways stay in view all
-            the way round (the stills keep every plane opaque; --no-fade keeps them opaque in the video too).
-  glass     the lateral camera again with the whole brain mask as a smooth translucent shell (marching cubes on the mask smoothed to
-            GLASS_SMOOTH_MM after filling its cavities, Taubin-smoothed, the outer surface only, gray at GLASS_OPACITY with its back faces
-            culled), the pathways inside at full color, the midline
-            plane at GLASS_MIDLINE, no coronal backdrop, no floor: the view that shows the pathways inside the brain. In the two lateral
-            views the orientation letter R (it would point at the viewer) is not drawn and the 5 mm bar lies along the A-P axis at the
-            lower left.
-Outputs: <out>_oblique.png (anterior-superior-right view), <out>_lateral.png (from the right), <out>_dorsal.png (from above), <out>_glass.png,
-<out>_rotation.mp4 (unless --no-video), <out>.provenance.json; the record $LINC_NUMBERS/fig_tracer_3d.json (the planes, the window, the
-cases, their vertex counts and the share of each pathway left of the midline, which the opaque mid-sagittal plane hides from the right).
-    $PY_VIZ3D reproduce/figures/tracer_3d.py [--out figures/tracer_3d] [--views oblique lateral dorsal glass] [--no-video] [--no-fade] [--glass-video] [--for-composite]
-Ported from the analysis project's paper/fig_tracer_3d_v3.py (3 Nov 2026), unchanged in content: the same environment renders the
-paper's files byte for byte.
+You need (configs/products_mri.yaml)
+  template_mri: the T2 channel and the brain mask; tracer_template_v2c and tracer_template_v2: the connected pathways, the bundle
+  densities and the injection sites; env/viz3d.yml (pyvista on a headless VTK; PY_VIZ3D).
+
+What it does
+  draws the template's T2 on three planes (the midline, a coronal backdrop behind the pathways, a floor), each case's connected
+  pathway as a smoothed surface in its color (the inferred joins in a lighter tint, the injection site opaque), and renders:
+  oblique   from the front, above and the right
+  lateral   from the right
+  dorsal    from above
+  glass     the lateral view with the brain's surface as a translucent shell instead of the planes
+  and one turn about the vertical axis as a video (with --glass-video, a second one with the shell).
+
+You get
+  <out>_{oblique,lateral,dorsal,glass}.png (2400 x 1800), <out>_rotation.mp4 [+ <out>_rotation_glass.mp4] (10 s, 30 fps),
+  <out>.provenance.json, and $LINC_NUMBERS/<record>.json (the planes, the window, the cases, the share of each pathway left of the
+  midline). --for-composite renders the stills for Fig. 10 (no in-scene key or plane labels, letters at print size).
+
+    $PY_VIZ3D reproduce/figures/tracer_3d.py [--out figures/tracer_3d] [--views ...] [--no-video] [--glass-video] [--for-composite]
 """
 import argparse
 import json
@@ -49,8 +41,9 @@ NAME = "fig_tracer_3d"
 CASES = ["MF191", "MR243", "MR252"]                      # drawing order: MF8 first (largest), then MM1, MM2
 LABEL = {"MR243": "MM1, area 10", "MR252": "MM2, SMA", "MF191": "MF8, area 13m (mirrored)"}
 MIRROR = {"MF191"}
-OKABE = {"vermilion": "#D55E00", "yellow": "#F0E442", "green": "#009E73"}
-COLOR = {"MR243": OKABE["vermilion"], "MF191": OKABE["yellow"], "MR252": OKABE["green"]}
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import figstyle as FS  # noqa: E402
+COLOR = {S: FS.TRACER[S] for S in CASES}                  # the tracer cases' colors (figstyle.TRACER)
 X_SAG, Y_BACK, Z_FLOOR = 0.0, -1.0, -1.5                 # mm: the mid-sagittal plane; the coronal backdrop; the axial floor
 LO_PCT, HI_PCT, GAMMA, TOP, FLOOR_BASE = 5.0, 99.0, 0.85, 0.90, 0.10   # the planes' gray window; the floor's base gray outside the brain
 FADE = 0.3                                                # a plane's opacity in the rotation frames where it would hide the pathways

@@ -5,7 +5,7 @@ This file is the contract between the modules of `linc`. Everything a module rea
 ## Brains and names
 
 - **Paper names:** MF1–MF10 (*Macaca fascicularis*) and MM1–MM15 (*Macaca mulatta*).
-- **LINC identifiers:** files and folders use the LINC identifier (for example `sub-MR252`). The mapping is
+- **Specimen IDs:** files and folders use the brain's Specimen ID (for example `sub-MR252`). The mapping is
   `docs/specimen_labels.json`.
 - **MF1–MF4** are M1–M4 of Gong et al. (2026), the four MRI brains of the template's MRI channels.
 
@@ -55,7 +55,7 @@ The released template lives under `$LINC_TEMPLATE/`:
 | `b0-native`, `t2-native`, `micro-native` | an MRI as acquired |
 | `mri-template` | the MRI template, 0.25 mm |
 | `bf-template` | the blockface template in its own space |
-| `histo-piece:<piece>` | one histology tissue piece |
+| `histo-piece:<piece>` | one component of a histology section (a hemisphere, the cerebellum and brainstem) |
 | `atlas:<name>` | a published template |
 
 **Folders.** A transform `<src>__to__<dst>` moves IMAGES from src to dst. Its folder holds the transform files and a `meta.json`
@@ -81,7 +81,7 @@ analysis project's transforms exactly (pull and inverse, maximum difference 0.0 
 ## World coordinates and display
 
 - **World coordinates:** RAS, millimeters.
-- **Figures:** neurological convention (subject's left on the left). Sagittal views have anterior to the right; axial views have
+- **Figures:** neurological convention (the animal's left on the left). Sagittal views have anterior to the right; axial views have
   anterior up.
 
 ## Parameters

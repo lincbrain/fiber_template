@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
-"""The tracer labels carried into the MRI template, all four tracer cases in one summary, for the chain of record since 3 Nov 2026
-(paper: Results, tracer labels; Fig. 9; Supplementary S2). The successor of tracer_template_current_all: the same summary (n_cases,
-n_brains, brains, route, n_sections per case and total, injection_site_recorded, classes) from the two carry records of the chain
-(products: numbers_of_record):
-  MR243 / MR252 / MR256  route B (blockface -> own MRI -> template): tracer_template_v2.json
-  MF191                  route A (blockface template member warp + the blockface-template -> MRI-template link): tracer_template_v2_mf191.json
-plus three blocks of record carried over unchanged: audit_rematch (the two section re-matches audited before the chain, copied from
-tracer_template_r058d_all.json: the per-arm registration overlaps it quotes were computed on intermediate arms that are not release
-products), label_sources and v2 (what the labels are and how they were made).
--> $LINC_NUMBERS/tracer_template_v2_all.json
-    python reproduce/numbers/tracer_template_v2_all.py"""
+"""The four tracer cases in the template, in one summary (Fig. 10; Supplementary S2).
+
+You need (configs/products_mri.yaml)
+  numbers_of_record: the two carry records of the labels of record (tracer_template_v2, tracer_template_v2_mf191) and the earlier
+  summary (tracer_template_r058d_all, for its audit block).
+
+What it does
+  combines the two carry records: the cases, brains, routes, sections per case, whether an injection site was charted, the classes;
+  carries over the audit of the two re-matched sections unchanged.
+
+You get
+  $LINC_NUMBERS/tracer_template_v2_all.json
+
+    python reproduce/numbers/tracer_template_v2_all.py
+"""
 import json
 import re
 import sys

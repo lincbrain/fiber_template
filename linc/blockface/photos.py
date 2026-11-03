@@ -1,15 +1,21 @@
-"""Step 1 and the stacks: the photographs renamed into a slice series, the 2D brain masks accepted, and both stacked into the
-working OME-Zarr stores (Methods, "Blockface reconstruction", first and second steps).
+"""Step 1 and the stacks: the photographs, their 2D brain masks, and both stacked (Methods, "Blockface reconstruction", first and
+second steps).
 
-    ingest              raw photos            -> 00_slices/SLICE_<k>_0000.png (a black frame for a missing or unreadable photo,
-                                                 so the physical section order is kept; rotated 180 degrees when rotate180)
-    normalize_masks     2D masks (either engine) -> 01_brainmask/00_predict (x50 PNGs, interior holes filled)
-    finalize_brainmask  00_predict            -> 01_brainmask/01_final (existing files are kept: a hand correction survives)
-    stack_blockface     00_slices             -> _work/blockface_raw.ome.zarr
-    stack_masks         01_final              -> _work/brainmask.ome.zarr
-    masks_to_png        an edited mask stack  -> 01_final (the hand-edit round trip)
+You need
+  the brain's photographs ($LINC_RAW/<raw>/..., configs/subjects/<ID>.yaml raw, raw_glob, raw_regex, idx_range, rotate180) and the
+  masks the photo network predicted (external.segment).
+What it does
+    ingest              raw photographs  -> 00_slices/SLICE_<k>_0000.png (a black frame for a missing or unreadable photograph,
+                                            so the order of the sections is kept; turned 180 degrees when rotate180)
+    normalize_masks     the 2D masks     -> 01_brainmask/00_predict (x50 PNGs, interior holes filled: mask_rules.fill_photo_mask)
+    finalize_brainmask  00_predict       -> 01_brainmask/01_final (existing files are kept, so a hand correction survives)
+    stack_blockface     00_slices        -> _work/blockface_raw.ome.zarr
+    stack_masks         01_final         -> _work/brainmask.ome.zarr
+    masks_to_png        an edited stack  -> 01_final (a hand-edited stack written back)
+You get
+  00_slices/, 01_brainmask/{00_predict, 01_final}/ and the two working stacks under _work/.
 
-Ported unchanged from the analysis project's code/tasks.py (the debugging switch DEBUG_ONLY_SLICE removed).
+Ported unchanged from the analysis project's code/tasks.py (a debugging switch removed).
 """
 import os
 import re

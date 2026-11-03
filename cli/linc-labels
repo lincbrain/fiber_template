@@ -1,16 +1,33 @@
 #!/usr/bin/env python3
-"""Labels on histology -> blockface -> MRI template (paper Methods, "Histology registration and label propagation").
+"""Carry the histology labels into the MRI template: onto the blockface, between sections, into the template.
 
-    linc-labels push        --subject MR252 [--kind tracer|structures]   annotations through each piece's TIRL chain onto the blockface
-    linc-labels interpolate --subject MR252                              demons between consecutive sections (RGB + labels)
-    linc-labels carry       --subject MR252 [--entry DIR ...]            demons labels into the MRI template, one resample
-    linc-labels all         --subject MR252                              push (tracer) -> interpolate -> carry
+You need, per brain under $LINC_DATA/sub-<ID>/ (configs/labels.yaml `layout`)
+  histology/annotations/<class>.ome.zarr (the annotators' masks), histology/section_map.tsv, histology/match_table.txt,
+  histology/regions.nii.gz (the atlas regions: left, right, cerebellum), the histology registration under histology/registration/
+  (linc-histology), the blockface grid blockface/<ID>_blockface_L2.nii.gz, and for `carry` the registry entries to the template.
 
-Inputs and outputs follow configs/labels.yaml (layout, relative to $LINC_DATA/sub-<ID>/); every path can be overridden. The push stage
-loads TIRL chains (TIRL 3.6.3 or 3.6.2), the interpolation needs SimpleITK. Route of `carry`, in PULL order (a template point goes first to last):
-  --entry DIR [--entry DIR ...]     registry entries (linc.xfm), each '<dir>' or '<dir>:inv'; given in IMAGE order (bf-native first)
+What it does
+  push         moves each class through each piece's histology -> blockface registration onto its blockface slice (TIRL);
+  interpolate  fills the slices between charted sections: the bundle grades as one group and the terminal grades as one, each density
+               class kept as a part of its group, sections paired within each hemisphere, demons between each pair (SimpleITK);
+  carry        resamples the labels once into the MRI template (anti-aliased, linear), through the registry chain or the given route;
+  all          push, interpolate and carry in turn.
+
+You get, under $LINC_DATA/sub-<ID>/labels/
+  blockface/tracer/<ID>_<class>_bfnative_L2.nii.gz (+ push_tracer_<ID>.json)                              push
+  blockface/tracer/<ID>_<group or class>_bfnative_L2_demons.nii.gz, <ID>_labels_demons_prov.nii.gz, interp_v2.json   interpolate
+  template/tracer/<ID>_<label>_mri-template{,_density,_footprint}.nii.gz + tracer_template_<ID>.json        carry
+  (density: float 0-1; solid and footprint: uint8 {0, 1}; provenance: 1 = charted section, 2 = interpolated)
+
+    linc-labels push        --subject MR252 [--kind tracer|structures]
+    linc-labels interpolate --subject MR252 [--method v2|v1]
+    linc-labels carry       --subject MR252 [--entry DIR ...]
+    linc-labels all         --subject MR252
+Every path can be overridden. The route of `carry`, in PULL order (a template point goes first to last):
+  --entry DIR [--entry DIR ...]     registry entries (linc.xfm), each '<dir>' or '<dir>:inv', in IMAGE order (bf-native first)
   --map DIR:NAME / --warp FILE:CONV[:SRC_GRID] / --ras-pull FILE     a precomputed pull map route, in PULL order (template first)
   (neither: the registry's own chain bf-native -> mri-template for the subject, every link with passing QC).
+Environments: push in env/tirl.yml, interpolate and carry in env/linc.yml (paper: Methods, "Histology registration and label propagation").
 """
 import argparse
 import sys
