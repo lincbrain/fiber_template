@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
-"""The paper's tracer figure (Fig. 10): panels a, b = two stills of the 3D scene (reproduce/figures/tracer_3d.py: the oblique and the
-lateral view), c = the dorsal projection, d = the capsule sections (--layout composite, the default); --layout panels draws instead the
-earlier four-panel form (a, b = the lateral projections on T2 and on the blockface channel). Panels c, d and the sections view:
+"""The paper's tracer figure (Fig. 10): panels a, b, c = three stills of the 3D scene (reproduce/figures/tracer_3d.py: the oblique view,
+the lateral view, the lateral view with the brain's surface as a translucent shell), d = the dorsal projection, e = the capsule sections
+(--layout composite, the default); --layout panels draws instead the earlier four-panel form (a, b = the lateral projections on T2 and on
+the blockface channel, c = dorsal, d = capsule). The 2D panels:
 the tracer pathways of three cases in the MRI template, drawn from the CONNECTED pathways of record (products_mri `tracer_template_v2c`),
 the interpolated densities (`tracer_template_v2`) and the per-section sheets carried without interpolation (`tracer_sections_v2`).
 
-    python reproduce/figures/tracer_pathways.py [--stills figures/tracer_3d_oblique.png figures/tracer_3d_lateral.png] [--out figures/tracer_pathways.png]
+    python reproduce/figures/tracer_pathways.py [--stills figures/tracer_3d_oblique.png figures/tracer_3d_lateral.png figures/tracer_3d_glass.png] [--out figures/tracer_pathways.png]
     python reproduce/figures/tracer_pathways.py --layout panels [--out figures/tracer_pathways_panels.png]
 
 Three cases: MM1 (MR243, area 10) and MF8 (MF191, area 13m) are the similar pair, in two warm colors; MM2 (MR252, supplementary motor
 area) is the different one, in green. MM3 (no injection site charted) is in Supplementary S2 only.
   a  lateral projection over a parasagittal slab of the right hemisphere (x in SLAB_X), on the template's T2 at the slab's middle plane
-     (anterior right): the connected pathway filled with a thin dark edge, its inferred bridges under a dotted white edge, the footprint
+     (anterior right): the connected pathway filled with a thin dark edge, its inferred joins under a dotted white edge, the footprint
      of the interpolated density (>= 0.1) as a light fill; the slab's maximum along x; gray: the projected brain outline
   b  the same over the template's blockface channel (the blockface template pulled into the MRI template by the link of record)
   c  dorsal projection of the right hemisphere, on the template's T2 at z = Z_AXIAL (anterior up)
@@ -19,11 +20,11 @@ area) is the different one, in green. MM3 (no injection site charted) is in Supp
      the atlas capsule in full color, outside faded; dotted, the internal capsule of the SARM atlas (level 6, label 50)
 Injection sites: the projected per-section Injection_site marks, closed over the gaps between sections (binary closing, radius CLOSE_MM),
 filled in the case's color with a thin white edge. MF8's left-hemisphere case is mirrored onto the right for display (x -> -x; the
-template is symmetric about x = 0); its data are unmirrored. The key gives each case's inferred share and longest bridge.
+template is symmetric about x = 0); its data are unmirrored. The key gives each case's inferred share and longest join.
 Each panel is a function (composite = the stills, lateral, dorsal, alic, key) over one loaded scene; main() draws either layout.
 Conventions: figstyle (true scale, nothing printed over images, scale bars below). Outputs: <out> (+ .provenance.json); the record
 $LINC_NUMBERS/fig_tracer_pathways.json (the layout, the stills' files and md5, the slabs, per case the pathway voxels drawn, the inferred
-share and the longest bridge, the sections and their spacing, the capsule counts of (d)); the panels layout writes fig_tracer_pathways_panels.
+share and the longest join, the sections and their spacing, the capsule counts of (d)); the panels layout writes fig_tracer_pathways_panels.
 Reads (products): products_figures template_t2 / template_mask / template_fa / sarm_level6; products_blockface template_link (the blockface
 template in the MRI template); products_mri tracer_sections_v2, tracer_template_v2, tracer_template_v2c.
 Ported from the analysis project's paper/fig_tracer_v2c_fig9.py over paper/scripts/fig_tracer_r061.py (3 Nov 2026); it renders the
@@ -100,7 +101,7 @@ def occupancy(P2, x0, y0, nx, ny, vox):
 
 def draw_proj(ax, Dp, Sp, Ip, color, ext):
     """A projected pathway on a panel: the footprint (density >= 0.1) light, the connected pathway filled with a thin dark edge,
-    the inferred bridges filled under a dotted white edge."""
+    the inferred joins filled under a dotted white edge."""
     if (Dp >= 0.1).any():
         ax.contourf((Dp >= 0.1).astype(float), levels=[0.5, 1.5], colors=[color], alpha=0.35, extent=ext, origin="upper", zorder=3)
     if Sp.any():
@@ -205,7 +206,7 @@ def lateral(fig, sc, rec, left, top, wab, hab, gap):
     return axs
 
 
-def dorsal(fig, sc, rec, left, top, wc, hc):
+def dorsal(fig, sc, rec, left, top, wc, hc, letter="c"):
     """(c): the dorsal projection of the right hemisphere, on T2 at Z_AXIAL; returns the axis."""
     A, vox, brain, xw, yw, zw = sc["A"], sc["vox"], sc["brain"], sc["xw"], sc["yw"], sc["zw"]
     pts, vol = sc["pts"], sc["vol"]; E = sc["ext"]; Y0, Y1, X0, X1 = E["Y0"], E["Y1"], E["X0"], E["X1"]
@@ -235,7 +236,7 @@ def dorsal(fig, sc, rec, left, top, wc, hc):
         rec["cases"][S]["dorsal_share_of_bundle_marks"] = round(float(sel.mean()), 3)
         rec["cases"][S]["contralateral_percent_of_bundle_marks"] = round(100.0 * float((B[:, 0] < 0).mean()), 1)   # in no panel
     axc.set_xlim(ext[0], ext[1]); axc.set_ylim(ext[2], ext[3]); axc.set_axis_off()
-    FS.letter(axc, "c", dy=12.0); FS.header(axc, "dorsal projection, on T2", dy=12.0)
+    FS.letter(axc, letter, dy=12.0); FS.header(axc, "dorsal projection, on T2", dy=12.0)
     FS.header(axc, f"right hemisphere; plane z = {zw[kz]:.1f} mm", dx=0, dy=2.5, color=FS.GRAY)
     FS.dirs(axc, "axial")
     for t, xy, va in (("A", (1, 1), "top"), ("P", (1, 0), "bottom")):
@@ -245,7 +246,7 @@ def dorsal(fig, sc, rec, left, top, wc, hc):
     return axc
 
 
-def alic(fig, sc, rec, left, top, pd, hd):
+def alic(fig, sc, rec, left, top, pd, hd, letter="d"):
     """(d): the anterior limb of the right internal capsule, 0.5 mm coronal slabs of FA, the connected pathway; returns the axes."""
     vox, xw, yw, zw, sarm, FA, sol = sc["vox"], sc["xw"], sc["yw"], sc["zw"], sc["sarm"], sc["FA"], sc["sol"]
     xr = (xw >= ALIC_X[0] - 1e-6) & (xw <= ALIC_X[1] + 1e-6); zr = (zw >= ALIC_Z[0] - 1e-6) & (zw <= ALIC_Z[1] + 1e-6)
@@ -271,16 +272,19 @@ def alic(fig, sc, rec, left, top, pd, hd):
         ax.contour(disp(crop2(sarm[:, j, :] == IC_LABEL).astype(float)), [0.5], colors=[FS.FG], linewidths=0.7, linestyles=[(0, (1, 1.2))])
         ax.set_xlim(-0.5, bg.shape[1] - 0.5); ax.set_ylim(bg.shape[0] - 0.5, -0.5); ax.set_axis_off()
         if q == 0:
-            FS.letter(ax, "d", dy=12.0); FS.header(ax, "anterior limb, right internal capsule, on FA", dy=12.0)
+            FS.letter(ax, letter, dy=12.0); FS.header(ax, "anterior limb, right internal capsule, on FA", dy=12.0)
         FS.header(ax, f"y = {y:.1f} mm", dx=0, dy=2.5, color=FS.GRAY)
     FS.dirs_row(axd[0], axd[-1], "coronal"); FS.scalebar(axd[0], 1.0 / vox, 2.0)
     return axd
 
 
-def key(fig, sc, rec, left, top, w, h, matplotlib):
-    """The key (outside every image): case, area, color, the inferred share; injection site; capsule; the bridge / footprint / outline row."""
+def key(fig, sc, rec, left, top, w, h, matplotlib, compact=False):
+    """The key (outside every image): case, area, color, the inferred share; injection site; capsule; the join / footprint / outline
+    row. compact: shorter lines in seven rows (the composite's narrower column)."""
     pts, conn, secj = sc["pts"], sc["conn"], sc["secj"]
     axk = FS.axes_mm(fig, left, top, w, h); axk.set_axis_off(); axk.set_xlim(0, 1); axk.set_ylim(0, 1)
+    x0, xt, dy = (0.015, 0.07, 0.14) if compact else (0.03, 0.1, 0.17)         # the marks' first x, the text's x, the row step
+    xs = [x0, x0 + 0.015, x0 + 0.03]
     rows = []
     for S in CASES:
         sp = secj[S]["spacing_summary_mm"]
@@ -288,53 +292,79 @@ def key(fig, sc, rec, left, top, w, h, matplotlib):
                                section_spacing_mm=sp, bundle_marks=int(len(pts[S]["Bundles"])),
                                injection_marks=int(len(pts[S]["Injection_site"])))
         rec["cases"][S].update(v2c_inferred_share=conn[S]["inferred_share"], v2c_longest_bridge_mm=conn[S]["longest_bridge_mm"], v2c_pieces_attached=conn[S]["pieces_attached"])
-        rows.append((S, f"{FS.label(S)}{' (mirrored)' if S in MIRROR else ''}, {AREA[S]}: connected pathway; inferred {100 * conn[S]['inferred_share']:.1f} % (longest bridge {conn[S]['longest_bridge_mm']:.1f} mm)"))
+        rows.append((S, (f"{FS.label(S)}{' (mirrored)' if S in MIRROR else ''}, {AREA[S]}: inferred {100 * conn[S]['inferred_share']:.1f} % (longest join {conn[S]['longest_bridge_mm']:.1f} mm)" if compact else
+                         f"{FS.label(S)}{' (mirrored)' if S in MIRROR else ''}, {AREA[S]}: connected pathway; inferred {100 * conn[S]['inferred_share']:.1f} % (longest join {conn[S]['longest_bridge_mm']:.1f} mm)")))
+    y1 = 0.93 if compact else 0.92
     for r, (S, txt) in enumerate(rows):
-        yk = 0.92 - r * 0.17
-        axk.scatter([0.03, 0.045, 0.06], [yk] * 3, s=6, c=COLOR[S], lw=0)
-        axk.text(0.1, yk, txt, va="center", ha="left", fontsize=FS.MIN_PT, color=FS.FG)
-    yk = 0.92 - 3 * 0.17
+        yk = y1 - r * dy
+        axk.scatter(xs, [yk] * 3, s=6, c=COLOR[S], lw=0)
+        axk.text(xt, yk, txt, va="center", ha="left", fontsize=FS.MIN_PT, color=FS.FG)
+    yk = y1 - 3 * dy
     for q, S in enumerate(CASES):                                               # one swatch per case color, thin white edge
-        axk.add_patch(matplotlib.patches.Rectangle((0.02 + q * 0.022, yk - 0.04), 0.018, 0.08, facecolor=COLOR[S], edgecolor=FS.FG,
+        axk.add_patch(matplotlib.patches.Rectangle((x0 - 0.01 + q * 0.022, yk - 0.04), 0.018, 0.08, facecolor=COLOR[S], edgecolor=FS.FG,
                                                    lw=INJ_EDGE))
-    axk.text(0.1, yk, "injection site (filled)", va="center", ha="left", fontsize=FS.MIN_PT, color=FS.FG)
-    yk -= 0.17
-    axk.plot([0.02, 0.075], [yk, yk], color=FS.FG, lw=0.7, ls=(0, (1, 1.2)))
-    axk.text(0.1, yk, "internal capsule (SARM atlas)", va="center", ha="left", fontsize=FS.MIN_PT, color=FS.FG)
-    yk -= 0.17
-    axk.plot([0.02, 0.075], [yk, yk], color=FS.FG, lw=0.5, ls=(0, (0.8, 0.8)))
-    axk.text(0.1, yk, "inferred bridge (dotted edge); light fill = footprint, density ≥ 0.1; gray = projected brain outline", va="center", ha="left", fontsize=FS.MIN_PT, color=FS.FG)
+    axk.text(xt, yk, "injection site (filled)", va="center", ha="left", fontsize=FS.MIN_PT, color=FS.FG)
+    yk -= dy
+    axk.plot([x0 - 0.01, x0 + 0.045], [yk, yk], color=FS.FG, lw=0.7, ls=(0, (1, 1.2)))
+    axk.text(xt, yk, "internal capsule (SARM atlas)", va="center", ha="left", fontsize=FS.MIN_PT, color=FS.FG)
+    yk -= dy
+    axk.plot([x0 - 0.01, x0 + 0.045], [yk, yk], color=FS.FG, lw=0.5, ls=(0, (0.8, 0.8)))
+    if compact:
+        axk.text(xt, yk, "inferred join (dotted edge); the pathways connected, as in a-c", va="center", ha="left", fontsize=FS.MIN_PT, color=FS.FG)
+        yk -= dy
+        axk.text(xt, yk, "light fill = footprint (density ≥ 0.1); gray = projected brain outline", va="center", ha="left", fontsize=FS.MIN_PT, color=FS.FG)
+    else:
+        axk.text(xt, yk, "inferred join (dotted edge); light fill = footprint, density ≥ 0.1; gray = projected brain outline", va="center", ha="left", fontsize=FS.MIN_PT, color=FS.FG)
     return axk
 
 
 # --------------------------------------------------------------------------- the paper's layout
 
-def composite(fig, sc, rec, stills, left, top, w, h, gap):
-    """(a), (b): the two 3D stills of reproduce/figures/tracer_3d.py (the oblique and the lateral view) as images, true to their
-    pixels; returns the two axes. The record keeps each still's file, size and md5."""
+STILL_W, STILL_MARGIN, STILL_DARK = 80.0, 0.03, 40                 # mm, the still's panel width; the crop's margin (of the still's width); background level
+
+
+def still_crop(im):
+    """The still's content box: the smallest box holding every pixel brighter than STILL_DARK (the brain, the planes, the letters and
+    the bar; not the black background), widened by STILL_MARGIN of the still's width on every side."""
+    on = np.argwhere(im.max(-1) > STILL_DARK)
+    m = int(round(STILL_MARGIN * im.shape[1]))
+    r0, c0 = np.maximum(on.min(0) - m, 0); r1, c1 = np.minimum(on.max(0) + m + 1, im.shape[:2])
+    return int(r0), int(r1), int(c0), int(c1)
+
+
+def composite(fig, sc, rec, stills, positions, w):
+    """(a), (b), (c): the 3D stills of reproduce/figures/tracer_3d.py (the oblique view, the lateral view, the lateral view with the
+    brain as a translucent shell), each cropped to its content (still_crop) and drawn at width w at the given (x, y) mm positions, so the
+    brain shows at a similar size in the three; returns the axes and the panel heights. The record keeps each still's file, size, md5 and
+    crop box."""
     import hashlib
     from PIL import Image
-    axs = []
+    axs, heights = [], []
     rec["stills"] = {}
-    for k, (name, path) in enumerate(stills):
+    for k, ((name, path), (x, y)) in enumerate(zip(stills, positions)):
         im = np.asarray(Image.open(path).convert("RGB"))
-        ax = FS.axes_mm(fig, left + k * (w + gap), top, w, h); axs.append(ax)
-        ax.imshow(im, interpolation="lanczos"); ax.set_axis_off()
-        FS.letter(ax, "ab"[k], dy=12.0)
-        FS.header(ax, {"oblique": "3D view, from the front, above and the right", "lateral": "3D view, from the right"}[name], dy=12.0)
-        FS.header(ax, {"oblique": "template T2: midline plane, coronal backdrop, floor; bridges in a lighter tint", "lateral": "the same scene"}[name], dx=0, dy=2.5, color=FS.GRAY)
-        rec["stills"][name] = dict(file=Path(path).name, pixels=[int(im.shape[1]), int(im.shape[0])], md5=hashlib.md5(open(path, "rb").read()).hexdigest())
-    return axs
+        r0, r1, c0, c1 = still_crop(im); crop = im[r0:r1, c0:c1]
+        h = w * crop.shape[0] / crop.shape[1]
+        ax = FS.axes_mm(fig, x, y, w, h); axs.append(ax); heights.append(h)
+        ax.imshow(crop, interpolation="lanczos"); ax.set_axis_off()
+        FS.letter(ax, "abc"[k], dy=12.0)
+        FS.header(ax, {"oblique": "3D view, from the front, above and the right", "lateral": "3D view, from the right",
+                       "glass": "the same view as b, the brain's surface drawn as a translucent shell"}[name], dy=12.0)
+        FS.header(ax, {"oblique": "template T2: midline plane, coronal backdrop, floor; joins in a lighter tint", "lateral": "the same scene",
+                       "glass": "the pathways lie inside the brain"}[name], dx=0, dy=2.5, color=FS.GRAY)
+        rec["stills"][name] = dict(file=Path(path).name, pixels=[int(im.shape[1]), int(im.shape[0])], md5=hashlib.md5(open(path, "rb").read()).hexdigest(),
+                                   crop_px=dict(rows=[r0, r1], cols=[c0, c1]), panel_mm=[round(w, 2), round(h, 2)])
+    return axs, heights
 
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", default=None, help="default figures/tracer_pathways.png (composite) or figures/tracer_pathways_panels.png (panels)")
     ap.add_argument("--layout", choices=["composite", "panels"], default="composite",
-                    help="composite (the paper's Fig. 10): a, b = the 3D stills, c = the dorsal projection, d = the capsule sections; "
-                         "panels: a, b = the lateral projections on T2 and on the blockface channel, c, d as above")
-    ap.add_argument("--stills", nargs=2, metavar=("OBLIQUE_PNG", "LATERAL_PNG"), default=None,
-                    help="composite: the two stills (default: figures/tracer_3d_oblique.png and figures/tracer_3d_lateral.png beside --out)")
+                    help="composite (the paper's Fig. 10): a, b, c = the 3D stills (oblique, lateral, lateral with the brain shell), d = the dorsal projection, "
+                         "e = the capsule sections; panels: a, b = the lateral projections on T2 and on the blockface channel, c = dorsal, d = capsule")
+    ap.add_argument("--stills", nargs=3, metavar=("OBLIQUE_PNG", "LATERAL_PNG", "GLASS_PNG"), default=None,
+                    help="composite: the three stills (default: figures/tracer_3d_{oblique,lateral,glass}.png beside --out)")
     a = ap.parse_args(argv)
     out = a.out or ("figures/tracer_pathways.png" if a.layout == "composite" else "figures/tracer_pathways_panels.png")
     Path(out).parent.mkdir(parents=True, exist_ok=True)
@@ -352,26 +382,35 @@ def main(argv=None):
     ins = list(sc["inputs"])
     if a.layout == "composite":
         od = Path(out).parent
-        stills = [("oblique", Path(a.stills[0]) if a.stills else od / "tracer_3d_oblique.png"), ("lateral", Path(a.stills[1]) if a.stills else od / "tracer_3d_lateral.png")]
+        stills = [(n, Path(a.stills[k]) if a.stills else od / f"tracer_3d_{n}.png") for k, n in enumerate(("oblique", "lateral", "glass"))]
         for _, p in stills:
             if not p.exists():
                 raise SystemExit(f"{p}: the 3D still is missing (reproduce/figures/tracer_3d.py renders it; --layout panels needs none)")
-        WS, GAPS = 80.0, 4.0; HS = WS * 0.75                                   # the stills are 4:3
-        TOP2 = TOP + HS + 17.0
-        H = TOP2 + max(hc, hd + 42.0) + 9.0
+        from PIL import Image
+        WS, GAPS = STILL_W, 4.0                                                 # rows: a | b, c | d, e | key; the stills cropped to their content
+        hs = []
+        for _, p in stills:
+            im = np.asarray(Image.open(p).convert("RGB")); r0, r1, c0, c1 = still_crop(im); hs.append(WS * (r1 - r0) / (c1 - c0))
+        TOP2 = TOP + max(hs[0], hs[1]) + 17.0
+        TOP3 = TOP2 + max(hs[2], hc) + 17.0
+        KW, KH = FS.FULL_W_IN / FS.MM - (LEFT + 3 * pd + 6.0 + 6.0) - 2.0, 40.0   # the key fills the row to the right edge
+        H = TOP3 + max(hd, KH) + 9.0
         fig = plt.figure(figsize=(FS.FULL_W_IN, H * FS.MM))
-        composite(fig, sc, rec, stills, LEFT, TOP, WS, HS, GAPS)
+        composite(fig, sc, rec, stills, [(LEFT, TOP), (LEFT + WS + GAPS, TOP), (LEFT, TOP2)], WS)
         ins += [p for _, p in stills]
+        dorsal(fig, sc, rec, LEFT + WS + 10.0, TOP2, wc, hc, letter="d")
+        alic(fig, sc, rec, LEFT, TOP3, pd, hd, letter="e")
+        key(fig, sc, rec, LEFT + 3 * pd + 6.0 + 6.0, TOP3, KW, KH, matplotlib, compact=True)
     else:
         wab, hab, GAP = (E["Y1"] - E["Y0"]) * SCALE_AB, (E["Z1"] - E["Z0"]) * SCALE_AB, 7.0
         TOP2 = TOP + hab + 17.0
         H = TOP2 + max(hc, hd + 42.0) + 9.0
         fig = plt.figure(figsize=(FS.FULL_W_IN, H * FS.MM))
         lateral(fig, sc, rec, LEFT, TOP, wab, hab, GAP)
-    dorsal(fig, sc, rec, LEFT, TOP2, wc, hc)
-    DX = LEFT + wc + 30.0
-    alic(fig, sc, rec, DX, TOP2, pd, hd)
-    key(fig, sc, rec, DX, TOP2 + hd + 9.0, 3 * pd + 6.0, 33.0, matplotlib)
+        dorsal(fig, sc, rec, LEFT, TOP2, wc, hc)
+        DX = LEFT + wc + 30.0
+        alic(fig, sc, rec, DX, TOP2, pd, hd)
+        key(fig, sc, rec, DX, TOP2 + hd + 9.0, 3 * pd + 6.0, 33.0, matplotlib)
     FS.save(fig, out, [str(p) for p in ins], cmd=cmd, extra=rec)
     print(provenance.write_numbers(name, rec, inputs=[str(p) for p in ins], md5=False, cmd=cmd))
     print(out, json.dumps(rec["cases"], indent=1))

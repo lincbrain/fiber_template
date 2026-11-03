@@ -16,7 +16,7 @@ $PY      cli/linc-labels interpolate --subject MR252   # env/linc.yml: interpola
 $PY      cli/linc-labels carry       --subject MR252   # env/linc.yml: carry the labels into the MRI template, in one resampling
 ```
 
-The interpolation interpolates the bundles and the terminal fields as one group each, keeping each grade as a part of its group,
+The interpolation interpolates the bundles and the terminal fields as one group each, keeping each density class as a part of its group,
 pairing sections within each hemisphere; a group present on only one side of a gap shrinks to a point at its middle. It writes
 labels only, under `labels/blockface/tracer/`. `--method v1`, the earlier method, interpolates each class on its own and also writes
 the RGB volume.

@@ -31,6 +31,12 @@
 # then `make test` (~3-10 min). Every step prints what it runs. Measured on this project's cluster, 3 Nov 2026 (empty package
 # caches): linc 2 min 30 s to 3 min 30 s, deep 4 min 25 s to 7 min 40 s, anatomix 8 min 15 s, tirl 1 min 30 s to 5 min 34 s; the others are
 # estimates until measured.
+# In all (linc, deep, anatomix, tirl, then make test): about 25 min and about 17 GB in the prefix (measured 3 Nov 2026: linc 1.3 GB,
+# deep 5.5 GB, anatomix 7.2 GB, tirl 2.8 GB, sources 0.3 GB; figures-3d adds 1.1 GB), plus the downloads, kept in the prefix:
+# conda's package cache in DIR/src/conda_pkgs (unless you set CONDA_PKGS_DIRS, e.g. to reuse a cache of your own) and pip's in
+# DIR/src/pip_cache; both are removable once the build is done. A shared conda's own package folder is never written. Network
+# access is needed (conda channels, PyPI, the PyTorch and VTK wheel indexes, and GitHub for anatomix and FireANTs); nothing else
+# outside the clone is read or written, except conda's own list of environments (~/.conda/environments.txt).
 # `pip check` in linc-anatomix lists three requirements the FireANTs fork declares but the engine never imports (hydra-core,
 # pytest, typing), as in the environment of record: expected, not a failure.
 #
@@ -52,11 +58,14 @@ done
 CONDA=$(command -v conda) || { CONDA=$(command -v mamba) && "$CONDA" --version > /dev/null 2>&1; } || { echo "conda (or a working mamba) not found on PATH"; exit 2; }   # conda first: some mamba builds are broken
 command -v git > /dev/null || { echo "git not found on PATH"; exit 2; }
 mkdir -p "$PREFIX/src"; PREFIX=$(cd "$PREFIX" && pwd)
-CLEAN=(env -i HOME="$HOME" PATH="$(dirname "$CONDA"):/usr/bin:/bin" PYTHONNOUSERSITE=1 PIP_USER=0 LANG=C.UTF-8)
+PKGS="${CONDA_PKGS_DIRS:-$PREFIX/src/conda_pkgs}"          # conda's package cache: in the prefix unless you set CONDA_PKGS_DIRS
+CLEAN=(env -i HOME="$HOME" PATH="$(dirname "$CONDA"):/usr/bin:/bin" PYTHONNOUSERSITE=1 PIP_USER=0 LANG=C.UTF-8
+       PIP_CACHE_DIR="$PREFIX/src/pip_cache" CONDA_PKGS_DIRS="$PKGS")   # downloads stay in the prefix (not ~/.cache/pip or a shared conda)
 fails=0
 say() { echo "[$(date +%H:%M:%S)] $*"; }
 run() { say "  \$ $*"; "${CLEAN[@]}" "$@" || { say "  FAILED: $*"; return 1; }; }
 want() { [ -z "$ONLY" ] || [[ ",$ONLY," == *",$1,"* ]]; }
+say "prefix $PREFIX; conda package cache $PKGS; pip cache $PREFIX/src/pip_cache"
 
 # create <short name> <env file>: DIR/<the file's name:> with a stamp (the file's md5) so a rerun can tell it built this one
 create() {

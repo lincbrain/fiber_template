@@ -22,7 +22,7 @@ if "--connected-from" in sys.argv:
     i = sys.argv.index("--connected-from"); del sys.argv[i:i + 2]
 SUBS = [
     ('RULE_TEXT = {"footprint": "density >= 0.1 (what Fig. 9 shows)", "solid": "density > 0.5"}',
-     'RULE_TEXT = {"footprint": "density >= 0.1 (what Fig. 9 shows)", "solid": "density > 0.5", "connected": "the connected pathway: density > 0.5 seeds grown through >= 0.25 (26-connected) plus the inferred bridges that join every piece into one pathway (tracer_connected_v2c; bundles; terminals keep the grown solid)"}'),
+     'RULE_TEXT = {"footprint": "density >= 0.1 (what Fig. 9 shows)", "solid": "density > 0.5", "connected": "the connected pathway: density > 0.5 seeds grown through >= 0.25 (26-connected) plus the inferred joins that connect every piece into one pathway (tracer_connected_v2c; bundles; terminals keep the grown solid)"}'),
     ('    ap.add_argument("--labels", default="tracer_template_r058d", help="label folder: a key of configs/products_blockface.yaml")\n'
      '    ap.add_argument("--name", default="tracer_label_volumes_r058d", help="record name ($LINC_NUMBERS/<name>.json)")\n'
      '    a = ap.parse_args()\n'

@@ -3,7 +3,7 @@
   "rules": {
    "footprint": "density >= 0.1 (what Fig. 9 shows)",
    "solid": "density > 0.5",
-   "connected": "the connected pathway: density > 0.5 seeds grown through >= 0.25 (26-connected) plus the inferred bridges that join every piece into one pathway (tracer_connected_v2c; bundles; terminals keep the grown solid)"
+   "connected": "the connected pathway: density > 0.5 seeds grown through >= 0.25 (26-connected) plus the inferred joins that connect every piece into one pathway (tracer_connected_v2c; bundles; terminals keep the grown solid)"
   },
   "voxel_mm3": 0.015625,
   "white_matter": "template FA > 0.25 in the template brain (linc_mri_wm_fa025)",

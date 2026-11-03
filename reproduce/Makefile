@@ -146,17 +146,19 @@ histology: tube_offsets_r054
 	@if [ -z "$(HISTOLOGY_ARGS)" ]; then echo "SKIPPED histology: set HISTOLOGY_ARGS (histology source data outside the release)"; \
 	else $(PY_TIRL) figures/histology.py $(HISTOLOGY_ARGS) --out $(OUT)/figures/$@.png; fi
 
-# the tracer figure (Fig. 10): the four-panel form always (record fig_tracer_pathways_panels); with PY_VIZ3D the 3D scene renders
-# first and the composite follows (the paper's figure, record fig_tracer_pathways)
+# the tracer figure (Fig. 10): the four-panel form always (record fig_tracer_pathways_panels); with PY_VIZ3D the three composite
+# stills render (no in-scene key, large letters; record fig_tracer_3d_stills) and the composite follows (the paper's figure, record
+# fig_tracer_pathways); `make tracer_3d` renders the full scene with its two rotation videos for the supplement
 tracer_pathways:
 	$(PY_MRI) figures/tracer_pathways.py --layout panels --out $(OUT)/figures/tracer_pathways_panels.png
 	@if [ -z "$(PY_VIZ3D)" ]; then echo "SKIPPED the composite of tracer_pathways: set PY_VIZ3D (env/viz3d.yml) for the 3D stills; the four-panel form is drawn"; \
-	else $(MAKE) tracer_3d && $(PY_MRI) figures/tracer_pathways.py --stills $(OUT)/figures/tracer_3d_oblique.png $(OUT)/figures/tracer_3d_lateral.png --out $(OUT)/figures/tracer_pathways.png; fi
+	else $(PY_VIZ3D) figures/tracer_3d.py --for-composite --views oblique lateral glass --no-video --record fig_tracer_3d_stills --out $(OUT)/figures/tracer_3d_stills && \
+	$(PY_MRI) figures/tracer_pathways.py --stills $(OUT)/figures/tracer_3d_stills_oblique.png $(OUT)/figures/tracer_3d_stills_lateral.png $(OUT)/figures/tracer_3d_stills_glass.png --out $(OUT)/figures/tracer_pathways.png; fi
 
 # the 3D tracer scene (Fig. 10 a, b and the rotation video) renders headless in env/viz3d.yml: skipped with a message when PY_VIZ3D is unset
 tracer_3d:
 	@if [ -z "$(PY_VIZ3D)" ]; then echo "SKIPPED tracer_3d: set PY_VIZ3D (env/viz3d.yml; install.sh --with-figures-3d)"; \
-	else $(PY_VIZ3D) figures/tracer_3d.py --out $(OUT)/figures/tracer_3d; fi
+	else $(PY_VIZ3D) figures/tracer_3d.py --glass-video --out $(OUT)/figures/tracer_3d; fi
 
 $(filter-out pipeline tracer_pathways,$(FIGURES_MRI)):
 	$(PY_MRI) figures/$@.py --out $(OUT)/figures/$@.png

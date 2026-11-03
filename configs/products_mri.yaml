@@ -14,7 +14,7 @@ tube_landmarks: labels/tube_landmarks                 # per-piece tube offsets: 
 push_current: labels/push_current                     # LGN/STN labels carried into the MRI template (the chain of record)
 template_gt: labels/template_gt                       # template-space reference labels for the LGN/STN geometry
 push_tracer: labels/push_tracer                       # tracer labels on the blockface grid (sheets + demons-interpolated)
-push_tracer_r058d: labels/push_tracer_r058d           # the per-grade sheets of record pushed onto the blockface (one slice per charted section; the chain of record since 3 Nov 2026 starts from them)
+push_tracer_r058d: labels/push_tracer_r058d           # the per-density-class sheets of record pushed onto the blockface (one slice per charted section; the chain of record since 3 Nov 2026 starts from them)
 tracer_template_demons: labels/tracer_template_current_demons   # tracer labels in the MRI template (Fig. 10)
 
 # --- MRI channels: construction runs, evaluation caches, template ---
@@ -39,7 +39,7 @@ mri_inputs: mri/data                                  # sub-<ID>/micro/frac{1,2}
 tensor_d9: mri/tensor_refit_d9                        # <ID>_existing/run.json: the tensor of record's volumes, b-values and gradient check
 
 # --- tracer labels, the chain of record since 3 Nov 2026 (v2 interpolation + the connected pathways, v2c) ---
-tracer_v2_bfnative: labels/tracer_v2                  # the interpolated tracer labels on the blockface grid, per group and grade (<S>/<S>_<label>_bfnative_L2_demons.nii.gz)
+tracer_v2_bfnative: labels/tracer_v2                  # the interpolated tracer labels on the blockface grid, per group and density class (<S>/<S>_<label>_bfnative_L2_demons.nii.gz)
                                                       #   made by the v2 interpolation (linc-labels interpolate --method v2); the release's run reproduces them byte for byte
                                                       #   (MR252, 3 Nov 2026: 11 of 11 volumes, the pairs and the summary of interp_v2.json)
 tracer_template_v2: labels/tracer_template_v2        # the same carried into the MRI template (density, footprint, solid, solid2 = the connected solid per group)

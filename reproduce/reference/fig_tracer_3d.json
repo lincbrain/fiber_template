@@ -54,6 +54,16 @@
     "share_left_of_midline": 0.0
    }
   },
+  "glass": {
+   "shell_vertices": 200138,
+   "shell_smooth_mm": 1.0,
+   "shell_opacity": 0.22,
+   "midline_opacity": 0.2,
+   "floor": false,
+   "backdrop": false,
+   "what": "the whole brain mask as a translucent shell, the pathways inside; the lateral camera",
+   "video_shell_opacity": 0.15
+  },
   "environment": {
    "pyvista": "0.44.2",
    "vtk": "VersionInfo(major=9, minor=3, micro=1)"

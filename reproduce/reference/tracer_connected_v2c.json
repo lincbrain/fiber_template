@@ -11,7 +11,7 @@
    "path inside the template brain mask (voxel cost 1 / (density + EPS), halved in white matter and inside the footprint, density >= 0.1;",
    "6-connected graph; multi-source Dijkstra from the current pathway, the cheapest piece first, so chains of pieces connect through each",
    "other), the path dilated to a tube of TUBE_R voxels; pieces smaller than MIN_VOX voxels are dropped (listed), no piece is dropped for",
-   "distance; every bridge is recorded with its length and voxel count and flagged when longer than LONG_MM. Bridge voxels that were not in",
+   "distance; every join is recorded with its length and voxel count and flagged when longer than LONG_MM. Join voxels that were not in",
    "the solid are inferred: label 2 in the written label (1 = the solid)."
   ],
   "cases": {
@@ -26,7 +26,7 @@
      "min_piece_vox": 8,
      "tube_radius_vox": 2,
      "graph": "6-connected, inside the template brain mask",
-     "drop": "specks only (no distance cap: every charted piece is bridged)",
+     "drop": "specks only (no distance cap: every charted piece is joined)",
      "pieces": "26-connected pieces of v2's connected solid (density > 0.5 grown through >= 0.25)"
     },
     "v2_solid": {
@@ -157,7 +157,7 @@
      "min_piece_vox": 8,
      "tube_radius_vox": 2,
      "graph": "6-connected, inside the template brain mask",
-     "drop": "specks only (no distance cap: every charted piece is bridged)",
+     "drop": "specks only (no distance cap: every charted piece is joined)",
      "pieces": "26-connected pieces of v2's connected solid (density > 0.5 grown through >= 0.25)"
     },
     "v2_solid": {
@@ -314,7 +314,7 @@
      "min_piece_vox": 8,
      "tube_radius_vox": 2,
      "graph": "6-connected, inside the template brain mask",
-     "drop": "specks only (no distance cap: every charted piece is bridged)",
+     "drop": "specks only (no distance cap: every charted piece is joined)",
      "pieces": "26-connected pieces of v2's connected solid (density > 0.5 grown through >= 0.25)"
     },
     "v2_solid": {
@@ -426,7 +426,7 @@
      "min_piece_vox": 8,
      "tube_radius_vox": 2,
      "graph": "6-connected, inside the template brain mask",
-     "drop": "specks only (no distance cap: every charted piece is bridged)",
+     "drop": "specks only (no distance cap: every charted piece is joined)",
      "pieces": "26-connected pieces of v2's connected solid (density > 0.5 grown through >= 0.25)"
     },
     "v2_solid": {

@@ -47,10 +47,19 @@ LINC_DATA=$LINC_REBUILD_DATA $PY_TIRL cli/linc-reconstruct all --subject MR263
 
 It runs its steps in order and prints each as it starts: `=== <ID>: photos`, then `stack`, `prepare`, `mask`, `volume`, `tubes` and
 `spacing`. In `photos`, the photographs are read and the network makes their brain masks, one line per photograph; `volume` ends with
-`=== DONE <ID> in <s>s`. On one node, reading the photographs took about 1.5 s each, their masks 1 to 4 s each on a shared GPU, and
-`prepare` about 30 minutes for about 1,400 photographs; MF8's 77 photographs took 9 minutes in all.
+`=== DONE <ID> in <s>s`. On one node, reading the photographs took about 1.5 s each, their masks 0.8 to 4 s each on a shared GPU, and
+`prepare` about 30 minutes for about 1,400 photographs. The whole reconstruction of MM2 (1,440 photographs) or MM14 (1,401) takes
+about 2.5 hours; MF8's 77 photographs took 9 minutes in all.
 
-<!-- MM2's runtime and the comparison with the paper's reconstruction (L1, ~16:10); MM14's: being completed -->
+Compare a volume with the paper's (here MM2's):
+
+```bash
+$PY tools/compare_reconstruction.py MR252 $LINC_REBUILD_DATA/sub-MR252/blockface $LINC_PRODUCTS/data/sub-MR252/blockface
+```
+
+It compares every level of the OME-Zarr stores (arrays, scale and translation), the NIfTI products (arrays and affines) and
+`MR252.info`, one line each, and exits with status 0 when all are identical. The results of this comparison for MM2 and MM14 are
+not yet on this page.
 
 MF8's volume of record was rebuilt on 24–26 Sep 2026 with an earlier padding of its canvas. The release reproduces its aligned
 photographs, brain mask and tubes exactly, and its volume up to a shift of the canvas by less than a voxel (its origin moves by 0.5

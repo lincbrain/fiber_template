@@ -9,11 +9,11 @@ Rule: the 26-connected pieces of the connected solid, largest first; every other
 path inside the template brain mask (voxel cost 1 / (density + EPS), halved in white matter and inside the footprint, density >= 0.1;
 6-connected graph; multi-source Dijkstra from the current pathway, the cheapest piece first, so chains of pieces connect through each
 other), the path dilated to a tube of TUBE_R voxels; pieces smaller than MIN_VOX voxels are dropped (listed), no piece is dropped for
-distance; every bridge is recorded with its length and voxel count and flagged when longer than LONG_MM. Bridge voxels that were not in
+distance; every join is recorded with its length and voxel count and flagged when longer than LONG_MM. Join voxels that were not in
 the solid are inferred: label 2 in the written label (1 = the solid).
 Outputs: $LINC_WORK/tracer_v2c/<S>/<S>_Bundles_mri-template_{connected,solid_v2c,bridges}.nii.gz (what the released labels
-`tracer_template_v2c` hold) and $LINC_NUMBERS/tracer_connected_v2c.json (per case: the solid's pieces and largest share, every bridge,
-the dropped specks, the inferred voxels and share, the longest bridge).
+`tracer_template_v2c` hold) and $LINC_NUMBERS/tracer_connected_v2c.json (per case: the solid's pieces and largest share, every join,
+the dropped specks, the inferred voxels and share, the longest join).
     python reproduce/numbers/tracer_connected_v2c.py [--cases MR243 ...]
 Ported from the analysis project's labels/tracer_v2/connect_v2c.py (3 Nov 2026), unchanged numerically.
 """
@@ -72,7 +72,7 @@ def connect(S, lab_dir, tpl, out_dir, log=print):
     main_id = int(order[0]); main = lab == main_id
     rec = dict(case=CASES[S], subject=S, params=dict(vox_mm=VOX, cost="1/(density + eps), x0.5 in white matter (FA > 0.25) or the footprint (density >= 0.1)",
                                                      eps=EPS, long_bridge_flag_mm=LONG_MM, min_piece_vox=MIN_VOX, tube_radius_vox=TUBE_R, graph="6-connected, inside the template brain mask",
-                                                     drop="specks only (no distance cap: every charted piece is bridged)",
+                                                     drop="specks only (no distance cap: every charted piece is joined)",
                                                      pieces="26-connected pieces of v2's connected solid (density > 0.5 grown through >= 0.25)"),
                v2_solid=dict(voxels=int(S0.sum()), pieces=int(n), largest_share=round(float(sizes.max() / S0.sum()), 4), piece_voxels=sorted(sizes.tolist(), reverse=True)),
                attached=[], dropped=[])

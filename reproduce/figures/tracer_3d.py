@@ -9,17 +9,23 @@ Scene (world = the template's RAS mm; the camera looks at the right hemisphere):
             (z = Z_FLOOR, the first tissue layer: the brainstem's cut face) on a dark gray base. Gray: a window from the brain's 5th to
             its 99th T2 percentile with gamma GAMMA, top gray TOP (white matter reads darker than gray matter); RGB texture, no lighting;
   pathways  each case's connected pathway as a smoothed isosurface of the interpolated density inside the connected label (graded) in the
-            case's color (MM1 vermilion, MF8 yellow, MM2 green; MF8 mirrored to the right as in Fig. 9), the inferred bridges (label 2 of
+            case's color (MM1 vermilion, MF8 yellow, MM2 green; MF8 mirrored to the right as in Fig. 9), the inferred joins (label 2 of
             <S>_Bundles_mri-template_connected) as separate surfaces in a lighter tint, the injection site (the interpolated solid) opaque;
   marks     labels on the planes' edges ("midline", "y = -1 mm", "floor"), the orientation letters A / P / S / I / R (A / P / L / R from
             above), a 5 mm bar on the backdrop's ventral edge, a key with the three case names in their colors;
   rotation  one turn about the vertical axis (10 s, 30 fps) from the oblique view; while the camera is on the left side the mid-sagittal
             plane is drawn at FADE opacity, and while it is behind the backdrop the backdrop likewise, so the pathways stay in view all
             the way round (the stills keep every plane opaque; --no-fade keeps them opaque in the video too).
-Outputs: <out>_oblique.png (anterior-superior-right view), <out>_lateral.png (from the right), <out>_dorsal.png (from above),
+  glass     the lateral camera again with the whole brain mask as a smooth translucent shell (marching cubes on the mask smoothed to
+            GLASS_SMOOTH_MM after filling its cavities, Taubin-smoothed, the outer surface only, gray at GLASS_OPACITY with its back faces
+            culled), the pathways inside at full color, the midline
+            plane at GLASS_MIDLINE, no coronal backdrop, no floor: the view that shows the pathways inside the brain. In the two lateral
+            views the orientation letter R (it would point at the viewer) is not drawn and the 5 mm bar lies along the A-P axis at the
+            lower left.
+Outputs: <out>_oblique.png (anterior-superior-right view), <out>_lateral.png (from the right), <out>_dorsal.png (from above), <out>_glass.png,
 <out>_rotation.mp4 (unless --no-video), <out>.provenance.json; the record $LINC_NUMBERS/fig_tracer_3d.json (the planes, the window, the
 cases, their vertex counts and the share of each pathway left of the midline, which the opaque mid-sagittal plane hides from the right).
-    $PY_VIZ3D reproduce/figures/tracer_3d.py [--out figures/tracer_3d] [--no-video] [--no-fade]
+    $PY_VIZ3D reproduce/figures/tracer_3d.py [--out figures/tracer_3d] [--views oblique lateral dorsal glass] [--no-video] [--no-fade] [--glass-video] [--for-composite]
 Ported from the analysis project's paper/fig_tracer_3d_v3.py (3 Nov 2026), unchanged in content: the same environment renders the
 paper's files byte for byte.
 """
@@ -48,6 +54,9 @@ COLOR = {"MR243": OKABE["vermilion"], "MF191": OKABE["yellow"], "MR252": OKABE["
 X_SAG, Y_BACK, Z_FLOOR = 0.0, -1.0, -1.5                 # mm: the mid-sagittal plane; the coronal backdrop; the axial floor
 LO_PCT, HI_PCT, GAMMA, TOP, FLOOR_BASE = 5.0, 99.0, 0.85, 0.90, 0.10   # the planes' gray window; the floor's base gray outside the brain
 FADE = 0.3                                                # a plane's opacity in the rotation frames where it would hide the pathways
+GLASS_SMOOTH_MM, GLASS_OPACITY, GLASS_MIDLINE, GLASS_FLOOR = 1.0, 0.22, 0.2, 0.5   # the glass view: the shell's smoothing and opacity, the midline plane's, the floor's
+GLASS_VIDEO_OPACITY = 0.15                                # the shell in the glass rotation
+GLASS_COLOR = "#D0D0D0"                                   # the shell's gray (its back faces are culled, so the front surface alone blends over the pathways)
 BG, FG = "black", "white"
 WIN = (2400, 1800)
 
@@ -90,6 +99,13 @@ def main(argv=None):
     ap.add_argument("--out", default=None, help="output prefix (default figures/tracer_3d under the figures root)")
     ap.add_argument("--no-video", action="store_true"); ap.add_argument("--no-fade", action="store_true", help="keep every plane opaque in the rotation too")
     ap.add_argument("--back", type=float, default=Y_BACK); ap.add_argument("--floor", type=float, default=Z_FLOOR)
+    ap.add_argument("--views", nargs="+", default=["oblique", "lateral", "dorsal", "glass"], choices=["oblique", "lateral", "dorsal", "glass"],
+                    help="the stills to render (default: all four)")
+    ap.add_argument("--glass-video", action="store_true", help="also a rotation with the brain shell (no backdrop) as <out>_rotation_glass.mp4")
+    ap.add_argument("--record", default=NAME, help="the record's name under $LINC_NUMBERS (default fig_tracer_3d; the composite's stills use fig_tracer_3d_stills)")
+    ap.add_argument("--for-composite", action="store_true",
+                    help="stills for the paper's composite: no in-scene case key (the composite has one), no plane labels (the panel subtitles name the planes), "
+                         "the orientation letters and the bar label at a size that prints at 80 mm panel width")
     a = ap.parse_args(argv); t0 = time.time()
     P = paths.products("products_mri"); TPL, V2, V2C = P["template_mri"], P["tracer_template_v2"], P["tracer_template_v2c"]
     prefix = Path(a.out) if a.out else Path("figures/tracer_3d")
@@ -111,7 +127,7 @@ def main(argv=None):
                    V2 / S / f"{S}_Injection_site_mri-template_solid2.nii.gz"]
         if S in MIRROR:
             C, D, I = C[::-1], D[::-1], I[::-1]
-        graded = np.where(C > 0, np.maximum(D, 0.55), 0.0).astype(np.float32)       # the density inside the connected label (bridges at 0.55)
+        graded = np.where(C > 0, np.maximum(D, 0.55), 0.0).astype(np.float32)       # the density inside the connected label (joins at 0.55)
         path = surface(graded, A, level=0.5)
         bridge = surface((C == 2).astype(np.float32), A, smooth_vox=0.4, taubin=10)
         inj = surface(I.astype(np.float32), A, smooth_vox=0.5)
@@ -128,12 +144,22 @@ def main(argv=None):
     sag = textured_plane(gray, A, 0, X_SAG, box)
     back = textured_plane(gray, A, 1, a.back, box)
     floor = textured_plane(np.where(brain, gray, FLOOR_BASE).astype(np.float32), A, 2, a.floor, box)   # the slice on the dark base
+    shell = surface(ndi.binary_fill_holes(brain).astype(np.float32), A, level=0.5, smooth_vox=GLASS_SMOOTH_MM / float(A[0, 0]), taubin=30).extract_largest()   # the brain's outer surface, smoothed
+    rec["glass"] = dict(shell_vertices=int(shell.n_points), shell_smooth_mm=GLASS_SMOOTH_MM, shell_opacity=GLASS_OPACITY, midline_opacity=GLASS_MIDLINE,
+                        floor=False, backdrop=False, what="the whole brain mask as a translucent shell, the pathways inside; the lateral camera")
 
-    def scene(view, size=WIN, letters=(), zoom=1.25, key=True):
+    def scene(view, size=WIN, letters=(), zoom=1.25, key=True, glass=False, shell_opacity=None, bar="edge", with_floor=True, large=False):
+        """The scene for one camera; glass = the brain's surface as a translucent shell with the pathways inside (the midline plane
+        faint, no coronal backdrop, the floor dim) instead of the opaque planes."""
         p = pv.Plotter(off_screen=True, window_size=size); p.set_background(BG)
-        actors = dict(sag=p.add_mesh(sag, scalars="rgb", rgb=True, lighting=False),
-                      back=p.add_mesh(back, scalars="rgb", rgb=True, lighting=False),
-                      floor=p.add_mesh(floor, scalars="rgb", rgb=True, lighting=False))
+        if glass:
+            actors = dict(sag=p.add_mesh(sag, scalars="rgb", rgb=True, lighting=False, opacity=GLASS_MIDLINE))
+            if with_floor:
+                actors["floor"] = p.add_mesh(floor, scalars="rgb", rgb=True, lighting=False, opacity=GLASS_FLOOR)
+        else:                                                                     # the actors in the order of the paper's stills (the renders are byte-identical to them)
+            actors = dict(sag=p.add_mesh(sag, scalars="rgb", rgb=True, lighting=False),
+                          back=p.add_mesh(back, scalars="rgb", rgb=True, lighting=False),
+                          floor=p.add_mesh(floor, scalars="rgb", rgb=True, lighting=False))
         for S, path, bridge, inj in meshes:
             if path is not None:
                 p.add_mesh(path, color=COLOR[S], smooth_shading=True, specular=0.25, specular_power=25)
@@ -141,14 +167,25 @@ def main(argv=None):
                 p.add_mesh(bridge, color=lighten(COLOR[S]), smooth_shading=True, specular=0.2)
             if inj is not None:
                 p.add_mesh(inj, color=COLOR[S], smooth_shading=True, ambient=0.3)
-        y0, z0 = a.back + 0.5, a.floor + 0.5                                      # the 5 mm bar on the backdrop's ventral edge
-        p.add_mesh(pv.Line((2.0, y0, z0), (7.0, y0, z0)), color=FG, line_width=6)
-        p.add_point_labels([(4.5, y0, z0 + 2.0)], ["5 mm"], text_color=FG, font_size=26, shape=None, show_points=False, always_visible=True)
-        edge = [((X_SAG, box[3] - 6.0, box[5] - 1.5), "midline"), ((box[1] - 8.0, a.back, box[5] - 1.5), f"y = {a.back:g} mm"), ((box[1] - 6.0, box[3] - 4.0, a.floor), "floor")]
-        for pos, txt in edge:
-            p.add_point_labels([pos], [txt], text_color="#BBBBBB", font_size=22, shape=None, show_points=False, always_visible=True)
+        if glass:                                                                 # after the opaque pathways: the front surface blends over them
+            actors["shell"] = p.add_mesh(shell, color=GLASS_COLOR, opacity=shell_opacity if shell_opacity is not None else GLASS_OPACITY,
+                                         smooth_shading=True, specular=0.15, specular_power=20, culling="back")
+        fs_bar, fs_letter, lw = (48, 60, 10) if large else (26, 30, 6)
+        if bar == "edge":                                                         # the 5 mm bar on the backdrop's ventral edge (the oblique and dorsal views)
+            y0, z0 = a.back + 0.5, a.floor + 0.5
+            p.add_mesh(pv.Line((2.0, y0, z0), (7.0, y0, z0)), color=FG, line_width=lw)
+            p.add_point_labels([(4.5, y0, z0 + 2.0)], ["5 mm"], text_color=FG, font_size=fs_bar, shape=None, show_points=False, always_visible=True)
+        else:                                                                     # the lateral views: along the A-P axis at the lower left, nearest the camera
+            xb, yb, zb = box[1], box[2] + 3.0, box[4] + 2.0
+            p.add_mesh(pv.Line((xb, yb, zb), (xb, yb + 5.0, zb)), color=FG, line_width=lw)
+            p.add_point_labels([(xb, yb + 2.5, zb - 2.5)], ["5 mm"], text_color=FG, font_size=fs_bar, shape=None, show_points=False, always_visible=True)
+        if not large:                                                             # the plane labels (the composite's subtitles name the planes instead)
+            edge = [((X_SAG, box[3] - 6.0, box[5] - 1.5), "midline")] + ([((box[1] - 6.0, box[3] - 4.0, a.floor), "floor")] if with_floor else []) + \
+                   ([((box[1] - 4.0, box[2] + 10.0, box[5] - 3.0), "brain surface")] if glass else [((box[1] - 8.0, a.back, box[5] - 1.5), f"y = {a.back:g} mm")])
+            for pos, txt in edge:
+                p.add_point_labels([pos], [txt], text_color="#BBBBBB", font_size=22, shape=None, show_points=False, always_visible=True)
         for pos, txt in letters:
-            p.add_point_labels([pos], [txt], text_color=FG, font_size=30, shape=None, show_points=False, always_visible=True)
+            p.add_point_labels([pos], [txt], text_color=FG, font_size=fs_letter, shape=None, show_points=False, always_visible=True)
         if key:
             p.add_legend([[LABEL[S], COLOR[S]] for S in ("MR243", "MF191", "MR252")], bcolor=None, border=False, size=(0.26, 0.11), loc="lower right", face="rectangle")
         p.camera_position = view; p.camera.zoom(zoom)
@@ -160,10 +197,16 @@ def main(argv=None):
              "dorsal": [(9.0, 16.0, 160.0), center, (0.0, 1.0, 0.0)]}          # from above, anterior up
     SIDE_LETTERS = (((0.0, 45.0, 8.0), "A"), ((0.0, -24.5, 8.0), "P"), ((0.0, 8.0, 37.0), "S"), ((0.0, 8.0, -4.5), "I"), ((29.5, 16.0, 14.0), "R"))
     TOP_LETTERS = (((0.0, 45.0, 2.0), "A"), ((0.0, -24.5, 2.0), "P"), ((29.5, 10.0, 2.0), "R"), ((-29.5, 10.0, 2.0), "L"))
-    LETTERS = {"oblique": SIDE_LETTERS, "lateral": SIDE_LETTERS, "dorsal": TOP_LETTERS}
+    views["glass"] = views["lateral"]                                           # the same camera as the lateral view, the brain as a shell
+    LATERAL_LETTERS = tuple(l for l in SIDE_LETTERS if l[1] != "R")              # from the right, R points at the viewer: not drawn
+    LETTERS = {"oblique": SIDE_LETTERS, "lateral": LATERAL_LETTERS, "dorsal": TOP_LETTERS, "glass": LATERAL_LETTERS}
+    SETUP = {"oblique": dict(bar="edge"), "lateral": dict(bar="ap"), "dorsal": dict(bar="edge"), "glass": dict(glass=True, bar="ap", with_floor=False)}
     written = []
-    for name, view in views.items():
-        p, _ = scene(view, letters=LETTERS[name]); f = Path(f"{prefix}_{name}.png"); p.screenshot(str(f), transparent_background=False); p.close(); written.append(f)
+    if a.for_composite:
+        rec["stills"] = dict(in_scene_key=False, plane_labels=False, letter_font_px=60, bar_font_px=48)
+    for name in a.views:
+        p, _ = scene(views[name], letters=LETTERS[name], key=not a.for_composite, large=a.for_composite, **SETUP[name])
+        f = Path(f"{prefix}_{name}.png"); p.screenshot(str(f), transparent_background=False); p.close(); written.append(f)
         print(f"wrote {f} ({time.time() - t0:.0f} s)", flush=True)
     if not a.no_video:
         p, actors = scene(views["oblique"], size=(1600, 1200), letters=SIDE_LETTERS); f = Path(f"{prefix}_rotation.mp4")
@@ -176,12 +219,19 @@ def main(argv=None):
                 actors["back"].GetProperty().SetOpacity(1.0 if cy >= a.back else FADE)
             p.write_frame()
         p.close(); written.append(f); print(f"wrote {f} ({time.time() - t0:.0f} s)", flush=True)
+    if a.glass_video:
+        p, actors = scene(views["oblique"], size=(1600, 1200), letters=SIDE_LETTERS, glass=True, shell_opacity=GLASS_VIDEO_OPACITY, with_floor=False); f = Path(f"{prefix}_rotation_glass.mp4")
+        p.open_movie(str(f), framerate=30, quality=7); n = 300
+        for i in range(n):
+            p.camera.Azimuth(360.0 / n); p.write_frame()
+        p.close(); written.append(f); print(f"wrote {f} ({time.time() - t0:.0f} s)", flush=True)
+        rec["glass"]["video_shell_opacity"] = GLASS_VIDEO_OPACITY
     rec["environment"] = dict(pyvista=pv.__version__, vtk=str(pv.vtk_version_info))
     cmd = " ".join(["$PY_VIZ3D reproduce/figures/tracer_3d.py"] + (argv if argv is not None else sys.argv[1:]))
     wall = round(time.time() - t0, 1)
     prov = provenance.provenance_dict(str(prefix), inputs=inputs, outputs=written, cmd=cmd, wall_s=wall, extra=dict(figure=NAME, outputs=[str(w) for w in written]), md5=False)
     Path(f"{prefix}.provenance.json").write_text(json.dumps(prov, indent=1, default=str))
-    print(provenance.write_numbers(NAME, rec, inputs=inputs, md5=False, cmd=cmd))
+    print(provenance.write_numbers(a.record, rec, inputs=inputs, md5=False, cmd=cmd))
 
 
 if __name__ == "__main__":
