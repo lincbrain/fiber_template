@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+"""Brain masks and marker tubes with the project's four segmentation models (linc/segment; models/segmentation.md). No nnU-Net.
+
+Quick start (weights in $LINC_MODELS/segment/<model>; environment env/deep.yml):
+    cli/linc-segment predict --model mri_brainmask --out b0_mask.nii.gz b0.nii.gz
+    cli/linc-segment predict --model bf_mask2d --native --in photos/ --out masks/     # a folder of <case>_0000.png photographs
+    cli/linc-segment predict --model bf_mask3d --out mask.nii.gz vol_0000.nii.gz vol_0001.nii.gz vol_0002.nii.gz
+
+The models (--model; or a model folder of your own):
+    mri_brainmask   any scalar ex vivo MRI (b0, T2) -> brain mask (resampled to 0.5 mm and back)
+    bf_mask2d       one blockface photograph (RGB) -> brain mask; native photographs with --native; enclosed holes filled
+    bf_mask3d       the background-intact RGB volume (one file per channel) -> brain mask; largest component, holes filled
+    bf_holes        the masked color volume -> marker tubes; needs the brain mask (--mask, or --masks with --in)
+A mask is written on the input's grid (uint8). `cli/linc-segment predict -h` lists the options.
+
+Advanced (training and evaluation, as the models were made):
+    cli/linc-segment train --task <spec.json> --fold <k|all> --out <run folder> [...]     (-h for the recipe's options)
+    cli/linc-segment score --task <spec.json> --pred <folder | map.json> --out <scores.json> [--fold k]
+    cli/linc-segment folds --task <spec.json>
+"""
+import argparse
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+
+def predict(argv):
+    ap = argparse.ArgumentParser(prog="linc-segment predict", formatter_class=argparse.RawDescriptionHelpFormatter,
+                                 description="Segment one case (its channel files) or every case of a folder.",
+                                 epilog="examples:\n"
+                                        "  cli/linc-segment predict --model mri_brainmask --out b0_mask.nii.gz b0.nii.gz\n"
+                                        "  cli/linc-segment predict --model bf_mask2d --native --in photos/ --out masks/\n"
+                                        "  cli/linc-segment predict --model bf_holes --mask brain.nii.gz --out tubes.nii.gz vol_0000.nii.gz ...")
+    g = ap.add_argument_group("what to segment")
+    g.add_argument("--model", required=True, help="mri_brainmask, bf_mask2d, bf_mask3d, bf_holes ($LINC_MODELS/segment/<model>), or a model folder")
+    g.add_argument("images", nargs="*", metavar="IMAGE", help="one case: its channel files, in order (<case>_0000, _0001, ...)")
+    g.add_argument("--in", dest="in_dir", type=Path, metavar="DIR", help="instead of IMAGE: every case of a folder of <case>_<cccc><ext> files")
+    g.add_argument("--out", required=True, type=Path, help="the mask file (one case) or the output folder (with --in)")
+    g.add_argument("--native", action="store_true", help="the photographs are at native size (bf_mask2d): reduced 4 x 4 first, masks back at native size")
+    t = ap.add_argument_group("the tube model (bf_holes) only")
+    t.add_argument("--mask", type=Path, help="one case: its brain mask")
+    t.add_argument("--masks", type=Path, metavar="DIR", help="with --in: a folder of brain masks <case><ext>")
+    x = ap.add_argument_group("advanced")
+    x.add_argument("--postprocess", default="spec", choices=("spec", "none", "largest_component", "largest_cc_fill", "fill_holes"),
+                   help="override the model's post-processing (spec: the model's own; default)")
+    x.add_argument("--mirror", default="spec", choices=("spec", "on", "off"),
+                   help="test-time mirroring (spec: on for the four models); off is 4x (2D) / 8x (3D) faster")
+    x.add_argument("--device", default="cuda", help="cuda (default), cuda:N or cpu")
+    a = ap.parse_args(argv)
+    from linc.segment import api, io
+    from linc.segment.predict import load, predict_case
+    mirror = None if a.mirror == "spec" else a.mirror == "on"
+    if a.in_dir:
+        if a.images:
+            ap.error("give --in or IMAGE files, not both")
+        took = api.predict_folder(a.model, a.in_dir, a.out, a.native, a.postprocess, a.masks, a.device, mirror)
+        print(f"{len(took)} cases -> {a.out}")
+        return 0
+    if not a.images:
+        ap.error("give --in DIR or the IMAGE files of one case")
+    net, spec = load(api.model_dir(a.model), a.device)
+    mask, meta, s = predict_case(net, spec, a.images, a.device, mirror, None if a.postprocess == "spec" else a.postprocess,
+                                 a.native, str(a.mask) if a.mask else None)
+    io.write_mask(mask, meta, a.out)
+    print(f"{a.out} ({s:.1f} s)")
+    return 0
+
+
+def main():
+    cmds = ("predict", "train", "score", "folds")
+    if len(sys.argv) < 2 or sys.argv[1] not in cmds:
+        print(__doc__); return 0 if len(sys.argv) > 1 and sys.argv[1] in ("-h", "--help") else 2
+    cmd, rest = sys.argv[1], sys.argv[2:]
+    if cmd == "predict":
+        return predict(rest)
+    import importlib
+    return importlib.import_module(f"linc.segment.{cmd}").main(rest)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

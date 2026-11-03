@@ -1,0 +1,162 @@
+#!/usr/bin/env python3
+"""Histology -> blockface registration of one brain (paper Methods, "Histology registration and label propagation").
+
+    linc-histology <step> --subject MR252 --store <ID>_blockface.ome.zarr --histology <sections dir> --table <match table> \
+                   --regions <ID>_regions.nii.gz --out <dir> [--jobs 12] [--threads 12]
+
+Steps, in order (`all` runs them in order; parameters: configs/histology.yaml):
+    match      matched blockface photo per section piece           -> <out>/matched/<section><suffix>_0000.png
+    pieces     piece partition from the atlas regions, then pieces -> <out>/partition/, <out>/pieces/<section>_<tag>.png
+    masks      histology tissue masks per piece                    -> <out>/tissue_masks/<section>_<tag>.png
+    prepare    TIRL moving (histology) and fixed (blockface) images -> <out>/moving/, <out>/fixed/   (masks first if absent)
+    register   TIRL 3.6.3 (or 3.6.2) per piece (the `tirl` beside the running Python, else PATH; version checked) -> <out>/tirl/<piece>/
+    rgb        registered RGB sections                              -> <out>/tirl/<piece>/moving4_nonlinear_rgb.png
+--subject reads idx_range[0] (the raw index of the store's first slice) and the corpus-callosum section range (ccs, cce)
+from configs/subjects/<ID>.yaml; --idx0 / --ccs / --cce override them. The regions volume is scaled into the store's calibrated frame by
+the brain's own factors (calibrated / made-at spacing per axis; configs/histology.yaml regions.made_at_spacing_um; pieces.regions_scale;
+1 for a brain not listed there); --regions-frame current skips that when the regions are known to be in the store's frame.
+Each step writes provenance.json into its product folder.
+"""
+import argparse
+import os
+import sys
+import time
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO))
+
+from linc import provenance  # noqa: E402
+from linc.histology import match, pieces, register  # noqa: E402
+
+STEPS = ["match", "pieces", "masks", "prepare", "register", "rgb"]
+
+
+def subject_cfg(a):
+    import yaml
+    f = REPO / "configs" / "subjects" / f"{a.subject}.yaml" if a.subject else None
+    return (yaml.safe_load(f.read_text()) or {}) if f is not None and f.exists() else {}
+
+
+def subject_values(a):
+    import yaml
+    s = {}
+    if a.subject:
+        f = REPO / "configs" / "subjects" / f"{a.subject}.yaml"
+        if f.exists():
+            s = yaml.safe_load(f.read_text()) or {}
+    idx0 = a.idx0 if a.idx0 is not None else (s.get("idx_range") or [None])[0]
+    ccs = a.ccs if a.ccs is not None else s.get("ccs", 0)
+    cce = a.cce if a.cce is not None else s.get("cce", 0)
+    return idx0, int(ccs or 0), int(cce or 0)
+
+
+def need(a, *names):
+    miss = [n for n in names if getattr(a, n) in (None, "")]
+    if miss:
+        sys.exit(f"this step needs --{' --'.join(m.replace('_', '-') for m in miss)}")
+
+
+def stamp(product, inputs, t0, **extra):
+    provenance.write_provenance(product, inputs=[str(p) for p in inputs if p], wall_s=round(time.time() - t0, 1), md5=True,
+                                extra=extra)
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("step", choices=STEPS + ["all"])
+    ap.add_argument("--subject", help="LINC identifier (reads configs/subjects/<ID>.yaml for idx_range and ccs/cce)")
+    ap.add_argument("--store", help="the blockface reconstruction, <ID>_blockface.ome.zarr")
+    ap.add_argument("--histology", help="folder of the histology sections (JPEG 2000)")
+    ap.add_argument("--table", help="the histology <-> blockface match table")
+    ap.add_argument("--regions", help="atlas regions on the blockface (1 left, 2 right, 3 cerebellum + brainstem, 4 holes)")
+    ap.add_argument("--regions-spacing-um", nargs=2, type=float, metavar=("VX", "VZ"),
+                    help="the spacing (um) these regions were made at, in place of configs/histology.yaml's for this brain (e.g. "
+                         "MF8's hidden-arm regions of record, 23.75 600: configs/products_blockface.yaml hidden_arm_regions)")
+    ap.add_argument("--regions-frame", choices=["reconstruction", "current"], default="reconstruction",
+                    help="the regions' frame: the spacing they were made at (configs/histology.yaml regions.made_at_spacing_um; "
+                         "scaled by the brain's own factors; default) or already the store's calibrated frame")
+    ap.add_argument("--out", required=True, help="output folder of this brain's histology registration")
+    ap.add_argument("--masks", help="use these tissue masks instead of <out>/tissue_masks")
+    ap.add_argument("--idx0", type=int, help="raw photograph index of the store's first slice")
+    ap.add_argument("--ccs", type=int, help="first histology section where the corpus callosum joins the hemispheres")
+    ap.add_argument("--cce", type=int, help="last such section")
+    ap.add_argument("--whole-from-table", choices=["auto", "yes", "no"], default="auto",
+                    help="keep whole-section rows whole (auto: when ccs = cce = 0)")
+    ap.add_argument("--pattern", help="section file pattern (default: configs/histology.yaml section_glob)")
+    ap.add_argument("--jobs", type=int, default=1, help="parallel processes (masks, TIRL pieces, RGB)")
+    ap.add_argument("--threads", type=int, help="threads per TIRL piece (default: configs/histology.yaml tirl.threads)")
+    ap.add_argument("--tirl", help="the tirl executable (default: `tirl` on PATH)")
+    ap.add_argument("--pieces", nargs="*", help="register only these pieces")
+    ap.add_argument("--config", help="parameters (default: configs/histology.yaml)")
+    a = ap.parse_args()
+
+    cfg = match.config(a.config)
+    out = Path(a.out)
+    D = {k: out / k for k in ("matched", "partition", "pieces", "tissue_masks", "moving", "fixed", "tirl")}
+    masks_dir = Path(a.masks) if a.masks else D["tissue_masks"]
+    idx0, ccs, cce = subject_values(a)
+    wft = None if a.whole_from_table == "auto" else a.whole_from_table == "yes"
+    steps = STEPS if a.step == "all" else [a.step]
+    cfg_file = a.config or str(match.CONFIG)
+
+    for step in steps:
+        t0 = t_step = time.time()
+        print(f"=== {time.strftime('%F %T')} {step}", flush=True)
+        if step == "match":
+            need(a, "store", "histology", "table")
+            if idx0 is None:
+                sys.exit("match needs --idx0 or --subject")
+            match.match_photos(a.store, a.histology, a.table, idx0, D["matched"], cfg, a.pattern)
+            stamp(D["matched"], [a.store, a.histology, a.table, cfg_file], t0, idx0=idx0)
+        elif step == "pieces":
+            need(a, "store", "table", "regions")
+            if idx0 is None:
+                sys.exit("pieces needs --idx0 or --subject")
+            sc = None
+            if a.regions_frame == "reconstruction":
+                sc_ = subject_cfg(a)
+                if not sc_:
+                    sys.exit("--regions-frame reconstruction needs --subject (configs/subjects/<ID>.yaml: vx, vz)")
+                made = ({"vx": a.regions_spacing_um[0], "vz": a.regions_spacing_um[1]} if a.regions_spacing_um
+                        else (cfg["regions"].get("made_at_spacing_um") or {}).get(a.subject))
+                sc = pieces.regions_scale(sc_, made)
+            pieces.partition(D["matched"], a.regions, a.store, a.table, idx0, D["partition"], cfg, scale_xyz=sc)
+            stamp(D["partition"], [D["matched"], a.regions, a.store, a.table, cfg_file], t0, idx0=idx0, regions_frame=a.regions_frame,
+                  regions_scale=list(sc) if sc else None)
+            t0 = time.time()
+            pieces.cut_pieces(D["matched"], D["partition"], a.table, ccs, cce, D["pieces"], wft, cfg)
+            stamp(D["pieces"], [D["matched"], D["partition"], a.table, cfg_file], t0, ccs=ccs, cce=cce,
+                  whole_from_table=a.whole_from_table)
+        elif step == "masks":
+            need(a, "histology", "table")
+            register.tissue_masks(a.histology, a.table, masks_dir, a.jobs, a.config, a.pattern)
+            stamp(masks_dir, [a.histology, a.table, cfg_file], t0)
+        elif step == "prepare":
+            need(a, "histology")
+            if not masks_dir.is_dir():
+                need(a, "table")
+                register.tissue_masks(a.histology, a.table, masks_dir, a.jobs, a.config, a.pattern)
+                stamp(masks_dir, [a.histology, a.table, cfg_file], t0)
+            t0 = time.time()
+            register.moving_images(a.histology, masks_dir, D["pieces"], D["moving"], cfg, a.pattern)
+            stamp(D["moving"], [a.histology, masks_dir, D["pieces"], cfg_file], t0)
+            t0 = time.time()
+            register.fixed_images(D["pieces"], D["fixed"], cfg)
+            stamp(D["fixed"], [D["pieces"], cfg_file], t0)
+        elif step == "register":
+            res = register.run_tirl(D["moving"], D["fixed"], D["tirl"], a.jobs, a.threads, a.tirl, a.pieces, cfg)
+            stamp(D["tirl"], [D["moving"], D["fixed"], cfg_file], t0, pieces_run=res)
+            if any(not r["ok"] for r in res.values()):
+                sys.exit(1)
+        elif step == "rgb":
+            need(a, "histology")
+            py = register.tirl_python(a.tirl, cfg)
+            bad = register.registered_rgb(a.histology, masks_dir, D["pieces"], D["moving"], D["tirl"], a.jobs, py, a.config)
+            if bad:
+                sys.exit(1)
+        print(f"=== {step} done in {time.time() - t_step:.0f} s", flush=True)
+
+
+if __name__ == "__main__":
+    main()

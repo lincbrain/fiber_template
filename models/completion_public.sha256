@@ -1,0 +1,15 @@
+# sha256 of the completion networks' files as released (copies without machine paths; the weights are
+# those of record, see models/completion_checksum_map.tsv), relative to $LINC_MODELS/completion.
+# Check a local copy with: python models/verify_weights.py models/completion_public.sha256 --root $LINC_MODELS/completion
+e606a4f02e7650f24e6228927ff747677471b9997b85db4c4283cb12a81951a1  d3_full_A_s0/last.pt
+db236f342a115940633bc77cf805029638d2570e2c10a3a1c41d624f1c6f2a4c  d3_full_A_s0/config.json
+0c4d8267f6418b505c7fe628189ece569a5d0875f23d1681377226cbf7f7b5ec  d3_full_A_s0/train_log.jsonl
+29c8cb2a86f33e8d77aa093fe4300cf011800ef13ef4a875c0d7e12794482a2c  d3p_full_A_s0/last.pt
+cafb9243ca45d659a506e0c107e93aee7b27f836262c3a9f24c35ad881fa7118  d3p_full_A_s0/config.json
+9fc7b427af91733e1f514dd6cae3528ad7de7b25ab6036f41e0e653e109460c2  d3p_full_A_s0/train_log.jsonl
+ae2358d5585cd35ae5ade854ce5f750dfd940b35bc9e37646e22aef61e12ae6d  d3_lso_A_s0/last.pt
+b3ef0cb156fe79504cf05f18468343edab0f225e700e6defc10ec6ccc79c136f  d3_lso_A_s0/config.json
+9f2020c222f2f5fc76b5f43aab1fa876caec354b0a3f3b12749cbaabcd130532  d3_lso_A_s0/train_log.jsonl
+480285955aa8e3b0a0457150e444e30e2d1b8bf8fbb27570b1a90ad46a699933  d3p_lso_A_s0/last.pt
+a9d876b4069ea6fb2cadd31ad7574db9fc28e62f05c191e970de7930ac4bbf0c  d3p_lso_A_s0/config.json
+1e0abe14dd3cee79fe69f0dde047a8c55390edd6bfdc5f6f20c861bf4f7a65c9  d3p_lso_A_s0/train_log.jsonl

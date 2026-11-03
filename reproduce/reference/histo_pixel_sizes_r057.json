@@ -1,0 +1,122 @@
+{
+ "data": {
+  "method": [
+   "For the six histology brains (MM1-MM3 = MR243, MR252, MR256; MF5 = MF278, MF6 = MF275, MF8 = MF191), the stack this work used",
+   "(labels/ingest_omezarr.zarr_paths(S)[0], LINC 000003 rawdata): the level-0 pixel size (um) from the OME-Zarr multiscales (dataset \"0\"",
+   "scale, else the JSON sidecar PixelSize), the levels present, and the pixel size of level 6 (= level 0 x 2^6; the level the tissue masks,",
+   "the piece registrations and the tracer labels were read at; MF5 stores levels 0, 4 and 8 only, and its level 6 is the block mean of level 4).",
+   "-> paper/numbers/histo_pixel_sizes_r057.json   (summary: l0_um_min/max, l6_um_min/max over the six)"
+  ],
+  "brains": {
+   "MM1": {
+    "subject": "MR243",
+    "stack": "sub-MR243_sample-slice0000slice0072_stain-LY_DF.ome.zarr",
+    "l0_um": 0.439701,
+    "levels_present": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ],
+    "l6_um": 28.141,
+    "l6_stored": true
+   },
+   "MM2": {
+    "subject": "MR252",
+    "stack": "sub-MR252_sample-slice0000slice0042_stain-FS_DF.ome.zarr",
+    "l0_um": 0.439714,
+    "levels_present": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ],
+    "l6_um": 28.142,
+    "l6_stored": true
+   },
+   "MM3": {
+    "subject": "MR256",
+    "stack": "sub-MR256_sample-slice0000slice0038_stain-LY_DF.ome.zarr",
+    "l0_um": 0.439714,
+    "levels_present": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ],
+    "l6_um": 28.142,
+    "l6_stored": true
+   },
+   "MF5": {
+    "subject": "MF278",
+    "stack": "sub-MF278_sample-slice0000slice0059_stain-LY_DF.ome.zarr",
+    "l0_um": 0.439677,
+    "levels_present": [
+     0,
+     4,
+     8
+    ],
+    "l6_um": 28.139,
+    "l6_stored": false
+   },
+   "MF6": {
+    "subject": "MF275",
+    "stack": "sub-MF275_sample-slice0000slice0056_stain-FR_DF.ome.zarr",
+    "l0_um": 0.439701,
+    "levels_present": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ],
+    "l6_um": 28.141,
+    "l6_stored": true
+   },
+   "MF8": {
+    "subject": "MF191",
+    "stack": "sub-MF191_sample-slice0000slice0049_stain-FR_DF.ome.zarr",
+    "l0_um": 0.439714,
+    "levels_present": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ],
+    "l6_um": 28.142,
+    "l6_stored": true
+   }
+  },
+  "summary": {
+   "l0_um_min": 0.439677,
+   "l0_um_max": 0.439714,
+   "l6_um_min": 28.139,
+   "l6_um_max": 28.142,
+   "n": 6
+  }
+ }
+}

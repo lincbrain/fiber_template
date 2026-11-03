@@ -1,0 +1,431 @@
+{
+ "file": "template_construction_v1/run_template_construction.py",
+ "commit": "f4907f4",
+ "source_md5": "d075950cc3dee21b4104594a377d831c",
+ "result_md5": "fd775b9b9e8b615826bc48459d65ded2",
+ "n_edits": 25,
+ "edits": [
+  {
+   "start": 25,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "\n",
+    "# LOCAL CHANGE B1 (fiber_template, 2026-09-29; bftemplate/b1/driver/make_driver.py): mask-weighted construction for inputs that are\n",
+    "# truncated (template members without MRI contribute photographed tissue only). Inert unless LINC_MASKWEIGHTED=1.\n",
+    "MASKW = os.environ.get('LINC_MASKWEIGHTED', '0') == '1'\n",
+    "\n",
+    "\n",
+    "def _costw(p):\n",
+    "    \"\"\"LOCAL CHANGE B1: path of an image's cost-mask companion (same transform, trilinear).\"\"\"\n",
+    "    return p[:-7] + '_costw.nii.gz' if p.endswith('.nii.gz') else p + '_costw'\n"
+   ]
+  },
+  {
+   "start": 169,
+   "n_old": 1,
+   "old_sha256": "63ad8e85349fe11819885976ef96cbe3f6f65c288b290713acadbdf9a9280388",
+   "new": [
+    "\n",
+    "    # LOCAL CHANGE (fiber_template): check for the bias fields HERE, at run time, not at script-generation\n",
+    "    # time in the caller. The bias fields are produced by the MMORF jobs that this averaging job\n",
+    "    # depends on, so whether they exist when the caller builds the command depends entirely on the\n",
+    "    # fsl_sub backend: the shell plugin runs jobs synchronously (they exist), SGE/Slurm submit\n",
+    "    # asynchronously (they do not). A generation-time check therefore silently disables bias\n",
+    "    # correction on a cluster while appearing to work locally. Run time is always correct.\n",
+    "    if biasfield_paths is not None:\n",
+    "        missing = [q for q in biasfield_paths if not os.path.exists(q)]\n",
+    "        if missing:\n",
+    "            print(f'WARNING: {len(missing)}/{len(biasfield_paths)} bias fields do not exist - '\n",
+    "                  f'averaging WITHOUT bias correction. First missing: {missing[0]}')\n",
+    "            biasfield_paths = None\n",
+    "\n"
+   ]
+  },
+  {
+   "start": 221,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "def averageImagesWeighted(img_paths, out_path, weight_paths, biasfield_paths=None, norm_bool=False):\n",
+    "    \"\"\"LOCAL CHANGE B1 (fiber_template, 2026-09-29): weighted mean sum_i (w_i + eps) I_i / sum_i (w_i + eps), eps = 1e-3.\n",
+    "\n",
+    "    w_i = input i's cost mask carried by the same transform as the image (bftemplate/b1: 1 everywhere for a member with\n",
+    "    MRI, the photographed-slab weight for a member without MRI), so a truncated input counts only where it was\n",
+    "    photographed. A 4D image (a warp) shares the 3D weight across its volumes. The floor eps (amendment 1, from the dry\n",
+    "    run) makes the mean fall back to the plain mean where no input has weight (the grid's edge shell), so the average warp\n",
+    "    stays continuous there; inside the brain it moves the mean by ~eps * n / sum_i w_i (about 0.1 %).\n",
+    "    Bias division as averageImages (fslmaths -div: 0 where the field is 0; the fields are checked at run time).\n",
+    "    Intensity normalisation (norm_bool, 3D only): each image is scaled so that the mean of its nonzero voxels inside the\n",
+    "    region where every weight >= 0.5 is 1000. With all weights 1 that region is the whole grid, which is fslmaths\n",
+    "    -inm 1000 (the mean of the nonzero voxels), i.e. averageImages' own normalisation.\"\"\"\n",
+    "    import os\n",
+    "    import numpy as np\n",
+    "    import nibabel as nib\n",
+    "    assert len(weight_paths) == len(img_paths), 'one weight per image'\n",
+    "    eps = 1e-3\n",
+    "    if biasfield_paths is not None:\n",
+    "        missing = [q for q in biasfield_paths if not os.path.exists(q)]\n",
+    "        if missing:\n",
+    "            print(f'WARNING: {len(missing)}/{len(biasfield_paths)} bias fields do not exist - '\n",
+    "                  f'averaging WITHOUT bias correction. First missing: {missing[0]}')\n",
+    "            biasfield_paths = None\n",
+    "    keep = []\n",
+    "    for i, p in enumerate(img_paths):\n",
+    "        if os.path.exists(p):\n",
+    "            keep.append(i)\n",
+    "            print(i, ' ', p, ' weight ', weight_paths[i])\n",
+    "        else:\n",
+    "            print(i, ' ', p, ' does not exist!')\n",
+    "    if not keep:\n",
+    "        return\n",
+    "    common = None\n",
+    "    for i in keep:\n",
+    "        w = np.asanyarray(nib.load(weight_paths[i]).dataobj) >= 0.5\n",
+    "        if not w.any():   # LOCAL CHANGE D2B (4 Oct 2026): an input with no weight anywhere (a channel it does not carry, e.g. TPL's\n",
+    "            continue      # blockface) must not empty the normalization region of everyone else; it still enters at eps, unnormalized\n",
+    "        common = w if common is None else (common & w)\n",
+    "    if common is None:    # LOCAL CHANGE D2B: every input weightless -> nothing is normalized (as before)\n",
+    "        common = np.zeros(nib.load(img_paths[keep[0]]).shape[:3], bool)\n",
+    "    img0 = nib.load(img_paths[keep[0]])\n",
+    "    num = den = None\n",
+    "    for i in keep:\n",
+    "        v = np.asanyarray(nib.load(img_paths[i]).dataobj).astype(np.float64)\n",
+    "        w = np.clip(np.asanyarray(nib.load(weight_paths[i]).dataobj).astype(np.float64), 0.0, None) + eps\n",
+    "        if biasfield_paths is not None:\n",
+    "            b = np.asanyarray(nib.load(biasfield_paths[i]).dataobj).astype(np.float64)\n",
+    "            v = np.divide(v, b, out=np.zeros_like(v), where=b != 0)\n",
+    "        if norm_bool:\n",
+    "            assert v.ndim == 3, 'intensity normalisation is for 3D images'\n",
+    "            sel = common & (v != 0)\n",
+    "            m = float(v[sel].mean()) if sel.any() else 0.0\n",
+    "            if m != 0:\n",
+    "                v = v * (1000.0 / m)\n",
+    "            print(f'   {i}: normalised by the mean {m:.6g} of {int(sel.sum())} voxels')\n",
+    "        ww = w if v.ndim == w.ndim else w.reshape(w.shape + (1,) * (v.ndim - w.ndim))\n",
+    "        num = ww * v if num is None else num + ww * v\n",
+    "        den = w.copy() if den is None else den + w\n",
+    "    dd = den if num.ndim == den.ndim else den.reshape(den.shape + (1,) * (num.ndim - den.ndim))\n",
+    "    out = num / dd\n",
+    "    hdr = img0.header.copy()\n",
+    "    hdr.set_data_dtype(np.float32)\n",
+    "    hdr.set_slope_inter(1.0, 0.0)\n",
+    "    nib.Nifti1Image(out.astype(np.float32), img0.affine, hdr).to_filename(out_path)\n",
+    "    print(f'weighted mean of {len(keep)} images -> {out_path}; sum of weights {float(den.min()) - eps * len(keep):.3f} .. '\n",
+    "          f'{float(den.max()) - eps * len(keep):.3f} (+ eps {eps} per input)')\n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "start": 245,
+   "n_old": 1,
+   "old_sha256": "8870527fcd5ab61ec6c2b7a98d33b805ed7dc6cbdbb08b703db111ff581f8ea9",
+   "new": [
+    "# LOCAL CHANGE (fiber_template): threads defaults to None, not 1. fsl_sub maps threads -> \n",
+    "# FSLSUB_PARALLEL, and the shell plugin's _get_cores() clamps the multiprocessing Pool to\n",
+    "# that value when it is > 0. threads=1 therefore made EVERY array job -- MMORF and every\n",
+    "# CPU stage -- run strictly serially on a 48-core machine, and made --batch/array_limit a\n",
+    "# no-op, because parallel_limit can only LOWER available_cores, never raise it from 1.\n",
+    "# Measured: 8 x \"sleep 10\" as an array task took 80.1 s with threads=1. threads=None sets\n",
+    "# FSLSUB_PARALLEL=0, which _get_cores() ignores, restoring Pool(n_cores); array_limit then\n",
+    "# does what its help text says and caps concurrent MMORF tasks per step.\n",
+    "def submitJob(command, name, log_dir, queue, wait_for=None, array_task=False, array_limit=None, coprocessor=None, coprocessor_class=None, coprocessor_multi=\"1\", threads=None, export_var=None):\n"
+   ]
+  },
+  {
+   "start": 270,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "                   array_limit=array_limit,   # LOCAL CHANGE (fiber_template): cap concurrent array tasks\n",
+    "\n"
+   ]
+  },
+  {
+   "start": 511,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "        'resume_from': [('-resume', '--resume_from'), '<STEP[:IT]>'],\n"
+   ]
+  },
+  {
+   "start": 514,
+   "n_old": 1,
+   "old_sha256": "14b856519f4bba5cd6a958c4794d3d958ef2447cd21275792caad553989575d9",
+   "new": [
+    "        'fslsub_conf': [('-fslsub_conf','--fslsub_conf'), '<string>'],\n",
+    "        # LOCAL CHANGES (fiber_template) -- see LOCAL_CHANGES.md\n",
+    "        'batch': [('-b', '--batch'), '<int> [<int> ...]'],\n",
+    "        'quant_scalar_mods': [('-qsc', '--quant_scalar_mods'), '<int> [<int> ...]']\n"
+   ]
+  },
+  {
+   "start": 517,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "        'resume_from': 'LOCAL (fiber_template): restart an interrupted nonlinear stage at STEP[:IT], skipping every earlier (step, iteration). Every iteration boundary is already a complete checkpoint: MMORF has no warp input (--warp_out only), so each iteration re-registers every subject from scratch against the current template, and the ONLY state carried forward is the template written by the previous iteration. Use with -aff False -nln True.',\n"
+   ]
+  },
+  {
+   "start": 520,
+   "n_old": 1,
+   "old_sha256": "8c34614af5cf4eab94555e727a831364f137df34d28afd1f91cba465cbc7aa86",
+   "new": [
+    "        'fslsub_conf': 'Path that will be assigned to the FSLSUB_CONF environment variable.',\n",
+    "        'batch': 'Max number of concurrent MMORF tasks per resolution step (fsl_sub array_limit). '\n",
+    "                 'One int for all steps, or one per step. Default: unlimited. Controls GPU memory '\n",
+    "                 'use only - it does not change any result.',\n",
+    "        'quant_scalar_mods': '1-based indices of scalar modalities that are QUANTITATIVE. Their '\n",
+    "                             'voxel values are physical quantities, so they are averaged without '\n",
+    "                             'intensity normalisation and without bias-field division.'\n"
+   ]
+  },
+  {
+   "start": 530,
+   "n_old": 1,
+   "old_sha256": "f69c2a0ee1239e78fc4706d7315df5f2cb1199a57fe7dbd47fca4a6393b3a7e6",
+   "new": [
+    "        if key in ('batch', 'quant_scalar_mods'):        # LOCAL CHANGE (fiber_template): typed int lists\n",
+    "            parser.add_argument(*flags_optional[key][0], help=help_optional[key],\n",
+    "                                metavar=flags_optional[key][1], required=False,\n",
+    "                                nargs='+', type=int)\n",
+    "        else:\n",
+    "            parser.add_argument(*flags_optional[key][0], help=help_optional[key], metavar=flags_optional[key][1], required=False, nargs='*')\n"
+   ]
+  },
+  {
+   "start": 555,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "\n",
+    "        # LOCAL CHANGE (fiber_template): resume an interrupted run. Nothing needs to be checkpointed --\n",
+    "        # the per-iteration templates on disk ARE the checkpoints, because MMORF takes no warp\n",
+    "        # input and so each iteration starts from the template alone. This only skips the\n",
+    "        # (step, iteration) pairs already done. Safe with the fsl_sub shell backend, which runs\n",
+    "        # each job synchronously, so no cross-iteration job dependency is broken by skipping.\n",
+    "        resume_at = None\n",
+    "        if getattr(args, 'resume_from', None):\n",
+    "            spec = args.resume_from[0] if isinstance(args.resume_from, list) else args.resume_from\n",
+    "            parts = str(spec).split(':')\n",
+    "            resume_at = (int(parts[0]), int(parts[1]) if len(parts) > 1 else 1)\n",
+    "            print('RESUMING at step {} iteration {} -- earlier iterations will be skipped'\n",
+    "                  .format(*resume_at))\n",
+    "\n",
+    "        # LOCAL CHANGE (fiber_template): per-step cap on concurrent MMORF array tasks. fsl_sub's shell\n",
+    "        # plugin maps array_limit -> parallel_limit -> multiprocessing Pool size, so this bounds\n",
+    "        # how many MMORF processes share the GPU. It changes scheduling only, never a result.\n",
+    "        n_steps = int(args.n_resolutions[0])\n",
+    "        if args.batch is None:\n",
+    "            gpu_batch_sizes = [None] * n_steps\n",
+    "        elif len(args.batch) == 1:\n",
+    "            gpu_batch_sizes = list(args.batch) * n_steps\n",
+    "        elif len(args.batch) == n_steps:\n",
+    "            gpu_batch_sizes = list(args.batch)\n",
+    "        else:\n",
+    "            sys.exit(f\"--batch takes 1 or {n_steps} integers (one per resolution step), \"\n",
+    "                     f\"got {len(args.batch)}\")\n",
+    "        if any(b is not None and b < 1 for b in gpu_batch_sizes):\n",
+    "            sys.exit('--batch values must be >= 1')\n"
+   ]
+  },
+  {
+   "start": 575,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "\n",
+    "    # LOCAL CHANGE (fiber_template): quantitative scalar modalities. frac1/frac2/std1/std2 are physical\n",
+    "    # quantities, not arbitrary-units anatomical contrasts: dividing them by a bias field or\n",
+    "    # rescaling them with `fslmaths -inm 1000` destroys the very thing they measure. Tags are\n",
+    "    # 1-based to match scalar_mod_tags = ['scalar_mod_{:02}'.format(i+1) ...].\n",
+    "    quant_scalar_idx = sorted(set(args.quant_scalar_mods or []))\n",
+    "    if quant_scalar_idx:\n",
+    "        n_scalar = len(args.input_scalar)\n",
+    "        bad = [i for i in quant_scalar_idx if i < 1 or i > n_scalar]\n",
+    "        if bad:\n",
+    "            sys.exit(f'--quant_scalar_mods indices {bad} are out of range: there are '\n",
+    "                     f'{n_scalar} scalar modalities, so valid indices are 1..{n_scalar}')\n",
+    "    quant_scalar_tags = {'scalar_mod_{:02}'.format(i) for i in quant_scalar_idx}\n",
+    "    if quant_scalar_tags:\n",
+    "        print('Quantitative scalar modalities (no bias division, no intensity normalisation): '\n",
+    "              + ', '.join(sorted(quant_scalar_tags)))\n"
+   ]
+  },
+  {
+   "start": 604,
+   "n_old": 1,
+   "old_sha256": "1700a3529bdc7bda6b6d5a38d177e609c88526247ae8a12c8773b6b8437e6591",
+   "new": [
+    "            tree = tree.update(**{tensor_mod_tags[i]+'_dir': mod})   # UPSTREAM BUG: was [0]\n"
+   ]
+  },
+  {
+   "start": 668,
+   "n_old": 2,
+   "old_sha256": "26cec6863af4887fc5e14486cbf6d991c16dcc385ed11fbc597fa12153223b0b",
+   "new": [
+    "                    if MASKW:   # LOCAL CHANGE B1: the input's cost mask weights the FLIRT cost\n",
+    "                        cmd = flirt(tree.get('scalar_mod_01/scalar_mod_brain'), affine_ref_path,\n",
+    "                                    omat=tree.get('mod_to_ref_mat', make_dir=True), dof=12,\n",
+    "                                    inweight=tree.get('scalar_mod_01/scalar_mod_brain_mask'), cmdonly=True)\n",
+    "                    else:\n",
+    "                        cmd = flirt(tree.get('scalar_mod_01/scalar_mod_brain'), affine_ref_path,\n",
+    "                                    omat=tree.get('mod_to_ref_mat', make_dir=True), dof=12, cmdonly=True)\n"
+   ]
+  },
+  {
+   "start": 709,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "                if MASKW:   # LOCAL CHANGE B1: the cost mask through the same matrix (weights of the affine average)\n",
+    "                    cmdw = applyxfm(src=tree.get(scalar_mod_tags[0]+'/scalar_mod_brain_mask'), ref=affine_ref_path,\n",
+    "                                    mat=tree.get('mod_to_unbiased_mat'), out=_costw(tree.get('mod_to_unbiased_img')),\n",
+    "                                    interp='trilinear', cmdonly=True)\n",
+    "                    f.write(' '.join(cmdw) + '\\n')\n"
+   ]
+  },
+  {
+   "start": 753,
+   "n_old": 2,
+   "old_sha256": "adbf718c17626418f33116d36095ae223f4f63ea2092a044ddf7731d2ee22357",
+   "new": [
+    "        if MASKW:   # LOCAL CHANGE B1: weighted by the carried cost masks\n",
+    "            jobcmd = func_to_cmd(averageImagesWeighted, args=(img_paths, aff_template_path, [_costw(p) for p in img_paths], None, True),\n",
+    "                                 tmp_dir=script_dir, kwargs=None, clean=\"never\")\n",
+    "        else:\n",
+    "            jobcmd = func_to_cmd(averageImages, args=(img_paths, aff_template_path, None ,'mean', True), tmp_dir=script_dir, kwargs=None,\n",
+    "                                 clean=\"never\")\n"
+   ]
+  },
+  {
+   "start": 845,
+   "n_old": 1,
+   "old_sha256": "e95b286fee3b573b50b5a53051bccb6e7b04f78e7cda60cc148d44e9172a3441",
+   "new": [
+    "                    norm_flag = (mod not in quant_scalar_tags)   # LOCAL CHANGE (fiber_template)\n",
+    "                    cmd += func_to_cmd(averageImages, args=(img_paths, aff_template_path, None, 'mean', norm_flag), tmp_dir=script_dir, \n"
+   ]
+  },
+  {
+   "start": 854,
+   "n_old": 2,
+   "old_sha256": "8d3eb3524c63324b4821925de8fca1091353acdd4feaa22c362a29cc2613334d",
+   "new": [
+    "                    norm_flag = (mod not in quant_scalar_tags)   # LOCAL CHANGE (fiber_template)\n",
+    "                    if MASKW and pre_mask_keys_given[mod]:   # LOCAL CHANGE B1: weighted by the cost masks in standard space\n",
+    "                        w_paths = [tree.update(sub_id=id, ref_id=aff_ref_id, mod=mod).get('mod_to_standard_brain_mask_img')\n",
+    "                                   for id in ls_ids]\n",
+    "                        cmd += func_to_cmd(averageImagesWeighted, args=(img_paths, aff_template_path, w_paths, None, norm_flag),\n",
+    "                                           tmp_dir=script_dir, kwargs=None, clean=\"always\") + '\\n'\n",
+    "                    else:\n",
+    "                        cmd += func_to_cmd(averageImages, args=(img_paths, aff_template_path, None, 'mean', norm_flag), tmp_dir=script_dir,\n",
+    "                                             kwargs=None, clean=\"always\") + '\\n'\n"
+   ]
+  },
+  {
+   "start": 899,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "            if gpu_batch_sizes[s] is not None:      # LOCAL CHANGE (fiber_template)\n",
+    "                print(f'Step {step}: limiting concurrent MMORF tasks to {gpu_batch_sizes[s]}')\n"
+   ]
+  },
+  {
+   "start": 901,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "                if resume_at is not None and (step, it) < resume_at:\n",
+    "                    it_total += 1\n",
+    "                    print('\\nStep ID: {}  Iteration ID: {}  -- SKIPPED (resume)'.format(step, it))\n",
+    "                    continue\n"
+   ]
+  },
+  {
+   "start": 1057,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "                        # LOCAL CHANGE (fiber_template): LINC_SKIP_DONE_MMORF=1 with -resume S:I skips, AT THE RESUME POINT\n",
+    "                        # ONLY, the MMORF tasks whose outputs (warp, jacobian, bias: --bias_out is a PREFIX, MMORF\n",
+    "                        # writes <prefix>_<k>.nii.gz) already exist from the interrupted\n",
+    "                        # run of that same (step, iteration): same config, same reference template. The task line\n",
+    "                        # becomes a no-op so array numbering is unchanged. Off by default. See LOCAL_CHANGES.md 5.\n",
+    "                        done_outs = [mmorf_args_mov['warp_out'], mmorf_args_mov['jac_det_out'], mmorf_args_mov['bias_out']]\n",
+    "                        if (os.environ.get('LINC_SKIP_DONE_MMORF') == '1' and resume_at is not None\n",
+    "                                and (step, it) == resume_at\n",
+    "                                and all(os.path.exists(p) or __import__('glob').glob(p + '_*.nii.gz') for p in done_outs)):\n",
+    "                            print('  {}: outputs present from the interrupted run -- MMORF task skipped'.format(id))\n",
+    "                            mmorf_script = 'true\\n'\n"
+   ]
+  },
+  {
+   "start": 1072,
+   "n_old": 1,
+   "old_sha256": "293989ba440677bdb4b8e9acef0def91f25b5fc806dd315acabec547cc4e3d75",
+   "new": [
+    "                                        array_task=True, array_limit=gpu_batch_sizes[s], coprocessor='cuda', coprocessor_class=None, coprocessor_multi=\"1\", threads=None, export_var=[export_var_str['SINGULARITY_BIND']])\n"
+   ]
+  },
+  {
+   "start": 1086,
+   "n_old": 2,
+   "old_sha256": "ba3c7bee5312efece8c8224a68f9fddf44d8cab462ff14cd503c92e6e0d19193",
+   "new": [
+    "                if MASKW:   # LOCAL CHANGE B1: weights = each cost mask in the current reference's space\n",
+    "                    if it_total == 1:\n",
+    "                        w_paths = [tree.update(sub_id=id, mod=scalar_mod_tags[0]).get('mod_to_standard_brain_mask_img')\n",
+    "                                   for id in ls_ids]   # (no ref_id in this path: safe under -aff False / -resume)\n",
+    "                    else:\n",
+    "                        w_paths = [tree.update(sub_id=id, step_id='{:02d}'.format(prev_step), it_id='{:02d}'.format(prev_it),\n",
+    "                                               mod=scalar_mod_tags[0]).get('warped_mod_brain_mask') for id in ls_ids]\n",
+    "                    jobcmd = func_to_cmd(averageImagesWeighted, args=(warp_paths, avg_warp_path, w_paths, None, False), tmp_dir=script_dir,\n",
+    "                                         kwargs=None, clean=\"always\") + '; '\n",
+    "                else:\n",
+    "                    jobcmd = func_to_cmd(averageImages, args=(warp_paths, avg_warp_path, None, 'mean', False), tmp_dir=script_dir,\n",
+    "                                         kwargs=None, clean=\"always\") + '; '\n"
+   ]
+  },
+  {
+   "start": 1213,
+   "n_old": 1,
+   "old_sha256": "2f5f7e0bf0494bfde28eaba1e7060eaae2eb813dde1c64b97e236e208f684d42",
+   "new": [
+    "                            # LOCAL CHANGE (fiber_template): quantitative modalities get neither bias\n",
+    "                            # division nor intensity normalisation. The two are decoupled on\n",
+    "                            # purpose -- a missing bias field is handled at run time inside\n",
+    "                            # averageImages and must not silently switch normalisation off too.\n",
+    "                            norm_flag = (mod not in quant_scalar_tags)\n",
+    "                            bias_arg = None if (mod in quant_scalar_tags) else biasfield_paths\n",
+    "                            cmd += func_to_cmd(averageImages, args=(img_paths, template_path, bias_arg, 'mean', norm_flag), tmp_dir=script_dir, \n"
+   ]
+  },
+  {
+   "start": 1224,
+   "n_old": 2,
+   "old_sha256": "dc0d24e2b8e8ec3d4471e7ff3cc7fe3729706ad7dcee2f97114e9205a997c289",
+   "new": [
+    "                            # LOCAL CHANGE (fiber_template): quantitative modalities get neither bias\n",
+    "                            # division nor intensity normalisation. The two are decoupled on\n",
+    "                            # purpose -- a missing bias field is handled at run time inside\n",
+    "                            # averageImages and must not silently switch normalisation off too.\n",
+    "                            norm_flag = (mod not in quant_scalar_tags)\n",
+    "                            bias_arg = None if (mod in quant_scalar_tags) else biasfield_paths\n",
+    "                            if MASKW and pre_mask_keys_given[mod]:   # LOCAL CHANGE B1: weighted by the warped cost masks\n",
+    "                                w_paths = [tree.update(sub_id=id, step_id='{:02d}'.format(step), it_id='{:02d}'.format(it),\n",
+    "                                                       mod=mod).get('warped_mod_brain_mask') for id in ls_ids]\n",
+    "                                cmd += func_to_cmd(averageImagesWeighted, args=(img_paths, template_path, w_paths, bias_arg, norm_flag),\n",
+    "                                                   tmp_dir=script_dir, kwargs=None, clean=\"always\") + '\\n'\n",
+    "                            else:\n",
+    "                                cmd += func_to_cmd(averageImages, args=(img_paths, template_path, bias_arg, 'mean', norm_flag), tmp_dir=script_dir,\n",
+    "                                                    kwargs=None, clean=\"always\") + '\\n'\n"
+   ]
+  }
+ ]
+}

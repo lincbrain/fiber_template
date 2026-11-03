@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+"""Complete one blockface volume caudally: the tissue the photographs lack, predicted from the brain's b0 and joined to them
+(paper: Methods, "Registration to the brain's own MRI and caudal completion"; environment env/deep.yml; a GPU for a full brain).
+
+Quick start (the networks in $LINC_MODELS/completion; a prepared folder per brain, named by its LINC ID):
+    cli/linc-complete --brain $LINC_COMPLETION_PREPARED/MF278 --out $LINC_WORK/complete              # a brain with its own b0
+    cli/linc-complete --brain $LINC_COMPLETION_PREPARED_STANDIN/MR248 --stand-in --out $LINC_WORK/complete   # no MRI: stand-in b0
+
+A prepared folder (layout: linc/completion/__init__.py) holds the b0 on its 0.5 mm box, the photographs on the 0.25 mm box, the
+masks and the join plane (seam.json). The network predicts blockface grey over the whole brain from the b0; one isotonic map matches
+the prediction to the photographs over the first 8 mm rostral of the clean cut face, and a 2 mm cosine cross-fade joins the two
+(configs/completion.yaml). Writes <out>/<ID>/<ID>_{bf_completed, bf_completed_rgb, bf_synth, bf_real, seam_ramp, seam_ramp_real,
+seam_depth, photo_fraction, provenance, synth_mask, b0_input_0p5}.nii.gz, <ID>_chroma.json and provenance.json, and the brain's row
+in <out>/summary_<network>.json. A brain's existing products are never overwritten: give a new --out to run it again.
+
+The prepared folder of a brain, from its products (linc/completion/prepare.py; CPU, numpy / scipy / nibabel; --help after prepare):
+    cli/linc-complete prepare --subject MF278 --out $LINC_WORK/prepared                               # defaults: MF278's inputs of record
+    cli/linc-complete prepare --subject MR248 --out $LINC_WORK/prepared_stand_in --lo0 --nonlin '{mri}/nonlinear_s2lin_prod' \
+        --matrix '{mri}/s2lin_prod/{ID}_bf2mri_dof9.mat' --brain-mask '{mri}/{ID}_pseudo_brain_n1_0p5_prod.nii.gz' \
+        --stand-in-b0 '{nonlin}/{ID}_mri_full.nii.gz'                                                  # no MRI: the stand-in b0
+"""
+import argparse
+import hashlib
+import json
+import os
+import sys
+import time
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from linc import provenance  # noqa: E402  (standard library only; torch and MONAI are imported after the arguments are read)
+
+
+def main():
+    if len(sys.argv) > 1 and sys.argv[1] == "prepare":                 # the prepared folder of a brain (no torch, no MONAI)
+        from linc.completion import prepare
+        return prepare.main(sys.argv[2:])
+    ap = argparse.ArgumentParser(prog="linc-complete", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    g = ap.add_argument_group("what to complete")
+    g.add_argument("--brain", required=True, type=Path, help="the brain's prepared folder (named by its LINC ID)")
+    g.add_argument("--out", required=True, type=Path, help="the output folder (the brain's products go to <out>/<ID>/)")
+    g.add_argument("--stand-in", action="store_true", help="the brain has no MRI: its input is the stand-in b0 (network d3p_full_A_s0)")
+    x = ap.add_argument_group("advanced")
+    x.add_argument("--model", type=Path, default=None, help="a network folder with last.pt (default: $LINC_MODELS/completion/"
+                   "d3_full_A_s0, or d3p_full_A_s0 with --stand-in; models/completion.md)")
+    x.add_argument("--device", default="cuda", help="cuda (default), cuda:N or cpu (slow for a full brain)")
+    x.add_argument("--cache-out", type=Path, default=None, help="also write <DIR>/<ID>/deploy/{brain, real_mask} and <DIR>/seam.json")
+    x.add_argument("--save-raw", type=Path, default=None, help="also write the unmapped prediction <DIR>/<ID>_raw.nii.gz")
+    a = ap.parse_args()
+    if a.model is None:
+        if not os.environ.get("LINC_MODELS"):
+            sys.exit("set --model or LINC_MODELS (models/completion.md)")
+        a.model = Path(os.environ["LINC_MODELS"]) / "completion" / ("d3p_full_A_s0" if a.stand_in else "d3_full_A_s0")
+    ckp = a.model / "last.pt" if a.model.is_dir() else a.model
+    D = a.brain.resolve(); S = D.name
+    if (a.out / S).exists() or (a.cache_out and (a.cache_out / S).exists()):
+        sys.exit(f"{a.out / S} (or its cache) exists: products are never overwritten")
+    from linc.completion import export, network                       # torch, MONAI, nibabel: env/deep.yml
+    t0 = time.time()
+    net, cfg = network.load(ckp, a.device)
+    row, normal = export.export_brain(net, str(D), S, str(a.out), device=a.device, save_raw=a.save_raw and str(a.save_raw),
+                                      cache_out=a.cache_out and str(a.cache_out))
+    ck_md5 = hashlib.md5(open(ckp, "rb").read()).hexdigest()
+    name = ckp.parent.name if ckp.name == "last.pt" else ckp.stem
+    sp = a.out / f"summary_{name}.json"
+    summ = json.loads(sp.read_text()) if sp.exists() else dict(
+        run=name, checkpoint=str(ckp), checkpoint_md5=ck_md5, units="the photographs' grey (fine/bf.nii.gz)",
+        grid="the brain's output grid, 0.25 mm", join="clean cut face z_f, depth along the section normal", members={})
+    assert summ["checkpoint_md5"] == ck_md5, f"{sp} was written with another network"
+    summ["members"][S] = row
+    sp.write_text(json.dumps(summ, indent=1, default=float))
+    if normal:
+        cp = a.cache_out / "seam.json"
+        old = json.loads(cp.read_text()) if cp.exists() else {}
+        old[S] = normal; cp.write_text(json.dumps(old, indent=1))
+    ins = [ckp, D / "seam.json", D / "coarse/in.nii.gz", D / "fine/bf.nii.gz", D / "fine/real_mask.nii.gz",
+           D / "fine/photo_fraction.nii.gz", D / "fine/brain.nii.gz"] + ([D / "fine/bf_rgb.nii.gz"] if (D / "fine/bf_rgb.nii.gz").exists() else [])
+    provenance.write_provenance(a.out / S, inputs=[str(p) for p in ins], wall_s=round(time.time() - t0, 1),
+                                extra=dict(network=name, device=a.device), md5=True)
+    print(f"{S}: predicted share {row['synth_frac']:.3f}, cut z_f {row['z_f']} -> {a.out / S} ({row['wall_s']} s)")
+
+
+if __name__ == "__main__":
+    main()

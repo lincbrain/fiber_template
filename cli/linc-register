@@ -1,0 +1,230 @@
+#!/usr/bin/env python3
+"""Register a brain's blockface volume into the template's frame.
+
+    linc-register mri --subject <ID> [--out DIR] [--device cuda:0] [--linear-only] [--new-brain] [--registry DIR] [--overwrite]
+        the MRI route: the blockface -> the brain's own b0 (Methods, "Registration to the brain's own MRI"). The b0 is placed in the
+        template frame first (--place-b0, or the placed b0 already in the data folder); the b0 -> MRI template registration is
+        `linc-register mri-template`. `--place-b0 B0_NATIVE` without a mask segments the b0 with the MRI brain-mask network
+        (linc-segment's mri_brainmask, $LINC_MODELS/segment/mri_brainmask, run with $LINC_SEGMENT_PYTHON; linc/registration/mri_mask.py),
+        so a new brain needs no hand mask; there is one such network, so no engine switch. A paper brain keeps its masks of record:
+        without --new-brain it needs MASK_NATIVE.
+    linc-register mri-template --subject <ID> --template-b0 B0 --template-mask M [...]
+        the MRI route's second registration: the brain's own b0 -> the MRI template's b0 (linc/link/b0_to_template.py, which defines
+        its options: `linc-register mri-template -h`; reproduce/templates/b0_to_template.md). Its environment of record is env/mri.yml.
+    linc-register blockface-template --subject <ID> --template-grey G --template-coverage C --frame F05 --bridge B [--out DIR]
+        the direct route onto a blockface template (route A of the route test): G and C at 0.25 mm on the 2x refinement of the 0.5 mm
+        frame F05; the flat brainstem cut through the bridge B (run-113 -> canonical) when the template lives in the run-113 frame
+    linc-register direct-placement --subject <ID> --template-b0 B0 --template-mask M [--out DIR] [--registry DIR] [--overwrite]
+        direct placement onto the MRI template's b0 (the brains without MRI)
+    linc-register qc --preset bf2b0|direct|b02template|template2template --fixed F --moved M [--warp W] [--mat A --mat-kind fsl|world|itk
+                     [--mat-src S --mat-ref R]] [--fixed-mask FM] [--moved-mask MM] [--outline-target T [--slab-iso-mask I]]
+                     [--ncc-fwhm-mm X] [--entry <registry dir>] [--out DIR] [--name NAME]
+        the paper's registration QC of one registration (linc/registration/qc.py; Methods, "Evaluation of the pathway"): the gate
+        measures on the fixed grid (linear part, NCC, folds, drift, envelope Dice, interior edge distance), the outline check
+        against --outline-target (for a blockface -> own b0 registration: the b0 brain mask inside the photographed slab, with
+        --slab-iso-mask = the blockface's isotropic mask and --mat the 9-dof matrix), a three-plane PNG and a JSON row in --out
+        (default $LINC_WORK/qc); with --entry, pass / fail is recorded in that registry entry (linc/xfm.py set_qc), so chains through
+        it stop warning. The preset sets the paper's flags for that kind of registration (inverted contrast, 180-degree absorption,
+        cross-animal scale rule).
+
+Inputs (CONVENTIONS.md data layout, $LINC_DATA/sub-<ID>/):
+    blockface/<ID>_blockface.ome.zarr, <ID>_mask.nii.gz          the reconstruction (cli/linc-reconstruct)
+    blockface/<ID>_blockface_iso_grey.nii.gz, <ID>_mask_iso.nii.gz   its isotropic pair (made here when missing)
+    mri/<ID>_mri.nii.gz, <ID>_mri_mask.nii.gz, <ID>_mri2template.mat, <ID>_mri_b0_native.nii.gz   the placed b0 (--place-b0 makes them)
+    mri/<ID>_mri_mask_native_linc_segment.nii.gz (+ .json provenance)   the network's b0 mask, when --place-b0 is given no mask
+configs/subjects/<ID>.yaml `registration_to_own_mri` gives the paper's brains their masks of record and start pose; --new-brain (or a
+brain without that entry) estimates the start pose instead. Parameters: configs/registration.yaml.
+Outputs: <out>/ (default $LINC_WORK/register/<ID>): the linear stage and the products on the working grid. The transform goes to the
+registry (linc/xfm.py), $LINC_DATA/sub-<ID>/xfm/bf-native__to__b0-native (mri-template: b0-native__to__mri-template; direct
+placement: bf-native__to__mri-template), where `python -m linc.xfm chain|apply` finds it, e.g. the MRI route's two entries chain
+bf-native -> mri-template; --registry DIR writes the entry under DIR instead. An existing entry is not replaced unless --overwrite
+is given (linc/xfm.py backs the old one up); the check runs before the registration.
+"""
+import argparse
+import os
+import sys
+from pathlib import Path
+
+import yaml
+
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO))
+from linc import paths, xfm  # noqa: E402
+
+
+def _entry_free(src, dst, a):
+    """Stop before the registration when its registry entry exists and --overwrite was not given."""
+    d = xfm.xfm_dir(src, dst, a.subject, a.registry)
+    if (d / "meta.json").exists() and not a.overwrite:
+        sys.exit(f"the transform entry {d} exists: pass --overwrite to replace it (the old entry is backed up), or --registry DIR")
+
+
+def mri_route(a):
+    from linc.registration import to_own_mri
+    cfg = yaml.safe_load((REPO / "configs" / "registration.yaml").read_text())["to_own_mri"]
+    S = a.subject
+    if not a.linear_only:
+        _entry_free("bf-native", "b0-native", a)
+    sub = paths.subject_dir(S); bd, md = sub / "blockface", sub / "mri"
+    out = Path(a.out or (paths.work_root() / "register" / S))
+    paths.refuse_records(out)                     # never write through a link into the records (tools/make_local_data.sh)
+    from linc.blockface.subject import subject_yaml
+    scfg_p = subject_yaml(S)
+    scfg = (yaml.safe_load(scfg_p.read_text()) if scfg_p.exists() else {}).get("registration_to_own_mri")
+    bf = dict(final_zarr=str(bd / f"{S}_blockface.ome.zarr"), final_mask=str(bd / f"{S}_mask.nii.gz"),
+              iso_grey=str(bd / f"{S}_blockface_iso_grey.nii.gz"), iso_mask=str(bd / f"{S}_mask_iso.nii.gz"))
+    if not (os.path.exists(bf["iso_grey"]) and os.path.exists(bf["iso_mask"])):
+        (out / "iso").mkdir(parents=True, exist_ok=True)
+        bf["iso_grey"], bf["iso_mask"] = to_own_mri.iso_pair(bf["final_zarr"], bf["final_mask"], str(out / "iso" / f"{S}_blockface_iso_grey.nii.gz"),
+                                                            str(out / "iso" / f"{S}_mask_iso.nii.gz"), iso=float(cfg["iso_mm"]))
+    if a.place_b0:
+        if len(a.place_b0) == 2:
+            b0_native, mask_native = a.place_b0
+        else:                                   # no hand mask: the MRI brain-mask network segments the b0 (linc/registration/mri_mask.py)
+            if scfg and not a.new_brain:
+                sys.exit(f"{S} has masks of record (configs/subjects/{S}.yaml registration_to_own_mri): give --place-b0 B0_NATIVE "
+                         "MASK_NATIVE, or --new-brain to treat it as a new brain and segment its b0")
+            from linc.registration import mri_mask
+            b0_native = a.place_b0[0]
+            mask_native = mri_mask.segment_b0(b0_native, str(md / f"{S}_mri_mask_native_linc_segment.nii.gz"), device=a.device)
+        to_own_mri.place_b0(b0_native, mask_native, str(paths.template_root() / "frames" / "mri_template_0p5.nii.gz"), str(md), S,
+                             search_deg=int(cfg["b0_placement_search_deg"]))
+    mri = dict(placed_b0=str(md / f"{S}_mri.nii.gz"), frame_mask=str(md / f"{S}_mri_mask.nii.gz"),
+               b0_native=str(md / f"{S}_mri_b0_native.nii.gz"), mri2template_mat=str(md / f"{S}_mri2template.mat"))
+    if scfg and not a.new_brain:
+        mri.update(fixed_b0=str(md / scfg["fixed_b0"]), b0_mask=str(md / scfg["b0_mask"]))
+        start = scfg["start_pose_world"]
+    else:
+        mri.update(fixed_b0=mri["placed_b0"], b0_mask=mri["frame_mask"])
+        start = to_own_mri.initial_pose(bf["iso_grey"], bf["iso_mask"], mri["placed_b0"], mri["frame_mask"], str(out / "pose"))
+    if a.linear_only:
+        r = to_own_mri.linear(S, bf, mri, start, str(out / "linear"), cfg)
+        print("linear stage:", r["mats"], "slab", r["slab_width_mm"], "mm")
+        return
+    sub_cfg = yaml.safe_load(scfg_p.read_text()) if scfg_p.exists() else {}
+    r = to_own_mri.register(S, bf, mri, start, str(out), cfg, device=a.device, xfm_root=a.registry, overwrite=a.overwrite,
+                            crop_mm=float(sub_cfg.get("native_end_crop_mm") or 0.0),
+                            vz_mm=float(sub_cfg["vz"]) / 1000.0 if sub_cfg.get("vz") else None)
+    print("done:", r["outdir"], "| entry", r["entry"])
+
+
+def _bf(S):
+    bd = paths.subject_dir(S) / "blockface"
+    return dict(final_zarr=str(bd / f"{S}_blockface.ome.zarr"), final_mask=str(bd / f"{S}_mask.nii.gz"),
+                iso_grey=str(bd / f"{S}_blockface_iso_grey.nii.gz"))
+
+
+def blockface_template_route(a):
+    from linc.registration import direct
+    cfg = yaml.safe_load((REPO / "configs" / "registration.yaml").read_text())["direct"]["to_blockface_template"]
+    out = Path(a.out or (paths.work_root() / "register_direct" / a.subject)); out.mkdir(parents=True, exist_ok=True)
+    paths.refuse_records(out)                     # never write through a link into the records (tools/make_local_data.sh)
+    g05, c05 = direct.coarsen_template(a.template_grey, a.template_coverage, a.frame, str(out / "_template_grey_0.5.nii.gz"),
+                                       str(out / "_template_coverage_0.5.nii.gz"))
+    r = direct.to_blockface_template(a.subject, _bf(a.subject), g05, c05, str(out), cfg, a.bridge, device=a.device)
+    print("done:", out, "| linear", r.get("linear_used"), "| anchor", r.get("anchor"))
+
+
+def direct_placement_route(a):
+    from linc.registration import direct
+    cfg = yaml.safe_load((REPO / "configs" / "registration.yaml").read_text())["direct"]["direct_placement"]
+    _entry_free("bf-native", "mri-template", a)
+    out = Path(a.out or (paths.work_root() / "direct_placement" / a.subject)); out.mkdir(parents=True, exist_ok=True)
+    paths.refuse_records(out)                     # never write through a link into the records (tools/make_local_data.sh)
+    r = direct.direct_placement(a.subject, _bf(a.subject), a.template_b0, a.template_mask, str(out), cfg, device=a.device,
+                                xfm_root=a.registry, overwrite=a.overwrite)
+    print("done:", out, "| linear", r.get("linear_used"), "| entry", r.get("entry"))
+
+
+def qc_route(a):
+    import json
+    import nibabel as nib
+    import numpy as np
+    import nibabel.processing as nip
+    from linc.registration import qc as Q
+    out = Path(a.out or (paths.work_root() / "qc")); out.mkdir(parents=True, exist_ok=True)
+    paths.refuse_records(out)                     # never write through a link into the records (tools/make_local_data.sh)
+    name = a.name or (Path(a.entry).name if a.entry else Path(a.moved).name.split(".")[0])
+    row, F, M, fm, mm = Q.measure(a.fixed, a.moved, warp=a.warp, mat=a.mat, mat_kind=a.mat_kind, mat_src=a.mat_src, mat_ref=a.mat_ref,
+                                  fixed_mask=a.fixed_mask, moved_mask=a.moved_mask, eval_mask=a.eval_mask, brain_mask=a.brain_mask,
+                                  ncc_fwhm_mm=a.ncc_fwhm_mm, **Q.PRESETS[a.preset])
+    row.update(preset=a.preset, name=name)
+    if a.outline_target:
+        fimg = nib.load(a.fixed)
+        T = np.asanyarray(nip.resample_from_to(nib.load(a.outline_target), (fimg.shape[:3], fimg.affine), order=0).dataobj) > 0
+        if a.slab_iso_mask:
+            if not (a.mat and a.mat_kind == "fsl" and a.mat_src and a.mat_ref):
+                sys.exit("--slab-iso-mask needs the 9-dof FLIRT matrix: --mat A --mat-kind fsl --mat-src S --mat-ref R")
+            keep, width = Q.photographed_slab(a.mat, a.mat_src, a.mat_ref, a.slab_iso_mask, fimg)
+            T &= keep; row["photographed_slab_mm"] = round(width, 3)
+        mv = mm if a.moved_mask else (M > 0)
+        st, why, ol = Q.outline(mv, T, fimg.affine)
+        row["outline"] = dict(status=st, reasons=why, target=a.outline_target, slab_iso_mask=a.slab_iso_mask, regions=ol)
+    ok = row["gate_pass"] and row.get("outline", {}).get("status") != "FAIL"
+    title = f"{a.preset} | {name} | {'PASS' if ok else 'FAIL'}"
+    Q.render_png(str(out / f"{name}.png"), F, M, fm, mm, title, Q.summary_lines(row), ok)
+    row["png"] = str(out / f"{name}.png")
+    if a.entry:
+        xfm.set_qc(a.entry, "pass" if ok else "fail", preset=a.preset, png=row["png"], reasons=row["gate_fail_reasons"]
+                   + row.get("outline", {}).get("reasons", []), ncc=row["ncc"], envelope_dice=row["envelope_dice"],
+                   outline=row.get("outline", {}).get("status"))
+        row["entry"] = str(a.entry)
+    (out / f"{name}.json").write_text(json.dumps(row, indent=1, default=float))
+    print(f"{'PASS' if ok else 'FAIL'}: {name} -> {out / (name + '.json')}, {row['png']}" + (f"; entry {a.entry}" if a.entry else ""))
+    for ln in Q.summary_lines(row):
+        print("  " + ln)
+
+
+def _registry_args(p):
+    p.add_argument("--registry", default=None, help="parent folder of the transform entry (default $LINC_DATA/sub-<ID>/xfm)")
+    p.add_argument("--overwrite", action="store_true", help="replace an existing transform entry (linc/xfm.py backs it up)")
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sp = ap.add_subparsers(dest="route", required=True)
+    m = sp.add_parser("mri", help="blockface -> the brain's own b0")
+    m.add_argument("--subject", required=True); m.add_argument("--out", default=None); m.add_argument("--device", default="cuda:0")
+    m.add_argument("--linear-only", action="store_true", help="steps 2-3 only (CPU)")
+    m.add_argument("--new-brain", action="store_true", help="estimate the start pose (ignore a pose of record)")
+    m.add_argument("--place-b0", nargs="+", metavar="PATH", default=None,
+                   help="B0_NATIVE [MASK_NATIVE]: place the b0 and its brain mask on the template's 0.5 mm grid first "
+                        "($LINC_TEMPLATE/frames/mri_template_0p5.nii.gz); "
+                        "without MASK_NATIVE the b0 is segmented by the MRI brain-mask network (linc-segment's mri_brainmask; one "
+                        "network, no engine switch); a paper brain needs MASK_NATIVE unless --new-brain")
+    _registry_args(m)
+    sp.add_parser("mri-template", add_help=False, help="the brain's own b0 -> the MRI template's b0 (options: mri-template -h)")
+    b = sp.add_parser("blockface-template", help="blockface -> a blockface template (route A)")
+    b.add_argument("--subject", required=True); b.add_argument("--template-grey", required=True); b.add_argument("--template-coverage", required=True)
+    b.add_argument("--frame", required=True, help="the 0.5 mm frame the template is the 2x refinement of")
+    b.add_argument("--bridge", required=True, help="the run-113 -> canonical bridge (linear.json), for the flat brainstem cut")
+    b.add_argument("--out", default=None); b.add_argument("--device", default="cuda:0")
+    d = sp.add_parser("direct-placement", help="blockface -> the MRI template's b0")
+    d.add_argument("--subject", required=True); d.add_argument("--template-b0", required=True); d.add_argument("--template-mask", required=True)
+    d.add_argument("--out", default=None); d.add_argument("--device", default="cuda:0")
+    _registry_args(d)
+    q = sp.add_parser("qc", help="the paper's registration QC of one registration (gate, outline, PNG; optionally into its registry entry)")
+    q.add_argument("--preset", required=True, choices=["bf2b0", "direct", "b02template", "template2template"],
+                   help="bf2b0: blockface -> own b0; direct: blockface -> MRI template; b02template: b0 -> MRI template; template2template: the link")
+    q.add_argument("--fixed", required=True); q.add_argument("--moved", required=True, help="the moved image on (or resampled to) the fixed grid")
+    q.add_argument("--warp"); q.add_argument("--mat"); q.add_argument("--mat-kind", default="fsl", choices=["fsl", "world", "itk"])
+    q.add_argument("--mat-src", help="FLIRT matrix: its moving image"); q.add_argument("--mat-ref", help="FLIRT matrix: its reference image")
+    q.add_argument("--fixed-mask"); q.add_argument("--moved-mask"); q.add_argument("--eval-mask"); q.add_argument("--brain-mask")
+    q.add_argument("--ncc-fwhm-mm", type=float, help="NCC at a matched bandwidth (the coarser acquisition's FWHM)")
+    q.add_argument("--outline-target", help="the target brain mask of the outline check (resampled nearest onto the fixed grid)")
+    q.add_argument("--slab-iso-mask", help="blockface -> own b0: the blockface's isotropic mask; the target is cut to the photographed slab")
+    q.add_argument("--entry", help="the registration's registry entry: record pass / fail there (linc/xfm.py set_qc)")
+    q.add_argument("--out", default=None, help="folder of the JSON row and PNG (default $LINC_WORK/qc)"); q.add_argument("--name")
+    a, rest = ap.parse_known_args()
+    if getattr(a, "place_b0", None) and len(a.place_b0) > 2:
+        ap.error("--place-b0 takes B0_NATIVE and, optionally, MASK_NATIVE")
+    if a.route == "mri-template":                                       # its options are defined by linc/link/b0_to_template.py
+        from linc.link import b0_to_template
+        return b0_to_template.main(rest, prog="linc-register mri-template")
+    if rest:
+        ap.error(f"unrecognized arguments: {' '.join(rest)}")
+    {"mri": mri_route, "blockface-template": blockface_template_route, "direct-placement": direct_placement_route, "qc": qc_route}[a.route](a)
+
+
+if __name__ == "__main__":
+    main()

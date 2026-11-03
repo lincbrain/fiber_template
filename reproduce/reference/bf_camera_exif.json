@@ -1,0 +1,668 @@
+{
+ "data": {
+  "n": 21,
+  "cameras": {
+   "d80": {
+    "model": "NIKON D80",
+    "width_px": 3872,
+    "height_px": 2592,
+    "brains_exif": [
+     "MF282",
+     "MR244",
+     "MR247",
+     "MR248",
+     "MR249",
+     "MR250",
+     "MR251",
+     "MR253",
+     "MR254",
+     "MR257",
+     "MR261",
+     "MR263",
+     "MR273"
+    ],
+    "brains_frame_size_only": [
+     "MF275",
+     "MF278",
+     "MR243",
+     "MR252",
+     "MR256"
+    ],
+    "n_brains": 18
+   },
+   "d100": {
+    "model": "NIKON D100",
+    "width_px": 3008,
+    "height_px": 2000,
+    "brains_exif": [
+     "MF191",
+     "MF196",
+     "MF204"
+    ],
+    "brains_frame_size_only": [],
+    "n_brains": 3
+   }
+  },
+  "by_camera": {
+   "NIKON CORPORATION NIKON D100": [
+    "MF191",
+    "MF196",
+    "MF204"
+   ],
+   "no EXIF (3872x2592)": [
+    "MF275",
+    "MF278",
+    "MR243",
+    "MR252",
+    "MR256"
+   ],
+   "NIKON CORPORATION NIKON D80": [
+    "MF282",
+    "MR244",
+    "MR247",
+    "MR248",
+    "MR249",
+    "MR250",
+    "MR251",
+    "MR253",
+    "MR254",
+    "MR257",
+    "MR261",
+    "MR263",
+    "MR273"
+   ]
+  },
+  "per_brain": {
+   "MF191": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MF191",
+    "n_files": 77,
+    "n_sampled": 4,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 4,
+    "image_size": [
+     "3008x2000"
+    ],
+    "camera": [
+     "NIKON CORPORATION NIKON D100"
+    ],
+    "focal_length_mm": [
+     80.0,
+     80.0
+    ],
+    "f_number": [
+     8.0,
+     8.0
+    ],
+    "exposure_s": [
+     0.004,
+     0.004
+    ],
+    "iso": [
+     200.0,
+     200.0
+    ],
+    "flash_fired": [
+     0
+    ]
+   },
+   "MF196": {
+    "raw_dir": "$LINC_RAW/blockface_segmentation/MF196_Photos",
+    "n_files": 79,
+    "n_sampled": 4,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 4,
+    "image_size": [
+     "3008x2000"
+    ],
+    "camera": [
+     "NIKON CORPORATION NIKON D100"
+    ],
+    "focal_length_mm": [
+     80.0,
+     80.0
+    ],
+    "f_number": [
+     6.3,
+     7.1
+    ],
+    "exposure_s": [
+     0.005,
+     0.00625
+    ],
+    "iso": null,
+    "flash_fired": [
+     0
+    ]
+   },
+   "MF204": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MF204",
+    "n_files": 71,
+    "n_sampled": 3,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 3,
+    "image_size": [
+     "3008x2000"
+    ],
+    "camera": [
+     "NIKON CORPORATION NIKON D100"
+    ],
+    "focal_length_mm": [
+     80.0,
+     80.0
+    ],
+    "f_number": [
+     6.3,
+     7.1
+    ],
+    "exposure_s": [
+     0.005,
+     0.00625
+    ],
+    "iso": [
+     200.0,
+     200.0
+    ],
+    "flash_fired": [
+     0
+    ]
+   },
+   "MF275": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MF275",
+    "n_files": 967,
+    "n_sampled": 39,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 0,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [],
+    "focal_length_mm": null,
+    "f_number": null,
+    "exposure_s": null,
+    "iso": null,
+    "flash_fired": []
+   },
+   "MF278": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MF278",
+    "n_files": 1132,
+    "n_sampled": 46,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 0,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [],
+    "focal_length_mm": null,
+    "f_number": null,
+    "exposure_s": null,
+    "iso": null,
+    "flash_fired": []
+   },
+   "MF282": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MF282",
+    "n_files": 1294,
+    "n_sampled": 52,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 52,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [
+     "NIKON CORPORATION NIKON D80"
+    ],
+    "focal_length_mm": [
+     90.0,
+     90.0
+    ],
+    "f_number": [
+     4.5,
+     4.5
+    ],
+    "exposure_s": [
+     0.005,
+     0.01
+    ],
+    "iso": [
+     100.0,
+     100.0
+    ],
+    "flash_fired": [
+     0
+    ]
+   },
+   "MR243": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MR243",
+    "n_files": 167,
+    "n_sampled": 7,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 0,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [],
+    "focal_length_mm": null,
+    "f_number": null,
+    "exposure_s": null,
+    "iso": null,
+    "flash_fired": []
+   },
+   "MR244": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MR244",
+    "n_files": 157,
+    "n_sampled": 7,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 7,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [
+     "NIKON CORPORATION NIKON D80"
+    ],
+    "focal_length_mm": [
+     90.0,
+     90.0
+    ],
+    "f_number": [
+     4.0,
+     4.0
+    ],
+    "exposure_s": [
+     0.005,
+     0.008
+    ],
+    "iso": [
+     100.0,
+     100.0
+    ],
+    "flash_fired": [
+     0
+    ]
+   },
+   "MR247": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MR247",
+    "n_files": 161,
+    "n_sampled": 7,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 7,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [
+     "NIKON CORPORATION NIKON D80"
+    ],
+    "focal_length_mm": [
+     90.0,
+     90.0
+    ],
+    "f_number": [
+     4.0,
+     4.0
+    ],
+    "exposure_s": [
+     0.005,
+     0.008
+    ],
+    "iso": [
+     100.0,
+     100.0
+    ],
+    "flash_fired": [
+     0
+    ]
+   },
+   "MR248": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MR248",
+    "n_files": 150,
+    "n_sampled": 6,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 6,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [
+     "NIKON CORPORATION NIKON D80"
+    ],
+    "focal_length_mm": [
+     90.0,
+     90.0
+    ],
+    "f_number": [
+     4.0,
+     4.0
+    ],
+    "exposure_s": [
+     0.003125,
+     0.00625
+    ],
+    "iso": [
+     100.0,
+     100.0
+    ],
+    "flash_fired": [
+     0
+    ]
+   },
+   "MR249": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MR249",
+    "n_files": 174,
+    "n_sampled": 7,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 7,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [
+     "NIKON CORPORATION NIKON D80"
+    ],
+    "focal_length_mm": [
+     90.0,
+     90.0
+    ],
+    "f_number": [
+     4.0,
+     4.0
+    ],
+    "exposure_s": [
+     0.003125,
+     0.005
+    ],
+    "iso": [
+     100.0,
+     100.0
+    ],
+    "flash_fired": [
+     0
+    ]
+   },
+   "MR250": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MR250",
+    "n_files": 1369,
+    "n_sampled": 55,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 55,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [
+     "NIKON CORPORATION NIKON D80"
+    ],
+    "focal_length_mm": [
+     90.0,
+     90.0
+    ],
+    "f_number": [
+     3.5,
+     5.6
+    ],
+    "exposure_s": [
+     0.008,
+     0.008
+    ],
+    "iso": [
+     100.0,
+     100.0
+    ],
+    "flash_fired": [
+     0
+    ]
+   },
+   "MR251": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MR251",
+    "n_files": 1293,
+    "n_sampled": 51,
+    "n_unreadable_sampled": 1,
+    "n_with_exif": 51,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [
+     "NIKON CORPORATION NIKON D80"
+    ],
+    "focal_length_mm": [
+     90.0,
+     90.0
+    ],
+    "f_number": [
+     3.5,
+     7.1
+    ],
+    "exposure_s": [
+     0.008,
+     0.008
+    ],
+    "iso": [
+     100.0,
+     100.0
+    ],
+    "flash_fired": [
+     0
+    ]
+   },
+   "MR252": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MR252",
+    "n_files": 1430,
+    "n_sampled": 58,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 0,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [],
+    "focal_length_mm": null,
+    "f_number": null,
+    "exposure_s": null,
+    "iso": null,
+    "flash_fired": []
+   },
+   "MR253": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MR253",
+    "n_files": 1322,
+    "n_sampled": 52,
+    "n_unreadable_sampled": 1,
+    "n_with_exif": 52,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [
+     "NIKON CORPORATION NIKON D80"
+    ],
+    "focal_length_mm": [
+     90.0,
+     90.0
+    ],
+    "f_number": [
+     4.5,
+     4.5
+    ],
+    "exposure_s": [
+     0.008,
+     0.016666666666666666
+    ],
+    "iso": [
+     100.0,
+     100.0
+    ],
+    "flash_fired": [
+     0
+    ]
+   },
+   "MR254": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MR254",
+    "n_files": 1410,
+    "n_sampled": 57,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 57,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [
+     "NIKON CORPORATION NIKON D80"
+    ],
+    "focal_length_mm": [
+     90.0,
+     90.0
+    ],
+    "f_number": [
+     4.5,
+     4.5
+    ],
+    "exposure_s": [
+     0.004,
+     0.00625
+    ],
+    "iso": [
+     100.0,
+     100.0
+    ],
+    "flash_fired": [
+     0
+    ]
+   },
+   "MR256": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MR256",
+    "n_files": 1323,
+    "n_sampled": 53,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 0,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [],
+    "focal_length_mm": null,
+    "f_number": null,
+    "exposure_s": null,
+    "iso": null,
+    "flash_fired": []
+   },
+   "MR257": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MR257",
+    "n_files": 1315,
+    "n_sampled": 53,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 53,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [
+     "NIKON CORPORATION NIKON D80"
+    ],
+    "focal_length_mm": [
+     90.0,
+     90.0
+    ],
+    "f_number": [
+     4.5,
+     4.5
+    ],
+    "exposure_s": [
+     0.005,
+     0.0125
+    ],
+    "iso": [
+     100.0,
+     100.0
+    ],
+    "flash_fired": [
+     0
+    ]
+   },
+   "MR261": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MR261",
+    "n_files": 1377,
+    "n_sampled": 56,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 56,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [
+     "NIKON CORPORATION NIKON D80"
+    ],
+    "focal_length_mm": [
+     90.0,
+     90.0
+    ],
+    "f_number": [
+     4.5,
+     4.5
+    ],
+    "exposure_s": [
+     0.008,
+     0.02
+    ],
+    "iso": [
+     100.0,
+     100.0
+    ],
+    "flash_fired": [
+     0
+    ]
+   },
+   "MR263": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MR263",
+    "n_files": 1396,
+    "n_sampled": 56,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 56,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [
+     "NIKON CORPORATION NIKON D80"
+    ],
+    "focal_length_mm": [
+     90.0,
+     90.0
+    ],
+    "f_number": [
+     4.5,
+     4.5
+    ],
+    "exposure_s": [
+     0.00625,
+     0.06666666666666667
+    ],
+    "iso": [
+     100.0,
+     100.0
+    ],
+    "flash_fired": [
+     0
+    ]
+   },
+   "MR273": {
+    "raw_dir": "$LINC_RAW/blockface_curated/MR273",
+    "n_files": 1406,
+    "n_sampled": 57,
+    "n_unreadable_sampled": 0,
+    "n_with_exif": 57,
+    "image_size": [
+     "3872x2592"
+    ],
+    "camera": [
+     "NIKON CORPORATION NIKON D80"
+    ],
+    "focal_length_mm": [
+     90.0,
+     90.0
+    ],
+    "f_number": [
+     3.5,
+     3.5
+    ],
+    "exposure_s": [
+     0.00625,
+     0.01
+    ],
+    "iso": [
+     100.0,
+     100.0
+    ],
+    "flash_fired": [
+     0
+    ]
+   }
+  },
+  "note": "Brains whose files carry no EXIF are grouped by image size; the D80's 3872x2592 frame is shared by every brain with EXIF of that size."
+ }
+}

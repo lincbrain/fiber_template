@@ -1,0 +1,47 @@
+# Products of record read by the reproduce scripts (MRI channels, link, atlas mappings, histology, labels, evaluation).
+# Paths are relative to $LINC_PRODUCTS (linc/paths.py products()). For validation, LINC_PRODUCTS = the analysis project, so these
+# are its own folders; a data release remaps them here only.
+
+# --- records of the analysis that later records read as inputs (dated snapshots, never rewritten) ---
+numbers_of_record: paper/numbers                     # e.g. tracer_template_current*.json, registration_qc_histo2bf_20261001.json
+
+# --- histology -> blockface (TIRL) and marker tubes ---
+histo_arm_hidden: data_arm_final                      # tubes hidden (inpainted blockface targets): sub-<ID>/blockface/06_histo2bf/tirl/<piece>/
+histo_arm_visible: data_arm_preinp                    # pre-inpaint blockface (holes visible): fixed.png per piece
+tube_landmarks: labels/tube_landmarks                 # per-piece tube offsets: r054hole_<ID>_native.json, inp_/preinp_<ID>_native.json
+
+# --- labels ---
+push_current: labels/push_current                     # LGN/STN labels carried into the MRI template (the chain of record)
+template_gt: labels/template_gt                       # template-space reference labels for the LGN/STN geometry
+push_tracer: labels/push_tracer                       # tracer labels on the blockface grid (sheets + demons-interpolated)
+push_tracer_r058d: labels/push_tracer_r058d           # the per-grade sheets of record pushed onto the blockface (one slice per charted section; the chain of record since 3 Nov 2026 starts from them)
+tracer_template_demons: labels/tracer_template_current_demons   # tracer labels in the MRI template (Fig. 10)
+
+# --- MRI channels: construction runs, evaluation caches, template ---
+mri_runs: mri/tc                                      # construction runs (rb_*, mmsym_model_dti_v) and evaluator outputs (crossmodal_*.json)
+crossmodal_cache: mri/data/_crossmodal_rebuild        # each input's images pushed through its construction warp (<arm>__<MOD>__<ID>.nii.gz)
+template_mri: template/mri                            # the MRI channels of record (linc_mri_*.nii.gz)
+atlas_v2: mri/tc/atlas_v2                             # template <-> NMT v2 / INIA19 / CIVM-R mappings (score.json per atlas)
+curated_mri: data/_lcn_src/data/curated               # the photographed brains' own MRI (dwi_b0, dwi, msme)
+
+# --- blockface template -> MRI template (registration and its independent check) ---
+bftemplate_cv: bftemplate/cv                          # s5_direct_d2bs8/, s5_compose_d2bs8_r05_guard/, s5_tpl_*, s5_compare_d2bs8.json
+template2template: bftemplate/cv/template2template    # exported maps, e.g. d2bs8_s5sym/
+
+# --- LGN/STN: the 2D network and the checks of the error budget (added 1 Nov 2026) ---
+lgnstn_model_labels: labels/nnunet/deploy_r059        # the network's LGN/STN labels carried like the observer's: <ID>/<ID>_<struct>_{mri-template,b0-native}_mask_demons.nii.gz
+lgnstn_nnunet: labels/nnunet                          # Dataset532 (LGN/STN 2D network): folds_loso_532.json, nnUNet_raw/<ds>/labelsTr/*.png (references),
+                                                      # nnUNet_results/<ds>/<trainer>/fold_<k>/validation/*.png (held-out predictions); a data release
+                                                      # ships these three, not the training images
+
+# --- MRI template brains: inputs and the tensor of record (added 1 Nov 2026) ---
+mri_inputs: mri/data                                  # sub-<ID>/micro/frac{1,2}_brain.nii.gz (delivered microstructure fractions), sub-<ID>/masks/micro_brain_mask.nii.gz
+tensor_d9: mri/tensor_refit_d9                        # <ID>_existing/run.json: the tensor of record's volumes, b-values and gradient check
+
+# --- tracer labels, the chain of record since 3 Nov 2026 (v2 interpolation + the connected pathways, v2c) ---
+tracer_v2_bfnative: labels/tracer_v2                  # the interpolated tracer labels on the blockface grid, per group and grade (<S>/<S>_<label>_bfnative_L2_demons.nii.gz)
+                                                      #   made by the v2 interpolation (linc-labels interpolate --method v2); the release's run reproduces them byte for byte
+                                                      #   (MR252, 3 Nov 2026: 11 of 11 volumes, the pairs and the summary of interp_v2.json)
+tracer_template_v2: labels/tracer_template_v2        # the same carried into the MRI template (density, footprint, solid, solid2 = the connected solid per group)
+tracer_template_v2c: labels/tracer_template_v2c      # the connected pathways: <S>_Bundles_mri-template_{connected (1 = solid, 2 = inferred), solid_v2c, bridges}.nii.gz + <S>_connect_v2c.json
+tracer_sections_v2: labels/tracer_v2/sections_template   # the per-section sheets carried into the template without interpolation (Fig. 9's sections view)

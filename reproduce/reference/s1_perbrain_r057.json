@@ -1,0 +1,243 @@
+{
+ "data": {
+  "per_brain": {
+   "MF278": {
+    "name": "MF5",
+    "photographed_sections": 1134,
+    "interpolated_sections": 4,
+    "missing_intervals": 5,
+    "camera": "no EXIF (3872x2592)",
+    "pixel_um": 27.0,
+    "section_step_um": 47.0,
+    "nominal_pixel_um": 26.0,
+    "nominal_section_step_um": 50.0
+   },
+   "MF275": {
+    "name": "MF6",
+    "photographed_sections": 1104,
+    "interpolated_sections": 192,
+    "missing_intervals": 27,
+    "camera": "no EXIF (3872x2592)",
+    "pixel_um": 27.0,
+    "section_step_um": 47.0,
+    "nominal_pixel_um": 26.0,
+    "nominal_section_step_um": 50.0
+   },
+   "MF282": {
+    "name": "MF7",
+    "photographed_sections": 1293,
+    "interpolated_sections": 48,
+    "missing_intervals": 25,
+    "camera": "Nikon D80",
+    "pixel_um": 27.0,
+    "section_step_um": 47.0,
+    "nominal_pixel_um": 26.0,
+    "nominal_section_step_um": 50.0
+   },
+   "MF191": {
+    "name": "MF8",
+    "photographed_sections": 77,
+    "interpolated_sections": 0,
+    "missing_intervals": 0,
+    "camera": "Nikon D100",
+    "pixel_um": 23.75,
+    "section_step_um": 750.0,
+    "nominal_pixel_um": 23.75,
+    "nominal_section_step_um": 600.0
+   },
+   "MF196": {
+    "name": "MF9",
+    "photographed_sections": 79,
+    "interpolated_sections": 1,
+    "missing_intervals": 1,
+    "camera": "Nikon D100",
+    "pixel_um": 21.49,
+    "section_step_um": 870.0,
+    "nominal_pixel_um": 21.49,
+    "nominal_section_step_um": 600.0
+   },
+   "MF204": {
+    "name": "MF10",
+    "photographed_sections": 71,
+    "interpolated_sections": 1,
+    "missing_intervals": 1,
+    "camera": "Nikon D100",
+    "pixel_um": 43.0,
+    "section_step_um": 810.0,
+    "nominal_pixel_um": 43.0,
+    "nominal_section_step_um": 810.0
+   },
+   "MR243": {
+    "name": "MM1",
+    "photographed_sections": 164,
+    "interpolated_sections": 0,
+    "missing_intervals": 1,
+    "camera": "no EXIF (3872x2592)",
+    "pixel_um": 20.0,
+    "section_step_um": 366.0,
+    "nominal_pixel_um": 20.0,
+    "nominal_section_step_um": 400.0
+   },
+   "MR252": {
+    "name": "MM2",
+    "photographed_sections": 1440,
+    "interpolated_sections": 35,
+    "missing_intervals": 22,
+    "camera": "no EXIF (3872x2592)",
+    "pixel_um": 20.0,
+    "section_step_um": 45.0,
+    "nominal_pixel_um": 20.0,
+    "nominal_section_step_um": 50.0
+   },
+   "MR256": {
+    "name": "MM3",
+    "photographed_sections": 1325,
+    "interpolated_sections": 1,
+    "missing_intervals": 3,
+    "camera": "no EXIF (3872x2592)",
+    "pixel_um": 20.0,
+    "section_step_um": 45.0,
+    "nominal_pixel_um": 20.0,
+    "nominal_section_step_um": 50.0
+   },
+   "MR249": {
+    "name": "MM4",
+    "photographed_sections": 176,
+    "interpolated_sections": 2,
+    "missing_intervals": 3,
+    "camera": "Nikon D80",
+    "pixel_um": 20.0,
+    "section_step_um": 366.0,
+    "nominal_pixel_um": 20.0,
+    "nominal_section_step_um": 400.0
+   },
+   "MR250": {
+    "name": "MM5",
+    "photographed_sections": 1381,
+    "interpolated_sections": 28,
+    "missing_intervals": 19,
+    "camera": "Nikon D80",
+    "pixel_um": 20.0,
+    "section_step_um": 45.0,
+    "nominal_pixel_um": 20.0,
+    "nominal_section_step_um": 50.0
+   },
+   "MR251": {
+    "name": "MM6",
+    "photographed_sections": 1301,
+    "interpolated_sections": 9,
+    "missing_intervals": 11,
+    "camera": "Nikon D80",
+    "pixel_um": 20.0,
+    "section_step_um": 45.0,
+    "nominal_pixel_um": 20.0,
+    "nominal_section_step_um": 50.0
+   },
+   "MR253": {
+    "name": "MM7",
+    "photographed_sections": 1322,
+    "interpolated_sections": 15,
+    "missing_intervals": 10,
+    "camera": "Nikon D80",
+    "pixel_um": 20.0,
+    "section_step_um": 45.0,
+    "nominal_pixel_um": 20.0,
+    "nominal_section_step_um": 50.0
+   },
+   "MR254": {
+    "name": "MM8",
+    "photographed_sections": 1410,
+    "interpolated_sections": 5,
+    "missing_intervals": 6,
+    "camera": "Nikon D80",
+    "pixel_um": 20.0,
+    "section_step_um": 45.0,
+    "nominal_pixel_um": 20.0,
+    "nominal_section_step_um": 50.0
+   },
+   "MR257": {
+    "name": "MM9",
+    "photographed_sections": 1320,
+    "interpolated_sections": 3,
+    "missing_intervals": 5,
+    "camera": "Nikon D80",
+    "pixel_um": 20.0,
+    "section_step_um": 45.0,
+    "nominal_pixel_um": 20.0,
+    "nominal_section_step_um": 50.0
+   },
+   "MR261": {
+    "name": "MM10",
+    "photographed_sections": 1587,
+    "interpolated_sections": 39,
+    "missing_intervals": 64,
+    "camera": "Nikon D80",
+    "pixel_um": 20.0,
+    "section_step_um": 45.0,
+    "nominal_pixel_um": 20.0,
+    "nominal_section_step_um": 50.0
+   },
+   "MR244": {
+    "name": "MM11",
+    "photographed_sections": 159,
+    "interpolated_sections": 0,
+    "missing_intervals": 3,
+    "camera": "Nikon D80",
+    "pixel_um": 20.0,
+    "section_step_um": 366.0,
+    "nominal_pixel_um": 20.0,
+    "nominal_section_step_um": 400.0
+   },
+   "MR247": {
+    "name": "MM12",
+    "photographed_sections": 165,
+    "interpolated_sections": 5,
+    "missing_intervals": 6,
+    "camera": "Nikon D80",
+    "pixel_um": 20.0,
+    "section_step_um": 366.0,
+    "nominal_pixel_um": 20.0,
+    "nominal_section_step_um": 400.0
+   },
+   "MR248": {
+    "name": "MM13",
+    "photographed_sections": 152,
+    "interpolated_sections": 1,
+    "missing_intervals": 4,
+    "camera": "Nikon D80",
+    "pixel_um": 20.0,
+    "section_step_um": 366.0,
+    "nominal_pixel_um": 20.0,
+    "nominal_section_step_um": 400.0
+   },
+   "MR263": {
+    "name": "MM14",
+    "photographed_sections": 1401,
+    "interpolated_sections": 88,
+    "missing_intervals": 79,
+    "camera": "Nikon D80",
+    "pixel_um": 20.0,
+    "section_step_um": 45.0,
+    "nominal_pixel_um": 20.0,
+    "nominal_section_step_um": 50.0
+   },
+   "MR273": {
+    "name": "MM15",
+    "photographed_sections": 1411,
+    "interpolated_sections": 21,
+    "missing_intervals": 19,
+    "camera": "Nikon D80",
+    "pixel_um": 27.0,
+    "section_step_um": 47.0,
+    "nominal_pixel_um": 26.0,
+    "nominal_section_step_um": 50.0
+   }
+  },
+  "cameras": [
+   "Nikon D100",
+   "Nikon D80",
+   "no EXIF (3872x2592)"
+  ],
+  "note": "pixel_um / section_step_um: the spacing of record (each brain calibrated against its own MRI where it has one, bf_spacing_used); interpolated_sections: sections filled between photographed neighbors (bf_cohort)"
+ }
+}

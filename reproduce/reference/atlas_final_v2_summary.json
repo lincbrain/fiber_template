@@ -1,0 +1,112 @@
+{
+ "data": {
+  "atlases": {
+   "NMT_v2.0_sym": {
+    "mask_dice": {
+     "atlas_mask_in_template_vs_template": 0.9788,
+     "template_mask_in_atlas_vs_atlas": 0.9809
+    },
+    "outline": {
+     "atlas_in_template": "WARN",
+     "template_in_atlas": "WARN"
+    },
+    "folds_fraction": {
+     "phi_A": 0.0,
+     "phi_B": 0.0,
+     "F": 0.0,
+     "G": 0.0
+    },
+    "roundtrip_max_mm": 0.02375630848109722,
+    "detJ": {
+     "template_to_atlas_in_template": {
+      "min": 0.521,
+      "p1": 0.884,
+      "p99": 3.054,
+      "folds": 0,
+      "n": 16529
+     },
+     "atlas_to_template_in_atlas": {
+      "min": 0.147,
+      "p1": 0.291,
+      "p99": 1.072,
+      "folds": 0,
+      "n": 29142
+     }
+    }
+   },
+   "INIA19": {
+    "mask_dice": {
+     "atlas_mask_in_template_vs_template": 0.9779,
+     "template_mask_in_atlas_vs_atlas": 0.9771
+    },
+    "outline": {
+     "atlas_in_template": "PASS",
+     "template_in_atlas": "PASS"
+    },
+    "folds_fraction": {
+     "phi_A": 0.0,
+     "phi_B": 0.0,
+     "F": 0.0,
+     "G": 0.0
+    },
+    "roundtrip_max_mm": 0.03139820694923401,
+    "detJ": {
+     "template_to_atlas_in_template": {
+      "min": 0.595,
+      "p1": 0.943,
+      "p99": 3.796,
+      "folds": 0,
+      "n": 16529
+     },
+     "atlas_to_template_in_atlas": {
+      "min": 0.151,
+      "p1": 0.23,
+      "p99": 0.975,
+      "folds": 0,
+      "n": 4025
+     }
+    }
+   },
+   "CIVM-R": {
+    "mask_dice": {
+     "atlas_mask_in_template_vs_template": 0.9779,
+     "template_mask_in_atlas_vs_atlas": 0.9805
+    },
+    "outline": {
+     "atlas_in_template": "WARN",
+     "template_in_atlas": "PASS"
+    },
+    "folds_fraction": {
+     "phi_A": 0.0,
+     "phi_B": 0.0,
+     "F": 0.0,
+     "G": 0.0
+    },
+    "roundtrip_max_mm": 0.02847941778600216,
+    "detJ": {
+     "template_to_atlas_in_template": {
+      "min": 0.462,
+      "p1": 0.752,
+      "p99": 2.576,
+      "folds": 0,
+      "n": 16529
+     },
+     "atlas_to_template_in_atlas": {
+      "min": 0.197,
+      "p1": 0.351,
+      "p99": 1.233,
+      "folds": 0,
+      "n": 23792
+     }
+    },
+    "vs_item11_anatomix_direct_mm": {
+     "p50": 0.292,
+     "p95": 0.83,
+     "max": 4.787,
+     "n": 237912
+    }
+   }
+  },
+  "note": "landmark-free (author 6 Oct); the rebuilt template (4 Oct)"
+ }
+}

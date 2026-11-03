@@ -1,0 +1,317 @@
+{
+ "data": {
+  "method": [
+   "as they stand in the data this work used (no raw ParaVision read; mri_acq_params_r057 covers the sectioned brains).",
+   "  dwi_025   the 0.25 mm diffusion series of record ($LINC_RAW/macaque_mri/Preprocessing/<S>/CS_DSI): dwi_orig.bvals",
+   "            (volumes, b < 200 s/mm^2 = b0 volumes, b max) and dwi_realori.JSON (EchoTime, RepetitionTime; s -> ms).",
+   "  micro     the 0.5 mm multi-shell series SANDIdot was fitted to (preprocess_mri MICRO_RAW: Gong et al. 2026, multi-shell dMRI, <S>/dmri.dt2):",
+   "            dwi_orig.bvals (b rounded to 100: shells and their volumes) and dwi_realori.JSON (TE, delta, Delta, TR).",
+   "  msme      Gong et al. 2026, multi-slice multi-echo spin-echo images, <S>/log.txt, the msme_process lines (TR, number of echoes, first TE = echo spacing).",
+   "  tensor    the tensor of record (D9, mri/tensor_refit_d9/<S>_existing/run.json): volumes acquired / used, b-values used, gradcheck.",
+   "  sandi     the delivered SANDIdot fractions before normalisation (mri/data/sub-<S>/micro/frac{1,2}_brain.nii.gz; frac1 = soma, frac2 =",
+   "            neurite) inside the micro hand mask (masks/micro_brain_mask): mean and 5th/95th percentiles of frac1 + frac2, the share of",
+   "            voxels with frac1 > 1 or frac2 > 1, the maxima. preprocess_mri.normalize_fracs_and_weights then clips each to [0, 1] and",
+   "            divides by their sum (the `_norm` files of record).",
+   "-> paper/numbers/r057_mri_facts_b.json",
+   "    mri/env/mmorf/bin/python paper/scripts/r057_mri_facts_b.py"
+  ],
+  "brains": {
+   "MF283": {
+    "dwi_025": {
+     "n_volumes": 171,
+     "n_b0": 1,
+     "n_dw": 170,
+     "b_max": 20000,
+     "te_ms": 28.24,
+     "tr_ms": 500.0
+    },
+    "micro": {
+     "n_volumes": 184,
+     "n_b0": 8,
+     "shells": {
+      "1000": 12,
+      "2500": 12,
+      "5000": 12,
+      "7500": 12,
+      "11100": 32,
+      "18100": 32,
+      "25000": 32,
+      "43000": 32
+     },
+     "n_shells": 8,
+     "b_max": 43000,
+     "te_ms": 33.0,
+     "delta_ms": 11.0,
+     "Delta_ms": 15.19,
+     "tr_ms": 500.0
+    },
+    "msme": {
+     "tr_ms": 500.0,
+     "n_echoes": 32,
+     "echo_spacing_ms": 6.0
+    },
+    "tensor": {
+     "n_acquired": 171,
+     "n_used": 43,
+     "b_max": 4800,
+     "bvalues_used": [
+      0,
+      800,
+      1600,
+      2400,
+      3200,
+      4000,
+      4800
+     ],
+     "n_bvalues_dw": 6,
+     "gradcheck": {
+      "permutation": [
+       1,
+       0,
+       2
+      ],
+      "signs": [
+       1,
+       1,
+       -1
+      ],
+      "max_residual": 3.8339999997027974e-07
+     },
+     "source": "PRE/dwi_eddycorrect (+ .ecclog): upstream dwidenoise (22 Oct 2025) + FSL 6.0.6 eddy_correct to vol 0 (Nov 2025)"
+    },
+    "sandi_raw": {
+     "n_voxels": 372061,
+     "sum_mean": 0.8851,
+     "sum_p5": 0.7313,
+     "sum_p95": 0.9487,
+     "share_any_gt1": 0.0001,
+     "share_sum_gt1": 0.0001,
+     "frac1_max": 1.858,
+     "frac2_max": 0.966
+    }
+   },
+   "MF284": {
+    "dwi_025": {
+     "n_volumes": 171,
+     "n_b0": 1,
+     "n_dw": 170,
+     "b_max": 20000,
+     "te_ms": 28.72,
+     "tr_ms": 500.0
+    },
+    "micro": {
+     "n_volumes": 184,
+     "n_b0": 8,
+     "shells": {
+      "1000": 12,
+      "2500": 12,
+      "5000": 12,
+      "7500": 12,
+      "11100": 32,
+      "18100": 32,
+      "25000": 32,
+      "43000": 32
+     },
+     "n_shells": 8,
+     "b_max": 43000,
+     "te_ms": 33.0,
+     "delta_ms": 11.0,
+     "Delta_ms": 15.19,
+     "tr_ms": 500.0
+    },
+    "msme": {
+     "tr_ms": 500.0,
+     "n_echoes": 32,
+     "echo_spacing_ms": 6.0
+    },
+    "tensor": {
+     "n_acquired": 171,
+     "n_used": 43,
+     "b_max": 4800,
+     "bvalues_used": [
+      0,
+      800,
+      1600,
+      2400,
+      3200,
+      4000,
+      4800
+     ],
+     "n_bvalues_dw": 6,
+     "gradcheck": {
+      "permutation": [
+       1,
+       0,
+       2
+      ],
+      "signs": [
+       -1,
+       -1,
+       1
+      ],
+      "max_residual": 5.037652104911139e-07
+     },
+     "source": "PRE/dwi_eddycorrect (+ .ecclog): upstream dwidenoise (22 Oct 2025) + FSL 6.0.6 eddy_correct to vol 0 (Nov 2025)"
+    },
+    "sandi_raw": {
+     "n_voxels": 495862,
+     "sum_mean": 0.8817,
+     "sum_p5": 0.7274,
+     "sum_p95": 0.9486,
+     "share_any_gt1": 0.00013,
+     "share_sum_gt1": 0.00015,
+     "frac1_max": 2.8,
+     "frac2_max": 0.958
+    }
+   },
+   "MF285": {
+    "dwi_025": {
+     "n_volumes": 171,
+     "n_b0": 1,
+     "n_dw": 170,
+     "b_max": 20000,
+     "te_ms": 28.24,
+     "tr_ms": 500.0
+    },
+    "micro": {
+     "n_volumes": 184,
+     "n_b0": 8,
+     "shells": {
+      "1000": 12,
+      "2500": 12,
+      "5000": 12,
+      "7500": 12,
+      "11100": 32,
+      "18100": 32,
+      "25000": 32,
+      "43000": 32
+     },
+     "n_shells": 8,
+     "b_max": 43000,
+     "te_ms": 33.0,
+     "delta_ms": 11.0,
+     "Delta_ms": 15.19,
+     "tr_ms": 500.0
+    },
+    "msme": {
+     "tr_ms": 500.0,
+     "n_echoes": 32,
+     "echo_spacing_ms": 6.0
+    },
+    "tensor": {
+     "n_acquired": 171,
+     "n_used": 43,
+     "b_max": 4800,
+     "bvalues_used": [
+      0,
+      800,
+      1600,
+      2400,
+      3200,
+      4000,
+      4800
+     ],
+     "n_bvalues_dw": 6,
+     "gradcheck": {
+      "permutation": [
+       1,
+       0,
+       2
+      ],
+      "signs": [
+       -1,
+       -1,
+       1
+      ],
+      "max_residual": 5.304024321972634e-07
+     },
+     "source": "PRE/dwi_eddycorrect (+ .ecclog): upstream dwidenoise (22 Oct 2025) + FSL 6.0.6 eddy_correct to vol 0 (Nov 2025)"
+    },
+    "sandi_raw": {
+     "n_voxels": 418647,
+     "sum_mean": 0.8818,
+     "sum_p5": 0.7411,
+     "sum_p95": 0.943,
+     "share_any_gt1": 0.0004,
+     "share_sum_gt1": 0.00043,
+     "frac1_max": 4.518,
+     "frac2_max": 0.944
+    }
+   },
+   "MF286": {
+    "dwi_025": {
+     "n_volumes": 171,
+     "n_b0": 1,
+     "n_dw": 170,
+     "b_max": 20000,
+     "te_ms": 28.46,
+     "tr_ms": 500.0
+    },
+    "micro": {
+     "n_volumes": 184,
+     "n_b0": 8,
+     "shells": {
+      "1000": 12,
+      "2500": 12,
+      "5000": 12,
+      "7500": 12,
+      "11100": 32,
+      "18100": 32,
+      "25000": 32,
+      "43000": 32
+     },
+     "n_shells": 8,
+     "b_max": 43000,
+     "te_ms": 33.0,
+     "delta_ms": 11.0,
+     "Delta_ms": 15.19,
+     "tr_ms": 500.0
+    },
+    "msme": {
+     "tr_ms": 500.0,
+     "n_echoes": 32,
+     "echo_spacing_ms": 6.0
+    },
+    "tensor": {
+     "n_acquired": 171,
+     "n_used": 43,
+     "b_max": 4800,
+     "bvalues_used": [
+      0,
+      800,
+      1600,
+      2400,
+      3200,
+      4000,
+      4800
+     ],
+     "n_bvalues_dw": 6,
+     "gradcheck": {
+      "permutation": [
+       1,
+       0,
+       2
+      ],
+      "signs": [
+       -1,
+       -1,
+       1
+      ],
+      "max_residual": 5.620310515319638e-07
+     },
+     "source": "PRE/dwi_eddycorrect (+ .ecclog): upstream dwidenoise (22 Oct 2025) + FSL 6.0.6 eddy_correct to vol 0 (Nov 2025)"
+    },
+    "sandi_raw": {
+     "n_voxels": 420612,
+     "sum_mean": 0.8813,
+     "sum_p5": 0.7515,
+     "sum_p95": 0.9539,
+     "share_any_gt1": 0.00022,
+     "share_sum_gt1": 0.00023,
+     "frac1_max": 5.8,
+     "frac2_max": 0.936
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,141 @@
+{
+ "data": {
+  "layout": "composite",
+  "slab_x_mm": [
+   0.0,
+   8.0
+  ],
+  "z_axial_mm": 18.0,
+  "alic_y_mm": [
+   20.0,
+   22.0,
+   24.0
+  ],
+  "alic_slab_mm": 0.5,
+  "close_mm": 1.0,
+  "cases": {
+   "MF191": {
+    "v2c_pathway_voxels_right_hemisphere": 23673,
+    "dorsal_marks_right_hemisphere": 23286,
+    "dorsal_share_of_bundle_marks": 0.863,
+    "contralateral_percent_of_bundle_marks": 13.7,
+    "name": "MF8",
+    "area": "area 13m",
+    "mirrored": true,
+    "sections": 29,
+    "section_spacing_mm": {
+     "median": 1.367,
+     "p90": 2.14,
+     "max": 2.688
+    },
+    "bundle_marks": 26978,
+    "injection_marks": 625,
+    "v2c_inferred_share": 0.1273,
+    "v2c_longest_bridge_mm": 5.0,
+    "v2c_pieces_attached": 34
+   },
+   "MR243": {
+    "v2c_pathway_voxels_right_hemisphere": 13551,
+    "dorsal_marks_right_hemisphere": 8737,
+    "dorsal_share_of_bundle_marks": 0.988,
+    "contralateral_percent_of_bundle_marks": 1.2,
+    "name": "MM1",
+    "area": "area 10",
+    "mirrored": false,
+    "sections": 35,
+    "section_spacing_mm": {
+     "median": 0.948,
+     "p90": 1.032,
+     "max": 1.506
+    },
+    "bundle_marks": 8839,
+    "injection_marks": 143,
+    "v2c_inferred_share": 0.0765,
+    "v2c_longest_bridge_mm": 8.5,
+    "v2c_pieces_attached": 7
+   },
+   "MR252": {
+    "v2c_pathway_voxels_right_hemisphere": 4071,
+    "dorsal_marks_right_hemisphere": 4353,
+    "dorsal_share_of_bundle_marks": 1.0,
+    "contralateral_percent_of_bundle_marks": 0.0,
+    "name": "MM2",
+    "area": "SMA",
+    "mirrored": false,
+    "sections": 27,
+    "section_spacing_mm": {
+     "median": 0.97,
+     "p90": 2.195,
+     "max": 3.825
+    },
+    "bundle_marks": 4353,
+    "injection_marks": 50,
+    "v2c_inferred_share": 0.1174,
+    "v2c_longest_bridge_mm": 1.75,
+    "v2c_pieces_attached": 9
+   }
+  },
+  "stills": {
+   "oblique": {
+    "file": "tracer_3d_oblique.png",
+    "pixels": [
+     2400,
+     1800
+    ],
+    "md5": "74591575916993c6db24bc82725e4c86"
+   },
+   "lateral": {
+    "file": "tracer_3d_lateral.png",
+    "pixels": [
+     2400,
+     1800
+    ],
+    "md5": "eabf722a06cdae36dd7d4f2e042c2448"
+   }
+  },
+  "capsule": {
+   "20.0": {
+    "MF191": {
+     "voxels_in_capsule": 63,
+     "voxels_total": 76
+    },
+    "MR243": {
+     "voxels_in_capsule": 34,
+     "voxels_total": 41
+    },
+    "MR252": {
+     "voxels_in_capsule": 5,
+     "voxels_total": 34
+    }
+   },
+   "22.0": {
+    "MF191": {
+     "voxels_in_capsule": 67,
+     "voxels_total": 73
+    },
+    "MR243": {
+     "voxels_in_capsule": 34,
+     "voxels_total": 39
+    },
+    "MR252": {
+     "voxels_in_capsule": 0,
+     "voxels_total": 0
+    }
+   },
+   "24.0": {
+    "MF191": {
+     "voxels_in_capsule": 46,
+     "voxels_total": 191
+    },
+    "MR243": {
+     "voxels_in_capsule": 16,
+     "voxels_total": 76
+    },
+    "MR252": {
+     "voxels_in_capsule": 0,
+     "voxels_total": 0
+    }
+   }
+  }
+ }
+}

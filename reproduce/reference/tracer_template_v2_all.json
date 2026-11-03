@@ -1,0 +1,244 @@
+{
+ "data": {
+  "summary": {
+   "n_cases": 4,
+   "n_brains": 4,
+   "brains": [
+    "MR243",
+    "MR252",
+    "MR256",
+    "MF191"
+   ],
+   "route": {
+    "MR243": "B",
+    "MR252": "B",
+    "MR256": "B",
+    "MF191": "A (2b member: d2bs8 member warp + the link d2bs8_s5sym)"
+   },
+   "n_sections": {
+    "MR243": 100,
+    "MR252": 515,
+    "MR256": 730,
+    "MF191": 49
+   },
+   "n_sections_total": 1394,
+   "injection_site_recorded": {
+    "MR243": true,
+    "MR252": true,
+    "MR256": false,
+    "MF191": true
+   },
+   "classes": {
+    "MR243": [
+     "Bundles",
+     "Fiber_dense_bundle",
+     "Fiber_light_bundle",
+     "Fiber_moderate_bundle",
+     "Fibers",
+     "Injection_site",
+     "Terminal_dense",
+     "Terminal_light",
+     "Terminal_moderate",
+     "Terminals"
+    ],
+    "MR252": [
+     "Bundle",
+     "Bundles",
+     "Fiber_dense_bundle",
+     "Fiber_light_bundle",
+     "Fiber_moderate_bundle",
+     "Fibers",
+     "Injection_site"
+    ],
+    "MR256": [
+     "Bundles",
+     "Fiber_dense_bundle",
+     "Fiber_light_bundle",
+     "Fiber_moderate_bundle",
+     "Fibers",
+     "Terminal_dense",
+     "Terminal_light",
+     "Terminal_moderate",
+     "Terminals"
+    ],
+    "MF191": {
+     "Bundles": {
+      "sections": 49,
+      "voxels_bf": 46568,
+      "vol_bf_mm3": 315.207,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 32898,
+      "voxels_template_gt05": 14409,
+      "density_sum_mm3": 264.052,
+      "frac_in_brain": 0.9969,
+      "x_mean_mm": -6.415,
+      "frac_same_side_as_injection": 0.867
+     },
+     "Fiber_dense_bundle": {
+      "sections": 32,
+      "voxels_bf": 20407,
+      "vol_bf_mm3": 138.13,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 14459,
+      "voxels_template_gt05": 6318,
+      "density_sum_mm3": 115.514,
+      "frac_in_brain": 0.9957,
+      "x_mean_mm": -6.047,
+      "frac_same_side_as_injection": 0.925
+     },
+     "Fiber_light_bundle": {
+      "sections": 34,
+      "voxels_bf": 7777,
+      "vol_bf_mm3": 52.641,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 6484,
+      "voxels_template_gt05": 1705,
+      "density_sum_mm3": 41.876,
+      "frac_in_brain": 0.9992,
+      "x_mean_mm": -6.958,
+      "frac_same_side_as_injection": 0.7656
+     },
+     "Fiber_moderate_bundle": {
+      "sections": 44,
+      "voxels_bf": 19019,
+      "vol_bf_mm3": 128.735,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 14321,
+      "voxels_template_gt05": 5847,
+      "density_sum_mm3": 110.449,
+      "frac_in_brain": 0.9977,
+      "x_mean_mm": -6.306,
+      "frac_same_side_as_injection": 0.8224
+     },
+     "Fibers": {
+      "sections": 46,
+      "voxels_bf": 39949,
+      "vol_bf_mm3": 270.405,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 39425,
+      "voxels_template_gt05": 5278,
+      "density_sum_mm3": 222.132,
+      "frac_in_brain": 0.9947,
+      "x_mean_mm": -4.679,
+      "frac_same_side_as_injection": 0.7668
+     },
+     "Injection_site": {
+      "sections": 5,
+      "voxels_bf": 864,
+      "vol_bf_mm3": 5.848,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 709,
+      "voxels_template_gt05": 306,
+      "density_sum_mm3": 5.628,
+      "frac_in_brain": 1.0,
+      "x_mean_mm": -5.973,
+      "frac_same_side_as_injection": 1.0
+     },
+     "Terminal_dense": {
+      "sections": 29,
+      "voxels_bf": 49884,
+      "vol_bf_mm3": 337.652,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 32565,
+      "voxels_template_gt05": 18084,
+      "density_sum_mm3": 303.003,
+      "frac_in_brain": 0.977,
+      "x_mean_mm": -7.17,
+      "frac_same_side_as_injection": 0.9826
+     },
+     "Terminal_light": {
+      "sections": 41,
+      "voxels_bf": 21311,
+      "vol_bf_mm3": 144.249,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 19560,
+      "voxels_template_gt05": 5003,
+      "density_sum_mm3": 125.493,
+      "frac_in_brain": 0.9918,
+      "x_mean_mm": -7.377,
+      "frac_same_side_as_injection": 0.8839
+     },
+     "Terminal_moderate": {
+      "sections": 33,
+      "voxels_bf": 32279,
+      "vol_bf_mm3": 218.488,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 24127,
+      "voxels_template_gt05": 8816,
+      "density_sum_mm3": 176.428,
+      "frac_in_brain": 0.9717,
+      "x_mean_mm": -8.197,
+      "frac_same_side_as_injection": 0.9662
+     },
+     "Terminals": {
+      "sections": 45,
+      "voxels_bf": 103414,
+      "vol_bf_mm3": 699.983,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 72497,
+      "voxels_template_gt05": 33707,
+      "density_sum_mm3": 604.588,
+      "frac_in_brain": 0.978,
+      "x_mean_mm": -7.471,
+      "frac_same_side_as_injection": 0.9509
+     }
+    }
+   }
+  },
+  "sources": {
+   "route_B": "paper/numbers/tracer_template_v2.json",
+   "MF191": "paper/numbers/tracer_template_v2_mf191.json"
+  },
+  "audit_rematch": {
+   "rule": "paper/numbers/tracer_match_audit_r058.json credible offsets (found despite the scan's bias to the record slice); decided 30 Oct 2026: move only where the tissue outline agrees",
+   "MR243_s03_0001": {
+    "decision": "moved to the audited slice",
+    "slice_record": 8,
+    "slice_new": 5,
+    "nmi_margin": 0.0205,
+    "dice_at_record": {
+     "affine": 0.8068,
+     "nonlinear": 0.8335
+    },
+    "dice_at_new": {
+     "affine": 0.935,
+     "nonlinear": 0.9645
+    },
+    "table": "labels/match_tables/num_MR243_r058c.txt"
+   },
+   "MF191_s14_0000": {
+    "decision": "one candidate, left at the record (interior NMI and tissue outline disagree)",
+    "slice_record": 26,
+    "slice_candidate": 29,
+    "nmi_margin_for_candidate": 0.0244,
+    "dice_at_record": {
+     "affine": 0.9386,
+     "nonlinear": 0.9706
+    },
+    "dice_at_candidate": {
+     "affine": 0.9096,
+     "nonlinear": 0.9398
+    },
+    "table": "labels/match_tables/num_MF191_r058.txt"
+   }
+  },
+  "label_sources": {
+   "MR243": "labels/tracer_v2 (histo_interp_v2.py on the sheets of record labels/push_tracer_r058d: the grades of a group interpolated as one label, per-hemisphere pairing, ends extended to mid-gap), carried by the chain of record",
+   "MR252": "labels/tracer_v2 (histo_interp_v2.py on the sheets of record labels/push_tracer_r058d: the grades of a group interpolated as one label, per-hemisphere pairing, ends extended to mid-gap), carried by the chain of record",
+   "MR256": "labels/tracer_v2 (histo_interp_v2.py on the sheets of record labels/push_tracer_r058d: the grades of a group interpolated as one label, per-hemisphere pairing, ends extended to mid-gap), carried by the chain of record",
+   "MF191": "labels/tracer_v2 (histo_interp_v2.py on the sheets of record labels/push_tracer_r058d: the grades of a group interpolated as one label, per-hemisphere pairing, ends extended to mid-gap), carried by the chain of record"
+  },
+  "v2": {
+   "interpolation": "labels/histo_interp_v2.py",
+   "carries": [
+    "labels/tracer_v2/carry_v2_B.py",
+    "labels/tracer_v2/carry_v2_A.py"
+   ],
+   "solid_rules": [
+    "density > 0.5 (the _mri-template files)",
+    "connected: > 0.5 seeds grown through >= 0.25 (the _solid2 files)"
+   ],
+   "predecessor": "tracer_template_r058d_all"
+  }
+ }
+}

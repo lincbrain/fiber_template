@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+"""Prepare a new brain's MRI for the template (the step before `linc-register mri --place-b0`).
+
+    linc-mri prep --subject <ID> --image <b0 or T2-weighted NIfTI> [--modality b0|t2] [--mask MASK] [--volume N] [--denoise] [--no-n4]
+                  [--mri-root DIR] [--device cuda]
+
+From one NIfTI (3-D, or a 4-D series of which --volume N is taken, default 0) to the files the paper's brains have under
+$LINC_DATA/sub-<ID>/mri/ (configs/mri_construction.yaml `prep.layout`), by the paper's preprocessing steps (linc/construction/
+mri_new_brain.py; Methods, "MRI preprocessing"):
+    stage      the volume under its own header (nothing is resampled; the registration resamples onto the template's 0.5 mm frame)
+    denoise    optional (--denoise): ANTs DenoiseImage, Rician. The paper's images were denoised upstream, so this is off by default.
+    mask       --mask MASK (on the image's grid, values 0/1), or else the MRI brain-mask network: linc-segment `mri_brainmask`
+               ($LINC_MODELS/segment/mri_brainmask, run with $LINC_SEGMENT_PYTHON = env/deep.yml's python; GPU by default;
+               --device cpu runs it on the CPU: 40 s for a 0.25 mm b0, 14 voxels different from the GPU's mask on MF283).
+               A mask is required; the network needs the weights of the data release.
+    N4         ANTs N4BiasFieldCorrection inside the mask, the recipe's parameters (--no-n4 to skip).
+    normalize  x mask, 1-99 percentile inside the mask rescaled to (0, 4095].
+External programs are optional except for the mask: a missing ANTs prints "not found, skipped" and the step is left out (recorded
+in the provenance). Versions are checked against the paper's (LINC_SKIP_VERSION_CHECK=1 to run with another ANTs).
+
+Outputs ($M = $LINC_DATA/sub-<ID>/mri, or --mri-root):
+    b0:  $M/dwi/b0.nii.gz, $M/masks/dwi_brain_mask.nii.gz (+ .json when the network made it), $M/dwi/b0_brain.nii.gz,
+         $M/dwi/b0_brain_n4.nii.gz (+ _bias), $M/dwi/b0_brain_n4.provenance.json
+    t2:  $M/t2/echo.nii.gz, $M/masks/t2_brain_mask.nii.gz, $M/t2/echo_n4.nii.gz (+ _bias), $M/t2/echo_n4_brain.nii.gz (+ .provenance.json)
+Then (printed at the end):
+    cli/linc-register mri --subject <ID> --place-b0 $M/dwi/b0_brain_n4.nii.gz $M/masks/dwi_brain_mask.nii.gz --new-brain
+For a T2-weighted image, give $M/t2/echo_n4_brain.nii.gz and $M/masks/t2_brain_mask.nii.gz there, and the template's T2 channel
+as --template-b0 of `linc-register mri-template`.
+Environment: env/linc.yml (python, nibabel, numpy, pyyaml); ANTSPATH (ANTs 2.5.4) for N4 and denoising; the mask network as above.
+"""
+import argparse
+import sys
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO))
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sp = ap.add_subparsers(dest="cmd", required=True)
+    p = sp.add_parser("prep", help="a new brain's b0 or T2-weighted image -> its masked, bias-corrected image and brain mask")
+    p.add_argument("--subject", required=True, help="the brain's identifier (file names, $LINC_DATA/sub-<ID>)")
+    p.add_argument("--image", required=True, help="the b0 or T2-weighted NIfTI (3-D, or a 4-D series with --volume)")
+    p.add_argument("--modality", choices=("b0", "t2"), default="b0")
+    p.add_argument("--mask", default=None, help="a brain mask on the image's grid (0/1); without it the MRI brain-mask network runs")
+    p.add_argument("--volume", type=int, default=0, help="the volume of a 4-D series to take (default 0, the b0 of a diffusion series)")
+    p.add_argument("--denoise", action="store_true", help="ANTs DenoiseImage (Rician) first; skipped with a message when ANTs is absent")
+    p.add_argument("--no-n4", action="store_true", help="no bias correction")
+    p.add_argument("--mri-root", default=None, help="write here instead of $LINC_DATA/sub-<ID>/mri")
+    p.add_argument("--device", default="cuda", help="the mask network's device (cuda, cuda:N, cpu)")
+    a = ap.parse_args()
+    from linc.construction import mri_new_brain
+    print(f"linc-mri prep {a.subject} ({a.modality})")
+    mri_new_brain.prep(a.subject, a.image, a.modality, mask=a.mask, volume=a.volume, denoise=a.denoise, n4=not a.no_n4,
+                       mri_root=a.mri_root, device=a.device)
+
+
+if __name__ == "__main__":
+    main()

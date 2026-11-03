@@ -1,0 +1,10 @@
+{
+ "data": {
+  "subject": "MR256",
+  "piece": "mr256LY_c02_s18nDF_0000",
+  "piece_dice": 0.9692,
+  "subject_median_dice": 0.9692,
+  "n_pieces": 53,
+  "rule": "MR256 histo2bf piece whose nonlinear tissue Dice is closest to the brain's median (registration_qc.json)"
+ }
+}

@@ -1,0 +1,97 @@
+{
+ "data": {
+  "template": "bftemplate/d2b/final_s8 (2b step 8)",
+  "fixed": "template/mri/linc_mri_b0 (MRI template of record)",
+  "links": {
+   "direct_greedy": {
+    "outline": "PASS",
+    "outline_reasons": [],
+    "ncc_b0": 0.919,
+    "folds_in_mask": 0,
+    "detJ_min": 0.315,
+    "detJ_max": 3.252,
+    "sd_log_detJ": 0.142,
+    "regqc_envelope_dice_support_not_brain_overlap": 0.986
+   },
+   "direct_sym": {
+    "outline": "PASS",
+    "outline_reasons": [],
+    "ncc_b0": 0.921,
+    "folds_in_mask": 0,
+    "detJ_min": 0.291,
+    "detJ_max": 3.517,
+    "sd_log_detJ": 0.136,
+    "regqc_envelope_dice_support_not_brain_overlap": 0.983,
+    "inverse_roundtrip_mm": {
+     "roundtrip_GF_mm_in_Amask": {
+      "median": 0.0039,
+      "p99": 0.0134,
+      "max": 0.0325
+     },
+     "roundtrip_FG_mm_in_Bmask": {
+      "median": 0.0041,
+      "p99": 0.013,
+      "max": 0.0339
+     }
+    },
+    "folds_fraction_both_maps": {
+     "phi_A": 0.0,
+     "phi_B": 0.0,
+     "F": 0.0,
+     "G": 0.0
+    }
+   },
+   "composition_of_member_warps": {
+    "outline": "PASS",
+    "outline_reasons": [],
+    "member_spread_mm": {
+     "p50": 0.599,
+     "p95": 1.67,
+     "max": 2.778
+    },
+    "link_symmetry_mm": {
+     "p50": 0.169,
+     "p95": 0.264
+    },
+    "mri_mask_points_without_converged_inverse": 0
+   },
+   "TPL_build_warp": {
+    "outline": "WARN",
+    "outline_reasons": [
+     "ventral undershoot p99 3.08 mm (warn)"
+    ],
+    "member_spread_mm": {
+     "p50": 0.0,
+     "p95": 0.0,
+     "max": 0.0
+    },
+    "link_symmetry_mm": {
+     "p50": 0.154,
+     "p95": 0.252
+    },
+    "mri_mask_points_without_converged_inverse": 218
+   }
+  },
+  "consistency_vs_composition_mm": {
+   "tpl_mm": {
+    "p50": 0.33,
+    "p95": 1.168,
+    "max": 23.159,
+    "frac_within_member_spread": 0.888
+   },
+   "direct_greedy_mm": {
+    "p50": 0.252,
+    "p95": 0.954,
+    "max": 2.529,
+    "frac_within_member_spread": 0.969
+   },
+   "direct_sym_mm": {
+    "p50": 0.312,
+    "p95": 1.005,
+    "max": 2.591,
+    "frac_within_member_spread": 0.924
+   }
+  },
+  "note": ""
+ }
+}

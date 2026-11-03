@@ -1,0 +1,26 @@
+# The 3D tracer scene (paper/fig_tracer_3d.py of the analysis; the release's figure script of the same name): pyvista on a headless
+# VTK (the OSMesa wheel from wheels.vtk.org: no display, no GPU needed) and imageio-ffmpeg for the rotation video. Pinned to the
+# versions that rendered the figure of record (3 Nov 2026). The OSMesa wheel is not on PyPI, so the VTK line needs the extra index:
+#     conda env create -f env/viz3d.yml && conda activate linc-viz3d
+#     pip install --no-cache-dir "vtk-osmesa==9.3.1" --extra-index-url https://wheels.vtk.org
+#     pip install --no-deps "pyvista==0.44.2"
+# (pyvista's own dependency "vtk" would pull the display-bound VTK from PyPI, so it is installed without dependencies after the OSMesa
+# wheel; the remaining dependencies are listed below.)
+name: linc-viz3d
+channels: [conda-forge]
+dependencies:
+  - python=3.11
+  - pyyaml                         # linc.paths reads configs/products_*.yaml
+  - pip
+  - pip:
+      - numpy==2.4.6
+      - scipy==1.17.1
+      - nibabel==5.4.2
+      - scikit-image==0.26.0
+      - matplotlib==3.11.2
+      - pillow
+      - pooch
+      - scooby
+      - typing_extensions
+      - imageio==2.37.0
+      - imageio-ffmpeg==0.6.0

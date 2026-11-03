@@ -1,0 +1,246 @@
+{
+ "data": {
+  "method": [
+   "question \"for MF5-MF7, 'b0 0.5 mm, T2': is the T2 also 0.5 mm?\".",
+   "  MRI         for the 13 photographed brains with MRI: the voxel size (mm, from the NIfTI header) of the b0 image used",
+   "              (data/_lcn_src/data/curated/<S>/dwi_b0.nii.gz) and, where present, of the T2-weighted image (the multi-echo spin-echo",
+   "              series, msme_echo_denoised_debiased.nii.gz, and its raw echo msme_denoised_las_echo.nii.gz); bf_cohort's mri_voxel_mm and",
+   "              t2_available for comparison. MF1-MF4 (Gong et al. 2026 acquisitions) are not re-read here.",
+   "  Histology   brains with registered histology pieces (registration_qc_histo2bf_20261001, family histo2bf, latest rows).",
+   "  Tracer      cases in tracer_template_current_all (summary.brains).",
+   "  LGN/STN     subjects in lgnstn_geometry_current.",
+   "-> paper/numbers/table_specimens_check_r054.json",
+   "    mri/env/mmorf/bin/python paper/scripts/table_specimens_check_r054.py"
+  ],
+  "mri": {
+   "MF275": {
+    "b0_voxel_mm": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "t2_voxel_mm": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "t2_raw_echo_voxel_mm": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "cohort_mri_voxel_mm": 0.5,
+    "cohort_t2_available": true,
+    "cohort_tier": "0.5 mm b0 + T2"
+   },
+   "MF278": {
+    "b0_voxel_mm": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "t2_voxel_mm": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "t2_raw_echo_voxel_mm": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "cohort_mri_voxel_mm": 0.5,
+    "cohort_t2_available": true,
+    "cohort_tier": "0.5 mm b0 + T2"
+   },
+   "MF282": {
+    "b0_voxel_mm": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "t2_voxel_mm": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "t2_raw_echo_voxel_mm": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "cohort_mri_voxel_mm": 0.5,
+    "cohort_t2_available": true,
+    "cohort_tier": "0.5 mm b0 + T2"
+   },
+   "MR243": {
+    "b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "t2_voxel_mm": null,
+    "t2_raw_echo_voxel_mm": null,
+    "cohort_mri_voxel_mm": 0.7,
+    "cohort_t2_available": false,
+    "cohort_tier": "0.7 mm b0"
+   },
+   "MR249": {
+    "b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "t2_voxel_mm": null,
+    "t2_raw_echo_voxel_mm": null,
+    "cohort_mri_voxel_mm": 0.7,
+    "cohort_t2_available": false,
+    "cohort_tier": "0.7 mm b0"
+   },
+   "MR250": {
+    "b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "t2_voxel_mm": null,
+    "t2_raw_echo_voxel_mm": null,
+    "cohort_mri_voxel_mm": 0.7,
+    "cohort_t2_available": false,
+    "cohort_tier": "0.7 mm b0"
+   },
+   "MR251": {
+    "b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "t2_voxel_mm": null,
+    "t2_raw_echo_voxel_mm": null,
+    "cohort_mri_voxel_mm": 0.7,
+    "cohort_t2_available": false,
+    "cohort_tier": "0.7 mm b0"
+   },
+   "MR252": {
+    "b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "t2_voxel_mm": null,
+    "t2_raw_echo_voxel_mm": null,
+    "cohort_mri_voxel_mm": 0.7,
+    "cohort_t2_available": false,
+    "cohort_tier": "0.7 mm b0"
+   },
+   "MR253": {
+    "b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "t2_voxel_mm": null,
+    "t2_raw_echo_voxel_mm": null,
+    "cohort_mri_voxel_mm": 0.7,
+    "cohort_t2_available": false,
+    "cohort_tier": "0.7 mm b0"
+   },
+   "MR254": {
+    "b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "t2_voxel_mm": null,
+    "t2_raw_echo_voxel_mm": null,
+    "cohort_mri_voxel_mm": 0.7,
+    "cohort_t2_available": false,
+    "cohort_tier": "0.7 mm b0"
+   },
+   "MR256": {
+    "b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "t2_voxel_mm": null,
+    "t2_raw_echo_voxel_mm": null,
+    "cohort_mri_voxel_mm": 0.7,
+    "cohort_t2_available": false,
+    "cohort_tier": "0.7 mm b0"
+   },
+   "MR257": {
+    "b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "t2_voxel_mm": null,
+    "t2_raw_echo_voxel_mm": null,
+    "cohort_mri_voxel_mm": 0.7,
+    "cohort_t2_available": false,
+    "cohort_tier": "0.7 mm b0"
+   },
+   "MR261": {
+    "b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "t2_voxel_mm": null,
+    "t2_raw_echo_voxel_mm": null,
+    "cohort_mri_voxel_mm": 0.7,
+    "cohort_t2_available": false,
+    "cohort_tier": "0.7 mm b0"
+   }
+  },
+  "histology_subjects": [
+   "MF191",
+   "MF191_LY",
+   "MF196_FS",
+   "MF196_LY",
+   "MF204_FR",
+   "MF204_LY",
+   "MF275",
+   "MF278",
+   "MR243",
+   "MR244_LY",
+   "MR252",
+   "MR252_preinp",
+   "MR253_FS",
+   "MR253_LY",
+   "MR254_FR",
+   "MR254_LY",
+   "MR256",
+   "MR256_preinp",
+   "MR257_FR",
+   "MR257_LY",
+   "MR263_LY",
+   "MR273_FR",
+   "MR273_FS"
+  ],
+  "tracer_cases": [
+   "MR243",
+   "MR252",
+   "MR256",
+   "MF191"
+  ],
+  "lgnstn_subjects": [
+   "MR243",
+   "MR252",
+   "MR256"
+  ],
+  "t2_brains": [
+   "MF275",
+   "MF278",
+   "MF282"
+  ],
+  "t2_voxel_mm_of_t2_brains": [
+   [
+    0.5,
+    0.5,
+    0.5
+   ]
+  ]
+ }
+}

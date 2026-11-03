@@ -1,0 +1,127 @@
+# MRI template construction recipe (paper Methods, "Symmetric groupwise construction").
+# MMORF 1.0.1 run through the multimodal groupwise template driver: four brains plus their exact left-right mirrors (8 inputs), so the
+# template is symmetric by construction. The schedule is the UK Biobank / Oxford-MM 1 mm recipe rescaled to 0.25 mm data: in voxel units
+# the coarsest knot spacing, the finest knot spacing (1 voxel) and the lambda_reg series match the upstream recipe, with two extra steps
+# for the two extra octaves of resolution.
+# Read by reproduce/numbers/mri_recipe.py, which checks every value below against the configs the template was built with.
+
+run: mmsym_model_dti_v                     # construction run of record (folder under the products key mri_runs)
+inputs: [MF283, MF284, MF285, MF286]       # MF1-MF4; each enters twice (as acquired and mirrored)
+
+# --- nonlinear schedule (Methods, "Symmetric groupwise construction") ---
+n_steps: 8                                 # nonlinear steps; step s runs s + 1 resolution levels (coarse to fine)
+iterations_per_step: 3                     # template-update iterations per step
+warp_res_init_mm: 16                       # knot spacing of the coarsest level (64 voxels at 0.25 mm)
+warp_scaling: [1, 1, 1, 2, 2, 2, 2, 2, 2]  # knot-spacing divisor per level: 16 mm three times, then halved to 0.25 mm (1 voxel)
+lambda_reg: [4.0e+5, 3.7e-1, 3.1e-1, 2.6e-1, 2.2e-1, 1.8e-1, 1.5e-1, 1.2e-1, 1.0e-1]   # bending-energy weight per level, before scaling
+lambda_scale: 10.0                         # multiplies every lambda_reg term except the first (near-rigid) one: a single stiffening factor
+fwhm_mm: [4.0, 2.0, 1.0, 0.5, 0.25, 0.125, 0.0625, 0.05, 0.05]   # Gaussian smoothing per level, every modality
+hires_mm: 1.9                              # levels with knot spacing below this use the high-resolution optimizer budget
+optimiser_max_it_lowres: 15
+optimiser_max_it_hires: 20
+bias_res_init_mm: 8                        # bias-field knot spacing (bias estimated for T2 only)
+lambda_bias_reg: 1.0e+8
+
+# --- channels and their weights (Methods, "Symmetric groupwise construction") ---
+scalar_modalities:                         # in driver order
+  - {name: T2M, weight: 1.0, quantitative: false}      # T2-weighted image
+  - {name: FRAC1M, weight: 0.5, quantitative: true}    # microstructure fraction 1 (no bias field, no intensity normalization)
+  - {name: FRAC2M, weight: 0.5, quantitative: true}    # microstructure fraction 2
+tensor_modalities:
+  - {name: DTIV, weight: 1.0}                          # diffusion tensor, registered with reorientation
+
+# --- cost-function masks ---
+cost_mask_scalar: 0                        # off for scalar channels: the zero-to-tissue edge of the brain-extracted images is signal
+cost_mask_tensor: 1                        # on for the tensor: its cost is otherwise dominated by the brain-edge contrast
+fwhm_floor_applied: false                  # the per-resolution smoothing floor below was evaluated but not applied in the run of record
+
+# --- smoothing floor per native resolution (reported for comparison) ---
+# FWHM of the Gaussian whose MTF is 0.5 at the measured effective bandwidth f_eff of data at that resolution: FWHM = 0.4413 / f_eff.
+# f_eff (cycles/mm) = the 2x-noise-floor crossing of radially averaged power spectra.
+fwhm_floor_mtf_constant: 0.4413
+fwhm_floor_f_eff_cyc_per_mm: {0.25: 1.485, 0.5: 0.785, 0.7: 0.575}
+
+# =====================================================================================================================================
+# Added with the release port of the construction code (linc/construction/*.py). Nothing above changed. The values below are the
+# analysis project's constants of record for the released MRI channels.
+rebuild_run: rb_final                      # the construction run of the released channels: the recipe above (its configs are byte-identical
+                                           # to `run`'s), rebuilt from the inputs prepared with the author's final brain masks (mri_prep.py)
+tools: {fsl: "6.0.7.4", mmorf: "1.0.1", ants: "2.5.4", mrtrix: "3.0.2"}   # checked by linc/construction/tools.py
+
+# --- canonical frame: rigid placement in the NMT v2 stereotaxic frame (Methods, "Symmetric groupwise construction") ---
+canonical:
+  box: [256, 320, 192]                     # canonical grid in voxels (64 x 80 x 48 mm)
+  vx_mm: 0.25
+  origin_mm: [-31.875, -30.0, -7.5]        # world RAS of voxel (0,0,0): NMT_v2.0_sym's grid shifted by (0, -9, +2) voxels; flip axis at x = 0
+  ac_target_mm: [0.0, 19.512, 15.454]      # NMT_v2.0_sym's AC (midline-restricted centroid of SARM level-6 label 59): the AC's y and z go here
+  sarm_labels: {AC: 59, PC: 158}           # SARM level-6 labels of the anterior and posterior commissures
+  landmark_midline_vox: 2                  # AC/PC = centroid of the label voxels within this many voxels of the mid-sagittal column,
+  landmark_midline_min_vox: 20             # when there are at least this many (otherwise all label voxels)
+  plane_step_mm: 0.5                       # the mid-sagittal plane is fitted on a copy resampled to this spacing
+  plane_max_restarts: 8                    # Nelder-Mead restarted from its optimum until the mirror correlation gains less than plane_tol
+  plane_tol: 1.0e-4
+  plane_max_landmark_dev_mm: 1.5           # the fitted plane is kept only if AC and PC lie within this distance of it
+  norm_max: 4095.0                         # anatomical channels: 1-99 percentile inside the mask rescaled to (norm_eps, norm_max], 0 outside
+  norm_eps: 1.0e-3
+  compositional_floor: 1.0e-3              # frac1 + frac2 renormalized to 1 where their sum exceeds this, 0 elsewhere
+
+# --- per-brain input preparation (Methods, "MRI preprocessing") ---
+prep:
+  layout:                                  # per-brain MRI files, relative to the brain's MRI folder (default $LINC_DATA/sub-<ID>/mri)
+    b0: dwi/b0.nii.gz                      # diffusion b0, 0.25 mm: every brain's reference grid
+    b0_n4_brain: dwi/b0_brain_n4.nii.gz    # b0 x dwi hand mask, N4-corrected, normalized
+    b0_n4_bias: dwi/b0_brain_n4_bias.nii.gz
+    dwi_mask: masks/dwi_brain_mask.nii.gz
+    t2_echo: t2/echo.nii.gz                # echo 5 of the 32-echo MSME (0.5 mm)
+    t2_head: t2/echo_n4.nii.gz
+    t2_brain: t2/echo_n4_brain.nii.gz
+    t2_mask: masks/t2_brain_mask.nii.gz
+    micro_b0: micro/b0.nii.gz              # SANDI session b0 (0.5 mm)
+    frac1_raw: micro/frac1_brain.nii.gz
+    frac2_raw: micro/frac2_brain.nii.gz
+    std1_raw: micro/std1_brain.nii.gz
+    std2_raw: micro/std2_brain.nii.gz
+    frac1: micro/frac1_brain_norm.nii.gz   # SANDI fractions renormalized to sum 1 inside the micro hand mask
+    frac2: micro/frac2_brain_norm.nii.gz
+    micro_mask: masks/micro_brain_mask.nii.gz
+    # the build driver's inputs (reproduce/templates/build_mri_channels.py; added 3 Nov 2026, the names above unchanged):
+    final_mask: masks/final_brain_mask.nii.gz   # the final hand-edited brain mask on the b0 grid, values {0, 1} (<ID>_mask_EDIT of the data release)
+    sarm_in_subject: landmarks/SARM6_in_subject.nii.gz   # SARM level-6 labels carried onto the b0 grid (NMT registered to the b0)
+    nmt_affine: landmarks/nmt_affine_0GenericAffine.mat  # the subject -> NMT_v2.0_sym ITK affine of that registration
+    dwi_eddy: dwi/raw/dwi_eddycorrect.nii.gz    # the D9 tensor's inputs: the denoised, eddy_correct-ed series (all volumes) and its log
+    dwi_ecclog: dwi/raw/dwi_eddycorrect.ecclog
+    dwi_bvecs: dwi/raw/dwi.bvecs                # the acquired gradient table
+    dwi_bvals: dwi/raw/dwi.bvals
+    dwi_fit_mask: dwi/raw/fit_brain_mask.nii.gz # the fit support of the reconstruction's dtifit
+  within_mri_xfm: {t2: t2-native__to__b0-native, micro: micro-native__to__b0-native}   # $LINC_DATA/sub-<ID>/xfm/<name>/ (one warp each)
+  t2_echo_index: 4                         # 0-based echo of the MSME used as the T2 image
+  n4: {fit_grid_mm: 0.5, bspline: "[60,3]", convergence: "[80x60x40,1e-7]"}
+  frac_eps: 1.0e-6
+  tensor_bmax: 4800                        # D9 tensor: dtifit on the volumes with b <= 4800 (1 b0 + 42 DWIs)
+
+# --- run assembly (linc/construction/mmorf_run.py) ---
+run_assembly:
+  input_files:                             # construction inputs: <prep dir>/<name>{,_flip}.nii.gz
+    T2M: {brain: t2_modelmask, mask: model_mask}
+    FRAC1M: {brain: frac1, mask: model_mask}
+    FRAC2M: {brain: frac2, mask: model_mask}
+    DTIV: {tensor: tensor_vr, mask: model_mask}
+  ini_spelling: {lambda_reg_first: "4.0e5", lambda_bias_reg: "1e8"}   # how the run's .ini files spell these two values (same numbers)
+  upstream: {repo: "https://git.fmrib.ox.ac.uk/cart/mm-template-construction.git", commit: f4907f431e453a24e74da492f6df47fd96a5bc05,
+             dir: template_construction_v1}  # the driver (patched: linc/construction/patches/) and its tempconfig/data_structure.tree
+  driver_args: {dof: 6, n_resolutions: 8, n_iterations: 3, cpuq: cpu.q, gpuq: gpu.q}
+  batch_of_record: [8, 8, 8, 8, 8, 4, 4, 3]   # concurrent MMORF tasks per step on one 48 GB card (scheduling only; no effect on results)
+
+# --- template channels (linc/construction/channels.py) ---
+channels:
+  step: 8                                  # the construction warps of record: step 8, iteration 3
+  iteration: 3
+  interp: {scalar: spline, mask: trilinear}
+  mask_threshold: 0.5                      # warped model masks >= this weight an input
+  intensity_mean: 1000.0                   # T2 and b0: each input scaled to this mean over the all-inputs overlap
+  core_threshold: 0.999                    # core masks: full coverage, eroded
+  core_erode_vox: 6
+  wm_fa_threshold: 0.25
+  tensor_log_floor_rel_md: 1.0e-6          # eigenvalue floor of the log-Euclidean mean, times the median MD
+  acceptance: {t2_r_min: 0.99, v1_median_deg_max: 2.0, tensor_symmetry_abs: 1.0e-18}
+  prefix: linc_mri

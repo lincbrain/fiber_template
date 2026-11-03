@@ -1,0 +1,215 @@
+{
+ "data": {
+  "what": "step 2: d3p_lso (trained on the S2 dev pseudo-b0) vs d3_lso, both fed the pseudo-b0, on the 12 withheld slabs",
+  "rule": "Use d3p for the 8 if d3p_lso with pseudo inputs beats d3_lso with pseudo inputs on the 12 withheld slabs, paired by brain, by a mean SSIM gain whose 95 % CI lies above 0. Otherwise: d3_full as is, with the gap stated. Report per animal too (fascicularis vs rhesus), and the remaining gap to the own-b0 ceiling. One model for all 8 either way. (decision of 4 Oct)",
+  "decision": "d3p (train d3p_full on the PROD pseudo-b0s; complete the 8 with it)",
+  "use_d3p": true,
+  "per_brain": {
+   "MF278": {
+    "animal": "fascicularis",
+    "d3p_pseudo": 0.6574287170713599,
+    "d3_pseudo": 0.6242470145225525,
+    "d3_own": 0.6335409410072096,
+    "gain": 0.03318170254880737,
+    "remaining_gap_to_own": 0.023887776064150268,
+    "l1": {
+     "d3p_pseudo": 0.11667869240045547,
+     "d3_pseudo": 0.11066428571939468,
+     "d3_own": 0.1110696792602539
+    }
+   },
+   "MF282": {
+    "animal": "fascicularis",
+    "d3p_pseudo": 0.7365177227001564,
+    "d3_pseudo": 0.7218937955650628,
+    "d3_own": 0.743752146468443,
+    "gain": 0.014623927135093528,
+    "remaining_gap_to_own": -0.007234423768286646,
+    "l1": {
+     "d3p_pseudo": 0.09344356507062912,
+     "d3_pseudo": 0.08461116999387741,
+     "d3_own": 0.08651763200759888
+    }
+   },
+   "MR243": {
+    "animal": "rhesus",
+    "d3p_pseudo": 0.6074514426290989,
+    "d3_pseudo": 0.5772253796458244,
+    "d3_own": 0.7146128204961618,
+    "gain": 0.03022606298327446,
+    "remaining_gap_to_own": -0.10716137786706292,
+    "l1": {
+     "d3p_pseudo": 0.10733950883150101,
+     "d3_pseudo": 0.11334969848394394,
+     "d3_own": 0.07863674312829971
+    }
+   },
+   "MR249": {
+    "animal": "rhesus",
+    "d3p_pseudo": 0.5502133987568043,
+    "d3_pseudo": 0.5056515722363083,
+    "d3_own": 0.7241321802139282,
+    "gain": 0.044561826520496006,
+    "remaining_gap_to_own": -0.17391878145712392,
+    "l1": {
+     "d3p_pseudo": 0.1301097720861435,
+     "d3_pseudo": 0.13963615894317627,
+     "d3_own": 0.08804123848676682
+    }
+   },
+   "MR250": {
+    "animal": "rhesus",
+    "d3p_pseudo": 0.5510487953821818,
+    "d3_pseudo": 0.5111009601284476,
+    "d3_own": 0.6964204486678628,
+    "gain": 0.03994783525373413,
+    "remaining_gap_to_own": -0.14537165328568102,
+    "l1": {
+     "d3p_pseudo": 0.13164779543876648,
+     "d3_pseudo": 0.13904888927936554,
+     "d3_own": 0.09295354783535004
+    }
+   },
+   "MR251": {
+    "animal": "rhesus",
+    "d3p_pseudo": 0.6304146187646048,
+    "d3_pseudo": 0.5988031693867275,
+    "d3_own": 0.686651451247079,
+    "gain": 0.0316114493778773,
+    "remaining_gap_to_own": -0.05623683248247424,
+    "l1": {
+     "d3p_pseudo": 0.11882095783948898,
+     "d3_pseudo": 0.11915554851293564,
+     "d3_own": 0.10257308930158615
+    }
+   },
+   "MR252": {
+    "animal": "rhesus",
+    "d3p_pseudo": 0.5131530144384929,
+    "d3_pseudo": 0.4853849070412772,
+    "d3_own": 0.6513324230909348,
+    "gain": 0.027768107397215747,
+    "remaining_gap_to_own": -0.13817940865244183,
+    "l1": {
+     "d3p_pseudo": 0.12508165836334229,
+     "d3_pseudo": 0.12451860308647156,
+     "d3_own": 0.0922837182879448
+    }
+   },
+   "MR253": {
+    "animal": "rhesus",
+    "d3p_pseudo": 0.5587550091246763,
+    "d3_pseudo": 0.5320884504665931,
+    "d3_own": 0.546974305373927,
+    "gain": 0.026666558658083206,
+    "remaining_gap_to_own": 0.011780703750749355,
+    "l1": {
+     "d3p_pseudo": 0.12137265503406525,
+     "d3_pseudo": 0.12903395295143127,
+     "d3_own": 0.11767692863941193
+    }
+   },
+   "MR254": {
+    "animal": "rhesus",
+    "d3p_pseudo": 0.6119324976205825,
+    "d3_pseudo": 0.5888773626089097,
+    "d3_own": 0.7176872372627259,
+    "gain": 0.02305513501167289,
+    "remaining_gap_to_own": -0.10575473964214333,
+    "l1": {
+     "d3p_pseudo": 0.10090718418359756,
+     "d3_pseudo": 0.11059903353452682,
+     "d3_own": 0.0842147022485733
+    }
+   },
+   "MR256": {
+    "animal": "rhesus",
+    "d3p_pseudo": 0.512486170977354,
+    "d3_pseudo": 0.49648001311080797,
+    "d3_own": 0.7052872202226094,
+    "gain": 0.016006157866546078,
+    "remaining_gap_to_own": -0.19280104924525532,
+    "l1": {
+     "d3p_pseudo": 0.11865504831075668,
+     "d3_pseudo": 0.12080411612987518,
+     "d3_own": 0.08022843301296234
+    }
+   },
+   "MR257": {
+    "animal": "rhesus",
+    "d3p_pseudo": 0.6371115945279598,
+    "d3_pseudo": 0.6047993555665017,
+    "d3_own": 0.7487770840525627,
+    "gain": 0.032312238961458184,
+    "remaining_gap_to_own": -0.11166548952460287,
+    "l1": {
+     "d3p_pseudo": 0.10125341266393661,
+     "d3_pseudo": 0.10645661503076553,
+     "d3_own": 0.07952524721622467
+    }
+   },
+   "MR261": {
+    "animal": "rhesus",
+    "d3p_pseudo": 0.4632128338728632,
+    "d3_pseudo": 0.4557830850992884,
+    "d3_own": 0.635373728615897,
+    "gain": 0.007429748773574829,
+    "remaining_gap_to_own": -0.1721608947430338,
+    "l1": {
+     "d3p_pseudo": 0.13588494062423706,
+     "d3_pseudo": 0.12811920046806335,
+     "d3_own": 0.10178975760936737
+    }
+   }
+  },
+  "summary": {
+   "all": {
+    "n": 12,
+    "mean_gain": 0.02728256254065281,
+    "ci95_gain": [
+     0.021279236472874823,
+     0.03281745601821535
+    ],
+    "mean_remaining_gap_to_own": -0.09790134757110051,
+    "ci95_remaining_gap": [
+     -0.1367971457843618,
+     -0.057383464509674846
+    ],
+    "mean_d3p_pseudo": 0.5858104846555113,
+    "mean_d3_pseudo": 0.5585279221148584,
+    "mean_d3_own": 0.6837118322266118
+   },
+   "fascicularis": {
+    "n": 2,
+    "brains": [
+     "MF278",
+     "MF282"
+    ],
+    "mean_gain": 0.023902814841950448,
+    "mean_remaining_gap_to_own": 0.00832667614793181,
+    "ci95_gain": null
+   },
+   "rhesus": {
+    "n": 10,
+    "brains": [
+     "MR243",
+     "MR249",
+     "MR250",
+     "MR251",
+     "MR252",
+     "MR253",
+     "MR254",
+     "MR256",
+     "MR257",
+     "MR261"
+    ],
+    "mean_gain": 0.027958512080393284,
+    "mean_remaining_gap_to_own": -0.11914695231490699,
+    "ci95_gain": [
+     0.021269086048452065,
+     0.03410155993596788
+    ]
+   }
+  }
+ }
+}

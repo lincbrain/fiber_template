@@ -1,0 +1,475 @@
+{
+ "data": {
+  "what": "the caudal extent each sectioned brain's blockface volume lacks (mm along the section normal, % of brain)",
+  "definitions": {
+   "unphotographed_mm": "brain's caudal end to its most caudal photographed plane (no photograph at all)",
+   "synthesized_mm": "brain's caudal end to the junction plane: the synthesized caudal end (unphotographed + the incomplete last photographed sections, junction_from_photographed_end_mm)",
+   "synthesized_caudal_pct": "brain volume caudal of the junction plane / brain volume (section-aligned 0.25 mm grid)",
+   "synthesized_share_pct": "all synthesized voxels / brain voxels on the 0.25 mm product grid (d3_predicted_share; includes the rim of brain outside the photographed outline rostral of the junction plane)",
+   "brain_extent": "brain mask of the b0 (brains with MRI, minus MRI tissue the photographs lack) or the template's brain mask carried into the brain (brains without MRI: an estimate)"
+  },
+  "per_brain": {
+   "MF278": {
+    "name": "MF5",
+    "species": "M. fascicularis",
+    "mri": "own b0",
+    "unphotographed_mm": 11.75,
+    "synthesized_mm": 13.75,
+    "junction_from_photographed_end_mm": 2.0,
+    "synthesized_caudal_pct": 13.28,
+    "synthesized_caudal_ml": 7.166,
+    "synthesized_share_pct": 15.99,
+    "batch": "d3_mf278"
+   },
+   "MF275": {
+    "name": "MF6",
+    "species": "M. fascicularis",
+    "mri": "own b0",
+    "unphotographed_mm": 15.75,
+    "synthesized_mm": 17.75,
+    "junction_from_photographed_end_mm": 2.0,
+    "synthesized_caudal_pct": 23.6,
+    "synthesized_caudal_ml": 12.773,
+    "synthesized_share_pct": 26.24,
+    "batch": "d2_mf275"
+   },
+   "MF282": {
+    "name": "MF7",
+    "species": "M. fascicularis",
+    "mri": "own b0",
+    "unphotographed_mm": 12.5,
+    "synthesized_mm": 16.0,
+    "junction_from_photographed_end_mm": 3.5,
+    "synthesized_caudal_pct": 18.02,
+    "synthesized_caudal_ml": 11.291,
+    "synthesized_share_pct": 20.38,
+    "batch": "1c2_a"
+   },
+   "MF191": {
+    "name": "MF8",
+    "species": "M. fascicularis",
+    "mri": "none (stand-in b0)",
+    "unphotographed_mm": 11.5,
+    "synthesized_mm": 13.25,
+    "junction_from_photographed_end_mm": 1.75,
+    "synthesized_caudal_pct": 7.91,
+    "synthesized_caudal_ml": 4.488,
+    "synthesized_share_pct": 9.05,
+    "batch": "d3n_prod"
+   },
+   "MF196": {
+    "name": "MF9",
+    "species": "M. fascicularis",
+    "mri": "none (stand-in b0)",
+    "unphotographed_mm": 14.0,
+    "synthesized_mm": 15.75,
+    "junction_from_photographed_end_mm": 1.75,
+    "synthesized_caudal_pct": 9.9,
+    "synthesized_caudal_ml": 9.501,
+    "synthesized_share_pct": 10.75,
+    "batch": "d3n_prod"
+   },
+   "MF204": {
+    "name": "MF10",
+    "species": "M. fascicularis",
+    "mri": "none (stand-in b0)",
+    "unphotographed_mm": 14.0,
+    "synthesized_mm": 15.75,
+    "junction_from_photographed_end_mm": 1.75,
+    "synthesized_caudal_pct": 13.99,
+    "synthesized_caudal_ml": 9.607,
+    "synthesized_share_pct": 14.91,
+    "batch": "d3n_prod"
+   },
+   "MR243": {
+    "name": "MM1",
+    "species": "M. mulatta",
+    "mri": "own b0",
+    "unphotographed_mm": 11.5,
+    "synthesized_mm": 13.5,
+    "junction_from_photographed_end_mm": 2.0,
+    "synthesized_caudal_pct": 11.73,
+    "synthesized_caudal_ml": 8.708,
+    "synthesized_share_pct": 14.09,
+    "batch": "1c2_a"
+   },
+   "MR252": {
+    "name": "MM2",
+    "species": "M. mulatta",
+    "mri": "own b0",
+    "unphotographed_mm": 10.0,
+    "synthesized_mm": 12.0,
+    "junction_from_photographed_end_mm": 2.0,
+    "synthesized_caudal_pct": 7.63,
+    "synthesized_caudal_ml": 6.214,
+    "synthesized_share_pct": 9.94,
+    "batch": "1c2_c"
+   },
+   "MR256": {
+    "name": "MM3",
+    "species": "M. mulatta",
+    "mri": "own b0",
+    "unphotographed_mm": 11.0,
+    "synthesized_mm": 12.75,
+    "junction_from_photographed_end_mm": 1.75,
+    "synthesized_caudal_pct": 11.03,
+    "synthesized_caudal_ml": 7.605,
+    "synthesized_share_pct": 13.17,
+    "batch": "1c2_c"
+   },
+   "MR249": {
+    "name": "MM4",
+    "species": "M. mulatta",
+    "mri": "own b0",
+    "unphotographed_mm": 10.25,
+    "synthesized_mm": 12.25,
+    "junction_from_photographed_end_mm": 2.0,
+    "synthesized_caudal_pct": 8.68,
+    "synthesized_caudal_ml": 6.746,
+    "synthesized_share_pct": 11.28,
+    "batch": "1c2_c"
+   },
+   "MR250": {
+    "name": "MM5",
+    "species": "M. mulatta",
+    "mri": "own b0",
+    "unphotographed_mm": 12.5,
+    "synthesized_mm": 14.25,
+    "junction_from_photographed_end_mm": 1.75,
+    "synthesized_caudal_pct": 11.2,
+    "synthesized_caudal_ml": 9.265,
+    "synthesized_share_pct": 13.11,
+    "batch": "1c2_a"
+   },
+   "MR251": {
+    "name": "MM6",
+    "species": "M. mulatta",
+    "mri": "own b0",
+    "unphotographed_mm": 10.75,
+    "synthesized_mm": 12.75,
+    "junction_from_photographed_end_mm": 2.0,
+    "synthesized_caudal_pct": 10.45,
+    "synthesized_caudal_ml": 6.69,
+    "synthesized_share_pct": 13.09,
+    "batch": "1c2_a"
+   },
+   "MR253": {
+    "name": "MM7",
+    "species": "M. mulatta",
+    "mri": "own b0",
+    "unphotographed_mm": 10.75,
+    "synthesized_mm": 12.5,
+    "junction_from_photographed_end_mm": 1.75,
+    "synthesized_caudal_pct": 8.44,
+    "synthesized_caudal_ml": 4.825,
+    "synthesized_share_pct": 10.81,
+    "batch": "1c2_a"
+   },
+   "MR254": {
+    "name": "MM8",
+    "species": "M. mulatta",
+    "mri": "own b0",
+    "unphotographed_mm": 15.5,
+    "synthesized_mm": 17.25,
+    "junction_from_photographed_end_mm": 1.75,
+    "synthesized_caudal_pct": 15.76,
+    "synthesized_caudal_ml": 13.144,
+    "synthesized_share_pct": 18.34,
+    "batch": "1c2_d"
+   },
+   "MR257": {
+    "name": "MM9",
+    "species": "M. mulatta",
+    "mri": "own b0",
+    "unphotographed_mm": 14.5,
+    "synthesized_mm": 16.5,
+    "junction_from_photographed_end_mm": 2.0,
+    "synthesized_caudal_pct": 14.93,
+    "synthesized_caudal_ml": 10.669,
+    "synthesized_share_pct": 17.2,
+    "batch": "1c2_b"
+   },
+   "MR261": {
+    "name": "MM10",
+    "species": "M. mulatta",
+    "mri": "own b0",
+    "unphotographed_mm": 10.25,
+    "synthesized_mm": 12.25,
+    "junction_from_photographed_end_mm": 2.0,
+    "synthesized_caudal_pct": 7.75,
+    "synthesized_caudal_ml": 5.333,
+    "synthesized_share_pct": 10.11,
+    "batch": "1c2_c"
+   },
+   "MR244": {
+    "name": "MM11",
+    "species": "M. mulatta",
+    "mri": "none (stand-in b0)",
+    "unphotographed_mm": 13.75,
+    "synthesized_mm": 15.5,
+    "junction_from_photographed_end_mm": 1.75,
+    "synthesized_caudal_pct": 12.54,
+    "synthesized_caudal_ml": 8.822,
+    "synthesized_share_pct": 13.31,
+    "batch": "d3n_prod"
+   },
+   "MR247": {
+    "name": "MM12",
+    "species": "M. mulatta",
+    "mri": "none (stand-in b0)",
+    "unphotographed_mm": 10.5,
+    "synthesized_mm": 12.25,
+    "junction_from_photographed_end_mm": 1.75,
+    "synthesized_caudal_pct": 8.84,
+    "synthesized_caudal_ml": 6.147,
+    "synthesized_share_pct": 9.69,
+    "batch": "d3n_prod"
+   },
+   "MR248": {
+    "name": "MM13",
+    "species": "M. mulatta",
+    "mri": "none (stand-in b0)",
+    "unphotographed_mm": 12.25,
+    "synthesized_mm": 14.0,
+    "junction_from_photographed_end_mm": 1.75,
+    "synthesized_caudal_pct": 12.12,
+    "synthesized_caudal_ml": 7.071,
+    "synthesized_share_pct": 13.06,
+    "batch": "d3n_prod"
+   },
+   "MR263": {
+    "name": "MM14",
+    "species": "M. mulatta",
+    "mri": "none (stand-in b0)",
+    "unphotographed_mm": 8.75,
+    "synthesized_mm": 10.5,
+    "junction_from_photographed_end_mm": 1.75,
+    "synthesized_caudal_pct": 5.04,
+    "synthesized_caudal_ml": 3.562,
+    "synthesized_share_pct": 6.15,
+    "batch": "d3n_prod"
+   },
+   "MR273": {
+    "name": "MM15",
+    "species": "M. mulatta",
+    "mri": "none (stand-in b0)",
+    "unphotographed_mm": 9.5,
+    "synthesized_mm": 11.25,
+    "junction_from_photographed_end_mm": 1.75,
+    "synthesized_caudal_pct": 4.02,
+    "synthesized_caudal_ml": 3.49,
+    "synthesized_share_pct": 4.98,
+    "batch": "d3n_prod"
+   }
+  },
+  "groups": {
+   "mri": {
+    "n": 13,
+    "brains": [
+     "MF5",
+     "MF6",
+     "MF7",
+     "MM1",
+     "MM2",
+     "MM3",
+     "MM4",
+     "MM5",
+     "MM6",
+     "MM7",
+     "MM8",
+     "MM9",
+     "MM10"
+    ],
+    "unphotographed_mm": {
+     "n": 13,
+     "median": 11.5,
+     "iqr": [
+      10.75,
+      12.5
+     ],
+     "min": 10.0,
+     "max": 15.75
+    },
+    "synthesized_mm": {
+     "n": 13,
+     "median": 13.5,
+     "iqr": [
+      12.5,
+      16.0
+     ],
+     "min": 12.0,
+     "max": 17.75
+    },
+    "junction_from_photographed_end_mm": {
+     "n": 13,
+     "median": 2.0,
+     "iqr": [
+      1.75,
+      2.0
+     ],
+     "min": 1.75,
+     "max": 3.5
+    },
+    "synthesized_caudal_pct": {
+     "n": 13,
+     "median": 11.2,
+     "iqr": [
+      8.68,
+      14.93
+     ],
+     "min": 7.63,
+     "max": 23.6
+    },
+    "synthesized_share_pct": {
+     "n": 13,
+     "median": 13.17,
+     "iqr": [
+      11.28,
+      17.2
+     ],
+     "min": 9.94,
+     "max": 26.24
+    }
+   },
+   "no_mri": {
+    "n": 8,
+    "brains": [
+     "MF8",
+     "MF9",
+     "MF10",
+     "MM11",
+     "MM12",
+     "MM13",
+     "MM14",
+     "MM15"
+    ],
+    "unphotographed_mm": {
+     "n": 8,
+     "median": 11.875,
+     "iqr": [
+      10.25,
+      13.8125
+     ],
+     "min": 8.75,
+     "max": 14.0
+    },
+    "synthesized_mm": {
+     "n": 8,
+     "median": 13.625,
+     "iqr": [
+      12.0,
+      15.5625
+     ],
+     "min": 10.5,
+     "max": 15.75
+    },
+    "junction_from_photographed_end_mm": {
+     "n": 8,
+     "median": 1.75,
+     "iqr": [
+      1.75,
+      1.75
+     ],
+     "min": 1.75,
+     "max": 1.75
+    },
+    "synthesized_caudal_pct": {
+     "n": 8,
+     "median": 9.370000000000001,
+     "iqr": [
+      7.1925,
+      12.225
+     ],
+     "min": 4.02,
+     "max": 13.99
+    },
+    "synthesized_share_pct": {
+     "n": 8,
+     "median": 10.219999999999999,
+     "iqr": [
+      8.325000000000001,
+      13.1225
+     ],
+     "min": 4.98,
+     "max": 14.91
+    }
+   },
+   "all": {
+    "n": 21,
+    "brains": [
+     "MF5",
+     "MF6",
+     "MF7",
+     "MF8",
+     "MF9",
+     "MF10",
+     "MM1",
+     "MM2",
+     "MM3",
+     "MM4",
+     "MM5",
+     "MM6",
+     "MM7",
+     "MM8",
+     "MM9",
+     "MM10",
+     "MM11",
+     "MM12",
+     "MM13",
+     "MM14",
+     "MM15"
+    ],
+    "unphotographed_mm": {
+     "n": 21,
+     "median": 11.5,
+     "iqr": [
+      10.5,
+      13.75
+     ],
+     "min": 8.75,
+     "max": 15.75
+    },
+    "synthesized_mm": {
+     "n": 21,
+     "median": 13.5,
+     "iqr": [
+      12.25,
+      15.75
+     ],
+     "min": 10.5,
+     "max": 17.75
+    },
+    "junction_from_photographed_end_mm": {
+     "n": 21,
+     "median": 1.75,
+     "iqr": [
+      1.75,
+      2.0
+     ],
+     "min": 1.75,
+     "max": 3.5
+    },
+    "synthesized_caudal_pct": {
+     "n": 21,
+     "median": 11.03,
+     "iqr": [
+      8.44,
+      13.28
+     ],
+     "min": 4.02,
+     "max": 23.6
+    },
+    "synthesized_share_pct": {
+     "n": 21,
+     "median": 13.09,
+     "iqr": [
+      10.11,
+      14.91
+     ],
+     "min": 4.98,
+     "max": 26.24
+    }
+   }
+  }
+ }
+}

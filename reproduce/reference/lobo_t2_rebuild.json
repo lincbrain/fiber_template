@@ -1,0 +1,435 @@
+{
+ "data": {
+  "method": [
+   "the held-out brain + its mirror vs the fold's 6 included inputs, ALL solved the same way (T2-only, the fold's step-8 schedule) against",
+   "the SAME target (the fold's step 8 iteration 01 T2 template). eval_heldout.py's method, with one deliberate difference stated: every",
+   "subject's map is composed as premat (its affine into the fold's standard space) + its raw MMORF warp, WITHOUT the fold's unbiasing",
+   "average_invwarp (the stopped folds have no complete iteration_02 average); the composition is identical for held-out and included, so",
+   "the comparison stays matched. Metrics (eval_heldout.score_one, inside the target template's brain mask): r, nmad, dice, jac_p1/p99,",
+   "jac_outside. Per fold: held-out mean minus included mean (paired within the fold, as eval_heldout insists).",
+   "-> paper/numbers/lobo_t2_rebuild.json (a saved script recomputes every value; the 17 Sep LOBO (a) record is quoted as context)",
+   "    mri/env/mmorf/bin/python mri/code/eval_lobo_t2.py [compose|score|all]"
+  ],
+  "folds": [
+   {
+    "fold": "rb_lobo_MF283",
+    "target": "nln_step_08/iteration_01",
+    "rows": [
+     {
+      "r": 0.949457704245114,
+      "nmad": 0.12828291952610016,
+      "dice": 0.9879262481468564,
+      "jac_p1": 0.6417503356933594,
+      "jac_p99": 1.637069821357727,
+      "jac_outside": 0.48272641908259317,
+      "subject": "MF283",
+      "group": "held-out"
+     },
+     {
+      "r": 0.9497121363032942,
+      "nmad": 0.12814801931381226,
+      "dice": 0.9879467150548348,
+      "jac_p1": 0.6382136940956116,
+      "jac_p99": 1.6382246017456055,
+      "jac_outside": 0.48599602943108205,
+      "subject": "MF283f",
+      "group": "held-out"
+     },
+     {
+      "r": 0.9755240041873475,
+      "nmad": 0.13422858715057373,
+      "dice": 0.9898794122585339,
+      "jac_p1": 0.6304340958595276,
+      "jac_p99": 1.6263642311096191,
+      "jac_outside": 0.5291606221896408,
+      "subject": "MF284",
+      "group": "included"
+     },
+     {
+      "r": 0.9756333058807397,
+      "nmad": 0.13411417603492737,
+      "dice": 0.9899552458322171,
+      "jac_p1": 0.6318459510803223,
+      "jac_p99": 1.6332712173461914,
+      "jac_outside": 0.5378509023264139,
+      "subject": "MF284f",
+      "group": "included"
+     },
+     {
+      "r": 0.9805650033059035,
+      "nmad": 0.11283084005117416,
+      "dice": 0.9906331916586257,
+      "jac_p1": 0.6221941709518433,
+      "jac_p99": 1.6712898015975952,
+      "jac_outside": 0.6487308462497282,
+      "subject": "MF285",
+      "group": "included"
+     },
+     {
+      "r": 0.9803373809753197,
+      "nmad": 0.11298629641532898,
+      "dice": 0.9905787001446246,
+      "jac_p1": 0.62616366147995,
+      "jac_p99": 1.675883173942566,
+      "jac_outside": 0.6448015776730355,
+      "subject": "MF285f",
+      "group": "included"
+     },
+     {
+      "r": 0.9847626867977736,
+      "nmad": 0.10460717231035233,
+      "dice": 0.9909721468559068,
+      "jac_p1": 0.6240361928939819,
+      "jac_p99": 1.8346360921859741,
+      "jac_outside": 0.8869248282163931,
+      "subject": "MF286",
+      "group": "included"
+     },
+     {
+      "r": 0.9847389414802605,
+      "nmad": 0.10507666319608688,
+      "dice": 0.9909809453097862,
+      "jac_p1": 0.6233129501342773,
+      "jac_p99": 1.836696743965149,
+      "jac_outside": 0.8908827775856165,
+      "subject": "MF286f",
+      "group": "included"
+     }
+    ],
+    "held_out_minus_included": {
+     "r": -0.03068,
+     "nmad": 0.01091,
+     "dice": -0.00256,
+     "jac_p1": 0.01365,
+     "jac_p99": -0.07538,
+     "jac_outside": -0.20536
+    },
+    "held_out_mean": {
+     "r": 0.94958,
+     "nmad": 0.12822,
+     "dice": 0.98794
+    },
+    "included_mean": {
+     "r": 0.98026,
+     "nmad": 0.11731,
+     "dice": 0.9905
+    }
+   },
+   {
+    "fold": "rb_lobo_MF284",
+    "target": "nln_step_08/iteration_01",
+    "rows": [
+     {
+      "r": 0.935958192481233,
+      "nmad": 0.0981203019618988,
+      "dice": 0.9860948238359007,
+      "jac_p1": 0.6483421325683594,
+      "jac_p99": 1.6530007123947144,
+      "jac_outside": 0.4752728067173405,
+      "subject": "MF284",
+      "group": "held-out"
+     },
+     {
+      "r": 0.9356292888619907,
+      "nmad": 0.09824560582637787,
+      "dice": 0.9860245745350493,
+      "jac_p1": 0.6496368050575256,
+      "jac_p99": 1.6559027433395386,
+      "jac_outside": 0.4793139199935342,
+      "subject": "MF284f",
+      "group": "held-out"
+     },
+     {
+      "r": 0.9847041157162026,
+      "nmad": 0.05643719807267189,
+      "dice": 0.9907336536678577,
+      "jac_p1": 0.5942028760910034,
+      "jac_p99": 1.7387934923171997,
+      "jac_outside": 0.8356895970378639,
+      "subject": "MF283",
+      "group": "included"
+     },
+     {
+      "r": 0.9844538683610558,
+      "nmad": 0.05668932572007179,
+      "dice": 0.9907004351737663,
+      "jac_p1": 0.5974741578102112,
+      "jac_p99": 1.7364622354507446,
+      "jac_outside": 0.8134319028213285,
+      "subject": "MF283f",
+      "group": "included"
+     },
+     {
+      "r": 0.9833459195270776,
+      "nmad": 0.05444387346506119,
+      "dice": 0.9910451679387952,
+      "jac_p1": 0.599783182144165,
+      "jac_p99": 1.7181909084320068,
+      "jac_outside": 0.8537167507933843,
+      "subject": "MF285",
+      "group": "included"
+     },
+     {
+      "r": 0.98323426238666,
+      "nmad": 0.054679516702890396,
+      "dice": 0.9910107038268204,
+      "jac_p1": 0.5987686514854431,
+      "jac_p99": 1.714033603668213,
+      "jac_outside": 0.8558951634188324,
+      "subject": "MF285f",
+      "group": "included"
+     },
+     {
+      "r": 0.9837851492378712,
+      "nmad": 0.0531635507941246,
+      "dice": 0.9910107694918331,
+      "jac_p1": 0.6153402924537659,
+      "jac_p99": 1.8614789247512817,
+      "jac_outside": 0.9398745486897321,
+      "subject": "MF286",
+      "group": "included"
+     },
+     {
+      "r": 0.9839393026871702,
+      "nmad": 0.05305520072579384,
+      "dice": 0.990990265685658,
+      "jac_p1": 0.613176167011261,
+      "jac_p99": 1.8525784015655518,
+      "jac_outside": 0.9377908496566948,
+      "subject": "MF286f",
+      "group": "included"
+     }
+    ],
+    "held_out_minus_included": {
+     "r": -0.04812,
+     "nmad": 0.04344,
+     "dice": -0.00486,
+     "jac_p1": 0.04587,
+     "jac_p99": -0.1158,
+     "jac_outside": -0.39544
+    },
+    "held_out_mean": {
+     "r": 0.93579,
+     "nmad": 0.09818,
+     "dice": 0.98606
+    },
+    "included_mean": {
+     "r": 0.98391,
+     "nmad": 0.05474,
+     "dice": 0.99092
+    }
+   },
+   {
+    "fold": "rb_lobo_MF285",
+    "target": "nln_step_08/iteration_01",
+    "rows": [
+     {
+      "r": 0.9501016318658052,
+      "nmad": 0.10738015919923782,
+      "dice": 0.9879538543127357,
+      "jac_p1": 0.652662456035614,
+      "jac_p99": 1.6500269174575806,
+      "jac_outside": 0.5325819497626777,
+      "subject": "MF285",
+      "group": "held-out"
+     },
+     {
+      "r": 0.9507319238651447,
+      "nmad": 0.1071600541472435,
+      "dice": 0.9879669389800856,
+      "jac_p1": 0.6497862339019775,
+      "jac_p99": 1.649109125137329,
+      "jac_outside": 0.5343747525558644,
+      "subject": "MF285f",
+      "group": "held-out"
+     },
+     {
+      "r": 0.981167607198439,
+      "nmad": 0.09372802078723907,
+      "dice": 0.9901790746306657,
+      "jac_p1": 0.6089271903038025,
+      "jac_p99": 1.698449969291687,
+      "jac_outside": 0.695966044315097,
+      "subject": "MF283",
+      "group": "included"
+     },
+     {
+      "r": 0.9812675996688484,
+      "nmad": 0.09356646984815598,
+      "dice": 0.9902290585059609,
+      "jac_p1": 0.6081634163856506,
+      "jac_p99": 1.7037163972854614,
+      "jac_outside": 0.6986552485048771,
+      "subject": "MF283f",
+      "group": "included"
+     },
+     {
+      "r": 0.9765281946633759,
+      "nmad": 0.11105352640151978,
+      "dice": 0.9900714122237767,
+      "jac_p1": 0.6108648777008057,
+      "jac_p99": 1.6537048816680908,
+      "jac_outside": 0.6491141313198165,
+      "subject": "MF284",
+      "group": "included"
+     },
+     {
+      "r": 0.9765789205229354,
+      "nmad": 0.11115999519824982,
+      "dice": 0.9900664384934589,
+      "jac_p1": 0.6125174760818481,
+      "jac_p99": 1.6562669277191162,
+      "jac_outside": 0.6518033355095967,
+      "subject": "MF284f",
+      "group": "included"
+     },
+     {
+      "r": 0.9845797868691687,
+      "nmad": 0.082861989736557,
+      "dice": 0.990877512163342,
+      "jac_p1": 0.6177353858947754,
+      "jac_p99": 1.841576337814331,
+      "jac_outside": 0.9063215720490092,
+      "subject": "MF286",
+      "group": "included"
+     },
+     {
+      "r": 0.9847465346345147,
+      "nmad": 0.08278258889913559,
+      "dice": 0.9909528282883036,
+      "jac_p1": 0.6154374480247498,
+      "jac_p99": 1.8353930711746216,
+      "jac_outside": 0.9088016159129176,
+      "subject": "MF286f",
+      "group": "included"
+     }
+    ],
+    "held_out_minus_included": {
+     "r": -0.03039,
+     "nmad": 0.01141,
+     "dice": -0.00244,
+     "jac_p1": 0.03895,
+     "jac_p99": -0.08195,
+     "jac_outside": -0.2183
+    },
+    "held_out_mean": {
+     "r": 0.95042,
+     "nmad": 0.10727,
+     "dice": 0.98796
+    },
+    "included_mean": {
+     "r": 0.98081,
+     "nmad": 0.09586,
+     "dice": 0.9904
+    }
+   },
+   {
+    "fold": "rb_lobo_MF286",
+    "target": "nln_step_08/iteration_01",
+    "rows": [
+     {
+      "r": 0.9467461982962764,
+      "nmad": 0.10944566130638123,
+      "dice": 0.9878299086124736,
+      "jac_p1": 0.6527197360992432,
+      "jac_p99": 1.8145956993103027,
+      "jac_outside": 0.7547161934320695,
+      "subject": "MF286",
+      "group": "held-out"
+     },
+     {
+      "r": 0.947597879383809,
+      "nmad": 0.1091608852148056,
+      "dice": 0.987804174289648,
+      "jac_p1": 0.6504725813865662,
+      "jac_p99": 1.8084875345230103,
+      "jac_outside": 0.7529568092046212,
+      "subject": "MF286f",
+      "group": "held-out"
+     },
+     {
+      "r": 0.9844937777262468,
+      "nmad": 0.09626313298940659,
+      "dice": 0.9910035689849659,
+      "jac_p1": 0.6140828728675842,
+      "jac_p99": 1.7585694789886475,
+      "jac_outside": 0.7717434543451721,
+      "subject": "MF283",
+      "group": "included"
+     },
+     {
+      "r": 0.9845146209199236,
+      "nmad": 0.09609022736549377,
+      "dice": 0.99098113488927,
+      "jac_p1": 0.6131845712661743,
+      "jac_p99": 1.7575511932373047,
+      "jac_outside": 0.7777372887471574,
+      "subject": "MF283f",
+      "group": "included"
+     },
+     {
+      "r": 0.976100698074862,
+      "nmad": 0.11570937931537628,
+      "dice": 0.9903377830143151,
+      "jac_p1": 0.634225070476532,
+      "jac_p99": 1.682250738143921,
+      "jac_outside": 0.5757063033071056,
+      "subject": "MF284",
+      "group": "included"
+     },
+     {
+      "r": 0.9761396917606682,
+      "nmad": 0.11579898744821548,
+      "dice": 0.9903396323018349,
+      "jac_p1": 0.6350423097610474,
+      "jac_p99": 1.6888561248779297,
+      "jac_outside": 0.5859644079552795,
+      "subject": "MF284f",
+      "group": "included"
+     },
+     {
+      "r": 0.9835332876181825,
+      "nmad": 0.09283914417028427,
+      "dice": 0.991332489837303,
+      "jac_p1": 0.6201076507568359,
+      "jac_p99": 1.7257112264633179,
+      "jac_outside": 0.7477979368088826,
+      "subject": "MF285",
+      "group": "included"
+     },
+     {
+      "r": 0.983698051466742,
+      "nmad": 0.09290874004364014,
+      "dice": 0.9913383063112883,
+      "jac_p1": 0.6194482445716858,
+      "jac_p99": 1.725935935974121,
+      "jac_outside": 0.7476786565222759,
+      "subject": "MF285f",
+      "group": "included"
+     }
+    ],
+    "held_out_minus_included": {
+     "r": -0.03424,
+     "nmad": 0.0077,
+     "dice": -0.00307,
+     "jac_p1": 0.02891,
+     "jac_p99": 0.0884,
+     "jac_outside": 0.05273
+    },
+    "held_out_mean": {
+     "r": 0.94717,
+     "nmad": 0.1093,
+     "dice": 0.98782
+    },
+    "included_mean": {
+     "r": 0.98141,
+     "nmad": 0.1016,
+     "dice": 0.99089
+    }
+   }
+  ],
+  "pooled_mean_of_fold_diffs_r": -0.03586,
+  "pooled_mean_of_fold_diffs_nmad": 0.01836,
+  "pooled_mean_of_fold_diffs_dice": -0.00323
+ }
+}

@@ -1,0 +1,18 @@
+{
+ "data": {
+  "example_pair": "pair_5",
+  "brains": [
+   "MR252",
+   "MR254"
+  ],
+  "section_index_ijk": [
+   152,
+   176,
+   117
+  ],
+  "section_nmt_y_mm": 11.28982925415039,
+  "crop_height_pct": 50,
+  "fov_mm": 20.0,
+  "figure": "$LINC_PRODUCTS/paper/figs/fig9_routes_1c_r054b.png"
+ }
+}

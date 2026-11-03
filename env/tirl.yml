@@ -1,0 +1,85 @@
+# Histology -> blockface registration and the label push, as run for the paper: linc/histology (match, pieces, register, labels push),
+# cli/linc-histology, cli/linc-labels push, linc/evaluation/tubes.py, reproduce/figures/histology.py.
+# Generated from the environment of record (conda env export --no-builds + pip freeze, 22 Oct 2026), trimmed to what this code and
+# TIRL import. TIRL's result depends on its thread count: use 12 threads per piece (configs/histology.yaml tirl.threads) to
+# reproduce the registrations of record bit for bit.
+# TIRL 3.6.3 and its three script packages (tirlscripts-oxford-scriptutils 1.1.1, -stanford-core 1.2.2, -mgh-linc 1.0.1) come from a
+# local copy of their sources: they are not on PyPI and TIRL is not yet publicly distributed (ask its authors; TIRL: Huszar et al.
+# 2023, Apache License 2.0; it builds two small C modules; tirlscripts-mgh-linc provides the `linc.h2b` script). env/install.sh does
+# all of it, from that folder (or LINC_TIRL_SRC):
+#     bash env/install.sh --only tirl --tirl-src <folder with the TIRL sources>          # 2-6 min on a cluster node, 3 Nov 2026
+# or by hand, in this order:
+#     conda env create -f env/tirl.yml && conda activate linc-tirl && pip install -e . --no-deps
+#     pip install --no-deps --no-build-isolation <tirl 3.6.3> <tirlscripts-oxford-scriptutils 1.1.1> <tirlscripts-stanford-core 1.2.2> <tirlscripts-mgh-linc 1.0.1>
+# (--no-build-isolation: TIRL's setup.py imports numpy and Cython from this environment; its C modules include lapacke.h, from the
+# openblas package below.) `tirl register` is not needed: the pipeline runs linc.h2b by its path, as the `tirl` launcher would
+# (linc/blockface/external.py tirl_script); register writes ~/.config/tirlscripts.yml, which every TIRL environment of the account
+# shares.
+# TIRL 3.6.3 vs 3.6.2: the paper's runs used 3.6.2, whose source is not available; 3.6.3 (github.com/tirlworks/tirl at 2890372,
+# 14 May 2024) differs from it only in the version and license strings, and a histology piece registered with the schedule of
+# record (configs/histology.yaml, 12 threads) gives byte-identical images at all four stages in both (3 Nov 2026), so the checks
+# accept either (linc/blockface/external.py ALSO_ACCEPTED, configs/histology.yaml tirl.also_accepted).
+# The `tirl` on an FSL 6.0.7.4 PATH is TIRL 2.2.1: linc-histology refuses it.
+# zarr 3.1.5 / numcodecs 0.16.5 and the packages listed with them: what the runs of record imported from the account's user
+# site-packages (which shadowed the env's zarr 3.0.1). Build and run with PYTHONNOUSERSITE=1.
+# The demons interpolation of record (cli/linc-labels interpolate) ran with SimpleITK 2.5.3: env/labels-interp.yml.
+# nifti-zarr 1.0.0rc6 (zarr2nii / nii2zarr, the reconstruction's stage-3 exports and the 2D masks' hand-edit round trip; it ran in
+# env/niizarr.yml for the paper, removed 3 Nov 2026) is installed here too, with dask and its helpers at that env's versions:
+# MR243's two stage-3 exports (zarr2nii --level 2 of 02_blockface and 02_blockface_mask) are byte-identical to the env of record, and
+# the nii2zarr round trip writes identical chunks (its root zarr.json lacks zarr 3.1.1's "consolidated_metadata": null; transient).
+name: linc-tirl
+channels: [conda-forge]
+dependencies:
+  - python=3.11.9
+  - numpy=1.26.4
+  - scipy=1.14.0
+  - numba=0.60.0
+  - scikit-image=0.24.0
+  - scikit-learn=1.5.1
+  - py-opencv=4.10.0
+  - pillow=10.4.0
+  - openjpeg=2.5.3            # JPEG 2000 decoding for glymur
+  - imageio=2.34.2
+  - tifffile=2024.8.10
+  - nibabel=5.3.2
+  - simpleitk=2.4.0
+  - matplotlib-base=3.9.2     # TIRL's plots and Fig. 6
+  # pinned to the env of record so Fig. 6 renders byte for byte (newer builds draw a few antialiased pixels differently)
+  - freetype=2.12.1
+  - libpng=1.6.50
+  - kiwisolver=1.4.5
+  - contourpy=1.2.1
+  - fonttools=4.53.1
+  - pyparsing=3.1.2
+  - libopenblas=0.3.27        # BLAS of record
+  - openblas=0.3.27           # its headers (lapacke.h): needed to build TIRL's C modules from source
+  - nlopt=2.7.1               # TIRL's optimizers
+  - dill=0.3.8
+  - joblib=1.4.2
+  - psutil=6.0.0
+  - attrdict3=2.0.2
+  - pygments=2.18.0
+  - openslide-python=1.3.1
+  - pyyaml=6.0.2
+  - pip
+  - pip:
+      - glymur==0.13.5
+      - zarr==3.1.5
+      - numcodecs==0.16.5
+      # also imported from the user site-packages by the runs of record (pinned at those versions):
+      - donfig==0.8.1.post1
+      - google-crc32c==1.8.0
+      - packaging==26.0
+      - platformdirs==4.9.4
+      - cython==3.2.4
+      - python-dateutil==2.9.0.post0
+      - six==1.17.0
+      # zarr2nii / nii2zarr (formerly env/niizarr.yml), at that environment's versions
+      - nifti-zarr==1.0.0rc6
+      - dask==2025.11.0
+      - fsspec==2026.2.0
+      - click==8.5.0
+      - cloudpickle==3.1.2
+      - locket==1.0.0
+      - partd==1.4.2
+      - toolz==1.2.0

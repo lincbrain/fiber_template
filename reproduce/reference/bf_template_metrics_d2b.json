@@ -1,0 +1,201 @@
+{
+ "data": {
+  "templates": [
+   {
+    "label": "2b step 8 (of record)",
+    "arm": "d2bs8",
+    "folder": "bftemplate/d2b/final_s8",
+    "n_brains": 21,
+    "n_blockface_inputs": 42,
+    "members_mri": 13,
+    "members_without_mri": 8,
+    "b0_only_members": [
+     "TPL"
+    ],
+    "n_member_warps": 43,
+    "grid_mm": 0.25,
+    "rule": "precision",
+    "finish_trim_mm_r_i": 1.0,
+    "brain_cm3": 68.1105625,
+    "photographed_cm3": 60.851875,
+    "predicted_cm3": 7.2586875,
+    "predicted_share_of_brain": 0.10657212675346793,
+    "shell_rule": {
+     "shell_mm": 1.0,
+     "support_before_vox": 4424173,
+     "support_after_vox": 4361051,
+     "support_lost_frac": 0.014267525252742108,
+     "touched_frac_of_support": 0.07300392638352976,
+     "shell_weight_share": 0.009125093514163714
+    },
+    "coverage": {
+     "median_in_brain": 21.0,
+     "core_frac_of_brain": 0.7958916063863075
+    },
+    "symmetry": {
+     "max_abs_mirror_diff": {
+      "b0": 0.0,
+      "grey": 0.0,
+      "rgb": 0.0
+     },
+     "brainmask_mirror_dice": 1.0,
+     "grey_asym_before_symmetrisation": 0.8720507025718689
+    },
+    "detj_gate_b": {
+     "gate": "(b) brain mask; no folds; every member <= max(2 %, plan A step-7 value + 0.5 points); 2b: TPL at the absolute 2 %",
+     "verdict": "PASS",
+     "mask": "brain",
+     "n_members": 43,
+     "median_outside_0p5_2_pct": 0.6624389753317722,
+     "max_outside_0p5_2_pct": 1.2517263771352674,
+     "worst": "MR253f",
+     "max_folds_pct": 0.0,
+     "folded_voxels_total": 0,
+     "per_member_outside_pct": {
+      "MF191": 0.8490567673550211,
+      "MF191f": 0.884776409777125,
+      "MF196": 0.5736600582438247,
+      "MF196f": 0.5552150244445465,
+      "MF204": 0.6317695008006575,
+      "MF204f": 0.614148099532957,
+      "MF275": 0.35353342690954864,
+      "MF275f": 0.35390189409472816,
+      "MF278": 0.4428108584245037,
+      "MF278f": 0.43877939392783416,
+      "MF282": 0.5489727568368002,
+      "MF282f": 0.5497096912071592,
+      "MR243": 0.4750192253172502,
+      "MR243f": 0.485097886558924,
+      "MR244": 0.7575468581886847,
+      "MR244f": 0.7356338979406586,
+      "MR247": 0.6578656473274858,
+      "MR247f": 0.6557198678373231,
+      "MR248": 0.6765924501507248,
+      "MR248f": 0.6640212167740135,
+      "MR249": 0.6146249394196599,
+      "MR249f": 0.6349773327657493,
+      "MR250": 0.7065249903114805,
+      "MR250f": 0.759324170493668,
+      "MR251": 0.6624389753317722,
+      "MR251f": 0.6718023767433917,
+      "MR252": 0.622341075768124,
+      "MR252f": 0.62960204677019,
+      "MR253": 1.1723975596201581,
+      "MR253f": 1.2517263771352674,
+      "MR254": 0.7082156044552451,
+      "MR254f": 0.7110983183157669,
+      "MR256": 0.7161268116664513,
+      "MR256f": 0.7218922393874948,
+      "MR257": 0.6907892740502867,
+      "MR257f": 0.691699604743083,
+      "MR261": 0.4798743223454974,
+      "MR261f": 0.46647945643720845,
+      "MR263": 0.7496139764371738,
+      "MR263f": 0.7056580086992935,
+      "MR273": 0.6831381613227365,
+      "MR273f": 0.6754870485951864,
+      "TPL": 0.6465298627481411
+     }
+    }
+   },
+   {
+    "label": "2b plan A",
+    "arm": "d2bA",
+    "folder": "bftemplate/d2b/final",
+    "n_brains": 21,
+    "n_blockface_inputs": 42,
+    "members_mri": 13,
+    "members_without_mri": 8,
+    "b0_only_members": [
+     "TPL"
+    ],
+    "n_member_warps": 43,
+    "grid_mm": 0.25,
+    "rule": "precision",
+    "finish_trim_mm_r_i": 1.0,
+    "brain_cm3": 68.10871875,
+    "photographed_cm3": 61.03890625,
+    "predicted_cm3": 7.0698125,
+    "predicted_share_of_brain": 0.10380187191526048,
+    "shell_rule": {
+     "shell_mm": 1.0,
+     "support_before_vox": 4426550,
+     "support_after_vox": 4360623,
+     "support_lost_frac": 0.014893540115891613,
+     "touched_frac_of_support": 0.06908133874010233,
+     "shell_weight_share": 0.008301063635140465
+    },
+    "coverage": {
+     "median_in_brain": 21.0,
+     "core_frac_of_brain": 0.833226656462393
+    },
+    "symmetry": {
+     "max_abs_mirror_diff": {
+      "b0": 0.0,
+      "grey": 0.0,
+      "rgb": 0.0
+     },
+     "brainmask_mirror_dice": 1.0,
+     "grey_asym_before_symmetrisation": 0.8766063451766968
+    },
+    "detj_gate_b": {
+     "gate": "(b) brain mask; no folds; every member <= max(2 %, plan A step-7 value + 0.5 points); 2b: TPL at the absolute 2 %",
+     "verdict": "PASS",
+     "mask": "brain",
+     "n_members": 43,
+     "median_outside_0p5_2_pct": 1.1703558005426242,
+     "max_outside_0p5_2_pct": 6.319096038980912,
+     "worst": "MF191f",
+     "max_folds_pct": 0.0,
+     "folded_voxels_total": 0,
+     "per_member_outside_pct": {
+      "MF191": 6.28883562750809,
+      "MF191f": 6.319096038980912,
+      "MF196": 1.8974653466708389,
+      "MF196f": 1.7710937419405863,
+      "MF204": 1.1106946483774573,
+      "MF204f": 1.2664669938000543,
+      "MF275": 0.7388010687427142,
+      "MF275f": 0.7418958835524347,
+      "MF278": 0.8529653483901806,
+      "MF278f": 0.8490108627999822,
+      "MF282": 0.9736631259692788,
+      "MF282f": 0.9805404922131021,
+      "MR243": 0.9248338256381337,
+      "MR243f": 0.9140019738041121,
+      "MR244": 1.4081407384228135,
+      "MR244f": 1.352949874316132,
+      "MR247": 1.206633907478792,
+      "MR247f": 1.229157281927313,
+      "MR248": 1.1019260064165826,
+      "MR248f": 1.173794483664536,
+      "MR249": 1.1703558005426242,
+      "MR249f": 1.1877211503082779,
+      "MR250": 1.170871603010911,
+      "MR250f": 1.1908159651179984,
+      "MR251": 1.1916756358984764,
+      "MR251f": 1.2050865000739317,
+      "MR252": 1.2265782695858793,
+      "MR252f": 1.2322520967370336,
+      "MR253": 3.1596339865685037,
+      "MR253f": 3.283598513113418,
+      "MR254": 1.3025731665801266,
+      "MR254f": 1.3022292982679353,
+      "MR256": 1.096080245109333,
+      "MR256f": 1.091953825363039,
+      "MR257": 1.151099175059919,
+      "MR257f": 1.1674329198889994,
+      "MR261": 0.9709121794717495,
+      "MR261f": 0.9869020559886387,
+      "MR263": 0.9942952247007485,
+      "MR263f": 1.0022041958811452,
+      "MR273": 1.1299512738601625,
+      "MR273f": 1.1332180228259785,
+      "TPL": 0.7797213978934627
+     }
+    }
+   }
+  ],
+  "definition": "Design 2b template numbers for the paper (5 Oct 2026): bftemplate/template_numbers.py's bf_template_metrics row\nfor the published 2b templates, from their saved products only (no template recomputed):\n  d2bs8   bftemplate/d2b/final_s8 (step 8, the 2b of record)     d2bA   bftemplate/d2b/final (plan A, for reference)\nper template: members (brains / blockface inputs / b0-only TPL), grid, brain / photographed / predicted volume and the predicted share\n(predicted = brain & photo_share < 0.5, finish_t1's synth_mask), the shell rule's footprint, coverage (median over the brain; the core\n= the share of the brain where EVERY brain overlaps, coverage >= n_brains: predicted and photographed tissue both count), symmetry\n(d2_symmetry.json: max |V - mirror(V)| of b0 / grey / rgb = 0 exactly; brain-mask mirror Dice; grey asymmetry before the final\nsymmetrization) and the construction det J gate (b) record: % of brain voxels with det J outside [0.5, 2] per member (median, max,\nworst) and folded voxels (det J <= 0), on the brain mask, from the gate JSON (step 8: bftemplate/d2b/s8/gate_jac_it03.json, which\nalso carries plan A's step-7 values).\n    python bftemplate/d2b/d2b_template_numbers.py  -> paper/numbers/bf_template_metrics_d2b.json"
+ }
+}

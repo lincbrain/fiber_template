@@ -1,0 +1,1174 @@
+{
+ "data": {
+  "task": "bf_mask3d",
+  "task_json_md5": "73f324f7bb57589814bb3eba4e0c5ff6",
+  "card_notes": [
+   "Compared with the masks of record, the released model's mask extends one voxel further on about a quarter to a half of the lines at anterior-facing surfaces (anterior face 26\u201342 % vs posterior 6\u201314 % of lines, in-sample on MF278, MR243, MR257, MR263), where brain tissue just below the cut surface shows through the ice; the masks of record, and the earlier network (Dataset506) on brains outside its training set (anterior 8 % vs posterior 4\u20136 % of lines on MR257 and MR263), follow the cut face.",
+   "In MR243 the mask the models were trained on is about one voxel short over the left hemisphere (left face 50 % vs right 16 % of lines): the voxel it leaves out is tissue-colored on the photograph, and the shortfall is inherited from the automatic mask the record was edited from (the two agree on 89 % of left-face lines, Dice 0.997). It was corrected after training (left face 13 % vs right 16 % of lines against the corrected label); on the anterior face the corrected left half now reaches further than the right (the model lies outside it on 18 % vs 33 % of lines, before 52 % vs 33 %).",
+   "MF278's mask of record sits about half a voxel (0.2 mm) right of its blockface volume; every network, the earlier one included, places its mask about 0.2 mm left of it (x centroid -0.165 mm for the released model, -0.198 mm for Dataset506)."
+  ],
+  "input": {
+   "dim": 3,
+   "channels": 3,
+   "normalization": "zscore",
+   "target_spacing": [
+    0.3199999928474426,
+    0.3659999966621399,
+    0.3199999928474426
+   ],
+   "spacing_rule": "median per axis over the task's cases (nnU-Net)",
+   "whole_image": false,
+   "native_downsample": null,
+   "patch": [
+    128,
+    128,
+    128
+   ]
+  },
+  "output": {
+   "classes": {
+    "0": "background",
+    "1": "brain"
+   },
+   "grid": "the input image's own grid (class probabilities resampled back linearly)"
+  },
+  "postprocess": {
+   "kind": "largest_cc_fill",
+   "connectivity": 26
+  },
+  "inference": {
+   "step": 0.5,
+   "mirror": true,
+   "mirror_copies": 8,
+   "gaussian_sigma_of_patch": 0.125,
+   "probabilities_back": "linear, to the input's grid",
+   "postprocess": {
+    "kind": "largest_cc_fill",
+    "connectivity": 26
+   },
+   "identical_across_runs": true
+  },
+  "data": {
+   "brains": 21,
+   "images_total": 21,
+   "images_counted": 21,
+   "per_brain": {
+    "MF191": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MF196": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MF204": {
+     "n_images": 1,
+     "label_kind": [
+      "hand-constrained"
+     ]
+    },
+    "MF275": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MF278": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MF282": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR243": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR244": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR247": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR248": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR249": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR250": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR251": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR252": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR253": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR254": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR256": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR257": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR261": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR263": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR273": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    }
+   },
+   "label_kind": {
+    "hand": 20,
+    "hand-constrained": 1
+   },
+   "label_provenance": [
+    {
+     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar: transported by the auto-mask displacement after a re-alignment",
+     "n": 10
+    },
+    {
+     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar: re-baselined 2026-09-21 when geometry_id became semantic (affine+shape+jumps+alignm",
+     "n": 3
+    },
+    {
+     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar: resynced to the current alignment",
+     "n": 3
+    },
+    {
+     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar:",
+     "n": 1
+    },
+    {
+     "text": "release yaml masks_of_record",
+     "n": 1
+    },
+    {
+     "text": "hand-constrained: the 3D model's mask restricted to a hand-edited L2 mask of the aligned stack (+1 L4 voxel in-plane), largest component (release yaml)",
+     "n": 1
+    },
+    {
+     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar: curator edit 2026-09-24 06:48, accepted as drawn",
+     "n": 1
+    },
+    {
+     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar: curator edit on the re-segmented model output, accepted as drawn (2026-09-23)",
+     "n": 1
+    }
+   ]
+  },
+  "recipe": {
+   "network": {
+    "dim": 3,
+    "in_channels": 3,
+    "n_classes": 2,
+    "features": [
+     32,
+     64,
+     128,
+     256,
+     320,
+     320
+    ],
+    "strides": [
+     [
+      1,
+      1,
+      1
+     ],
+     [
+      2,
+      2,
+      2
+     ],
+     [
+      2,
+      2,
+      2
+     ],
+     [
+      2,
+      2,
+      2
+     ],
+     [
+      2,
+      2,
+      2
+     ],
+     [
+      2,
+      2,
+      2
+     ]
+    ],
+    "deep_supervision": true
+   },
+   "patch": [
+    128,
+    128,
+    128
+   ],
+   "batch": 2,
+   "epochs": 200,
+   "iterations_per_epoch": 250,
+   "optimizer": {
+    "name": "SGD",
+    "nesterov": true,
+    "momentum": 0.99,
+    "lr": 0.01,
+    "weight_decay": 3e-05,
+    "schedule": "poly (1 - epoch/epochs)^0.9",
+    "grad_norm_clip": 12.0,
+    "autocast": "bfloat16"
+   },
+   "loss": "Dice (foreground classes, batch) + cross-entropy; deep supervision weights 1, 1/2, 1/4, ... (lowest 0)",
+   "augmentation": {
+    "p_rot": 0.2,
+    "rot_deg": 30.0,
+    "p_scale": 0.2,
+    "scale": [
+     0.8,
+     1.2
+    ],
+    "p_mirror": 0.5,
+    "mirror_axes": null,
+    "p_noise": 0.1,
+    "noise_var": 0.1,
+    "p_blur": 0.2,
+    "blur_sigma": [
+     0.5,
+     1.0
+    ],
+    "p_bright": 0.15,
+    "bright": [
+     0.75,
+     1.25
+    ],
+    "p_contrast": 0.15,
+    "contrast": [
+     0.75,
+     1.25
+    ],
+    "p_lowres": 0.25,
+    "lowres": [
+     0.5,
+     1.0
+    ],
+    "p_gamma": 0.3,
+    "gamma": [
+     0.7,
+     1.5
+    ],
+    "p_gamma_inv": 0.1
+   },
+   "normalization": "zscore",
+   "seed": 0,
+   "foreground_oversampling": "1/3 of the patches centered on a foreground voxel",
+   "inference": {
+    "step": 0.5,
+    "mirror": true,
+    "postprocess": {
+     "kind": "largest_cc_fill",
+     "connectivity": 26
+    }
+   },
+   "parameters": 31197322
+  },
+  "folds": {
+   "0": [
+    "MF275",
+    "MR249",
+    "MR252",
+    "MR253",
+    "MR256"
+   ],
+   "1": [
+    "MF282",
+    "MR248",
+    "MR250",
+    "MR251"
+   ],
+   "2": [
+    "MF196",
+    "MR247",
+    "MR254",
+    "MR273"
+   ],
+   "3": [
+    "MF191",
+    "MR243",
+    "MR244",
+    "MR261"
+   ],
+   "4": [
+    "MF204",
+    "MF278",
+    "MR257",
+    "MR263"
+   ]
+  },
+  "fold_rule": "21 subjects, 21 cases; 5 folds: subjects in numpy default_rng(2026).permutation order (from the sorted list), dealt round-robin; a subject's cases are all in one fold",
+  "cv": {
+   "per_case": [
+    {
+     "case": "MF275",
+     "subject": "MF275",
+     "fold": "0",
+     "dice": 0.9839829155468033,
+     "hd95_mm": 0.5727128620970083,
+     "assd_mm": 0.25798309377640977,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9004852148219255,
+      "hd95_mm": 25.619447359084937
+     }
+    },
+    {
+     "case": "MR249",
+     "subject": "MR249",
+     "fold": "0",
+     "dice": 0.9913098228446183,
+     "hd95_mm": 0.3659999966621399,
+     "assd_mm": 0.23489346713486017,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9921454074040339,
+      "hd95_mm": 0.3199999928474426
+     }
+    },
+    {
+     "case": "MR252",
+     "subject": "MR252",
+     "fold": "0",
+     "dice": 0.9866057665612851,
+     "hd95_mm": 0.7155417368063282,
+     "assd_mm": 0.31354798815183393,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9873850968120477,
+      "hd95_mm": 0.4525483298441468
+     }
+    },
+    {
+     "case": "MR253",
+     "subject": "MR253",
+     "fold": "0",
+     "dice": 0.9836543755970328,
+     "hd95_mm": 1.011928828635509,
+     "assd_mm": 0.34458307838133073,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9853069180923094,
+      "hd95_mm": 0.4525483298441468
+     }
+    },
+    {
+     "case": "MR256",
+     "subject": "MR256",
+     "fold": "0",
+     "dice": 0.9868664811677775,
+     "hd95_mm": 0.5782732927815442,
+     "assd_mm": 0.2671185126567147,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9871295982633383,
+      "hd95_mm": 0.4525483298441468
+     }
+    },
+    {
+     "case": "MF282",
+     "subject": "MF282",
+     "fold": "1",
+     "dice": 0.9873938600150087,
+     "hd95_mm": 0.4320000112056732,
+     "assd_mm": 0.32930915531960764,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.988627467699813,
+      "hd95_mm": 0.4320000112056732
+     }
+    },
+    {
+     "case": "MR248",
+     "subject": "MR248",
+     "fold": "1",
+     "dice": 0.9898189270867829,
+     "hd95_mm": 0.48616457396549345,
+     "assd_mm": 0.25058614310197486,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9898710123149251,
+      "hd95_mm": 0.48616457396549345
+     }
+    },
+    {
+     "case": "MR250",
+     "subject": "MR250",
+     "fold": "1",
+     "dice": 0.9881103876240004,
+     "hd95_mm": 0.6399999856948853,
+     "assd_mm": 0.27899008972281064,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9884046844690013,
+      "hd95_mm": 0.48166378909156765
+     }
+    },
+    {
+     "case": "MR251",
+     "subject": "MR251",
+     "fold": "1",
+     "dice": 0.9916125531753422,
+     "hd95_mm": 0.36000001430511475,
+     "assd_mm": 0.17008821254153214,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9916899724364756,
+      "hd95_mm": 0.3199999928474426
+     }
+    },
+    {
+     "case": "MF196",
+     "subject": "MF196",
+     "fold": "2",
+     "dice": 0.978664323314827,
+     "hd95_mm": 1.1089651928652071,
+     "assd_mm": 0.4034356065424965,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9798579431139485,
+      "hd95_mm": 0.8700000047683716
+     }
+    },
+    {
+     "case": "MR247",
+     "subject": "MR247",
+     "fold": "2",
+     "dice": 0.9933386081738685,
+     "hd95_mm": 0.3199999928474426,
+     "assd_mm": 0.1860325480025823,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9933926932272032,
+      "hd95_mm": 0.3199999928474426
+     }
+    },
+    {
+     "case": "MR254",
+     "subject": "MR254",
+     "fold": "2",
+     "dice": 0.9792522822438386,
+     "hd95_mm": 1.7545369550846783,
+     "assd_mm": 0.43921040545757706,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9796889223421342,
+      "hd95_mm": 0.8504116838587402
+     }
+    },
+    {
+     "case": "MR273",
+     "subject": "MR273",
+     "fold": "2",
+     "dice": 0.9866372021506143,
+     "hd95_mm": 0.5727128620970083,
+     "assd_mm": 0.27880482259747974,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9867457816295713,
+      "hd95_mm": 0.4320000112056732
+     }
+    },
+    {
+     "case": "MF191",
+     "subject": "MF191",
+     "fold": "3",
+     "dice": 0.9697806314157311,
+     "hd95_mm": 1.5619538894885754,
+     "assd_mm": 0.4640656901091676,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9700171932627165,
+      "hd95_mm": 1.1399999856948853
+     }
+    },
+    {
+     "case": "MR243",
+     "subject": "MR243",
+     "fold": "3",
+     "dice": 0.989604532839963,
+     "hd95_mm": 0.4525483298441468,
+     "assd_mm": 0.2496202179341396,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9900838166684032,
+      "hd95_mm": 0.3659999966621399
+     }
+    },
+    {
+     "case": "MR244",
+     "subject": "MR244",
+     "fold": "3",
+     "dice": 0.9910846183297077,
+     "hd95_mm": 0.48616457396549345,
+     "assd_mm": 0.258612208185909,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9911405868006282,
+      "hd95_mm": 0.4525483298441468
+     }
+    },
+    {
+     "case": "MR261",
+     "subject": "MR261",
+     "fold": "3",
+     "dice": 0.9903117429926857,
+     "hd95_mm": 0.4525483298441468,
+     "assd_mm": 0.14807845042662574,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9900393441737019,
+      "hd95_mm": 0.4525483298441468
+     }
+    },
+    {
+     "case": "MF204",
+     "subject": "MF204",
+     "fold": "4",
+     "dice": 0.9790082541270635,
+     "hd95_mm": 0.6880000233650208,
+     "assd_mm": 0.27452002574933265,
+     "counted": true,
+     "label_kind": "hand-constrained",
+     "raw": {
+      "dice": 0.9786838680614646,
+      "hd95_mm": 0.6880000233650208
+     }
+    },
+    {
+     "case": "MF278",
+     "subject": "MF278",
+     "fold": "4",
+     "dice": 0.9857225605227982,
+     "hd95_mm": 0.4320000112056732,
+     "assd_mm": 0.2814150006610519,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9862184189139653,
+      "hd95_mm": 0.4320000112056732
+     }
+    },
+    {
+     "case": "MR257",
+     "subject": "MR257",
+     "fold": "4",
+     "dice": 0.9894231182975631,
+     "hd95_mm": 0.800999367922035,
+     "assd_mm": 0.2976327818799522,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9901938617426621,
+      "hd95_mm": 0.4525483298441468
+     }
+    },
+    {
+     "case": "MR263",
+     "subject": "MR263",
+     "fold": "4",
+     "dice": 0.9908789355590931,
+     "hd95_mm": 0.3199999928474426,
+     "assd_mm": 0.1293550352625939,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.9902100732969495,
+      "hd95_mm": 0.36000001430511475
+     }
+    }
+   ],
+   "pooled": {
+    "dice_median": 0.9873938600150087,
+    "dice_mean": 0.9863362809326859,
+    "dice_min": 0.9697806314157311,
+    "dice_q10": 0.9790082541270635,
+    "hd95_median": 0.5727128620970083,
+    "hd95_q90": 1.1089651928652071,
+    "assd_median": 0.27452002574933265,
+    "n_cases": 21,
+    "n_brains": 21
+   },
+   "per_brain": {
+    "MF191": {
+     "dice_median": 0.9697806314157311,
+     "hd95_median": 1.5619538894885754,
+     "n": 1
+    },
+    "MF196": {
+     "dice_median": 0.978664323314827,
+     "hd95_median": 1.1089651928652071,
+     "n": 1
+    },
+    "MF204": {
+     "dice_median": 0.9790082541270635,
+     "hd95_median": 0.6880000233650208,
+     "n": 1
+    },
+    "MF275": {
+     "dice_median": 0.9839829155468033,
+     "hd95_median": 0.5727128620970083,
+     "n": 1
+    },
+    "MF278": {
+     "dice_median": 0.9857225605227982,
+     "hd95_median": 0.4320000112056732,
+     "n": 1
+    },
+    "MF282": {
+     "dice_median": 0.9873938600150087,
+     "hd95_median": 0.4320000112056732,
+     "n": 1
+    },
+    "MR243": {
+     "dice_median": 0.989604532839963,
+     "hd95_median": 0.4525483298441468,
+     "n": 1
+    },
+    "MR244": {
+     "dice_median": 0.9910846183297077,
+     "hd95_median": 0.48616457396549345,
+     "n": 1
+    },
+    "MR247": {
+     "dice_median": 0.9933386081738685,
+     "hd95_median": 0.3199999928474426,
+     "n": 1
+    },
+    "MR248": {
+     "dice_median": 0.9898189270867829,
+     "hd95_median": 0.48616457396549345,
+     "n": 1
+    },
+    "MR249": {
+     "dice_median": 0.9913098228446183,
+     "hd95_median": 0.3659999966621399,
+     "n": 1
+    },
+    "MR250": {
+     "dice_median": 0.9881103876240004,
+     "hd95_median": 0.6399999856948853,
+     "n": 1
+    },
+    "MR251": {
+     "dice_median": 0.9916125531753422,
+     "hd95_median": 0.36000001430511475,
+     "n": 1
+    },
+    "MR252": {
+     "dice_median": 0.9866057665612851,
+     "hd95_median": 0.7155417368063282,
+     "n": 1
+    },
+    "MR253": {
+     "dice_median": 0.9836543755970328,
+     "hd95_median": 1.011928828635509,
+     "n": 1
+    },
+    "MR254": {
+     "dice_median": 0.9792522822438386,
+     "hd95_median": 1.7545369550846783,
+     "n": 1
+    },
+    "MR256": {
+     "dice_median": 0.9868664811677775,
+     "hd95_median": 0.5782732927815442,
+     "n": 1
+    },
+    "MR257": {
+     "dice_median": 0.9894231182975631,
+     "hd95_median": 0.800999367922035,
+     "n": 1
+    },
+    "MR261": {
+     "dice_median": 0.9903117429926857,
+     "hd95_median": 0.4525483298441468,
+     "n": 1
+    },
+    "MR263": {
+     "dice_median": 0.9908789355590931,
+     "hd95_median": 0.3199999928474426,
+     "n": 1
+    },
+    "MR273": {
+     "dice_median": 0.9866372021506143,
+     "hd95_median": 0.5727128620970083,
+     "n": 1
+    }
+   },
+   "not_pooled": [],
+   "folds_scored": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+   ],
+   "pooled_raw": {
+    "dice_median": 0.9884046844690013,
+    "dice_mean": 0.9827294226451054,
+    "dice_min": 0.9004852148219255,
+    "dice_q10": 0.9786838680614646,
+    "hd95_median": 0.4525483298441468,
+    "hd95_q90": 0.8700000047683716,
+    "assd_median": null,
+    "n_cases": 21,
+    "n_brains": 21
+   },
+   "corrected_labels": {
+    "MR243": {
+     "fold": "3",
+     "label": "data/sub-MR243/blockface/curated/MR243_mask_edited_v2.nii.gz",
+     "reason": "The mask of record left the left hemisphere one voxel short on every face (inherited from the 3D model mask it was curated from); 9,933 outer-shell voxels of the left half were added where the held-out fold-3 model marks brain and the photograph is tissue-colored by the right hemisphere's own per-face convention (made 3 Nov 2026, after training; the models were trained on the old label).",
+     "label_md5": "7dfda8de4a7604fda7354943644ab1a8",
+     "as_trained": {
+      "dice": 0.989604532839963,
+      "hd95_mm": 0.4525483298441468
+     },
+     "against_corrected": {
+      "dice": 0.9924975490994435,
+      "hd95_mm": 0.4525483298441468,
+      "assd_mm": 0.2151341533320652
+     }
+    }
+   },
+   "corrected_labels_summary": {
+    "MR243": {
+     "n": 1,
+     "as_trained": {
+      "dice_median": 0.989604532839963,
+      "hd95_median": 0.4525483298441468
+     },
+     "against_corrected": {
+      "dice_median": 0.9924975490994435,
+      "hd95_median": 0.4525483298441468
+     },
+     "reason": "The mask of record left the left hemisphere one voxel short on every face (inherited from the 3D model mask it was curated from); 9,933 outer-shell voxels of the left half were added where the held-out fold-3 model marks brain and the photograph is tissue-colored by the right hemisphere's own per-face convention (made 3 Nov 2026, after training; the models were trained on the old label).",
+     "folds": [
+      "3"
+     ]
+    }
+   },
+   "worst_per_fold": {
+    "0": {
+     "case": "MR253",
+     "subject": "MR253",
+     "dice": 0.9836543755970328,
+     "hd95_mm": 1.011928828635509
+    },
+    "1": {
+     "case": "MF282",
+     "subject": "MF282",
+     "dice": 0.9873938600150087,
+     "hd95_mm": 0.4320000112056732
+    },
+    "2": {
+     "case": "MF196",
+     "subject": "MF196",
+     "dice": 0.978664323314827,
+     "hd95_mm": 1.1089651928652071
+    },
+    "3": {
+     "case": "MF191",
+     "subject": "MF191",
+     "dice": 0.9697806314157311,
+     "hd95_mm": 1.5619538894885754
+    },
+    "4": {
+     "case": "MF204",
+     "subject": "MF204",
+     "dice": 0.9790082541270635,
+     "hd95_mm": 0.6880000233650208
+    }
+   },
+   "per_brain_summary": {
+    "n_brains": 21,
+    "dice_median": 0.9873938600150087,
+    "dice_min": 0.9697806314157311,
+    "dice_max": 0.9933386081738685,
+    "hd95_median": 0.5727128620970083,
+    "hd95_min": 0.3199999928474426,
+    "hd95_max": 1.7545369550846783
+   }
+  },
+  "incumbent": {
+   "name": "Dataset506_BFmask5 (3D nnU-Net ResEnc-M, fold 0)",
+   "in_sample_brains": [
+    "MF278",
+    "MR243",
+    "MR244",
+    "MR247",
+    "MR248",
+    "MR249",
+    "MR250",
+    "MR251",
+    "MR252",
+    "MR253",
+    "MR254",
+    "MR256"
+   ],
+   "no_prediction": {},
+   "fair_subset": {
+    "brains": [
+     "MF191",
+     "MF196",
+     "MF204",
+     "MF275",
+     "MF282",
+     "MR257",
+     "MR261",
+     "MR263",
+     "MR273"
+    ],
+    "n_cases": 9,
+    "incumbent": {
+     "dice_median": 0.9879301445355989,
+     "hd95_median": 0.4320000112056732
+    },
+    "new": {
+     "dice_median": 0.9866372021506143,
+     "hd95_median": 0.5727128620970083
+    },
+    "paired_dice_diff_median": -0.003576286961473829,
+    "new_higher": 0,
+    "per_brain": {
+     "MF191": {
+      "incumbent_dice_median": 0.9794568169687086,
+      "new_dice_median": 0.9697806314157311,
+      "n": 1
+     },
+     "MF196": {
+      "incumbent_dice_median": 0.9819024078664124,
+      "new_dice_median": 0.978664323314827,
+      "n": 1
+     },
+     "MF204": {
+      "incumbent_dice_median": 0.9808205496340455,
+      "new_dice_median": 0.9790082541270635,
+      "n": 1
+     },
+     "MF275": {
+      "incumbent_dice_median": 0.9879301445355989,
+      "new_dice_median": 0.9839829155468033,
+      "n": 1
+     },
+     "MF282": {
+      "incumbent_dice_median": 0.9886511289891772,
+      "new_dice_median": 0.9873938600150087,
+      "n": 1
+     },
+     "MR257": {
+      "incumbent_dice_median": 0.995815056380532,
+      "new_dice_median": 0.9894231182975631,
+      "n": 1
+     },
+     "MR261": {
+      "incumbent_dice_median": 0.9938880299541595,
+      "new_dice_median": 0.9903117429926857,
+      "n": 1
+     },
+     "MR263": {
+      "incumbent_dice_median": 0.9975865874591392,
+      "new_dice_median": 0.9908789355590931,
+      "n": 1
+     },
+     "MR273": {
+      "incumbent_dice_median": 0.9874206721980953,
+      "new_dice_median": 0.9866372021506143,
+      "n": 1
+     }
+    },
+    "per_brain_summary": {
+     "n_brains": 9,
+     "incumbent_dice_median": 0.9879301445355989,
+     "new_dice_median": 0.9866372021506143,
+     "new_higher_brains": 0
+    },
+    "margin": 0.01,
+    "within_margin": true,
+    "reading": "consistent with its one-voxel extension at anterior-facing surfaces, where the masks of record (made from the earlier network's own predictions and then edited) follow the cut face"
+   },
+   "per_case": [
+    {
+     "case": "MF191",
+     "subject": "MF191",
+     "counted": true,
+     "dice": 0.9794568169687086,
+     "hd95_mm": 0.8407734512792596,
+     "assd_mm": 0.2903687088870347,
+     "vox_pred": 512045,
+     "vox_ref": 503377,
+     "fp_area_mm2": null
+    },
+    {
+     "case": "MF196",
+     "subject": "MF196",
+     "counted": true,
+     "dice": 0.9819024078664124,
+     "hd95_mm": 0.8700000047683716,
+     "assd_mm": 0.24471906620761205,
+     "vox_pred": 869586,
+     "vox_ref": 872911,
+     "fp_area_mm2": null
+    },
+    {
+     "case": "MF204",
+     "subject": "MF204",
+     "counted": true,
+     "dice": 0.9808205496340455,
+     "hd95_mm": 0.6880000233650208,
+     "assd_mm": 0.2329444942154705,
+     "vox_pred": 158719,
+     "vox_ref": 161676,
+     "fp_area_mm2": null
+    },
+    {
+     "case": "MF275",
+     "subject": "MF275",
+     "counted": true,
+     "dice": 0.9879301445355989,
+     "hd95_mm": 0.4320000112056732,
+     "assd_mm": 0.23280261181611678,
+     "vox_pred": 605943,
+     "vox_ref": 616524,
+     "fp_area_mm2": null
+    },
+    {
+     "case": "MF282",
+     "subject": "MF282",
+     "counted": true,
+     "dice": 0.9886511289891772,
+     "hd95_mm": 0.4320000112056732,
+     "assd_mm": 0.33426603768358665,
+     "vox_pred": 1117064,
+     "vox_ref": 1095579,
+     "fp_area_mm2": null
+    },
+    {
+     "case": "MR257",
+     "subject": "MR257",
+     "counted": true,
+     "dice": 0.995815056380532,
+     "hd95_mm": 0.3199999928474426,
+     "assd_mm": 0.14233008996960075,
+     "vox_pred": 1670638,
+     "vox_ref": 1663935,
+     "fp_area_mm2": null
+    },
+    {
+     "case": "MR261",
+     "subject": "MR261",
+     "counted": true,
+     "dice": 0.9938880299541595,
+     "hd95_mm": 0.36000001430511475,
+     "assd_mm": 0.08185309070769198,
+     "vox_pred": 1742214,
+     "vox_ref": 1726553,
+     "fp_area_mm2": null
+    },
+    {
+     "case": "MR263",
+     "subject": "MR263",
+     "counted": true,
+     "dice": 0.9975865874591392,
+     "hd95_mm": 0.3199999928474426,
+     "assd_mm": 0.03529527756662518,
+     "vox_pred": 1880726,
+     "vox_ref": 1878681,
+     "fp_area_mm2": null
+    },
+    {
+     "case": "MR273",
+     "subject": "MR273",
+     "counted": true,
+     "dice": 0.9874206721980953,
+     "hd95_mm": 0.4320000112056732,
+     "assd_mm": 0.2469212101493336,
+     "vox_pred": 1219882,
+     "vox_ref": 1219994,
+     "fp_area_mm2": null
+    }
+   ],
+   "caveat": "Dataset506_BFmask5 (nnU-Net ResEnc-M 3d_fullres, fold 0, checkpoint_final, default mirroring; post-processing: largest 26-connected component + fill holes, code/segment.py post_mask). Held-out brains only (outside its training set); every hand label began as a model prediction (edited vs auto Dice 0.975-0.999), which favors the incumbent."
+  },
+  "all_model": {
+   "run": "models_wrapup/runs/bf_mask3d/fold_all",
+   "epochs": 200,
+   "final_loss": 0.046623128183186056,
+   "wall_h": 2.14,
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "weights_md5": "a48af67bd519cdf385d1afc95bed56c7",
+   "spec_md5": "b17eed80e86b9c9ab61f7b303a24a28f",
+   "parameters": 31197322,
+   "git": {
+    "commit": "7e3beb6d4e90ec6f55d1835760f62e473f16f9a2",
+    "dirty": false,
+    "dirty_files": []
+   }
+  },
+  "predictor_check": {
+   "source_run": "models_wrapup/runs/bf_mask3d/fold_0",
+   "fold": "0",
+   "n_cases": 5,
+   "n_identical": 5,
+   "max_abs_dice_diff": 0.0
+  },
+  "hardware": {
+   "runs": {
+    "0": {
+     "gpu": "NVIDIA RTX 6000 Ada Generation",
+     "wall_h": 2.04,
+     "resumed": null
+    },
+    "1": {
+     "gpu": "NVIDIA RTX 6000 Ada Generation",
+     "wall_h": 2.14,
+     "resumed": null
+    },
+    "2": {
+     "gpu": "NVIDIA RTX 6000 Ada Generation",
+     "wall_h": 2.07,
+     "resumed": null
+    },
+    "3": {
+     "gpu": "NVIDIA RTX 6000 Ada Generation",
+     "wall_h": 2.12,
+     "resumed": null
+    },
+    "4": {
+     "gpu": "NVIDIA RTX 6000 Ada Generation",
+     "wall_h": 2.08,
+     "resumed": null
+    },
+    "all": {
+     "gpu": "NVIDIA RTX 6000 Ada Generation",
+     "wall_h": 2.14,
+     "resumed": null
+    }
+   },
+   "torch": null,
+   "cuda": null,
+   "wall_hours_total": 12.59
+  },
+  "code": {
+   "linc_seg_md5_identical": true,
+   "commits": {
+    "0": "7e3beb6d4e90ec6f55d1835760f62e473f16f9a2",
+    "1": "ff0327f9f77d02008ef924b6db4ae1ade56c4448",
+    "2": "d0753d2691018f6033c9ad9d382c10415b5b4c54",
+    "3": "d26e4eb583836415a6947832a92beb95c972397c",
+    "4": "51895075daddcc1badb85fc47f89c6f8f4320c66",
+    "all": "7e3beb6d4e90ec6f55d1835760f62e473f16f9a2"
+   },
+   "dirty": {
+    "0": false,
+    "1": false,
+    "2": false,
+    "3": false,
+    "4": false,
+    "all": false
+   }
+  },
+  "status": {
+   "runs_done": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "all"
+   ],
+   "runs_missing": []
+  }
+ }
+}

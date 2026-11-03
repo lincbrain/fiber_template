@@ -1,0 +1,86 @@
+{
+ "data": {
+  "run": "mmsym_model_dti_v",
+  "n_steps": 8,
+  "iterations_per_step": [
+   3
+  ],
+  "warp_res_init_mm": 16.0,
+  "warp_scaling": "1 1 1 2 2 2 2 2 2",
+  "steps": {
+   "1": {
+    "levels": 2,
+    "final_knot_mm": 16.0,
+    "final_fwhm_mm": 2.0
+   },
+   "2": {
+    "levels": 3,
+    "final_knot_mm": 16.0,
+    "final_fwhm_mm": 1.0
+   },
+   "3": {
+    "levels": 4,
+    "final_knot_mm": 8.0,
+    "final_fwhm_mm": 0.5
+   },
+   "4": {
+    "levels": 5,
+    "final_knot_mm": 4.0,
+    "final_fwhm_mm": 0.25
+   },
+   "5": {
+    "levels": 6,
+    "final_knot_mm": 2.0,
+    "final_fwhm_mm": 0.125
+   },
+   "6": {
+    "levels": 7,
+    "final_knot_mm": 1.0,
+    "final_fwhm_mm": 0.0625
+   },
+   "7": {
+    "levels": 8,
+    "final_knot_mm": 0.5,
+    "final_fwhm_mm": 0.05
+   },
+   "8": {
+    "levels": 9,
+    "final_knot_mm": 0.25,
+    "final_fwhm_mm": 0.05
+   }
+  },
+  "knot_step4_mm": 4.0,
+  "knot_final_mm": 0.25,
+  "fwhm_first_mm": 4.0,
+  "fwhm_last_mm": 0.05,
+  "lambda_scale": 10.0,
+  "lambda_reg_first": 400000.0,
+  "lambda_reg_rest": [
+   3.7,
+   3.1,
+   2.6,
+   2.2,
+   1.8,
+   1.5,
+   1.2,
+   1.0
+  ],
+  "weights": {
+   "T2M": 1.0,
+   "FRAC1M": 0.5,
+   "FRAC2M": 0.5,
+   "DTIV": 1.0
+  },
+  "cost_mask_scalar_values": [
+   0
+  ],
+  "cost_mask_tensor_values": [
+   1
+  ],
+  "fwhm_floor_mm": {
+   "native_0p25": 0.29717171717171714,
+   "native_0p5": 0.5621656050955414,
+   "native_0p7": 0.7674782608695653
+  }
+ }
+}

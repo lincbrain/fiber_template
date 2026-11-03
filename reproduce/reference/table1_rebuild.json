@@ -1,0 +1,447 @@
+{
+ "data": {
+  "arms": {
+   "rb_t2": {
+    "label": "T2",
+    "build": "rb_t2",
+    "vecreg_tensors": false,
+    "built_with": [
+     "T2"
+    ],
+    "sources": {
+     "new": "mri/tc/crossmodal_rb_t2_rebuild_vr_wmfa040_deliverable.json",
+     "new_wm": "mri/tc/crossmodal_rb_t2_rebuild_vr_deliverable_wm.json",
+     "old": "paper/numbers/table1_oldmetrics_rb_t2_rebuild_vr.json",
+     "landmarks": "paper/numbers/mri_template_landmark_spread_rebuild.json"
+    },
+    "new": {
+     "T2_r": 0.9586686190521322,
+     "T2_cv": 0.06084012985229492,
+     "FRAC1_r": 0.6527296468919016,
+     "FRAC2_r": 0.6527280002239708,
+     "B0_r": 0.8411817062466164,
+     "mask_dice": 0.9842648600528328,
+     "fibre_angle_wm_deg": 13.25095728465489
+    },
+    "new_wm": {
+     "T2_r": 0.9540982957121172,
+     "T2_cv": 0.0717359185218811,
+     "FRAC1_r": 0.5715929783380627,
+     "FRAC2_r": 0.57158734236405,
+     "B0_r": 0.8300320286811054
+    },
+    "old": {
+     "T2_NMI": 1.2496790781441076,
+     "T2_NMI_WM": 1.2680968433135282,
+     "FRAC1_MAE": 0.04573492388952785,
+     "FRAC1_MAE_WM": 0.04762064077445935,
+     "FRAC2_MAE": 0.045740967090243174,
+     "FRAC2_MAE_WM": 0.04762104837044087,
+     "DTI_OVL": 0.8514460239183426,
+     "DTI_OVL_WM": 0.90776694302857
+    },
+    "deformation": {
+     "jacobian_outside_0p5_2_pct": 0.4503446831171952,
+     "core_voxels": 1552981,
+     "step": "nln_step_08",
+     "iteration": "iteration_03"
+    },
+    "landmark_spread": {
+     "median_excl_AC_mm": 0.2566,
+     "AC_mm": 0.0559,
+     "n_specimens": 4
+    },
+    "status": "evaluated",
+    "in_sample": {
+     "T2": true,
+     "FRAC1": false,
+     "FRAC2": false,
+     "DTI": false,
+     "B0": false,
+     "MASK": false
+    }
+   },
+   "rb_micro": {
+    "label": "SANDI",
+    "build": "rb_micro",
+    "vecreg_tensors": false,
+    "built_with": [
+     "FRAC1",
+     "FRAC2"
+    ],
+    "sources": {
+     "new": "mri/tc/crossmodal_rb_micro_rebuild_vr_wmfa040_deliverable.json",
+     "new_wm": "mri/tc/crossmodal_rb_micro_rebuild_vr_deliverable_wm.json",
+     "old": "paper/numbers/table1_oldmetrics_rb_micro_rebuild_vr.json",
+     "landmarks": "paper/numbers/mri_template_landmark_spread_rebuild.json"
+    },
+    "new": {
+     "T2_r": 0.7246920192502261,
+     "T2_cv": 0.14852286875247955,
+     "FRAC1_r": 0.7477838752756755,
+     "FRAC2_r": 0.7477641179226365,
+     "B0_r": 0.6385991769725502,
+     "mask_dice": 0.988777217237493,
+     "fibre_angle_wm_deg": 19.54162754331316
+    },
+    "new_wm": {
+     "T2_r": 0.6750981318500051,
+     "T2_cv": 0.17144940793514252,
+     "FRAC1_r": 0.6838915402431797,
+     "FRAC2_r": 0.6838825601862718,
+     "B0_r": 0.6019376311644475
+    },
+    "old": {
+     "T2_NMI": 1.1011817839013185,
+     "T2_NMI_WM": 1.110302954201766,
+     "FRAC1_MAE": 0.038687484068111455,
+     "FRAC1_MAE_WM": 0.03879781273434929,
+     "FRAC2_MAE": 0.038708788175804296,
+     "FRAC2_MAE_WM": 0.038799363821506394,
+     "DTI_OVL": 0.8025458180206787,
+     "DTI_OVL_WM": 0.8661710099789754
+    },
+    "deformation": {
+     "jacobian_outside_0p5_2_pct": 0.15132996992939607,
+     "core_voxels": 1391547,
+     "step": "nln_step_08",
+     "iteration": "iteration_03"
+    },
+    "landmark_spread": {
+     "median_excl_AC_mm": 0.2699,
+     "AC_mm": 0.0629,
+     "n_specimens": 4
+    },
+    "status": "evaluated",
+    "in_sample": {
+     "T2": false,
+     "FRAC1": true,
+     "FRAC2": true,
+     "DTI": false,
+     "B0": false,
+     "MASK": false
+    }
+   },
+   "rb_dti": {
+    "label": "tensor",
+    "build": "rb_dti",
+    "vecreg_tensors": false,
+    "built_with": [
+     "DTI"
+    ],
+    "sources": {
+     "new": "mri/tc/crossmodal_rb_dti_rebuild_vr_wmfa040_deliverable.json",
+     "new_wm": "mri/tc/crossmodal_rb_dti_rebuild_vr_deliverable_wm.json",
+     "old": "paper/numbers/table1_oldmetrics_rb_dti_rebuild_vr.json",
+     "landmarks": "paper/numbers/mri_template_landmark_spread_rebuild.json"
+    },
+    "new": {
+     "T2_r": 0.878795058042507,
+     "T2_cv": 0.10110737383365631,
+     "FRAC1_r": 0.6422043782138213,
+     "FRAC2_r": 0.642230816418983,
+     "B0_r": 0.7920451049423417,
+     "mask_dice": 0.9669886083260012,
+     "fibre_angle_wm_deg": 10.79951422555106
+    },
+    "new_wm": {
+     "T2_r": 0.8651559445097291,
+     "T2_cv": 0.11556192487478256,
+     "FRAC1_r": 0.5597800769322137,
+     "FRAC2_r": 0.5597820796018884,
+     "B0_r": 0.7782309183051997
+    },
+    "old": {
+     "T2_NMI": 1.1604884257241084,
+     "T2_NMI_WM": 1.1642668993537848,
+     "FRAC1_MAE": 0.046318946031295716,
+     "FRAC1_MAE_WM": 0.048084913684217384,
+     "FRAC2_MAE": 0.046350249939299155,
+     "FRAC2_MAE_WM": 0.04809306156999349,
+     "DTI_OVL": 0.863733407265282,
+     "DTI_OVL_WM": 0.9182981025974413
+    },
+    "deformation": {
+     "jacobian_outside_0p5_2_pct": 0.03410570375573545,
+     "core_voxels": 1420271,
+     "step": "nln_step_08",
+     "iteration": "iteration_03"
+    },
+    "landmark_spread": {
+     "median_excl_AC_mm": 0.2153,
+     "AC_mm": 0.0324,
+     "n_specimens": 4
+    },
+    "status": "evaluated",
+    "in_sample": {
+     "T2": false,
+     "FRAC1": false,
+     "FRAC2": false,
+     "DTI": true,
+     "B0": false,
+     "MASK": false
+    }
+   },
+   "rb_t2micro": {
+    "label": "T2 + SANDI",
+    "build": "rb_t2micro",
+    "vecreg_tensors": false,
+    "built_with": [
+     "FRAC1",
+     "FRAC2",
+     "T2"
+    ],
+    "sources": {
+     "new": "mri/tc/crossmodal_rb_t2micro_rebuild_vr_wmfa040_deliverable.json",
+     "new_wm": "mri/tc/crossmodal_rb_t2micro_rebuild_vr_deliverable_wm.json",
+     "old": "paper/numbers/table1_oldmetrics_rb_t2micro_rebuild_vr.json",
+     "landmarks": "paper/numbers/mri_template_landmark_spread_rebuild.json"
+    },
+    "new": {
+     "T2_r": 0.9564912405633951,
+     "T2_cv": 0.0629047080874443,
+     "FRAC1_r": 0.6902228062498307,
+     "FRAC2_r": 0.6902177684580747,
+     "B0_r": 0.8396897852229056,
+     "mask_dice": 0.9885725946483604,
+     "fibre_angle_wm_deg": 13.25856191771371
+    },
+    "new_wm": {
+     "T2_r": 0.9514346885004693,
+     "T2_cv": 0.07422041893005371,
+     "FRAC1_r": 0.6121563285929076,
+     "FRAC2_r": 0.6121498153610305,
+     "B0_r": 0.8280266706780862
+    },
+    "old": {
+     "T2_NMI": 1.2432419852020637,
+     "T2_NMI_WM": 1.2583553496051718,
+     "FRAC1_MAE": 0.04282340265899147,
+     "FRAC1_MAE_WM": 0.04445026750633075,
+     "FRAC2_MAE": 0.04282931133877828,
+     "FRAC2_MAE_WM": 0.04445032093745288,
+     "DTI_OVL": 0.8526050593664172,
+     "DTI_OVL_WM": 0.9096936727066643
+    },
+    "deformation": {
+     "jacobian_outside_0p5_2_pct": 0.5294289946259588,
+     "core_voxels": 1564075,
+     "step": "nln_step_08",
+     "iteration": "iteration_03"
+    },
+    "landmark_spread": {
+     "median_excl_AC_mm": 0.2712,
+     "AC_mm": 0.0634,
+     "n_specimens": 4
+    },
+    "status": "evaluated",
+    "in_sample": {
+     "T2": true,
+     "FRAC1": true,
+     "FRAC2": true,
+     "DTI": false,
+     "B0": false,
+     "MASK": false
+    }
+   },
+   "rb_t2dti": {
+    "label": "T2 + tensor",
+    "build": "rb_t2dti",
+    "vecreg_tensors": false,
+    "built_with": [
+     "DTI",
+     "T2"
+    ],
+    "sources": {
+     "new": "mri/tc/crossmodal_rb_t2dti_rebuild_vr_wmfa040_deliverable.json",
+     "new_wm": "mri/tc/crossmodal_rb_t2dti_rebuild_vr_deliverable_wm.json",
+     "old": "paper/numbers/table1_oldmetrics_rb_t2dti_rebuild_vr.json",
+     "landmarks": "paper/numbers/mri_template_landmark_spread_rebuild.json"
+    },
+    "new": {
+     "T2_r": 0.9552901932729323,
+     "T2_cv": 0.06417974084615707,
+     "FRAC1_r": 0.6568373281331407,
+     "FRAC2_r": 0.6568354386724147,
+     "B0_r": 0.8477965536857403,
+     "mask_dice": 0.9850054134645827,
+     "fibre_angle_wm_deg": 10.513927425657
+    },
+    "new_wm": {
+     "T2_r": 0.9496616558465456,
+     "T2_cv": 0.07619980722665787,
+     "FRAC1_r": 0.5726808661474093,
+     "FRAC2_r": 0.5726771115249232,
+     "B0_r": 0.8380739207341877
+    },
+    "old": {
+     "T2_NMI": 1.2394811570054096,
+     "T2_NMI_WM": 1.252254505671878,
+     "FRAC1_MAE": 0.04537090437919705,
+     "FRAC1_MAE_WM": 0.04734806066555547,
+     "FRAC2_MAE": 0.0453771822253673,
+     "FRAC2_MAE_WM": 0.047348213471149606,
+     "DTI_OVL": 0.868727741130625,
+     "DTI_OVL_WM": 0.925606582112996
+    },
+    "deformation": {
+     "jacobian_outside_0p5_2_pct": 0.5097533015764686,
+     "core_voxels": 1555643,
+     "step": "nln_step_08",
+     "iteration": "iteration_03"
+    },
+    "landmark_spread": {
+     "median_excl_AC_mm": 0.2515,
+     "AC_mm": 0.0409,
+     "n_specimens": 4
+    },
+    "status": "evaluated",
+    "in_sample": {
+     "T2": true,
+     "FRAC1": false,
+     "FRAC2": false,
+     "DTI": true,
+     "B0": false,
+     "MASK": false
+    }
+   },
+   "rb_dtimicro": {
+    "label": "tensor + SANDI",
+    "build": "rb_dtimicro",
+    "vecreg_tensors": false,
+    "built_with": [
+     "DTI",
+     "FRAC1",
+     "FRAC2"
+    ],
+    "sources": {
+     "new": "mri/tc/crossmodal_rb_dtimicro_rebuild_vr_wmfa040_deliverable.json",
+     "new_wm": "mri/tc/crossmodal_rb_dtimicro_rebuild_vr_deliverable_wm.json",
+     "old": "paper/numbers/table1_oldmetrics_rb_dtimicro_rebuild_vr.json",
+     "landmarks": "paper/numbers/mri_template_landmark_spread_rebuild.json"
+    },
+    "new": {
+     "T2_r": 0.8866029391800511,
+     "T2_cv": 0.0992516577243805,
+     "FRAC1_r": 0.7058254174643614,
+     "FRAC2_r": 0.7058253593777296,
+     "B0_r": 0.7969333566808843,
+     "mask_dice": 0.9894109105964687,
+     "fibre_angle_wm_deg": 10.76432728767395
+    },
+    "new_wm": {
+     "T2_r": 0.870141986544099,
+     "T2_cv": 0.11501934379339218,
+     "FRAC1_r": 0.6228453492907312,
+     "FRAC2_r": 0.6228436762515347,
+     "B0_r": 0.7825672297132664
+    },
+    "old": {
+     "T2_NMI": 1.1631389525389553,
+     "T2_NMI_WM": 1.1686789261041066,
+     "FRAC1_MAE": 0.04145342438285378,
+     "FRAC1_MAE_WM": 0.043079216336839,
+     "FRAC2_MAE": 0.04146255714529271,
+     "FRAC2_MAE_WM": 0.04307982754260398,
+     "DTI_OVL": 0.8661194541396985,
+     "DTI_OVL_WM": 0.9235311847156955
+    },
+    "deformation": {
+     "jacobian_outside_0p5_2_pct": 0.20880699712652298,
+     "core_voxels": 1493503,
+     "step": "nln_step_08",
+     "iteration": "iteration_03"
+    },
+    "landmark_spread": {
+     "median_excl_AC_mm": 0.2077,
+     "AC_mm": 0.0325,
+     "n_specimens": 4
+    },
+    "status": "evaluated",
+    "in_sample": {
+     "T2": false,
+     "FRAC1": true,
+     "FRAC2": true,
+     "DTI": true,
+     "B0": false,
+     "MASK": false
+    }
+   },
+   "rb_final": {
+    "label": "four-channel template",
+    "build": "rb_final",
+    "vecreg_tensors": false,
+    "built_with": [
+     "DTI",
+     "FRAC1",
+     "FRAC2",
+     "T2"
+    ],
+    "sources": {
+     "new": "mri/tc/crossmodal_rb_final_rebuild_vr_wmfa040_deliverable.json",
+     "new_wm": "mri/tc/crossmodal_rb_final_rebuild_vr_deliverable_wm.json",
+     "old": "paper/numbers/table1_oldmetrics_rb_final_rebuild_vr.json",
+     "landmarks": "paper/numbers/mri_template_landmark_spread_rebuild.json"
+    },
+    "new": {
+     "T2_r": 0.9541023048881049,
+     "T2_cv": 0.06532555818557739,
+     "FRAC1_r": 0.6873764748498028,
+     "FRAC2_r": 0.6873738044601269,
+     "B0_r": 0.8466464691442577,
+     "mask_dice": 0.9887981658306313,
+     "fibre_angle_wm_deg": 10.587464877537318
+    },
+    "new_wm": {
+     "T2_r": 0.9481690315120325,
+     "T2_cv": 0.0775374248623848,
+     "FRAC1_r": 0.6046788775002924,
+     "FRAC2_r": 0.6046751927604825,
+     "B0_r": 0.8365176319045681
+    },
+    "old": {
+     "T2_NMI": 1.2360606025773104,
+     "T2_NMI_WM": 1.2469976048513307,
+     "FRAC1_MAE": 0.04296792785701631,
+     "FRAC1_MAE_WM": 0.044808054376579115,
+     "FRAC2_MAE": 0.04297372101428969,
+     "FRAC2_MAE_WM": 0.04480825049473515,
+     "DTI_OVL": 0.8687965555364427,
+     "DTI_OVL_WM": 0.9259299562868122
+    },
+    "deformation": {
+     "jacobian_outside_0p5_2_pct": 0.5934973948535531,
+     "core_voxels": 1564064,
+     "step": "nln_step_08",
+     "iteration": "iteration_03"
+    },
+    "landmark_spread": {
+     "median_excl_AC_mm": 0.248,
+     "AC_mm": 0.0411,
+     "n_specimens": 4
+    },
+    "status": "evaluated",
+    "in_sample": {
+     "T2": true,
+     "FRAC1": true,
+     "FRAC2": true,
+     "DTI": true,
+     "B0": false,
+     "MASK": false
+    }
+   }
+  },
+  "order": [
+   "rb_t2",
+   "rb_micro",
+   "rb_dti",
+   "rb_t2micro",
+   "rb_t2dti",
+   "rb_dtimicro",
+   "rb_final"
+  ],
+  "n_evaluated": 7,
+  "note": "new metrics on the deliverable core (whole); fibre angle on the common WM; old metrics whole + WM",
+  "landmark_spread_baseline_rigid_median_excl_AC_mm": 0.7013
+ }
+}

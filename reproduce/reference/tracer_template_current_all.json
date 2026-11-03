@@ -1,0 +1,164 @@
+{
+ "data": {
+  "summary": {
+   "n_cases": 4,
+   "n_brains": 4,
+   "brains": [
+    "MR243",
+    "MR252",
+    "MR256",
+    "MF191"
+   ],
+   "route": {
+    "MR243": "B",
+    "MR252": "B",
+    "MR256": "B",
+    "MF191": "A (2b member: d2bs8 member warp + the link d2bs8_s5sym)"
+   },
+   "n_sections": {
+    "MR243": 32,
+    "MR252": 25,
+    "MR256": 30,
+    "MF191": 35
+   },
+   "n_sections_total": 122,
+   "injection_site_recorded": {
+    "MR243": true,
+    "MR252": true,
+    "MR256": false,
+    "MF191": true
+   },
+   "classes": {
+    "MR243": [
+     "Fiber_dense_bundle",
+     "Fiber_light_bundle",
+     "Fiber_moderate_bundle",
+     "Fibers",
+     "Injection_site",
+     "Terminal_dense",
+     "Terminal_light",
+     "Terminal_moderate"
+    ],
+    "MR252": [
+     "Bundle",
+     "Fiber_dense_bundle",
+     "Fiber_light_bundle",
+     "Fiber_moderate_bundle",
+     "Fibers",
+     "Injection_site"
+    ],
+    "MR256": [
+     "Fiber_dense_bundle",
+     "Fiber_light_bundle",
+     "Fiber_moderate_bundle",
+     "Fibers",
+     "Terminal_dense",
+     "Terminal_light",
+     "Terminal_moderate"
+    ],
+    "MF191": {
+     "Fiber_dense_bundle": {
+      "sections": 19,
+      "voxels_bf": 10605,
+      "vol_bf_mm3": 71.783,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 8768,
+      "voxels_template_gt05": 2409,
+      "density_sum_mm3": 56.846,
+      "frac_in_brain": 0.9956,
+      "x_mean_mm": -5.385,
+      "frac_same_side_as_injection": 0.8806
+     },
+     "Fiber_light_bundle": {
+      "sections": 23,
+      "voxels_bf": 5888,
+      "vol_bf_mm3": 39.854,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 5291,
+      "voxels_template_gt05": 1128,
+      "density_sum_mm3": 32.248,
+      "frac_in_brain": 0.9991,
+      "x_mean_mm": -7.052,
+      "frac_same_side_as_injection": 0.7836
+     },
+     "Fiber_moderate_bundle": {
+      "sections": 27,
+      "voxels_bf": 12606,
+      "vol_bf_mm3": 85.327,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 10802,
+      "voxels_template_gt05": 3119,
+      "density_sum_mm3": 71.441,
+      "frac_in_brain": 0.9973,
+      "x_mean_mm": -6.003,
+      "frac_same_side_as_injection": 0.8111
+     },
+     "Fibers": {
+      "sections": 35,
+      "voxels_bf": 30150,
+      "vol_bf_mm3": 204.078,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 31550,
+      "voxels_template_gt05": 2098,
+      "density_sum_mm3": 164.894,
+      "frac_in_brain": 0.9955,
+      "x_mean_mm": -4.328,
+      "frac_same_side_as_injection": 0.7457
+     },
+     "Injection_site": {
+      "sections": 2,
+      "voxels_bf": 111,
+      "vol_bf_mm3": 0.751,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 158,
+      "voxels_template_gt05": 13,
+      "density_sum_mm3": 0.834,
+      "frac_in_brain": 1.0,
+      "x_mean_mm": -6.122,
+      "frac_same_side_as_injection": 1.0
+     },
+     "Terminal_dense": {
+      "sections": 19,
+      "voxels_bf": 29536,
+      "vol_bf_mm3": 199.922,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 22906,
+      "voxels_template_gt05": 8452,
+      "density_sum_mm3": 164.814,
+      "frac_in_brain": 0.9781,
+      "x_mean_mm": -6.623,
+      "frac_same_side_as_injection": 0.9318
+     },
+     "Terminal_light": {
+      "sections": 30,
+      "voxels_bf": 15392,
+      "vol_bf_mm3": 104.185,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 14948,
+      "voxels_template_gt05": 2972,
+      "density_sum_mm3": 89.434,
+      "frac_in_brain": 0.9894,
+      "x_mean_mm": -6.805,
+      "frac_same_side_as_injection": 0.8649
+     },
+     "Terminal_moderate": {
+      "sections": 24,
+      "voxels_bf": 24694,
+      "vol_bf_mm3": 167.148,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 19690,
+      "voxels_template_gt05": 5609,
+      "density_sum_mm3": 129.862,
+      "frac_in_brain": 0.9686,
+      "x_mean_mm": -7.351,
+      "frac_same_side_as_injection": 0.9416
+     }
+    }
+   }
+  },
+  "sources": {
+   "route_B": "paper/numbers/tracer_template_current.json",
+   "MF191": "paper/numbers/tracer_template_current_mf191.json"
+  }
+ }
+}

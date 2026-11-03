@@ -1,0 +1,1093 @@
+{
+ "data": {
+  "task": "bf_holes",
+  "task_json_md5": "52a10dd6708d29d5a6c14164e5d1ec77",
+  "card_notes": [
+   "Marker tubes are thin, so one voxel at the tube wall costs a lot of Dice: on four of its own training brains (MF278, MR243, MR257, MR263) the released model reaches Dice 0.75\u20130.85 while its tube volume is within 9 % of the label's. In-plane its tube walls sit within 0.4 mm of the labels' on average; the largest differences are where a tube starts or ends along the cutting axis (up to 0.9 mm, about 2 sections, in MR263).",
+   "The shipped rule keeps tubes in the left hemisphere only (it drops voxels at or right of the brain's x-centroid plus 3 voxels), clamps them to the brain mask and drops components under 3 voxels; applied to the 21 training labels it removes 281 of 81,783 tube voxels (0.3 %; 32 of them on the right of that line, the rest outside the brain mask of record), so a brain with tubes in the right hemisphere is outside its scope.",
+   "The earlier network (Dataset508) finds much less tube than labelled on 4 of its 5 held-out brains (17\u201352 % of the labelled voxels; MR261 93 %), so it is a weak reference for this task."
+  ],
+  "input": {
+   "dim": 3,
+   "channels": 3,
+   "normalization": "zscore",
+   "target_spacing": [
+    0.3199999928474426,
+    0.3659999966621399,
+    0.3199999928474426
+   ],
+   "spacing_rule": "median per axis over the task's cases (nnU-Net)",
+   "whole_image": false,
+   "native_downsample": null,
+   "patch": [
+    128,
+    128,
+    128
+   ]
+  },
+  "output": {
+   "classes": {
+    "0": "background",
+    "1": "tube"
+   },
+   "grid": "the input image's own grid (class probabilities resampled back linearly)"
+  },
+  "postprocess": {
+   "kind": "tubes_left_hemisphere",
+   "mask_key": "mask",
+   "left_tol_vox": 3.0,
+   "min_vox": 3,
+   "note": "x axis 0 increasing = anatomical right; tubes are drilled in the left hemisphere"
+  },
+  "inference": {
+   "step": 0.5,
+   "mirror": true,
+   "mirror_copies": 8,
+   "gaussian_sigma_of_patch": 0.125,
+   "probabilities_back": "linear, to the input's grid",
+   "postprocess": {
+    "kind": "tubes_left_hemisphere",
+    "mask_key": "mask",
+    "left_tol_vox": 3.0,
+    "min_vox": 3,
+    "note": "x axis 0 increasing = anatomical right; tubes are drilled in the left hemisphere"
+   },
+   "identical_across_runs": true
+  },
+  "data": {
+   "brains": 21,
+   "images_total": 21,
+   "images_counted": 21,
+   "per_brain": {
+    "MF191": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MF196": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MF204": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MF275": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MF278": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MF282": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR243": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR244": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR247": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR248": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR249": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR250": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR251": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR252": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR253": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR254": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR256": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR257": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR261": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR263": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    },
+    "MR273": {
+     "n_images": 1,
+     "label_kind": [
+      "hand"
+     ]
+    }
+   },
+   "label_kind": {
+    "hand": 21
+   },
+   "label_provenance": [
+    {
+     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar: transported by the auto-mask displacement after a re-alignment",
+     "n": 10
+    },
+    {
+     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar: re-baselined 2026-09-21 when geometry_id became semantic (affine+shape+jumps+alignm",
+     "n": 3
+    },
+    {
+     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar: resynced to the current alignment",
+     "n": 3
+    },
+    {
+     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar: curator edit 2026-09-24 11:29, used as drawn - never transported",
+     "n": 1
+    },
+    {
+     "text": "release yaml masks_of_record",
+     "n": 1
+    },
+    {
+     "text": "release yaml tubes_3d hand_edited",
+     "n": 1
+    },
+    {
+     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar: curator edit 2026-09-24 06:48, accepted as drawn",
+     "n": 1
+    },
+    {
+     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar: curator edit on the re-segmented model output, accepted as drawn (2026-09-23)",
+     "n": 1
+    }
+   ]
+  },
+  "recipe": {
+   "network": {
+    "dim": 3,
+    "in_channels": 3,
+    "n_classes": 2,
+    "features": [
+     32,
+     64,
+     128,
+     256,
+     320,
+     320
+    ],
+    "strides": [
+     [
+      1,
+      1,
+      1
+     ],
+     [
+      2,
+      2,
+      2
+     ],
+     [
+      2,
+      2,
+      2
+     ],
+     [
+      2,
+      2,
+      2
+     ],
+     [
+      2,
+      2,
+      2
+     ],
+     [
+      2,
+      2,
+      2
+     ]
+    ],
+    "deep_supervision": true
+   },
+   "patch": [
+    128,
+    128,
+    128
+   ],
+   "batch": 2,
+   "epochs": 200,
+   "iterations_per_epoch": 250,
+   "optimizer": {
+    "name": "SGD",
+    "nesterov": true,
+    "momentum": 0.99,
+    "lr": 0.01,
+    "weight_decay": 3e-05,
+    "schedule": "poly (1 - epoch/epochs)^0.9",
+    "grad_norm_clip": 12.0,
+    "autocast": "bfloat16"
+   },
+   "loss": "Dice (foreground classes, batch) + cross-entropy; deep supervision weights 1, 1/2, 1/4, ... (lowest 0)",
+   "augmentation": {
+    "p_rot": 0.2,
+    "rot_deg": 30.0,
+    "p_scale": 0.2,
+    "scale": [
+     0.8,
+     1.2
+    ],
+    "p_mirror": 0.5,
+    "mirror_axes": null,
+    "p_noise": 0.1,
+    "noise_var": 0.1,
+    "p_blur": 0.2,
+    "blur_sigma": [
+     0.5,
+     1.0
+    ],
+    "p_bright": 0.15,
+    "bright": [
+     0.75,
+     1.25
+    ],
+    "p_contrast": 0.15,
+    "contrast": [
+     0.75,
+     1.25
+    ],
+    "p_lowres": 0.25,
+    "lowres": [
+     0.5,
+     1.0
+    ],
+    "p_gamma": 0.3,
+    "gamma": [
+     0.7,
+     1.5
+    ],
+    "p_gamma_inv": 0.1
+   },
+   "normalization": "zscore",
+   "seed": 0,
+   "foreground_oversampling": "1/3 of the patches centered on a foreground voxel",
+   "inference": {
+    "step": 0.5,
+    "mirror": true,
+    "postprocess": {
+     "kind": "tubes_left_hemisphere",
+     "mask_key": "mask",
+     "left_tol_vox": 3.0,
+     "min_vox": 3,
+     "note": "x axis 0 increasing = anatomical right; tubes are drilled in the left hemisphere"
+    }
+   },
+   "parameters": 31197322
+  },
+  "folds": {
+   "0": [
+    "MF275",
+    "MR249",
+    "MR252",
+    "MR253",
+    "MR256"
+   ],
+   "1": [
+    "MF282",
+    "MR248",
+    "MR250",
+    "MR251"
+   ],
+   "2": [
+    "MF196",
+    "MR247",
+    "MR254",
+    "MR273"
+   ],
+   "3": [
+    "MF191",
+    "MR243",
+    "MR244",
+    "MR261"
+   ],
+   "4": [
+    "MF204",
+    "MF278",
+    "MR257",
+    "MR263"
+   ]
+  },
+  "fold_rule": "21 subjects, 21 cases; 5 folds: subjects in numpy default_rng(2026).permutation order (from the sorted list), dealt round-robin; a subject's cases are all in one fold",
+  "cv": {
+   "per_case": [
+    {
+     "case": "MF275",
+     "subject": "MF275",
+     "fold": "0",
+     "dice": 0.6621004566210046,
+     "hd95_mm": 0.6109402747923921,
+     "assd_mm": 0.25875676986400886,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.6621004566210046,
+      "hd95_mm": 0.6109402747923921
+     }
+    },
+    {
+     "case": "MR249",
+     "subject": "MR249",
+     "fold": "0",
+     "dice": 0.7577677224736048,
+     "hd95_mm": 0.3199999928474426,
+     "assd_mm": 0.14047461051213664,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.7569685098689167,
+      "hd95_mm": 0.3199999928474426
+     }
+    },
+    {
+     "case": "MR252",
+     "subject": "MR252",
+     "fold": "0",
+     "dice": 0.653972903698279,
+     "hd95_mm": 0.6399999856948853,
+     "assd_mm": 0.23139398205130543,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.653972903698279,
+      "hd95_mm": 0.6399999856948853
+     }
+    },
+    {
+     "case": "MR253",
+     "subject": "MR253",
+     "fold": "0",
+     "dice": 0.6874350986500519,
+     "hd95_mm": 1.1565465855630883,
+     "assd_mm": 0.2767762175443516,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.6869595295745416,
+      "hd95_mm": 1.1565465855630883
+     }
+    },
+    {
+     "case": "MR256",
+     "subject": "MR256",
+     "fold": "0",
+     "dice": 0.7259328576441689,
+     "hd95_mm": 0.48166378909156765,
+     "assd_mm": 0.1707764316427167,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.7255933590553022,
+      "hd95_mm": 0.48166378909156765
+     }
+    },
+    {
+     "case": "MF282",
+     "subject": "MF282",
+     "fold": "1",
+     "dice": 0.7496823379923762,
+     "hd95_mm": 0.4320000112056732,
+     "assd_mm": 0.17085300889229957,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.7496823379923762,
+      "hd95_mm": 0.4320000112056732
+     }
+    },
+    {
+     "case": "MR248",
+     "subject": "MR248",
+     "fold": "1",
+     "dice": 0.651966473243069,
+     "hd95_mm": 0.5820274807957208,
+     "assd_mm": 0.21868290455511122,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.651966473243069,
+      "hd95_mm": 0.5820274807957208
+     }
+    },
+    {
+     "case": "MR250",
+     "subject": "MR250",
+     "fold": "1",
+     "dice": 0.7623152709359606,
+     "hd95_mm": 0.36000001430511475,
+     "assd_mm": 0.15115045632486063,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.7623152709359606,
+      "hd95_mm": 0.36000001430511475
+     }
+    },
+    {
+     "case": "MR251",
+     "subject": "MR251",
+     "fold": "1",
+     "dice": 0.7997070670084219,
+     "hd95_mm": 0.3199999928474426,
+     "assd_mm": 0.13348774230279417,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.7997070670084219,
+      "hd95_mm": 0.3199999928474426
+     }
+    },
+    {
+     "case": "MF196",
+     "subject": "MF196",
+     "fold": "2",
+     "dice": 0.6518987341772152,
+     "hd95_mm": 0.9725263910965086,
+     "assd_mm": 0.3778349203378811,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.6516175413371675,
+      "hd95_mm": 0.9725263910965086
+     }
+    },
+    {
+     "case": "MR247",
+     "subject": "MR247",
+     "fold": "2",
+     "dice": 0.7310904318778334,
+     "hd95_mm": 0.6399999856948853,
+     "assd_mm": 0.2667124257298962,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.7310904318778334,
+      "hd95_mm": 0.6399999856948853
+     }
+    },
+    {
+     "case": "MR254",
+     "subject": "MR254",
+     "fold": "2",
+     "dice": 0.6442376521116678,
+     "hd95_mm": 0.6399999856948853,
+     "assd_mm": 0.22763369105065337,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.6438535829259568,
+      "hd95_mm": 0.6399999856948853
+     }
+    },
+    {
+     "case": "MR273",
+     "subject": "MR273",
+     "fold": "2",
+     "dice": 0.64123993314086,
+     "hd95_mm": 0.8640000224113464,
+     "assd_mm": 0.3828785294107115,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.6416527419109829,
+      "hd95_mm": 0.8640000224113464
+     }
+    },
+    {
+     "case": "MF191",
+     "subject": "MF191",
+     "fold": "3",
+     "dice": 0.3311678022500396,
+     "hd95_mm": 5.43139439206539,
+     "assd_mm": 1.4887517293229093,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.3311678022500396,
+      "hd95_mm": 5.43139439206539
+     }
+    },
+    {
+     "case": "MR243",
+     "subject": "MR243",
+     "fold": "3",
+     "dice": 0.8021621621621622,
+     "hd95_mm": 0.3199999928474426,
+     "assd_mm": 0.11123680924087528,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.8021621621621622,
+      "hd95_mm": 0.3199999928474426
+     }
+    },
+    {
+     "case": "MR244",
+     "subject": "MR244",
+     "fold": "3",
+     "dice": 0.790690259843775,
+     "hd95_mm": 0.3199999928474426,
+     "assd_mm": 0.19044914170529254,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.790690259843775,
+      "hd95_mm": 0.3199999928474426
+     }
+    },
+    {
+     "case": "MR261",
+     "subject": "MR261",
+     "fold": "3",
+     "dice": 0.7877737513786041,
+     "hd95_mm": 0.3199999928474426,
+     "assd_mm": 0.1720019451433195,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.787745136646452,
+      "hd95_mm": 0.3199999928474426
+     }
+    },
+    {
+     "case": "MF204",
+     "subject": "MF204",
+     "fold": "4",
+     "dice": 0.7193778353856124,
+     "hd95_mm": 0.6880000233650208,
+     "assd_mm": 0.29248653638343114,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.7184466019417476,
+      "hd95_mm": 0.6880000233650208
+     }
+    },
+    {
+     "case": "MF278",
+     "subject": "MF278",
+     "fold": "4",
+     "dice": 0.7307901907356948,
+     "hd95_mm": 0.5727128620970083,
+     "assd_mm": 0.18544736014365268,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.7303921568627451,
+      "hd95_mm": 0.5727128620970083
+     }
+    },
+    {
+     "case": "MR257",
+     "subject": "MR257",
+     "fold": "4",
+     "dice": 0.6624187256176853,
+     "hd95_mm": 0.7155417368063282,
+     "assd_mm": 0.23135937006502638,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.6616443693986231,
+      "hd95_mm": 0.7155417368063282
+     }
+    },
+    {
+     "case": "MR263",
+     "subject": "MR263",
+     "fold": "4",
+     "dice": 0.49790273211654007,
+     "hd95_mm": 1.638337216175425,
+     "assd_mm": 0.5262395397816222,
+     "counted": true,
+     "label_kind": "hand",
+     "raw": {
+      "dice": 0.49798787054355836,
+      "hd95_mm": 1.638337216175425
+     }
+    }
+   ],
+   "pooled": {
+    "dice_median": 0.7193778353856124,
+    "dice_mean": 0.6876966856697442,
+    "dice_min": 0.3311678022500396,
+    "dice_q10": 0.64123993314086,
+    "hd95_median": 0.6109402747923921,
+    "hd95_q90": 1.1565465855630883,
+    "assd_median": 0.22763369105065337,
+    "n_cases": 21,
+    "n_brains": 21
+   },
+   "per_brain": {
+    "MF191": {
+     "dice_median": 0.3311678022500396,
+     "hd95_median": 5.43139439206539,
+     "n": 1
+    },
+    "MF196": {
+     "dice_median": 0.6518987341772152,
+     "hd95_median": 0.9725263910965086,
+     "n": 1
+    },
+    "MF204": {
+     "dice_median": 0.7193778353856124,
+     "hd95_median": 0.6880000233650208,
+     "n": 1
+    },
+    "MF275": {
+     "dice_median": 0.6621004566210046,
+     "hd95_median": 0.6109402747923921,
+     "n": 1
+    },
+    "MF278": {
+     "dice_median": 0.7307901907356948,
+     "hd95_median": 0.5727128620970083,
+     "n": 1
+    },
+    "MF282": {
+     "dice_median": 0.7496823379923762,
+     "hd95_median": 0.4320000112056732,
+     "n": 1
+    },
+    "MR243": {
+     "dice_median": 0.8021621621621622,
+     "hd95_median": 0.3199999928474426,
+     "n": 1
+    },
+    "MR244": {
+     "dice_median": 0.790690259843775,
+     "hd95_median": 0.3199999928474426,
+     "n": 1
+    },
+    "MR247": {
+     "dice_median": 0.7310904318778334,
+     "hd95_median": 0.6399999856948853,
+     "n": 1
+    },
+    "MR248": {
+     "dice_median": 0.651966473243069,
+     "hd95_median": 0.5820274807957208,
+     "n": 1
+    },
+    "MR249": {
+     "dice_median": 0.7577677224736048,
+     "hd95_median": 0.3199999928474426,
+     "n": 1
+    },
+    "MR250": {
+     "dice_median": 0.7623152709359606,
+     "hd95_median": 0.36000001430511475,
+     "n": 1
+    },
+    "MR251": {
+     "dice_median": 0.7997070670084219,
+     "hd95_median": 0.3199999928474426,
+     "n": 1
+    },
+    "MR252": {
+     "dice_median": 0.653972903698279,
+     "hd95_median": 0.6399999856948853,
+     "n": 1
+    },
+    "MR253": {
+     "dice_median": 0.6874350986500519,
+     "hd95_median": 1.1565465855630883,
+     "n": 1
+    },
+    "MR254": {
+     "dice_median": 0.6442376521116678,
+     "hd95_median": 0.6399999856948853,
+     "n": 1
+    },
+    "MR256": {
+     "dice_median": 0.7259328576441689,
+     "hd95_median": 0.48166378909156765,
+     "n": 1
+    },
+    "MR257": {
+     "dice_median": 0.6624187256176853,
+     "hd95_median": 0.7155417368063282,
+     "n": 1
+    },
+    "MR261": {
+     "dice_median": 0.7877737513786041,
+     "hd95_median": 0.3199999928474426,
+     "n": 1
+    },
+    "MR263": {
+     "dice_median": 0.49790273211654007,
+     "hd95_median": 1.638337216175425,
+     "n": 1
+    },
+    "MR273": {
+     "dice_median": 0.64123993314086,
+     "hd95_median": 0.8640000224113464,
+     "n": 1
+    }
+   },
+   "not_pooled": [],
+   "folds_scored": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+   ],
+   "pooled_raw": {
+    "dice_median": 0.7184466019417476,
+    "dice_mean": 0.6875103126523293,
+    "dice_min": 0.3311678022500396,
+    "dice_q10": 0.6416527419109829,
+    "hd95_median": 0.6109402747923921,
+    "hd95_q90": 1.1565465855630883,
+    "assd_median": null,
+    "n_cases": 21,
+    "n_brains": 21
+   },
+   "worst_per_fold": {
+    "0": {
+     "case": "MR252",
+     "subject": "MR252",
+     "dice": 0.653972903698279,
+     "hd95_mm": 0.6399999856948853
+    },
+    "1": {
+     "case": "MR248",
+     "subject": "MR248",
+     "dice": 0.651966473243069,
+     "hd95_mm": 0.5820274807957208
+    },
+    "2": {
+     "case": "MR273",
+     "subject": "MR273",
+     "dice": 0.64123993314086,
+     "hd95_mm": 0.8640000224113464
+    },
+    "3": {
+     "case": "MF191",
+     "subject": "MF191",
+     "dice": 0.3311678022500396,
+     "hd95_mm": 5.43139439206539
+    },
+    "4": {
+     "case": "MR263",
+     "subject": "MR263",
+     "dice": 0.49790273211654007,
+     "hd95_mm": 1.638337216175425
+    }
+   },
+   "per_brain_summary": {
+    "n_brains": 21,
+    "dice_median": 0.7193778353856124,
+    "dice_min": 0.3311678022500396,
+    "dice_max": 0.8021621621621622,
+    "hd95_median": 0.6109402747923921,
+    "hd95_min": 0.3199999928474426,
+    "hd95_max": 5.43139439206539
+   }
+  },
+  "incumbent": {
+   "name": "Dataset508_holes3 (3D nnU-Net ResEnc-M, fold 0)",
+   "in_sample_brains": [
+    "MF278",
+    "MF282",
+    "MR243",
+    "MR244",
+    "MR247",
+    "MR248",
+    "MR249",
+    "MR250",
+    "MR251",
+    "MR252",
+    "MR253",
+    "MR254",
+    "MR256",
+    "MR257",
+    "MR263",
+    "MR273"
+   ],
+   "no_prediction": {},
+   "fair_subset": {
+    "brains": [
+     "MF191",
+     "MF196",
+     "MF204",
+     "MF275",
+     "MR261"
+    ],
+    "n_cases": 5,
+    "incumbent": {
+     "dice_median": 0.5242135030045952,
+     "hd95_median": 1.0315200090408325
+    },
+    "new": {
+     "dice_median": 0.6621004566210046,
+     "hd95_median": 0.6880000233650208
+    },
+    "paired_dice_diff_median": 0.12768523117261998,
+    "new_higher": 4,
+    "per_brain": {
+     "MF191": {
+      "incumbent_dice_median": 0.15544041450777202,
+      "new_dice_median": 0.3311678022500396,
+      "n": 1
+     },
+     "MF196": {
+      "incumbent_dice_median": 0.5242135030045952,
+      "new_dice_median": 0.6518987341772152,
+      "n": 1
+     },
+     "MF204": {
+      "incumbent_dice_median": 0.4740450538687561,
+      "new_dice_median": 0.7193778353856124,
+      "n": 1
+     },
+     "MF275": {
+      "incumbent_dice_median": 0.590237636480411,
+      "new_dice_median": 0.6621004566210046,
+      "n": 1
+     },
+     "MR261": {
+      "incumbent_dice_median": 0.9498880996399728,
+      "new_dice_median": 0.7877737513786041,
+      "n": 1
+     }
+    },
+    "per_brain_summary": {
+     "n_brains": 5,
+     "incumbent_dice_median": 0.5242135030045952,
+     "new_dice_median": 0.6621004566210046,
+     "new_higher_brains": 4
+    },
+    "margin": 0.01,
+    "within_margin": true
+   },
+   "per_case": [
+    {
+     "case": "MF191",
+     "subject": "MF191",
+     "counted": true,
+     "dice": 0.15544041450777202,
+     "hd95_mm": 5.979197200230206,
+     "assd_mm": 2.001216772943467,
+     "vox_pred": 675,
+     "vox_ref": 3957,
+     "fp_area_mm2": null
+    },
+    {
+     "case": "MF196",
+     "subject": "MF196",
+     "counted": true,
+     "dice": 0.5242135030045952,
+     "hd95_mm": 1.0315200090408325,
+     "assd_mm": 0.3975432180339712,
+     "vox_pred": 1642,
+     "vox_ref": 4016,
+     "fp_area_mm2": null
+    },
+    {
+     "case": "MF204",
+     "subject": "MF204",
+     "counted": true,
+     "dice": 0.4740450538687561,
+     "hd95_mm": 2.961985180134721,
+     "assd_mm": 0.7107744587871873,
+     "vox_pred": 274,
+     "vox_ref": 747,
+     "fp_area_mm2": null
+    },
+    {
+     "case": "MF275",
+     "subject": "MF275",
+     "counted": true,
+     "dice": 0.590237636480411,
+     "hd95_mm": 0.8640000224113464,
+     "assd_mm": 0.31022974949568066,
+     "vox_pred": 1072,
+     "vox_ref": 2042,
+     "fp_area_mm2": null
+    },
+    {
+     "case": "MR261",
+     "subject": "MR261",
+     "counted": true,
+     "dice": 0.9498880996399728,
+     "hd95_mm": 0.3199999928474426,
+     "assd_mm": 0.03362177331777358,
+     "vox_pred": 4961,
+     "vox_ref": 5316,
+     "fp_area_mm2": null
+    }
+   ],
+   "caveat": "Dataset508_holes3 (nnU-Net ResEnc-M 3d_fullres, fold 0, checkpoint_final, default mirroring; post-processing as code/segment.py post_holes: drop at/right of the brain x-centroid + 3.0 voxels, clamp to the mask of record, drop components < 3 voxels). Held-out brains only (outside its training set); every hand label began as a model prediction (edited vs auto Dice 0.975-0.999), which favors the incumbent."
+  },
+  "all_model": {
+   "run": "models_wrapup/runs/bf_holes/fold_all",
+   "epochs": 200,
+   "final_loss": 0.38233357965946196,
+   "wall_h": 1.98,
+   "gpu": "NVIDIA RTX 6000 Ada Generation",
+   "weights_md5": "030279b5215edf06e9ddda892f50b523",
+   "spec_md5": "481d0bf63302a6a35d8053377368b95f",
+   "parameters": 31197322,
+   "git": {
+    "commit": "ff0327f9f77d02008ef924b6db4ae1ade56c4448",
+    "dirty": false,
+    "dirty_files": []
+   }
+  },
+  "predictor_check": {
+   "source_run": "models_wrapup/runs/bf_holes/fold_0",
+   "fold": "0",
+   "n_cases": 5,
+   "n_identical": 5,
+   "max_abs_dice_diff": 0.0
+  },
+  "hardware": {
+   "runs": {
+    "0": {
+     "gpu": "NVIDIA RTX 6000 Ada Generation",
+     "wall_h": 2.12,
+     "resumed": null
+    },
+    "1": {
+     "gpu": "NVIDIA RTX 6000 Ada Generation",
+     "wall_h": 2.13,
+     "resumed": null
+    },
+    "2": {
+     "gpu": "NVIDIA RTX 6000 Ada Generation",
+     "wall_h": 2.87,
+     "resumed": [
+      {
+       "epoch": 185,
+       "at": "2026-11-03T10:27:31-05:00"
+      }
+     ]
+    },
+    "3": {
+     "gpu": "NVIDIA RTX 6000 Ada Generation",
+     "wall_h": 2.15,
+     "resumed": null
+    },
+    "4": {
+     "gpu": "NVIDIA RTX 6000 Ada Generation",
+     "wall_h": 2.7,
+     "resumed": [
+      {
+       "epoch": 30,
+       "at": "2026-11-03T11:15:11-05:00"
+      }
+     ]
+    },
+    "all": {
+     "gpu": "NVIDIA RTX 6000 Ada Generation",
+     "wall_h": 1.98,
+     "resumed": null
+    }
+   },
+   "torch": "2.6.0+cu124",
+   "cuda": "12.4",
+   "wall_hours_total": 13.95
+  },
+  "code": {
+   "linc_seg_md5_identical": true,
+   "commits": {
+    "0": "ff0327f9f77d02008ef924b6db4ae1ade56c4448",
+    "1": "ee7a1196cac297a735f1497e5eddbc4db6494819",
+    "2": "140a3ad7ebdb8363b9447ec2ad08fd9366ab8348",
+    "3": "d26e4eb583836415a6947832a92beb95c972397c",
+    "4": "f697fdf364f75778963413da705ef997c94ae1c0",
+    "all": "ff0327f9f77d02008ef924b6db4ae1ade56c4448"
+   },
+   "dirty": {
+    "0": false,
+    "1": false,
+    "2": false,
+    "3": false,
+    "4": false,
+    "all": false
+   }
+  },
+  "status": {
+   "runs_done": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "all"
+   ],
+   "runs_missing": []
+  }
+ }
+}

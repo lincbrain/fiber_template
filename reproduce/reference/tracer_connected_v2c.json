@@ -1,0 +1,809 @@
+{
+ "data": {
+  "method": [
+   "One connected pathway per tracer case (paper: Results, tracer labels; Fig. 9; Supplementary S2): the interpolated bundle label of each",
+   "case joined into a single piece, the joins marked as inferred.",
+   "",
+   "Inputs (products_mri `tracer_template_v2`): <S>/<S>_Bundles_mri-template_density.nii.gz (the carried density of the interpolated bundle",
+   "label, 0-1 on the 0.25 mm template grid) and <S>_Bundles_mri-template_solid2.nii.gz (its connected solid: density > 0.5 grown through",
+   "connected voxels of density >= 0.25); the template brain mask and white matter (template_mri: linc_mri_brainmask, linc_mri_wm_fa025).",
+   "Rule: the 26-connected pieces of the connected solid, largest first; every other piece is attached to the pathway along the cheapest",
+   "path inside the template brain mask (voxel cost 1 / (density + EPS), halved in white matter and inside the footprint, density >= 0.1;",
+   "6-connected graph; multi-source Dijkstra from the current pathway, the cheapest piece first, so chains of pieces connect through each",
+   "other), the path dilated to a tube of TUBE_R voxels; pieces smaller than MIN_VOX voxels are dropped (listed), no piece is dropped for",
+   "distance; every bridge is recorded with its length and voxel count and flagged when longer than LONG_MM. Bridge voxels that were not in",
+   "the solid are inferred: label 2 in the written label (1 = the solid)."
+  ],
+  "cases": {
+   "MR243": {
+    "case": "MM1",
+    "subject": "MR243",
+    "params": {
+     "vox_mm": 0.25,
+     "cost": "1/(density + eps), x0.5 in white matter (FA > 0.25) or the footprint (density >= 0.1)",
+     "eps": 0.05,
+     "long_bridge_flag_mm": 10.0,
+     "min_piece_vox": 8,
+     "tube_radius_vox": 2,
+     "graph": "6-connected, inside the template brain mask",
+     "drop": "specks only (no distance cap: every charted piece is bridged)",
+     "pieces": "26-connected pieces of v2's connected solid (density > 0.5 grown through >= 0.25)"
+    },
+    "v2_solid": {
+     "voxels": 12653,
+     "pieces": 11,
+     "largest_share": 0.9533,
+     "piece_voxels": [
+      12062,
+      294,
+      117,
+      88,
+      31,
+      21,
+      15,
+      11,
+      6,
+      6,
+      2
+     ]
+    },
+    "attached": [
+     {
+      "piece": 5,
+      "voxels": 294,
+      "path_mm": 1.0,
+      "long": false,
+      "cost": 3.411,
+      "bridge_voxels": 56,
+      "added_voxels": 350
+     },
+     {
+      "piece": 9,
+      "voxels": 15,
+      "path_mm": 1.5,
+      "long": false,
+      "cost": 8.177,
+      "bridge_voxels": 90,
+      "added_voxels": 105
+     },
+     {
+      "piece": 6,
+      "voxels": 11,
+      "path_mm": 1.5,
+      "long": false,
+      "cost": 7.708,
+      "bridge_voxels": 81,
+      "added_voxels": 92
+     },
+     {
+      "piece": 2,
+      "voxels": 88,
+      "path_mm": 1.75,
+      "long": false,
+      "cost": 10.505,
+      "bridge_voxels": 76,
+      "added_voxels": 164
+     },
+     {
+      "piece": 8,
+      "voxels": 31,
+      "path_mm": 2.5,
+      "long": false,
+      "cost": 20.007,
+      "bridge_voxels": 144,
+      "added_voxels": 175
+     },
+     {
+      "piece": 10,
+      "voxels": 21,
+      "path_mm": 3.25,
+      "long": false,
+      "cost": 26.052,
+      "bridge_voxels": 174,
+      "added_voxels": 195
+     },
+     {
+      "piece": 11,
+      "voxels": 117,
+      "path_mm": 8.5,
+      "long": false,
+      "cost": 77.817,
+      "bridge_voxels": 426,
+      "added_voxels": 543
+     }
+    ],
+    "dropped": [
+     {
+      "piece": 3,
+      "voxels": 6,
+      "reason": "smaller than 8 voxels"
+     },
+     {
+      "piece": 4,
+      "voxels": 6,
+      "reason": "smaller than 8 voxels"
+     },
+     {
+      "piece": 7,
+      "voxels": 2,
+      "reason": "smaller than 8 voxels"
+     }
+    ],
+    "final": {
+     "voxels": 13686,
+     "mm3": 213.844,
+     "pieces": 1,
+     "inferred_voxels": 1047,
+     "inferred_mm3": 16.359,
+     "inferred_share": 0.0765,
+     "v2_solid_voxels_kept": 12639,
+     "v2_solid_voxels_dropped": 14,
+     "dropped_share_of_v2_solid": 0.0011,
+     "pieces_attached": 7,
+     "pieces_dropped": 3,
+     "bridges_longer_than_flag": 0,
+     "longest_bridge_mm": 8.5,
+     "bridge_total_mm": 20.0
+    }
+   },
+   "MR252": {
+    "case": "MM2",
+    "subject": "MR252",
+    "params": {
+     "vox_mm": 0.25,
+     "cost": "1/(density + eps), x0.5 in white matter (FA > 0.25) or the footprint (density >= 0.1)",
+     "eps": 0.05,
+     "long_bridge_flag_mm": 10.0,
+     "min_piece_vox": 8,
+     "tube_radius_vox": 2,
+     "graph": "6-connected, inside the template brain mask",
+     "drop": "specks only (no distance cap: every charted piece is bridged)",
+     "pieces": "26-connected pieces of v2's connected solid (density > 0.5 grown through >= 0.25)"
+    },
+    "v2_solid": {
+     "voxels": 3612,
+     "pieces": 14,
+     "largest_share": 0.755,
+     "piece_voxels": [
+      2727,
+      367,
+      321,
+      49,
+      39,
+      24,
+      22,
+      18,
+      18,
+      8,
+      7,
+      5,
+      5,
+      2
+     ]
+    },
+    "attached": [
+     {
+      "piece": 14,
+      "voxels": 49,
+      "path_mm": 0.75,
+      "long": false,
+      "cost": 2.125,
+      "bridge_voxels": 32,
+      "added_voxels": 81
+     },
+     {
+      "piece": 6,
+      "voxels": 18,
+      "path_mm": 0.75,
+      "long": false,
+      "cost": 2.135,
+      "bridge_voxels": 47,
+      "added_voxels": 65
+     },
+     {
+      "piece": 13,
+      "voxels": 367,
+      "path_mm": 0.75,
+      "long": false,
+      "cost": 2.203,
+      "bridge_voxels": 37,
+      "added_voxels": 404
+     },
+     {
+      "piece": 2,
+      "voxels": 321,
+      "path_mm": 1.25,
+      "long": false,
+      "cost": 3.101,
+      "bridge_voxels": 80,
+      "added_voxels": 401
+     },
+     {
+      "piece": 9,
+      "voxels": 8,
+      "path_mm": 0.75,
+      "long": false,
+      "cost": 1.702,
+      "bridge_voxels": 48,
+      "added_voxels": 56
+     },
+     {
+      "piece": 10,
+      "voxels": 22,
+      "path_mm": 0.5,
+      "long": false,
+      "cost": 2.007,
+      "bridge_voxels": 38,
+      "added_voxels": 60
+     },
+     {
+      "piece": 8,
+      "voxels": 39,
+      "path_mm": 0.5,
+      "long": false,
+      "cost": 1.183,
+      "bridge_voxels": 33,
+      "added_voxels": 72
+     },
+     {
+      "piece": 12,
+      "voxels": 24,
+      "path_mm": 1.75,
+      "long": false,
+      "cost": 12.302,
+      "bridge_voxels": 95,
+      "added_voxels": 119
+     },
+     {
+      "piece": 11,
+      "voxels": 18,
+      "path_mm": 1.0,
+      "long": false,
+      "cost": 4.003,
+      "bridge_voxels": 68,
+      "added_voxels": 86
+     }
+    ],
+    "dropped": [
+     {
+      "piece": 1,
+      "voxels": 7,
+      "reason": "smaller than 8 voxels"
+     },
+     {
+      "piece": 3,
+      "voxels": 5,
+      "reason": "smaller than 8 voxels"
+     },
+     {
+      "piece": 4,
+      "voxels": 5,
+      "reason": "smaller than 8 voxels"
+     },
+     {
+      "piece": 5,
+      "voxels": 2,
+      "reason": "smaller than 8 voxels"
+     }
+    ],
+    "final": {
+     "voxels": 4071,
+     "mm3": 63.609,
+     "pieces": 1,
+     "inferred_voxels": 478,
+     "inferred_mm3": 7.469,
+     "inferred_share": 0.1174,
+     "v2_solid_voxels_kept": 3593,
+     "v2_solid_voxels_dropped": 19,
+     "dropped_share_of_v2_solid": 0.0053,
+     "pieces_attached": 9,
+     "pieces_dropped": 4,
+     "bridges_longer_than_flag": 0,
+     "longest_bridge_mm": 1.75,
+     "bridge_total_mm": 8.0
+    }
+   },
+   "MR256": {
+    "case": "MM3",
+    "subject": "MR256",
+    "params": {
+     "vox_mm": 0.25,
+     "cost": "1/(density + eps), x0.5 in white matter (FA > 0.25) or the footprint (density >= 0.1)",
+     "eps": 0.05,
+     "long_bridge_flag_mm": 10.0,
+     "min_piece_vox": 8,
+     "tube_radius_vox": 2,
+     "graph": "6-connected, inside the template brain mask",
+     "drop": "specks only (no distance cap: every charted piece is bridged)",
+     "pieces": "26-connected pieces of v2's connected solid (density > 0.5 grown through >= 0.25)"
+    },
+    "v2_solid": {
+     "voxels": 9908,
+     "pieces": 8,
+     "largest_share": 0.8397,
+     "piece_voxels": [
+      8320,
+      955,
+      403,
+      87,
+      58,
+      37,
+      31,
+      17
+     ]
+    },
+    "attached": [
+     {
+      "piece": 2,
+      "voxels": 955,
+      "path_mm": 0.75,
+      "long": false,
+      "cost": 1.28,
+      "bridge_voxels": 52,
+      "added_voxels": 1007
+     },
+     {
+      "piece": 4,
+      "voxels": 87,
+      "path_mm": 0.75,
+      "long": false,
+      "cost": 3.679,
+      "bridge_voxels": 49,
+      "added_voxels": 136
+     },
+     {
+      "piece": 7,
+      "voxels": 58,
+      "path_mm": 1.25,
+      "long": false,
+      "cost": 5.566,
+      "bridge_voxels": 68,
+      "added_voxels": 126
+     },
+     {
+      "piece": 6,
+      "voxels": 31,
+      "path_mm": 1.75,
+      "long": false,
+      "cost": 12.173,
+      "bridge_voxels": 99,
+      "added_voxels": 130
+     },
+     {
+      "piece": 3,
+      "voxels": 17,
+      "path_mm": 1.0,
+      "long": false,
+      "cost": 5.632,
+      "bridge_voxels": 65,
+      "added_voxels": 82
+     },
+     {
+      "piece": 5,
+      "voxels": 37,
+      "path_mm": 1.25,
+      "long": false,
+      "cost": 6.982,
+      "bridge_voxels": 75,
+      "added_voxels": 112
+     },
+     {
+      "piece": 8,
+      "voxels": 403,
+      "path_mm": 2.75,
+      "long": false,
+      "cost": 20.427,
+      "bridge_voxels": 136,
+      "added_voxels": 539
+     }
+    ],
+    "dropped": [],
+    "final": {
+     "voxels": 10452,
+     "mm3": 163.312,
+     "pieces": 1,
+     "inferred_voxels": 544,
+     "inferred_mm3": 8.5,
+     "inferred_share": 0.052,
+     "v2_solid_voxels_kept": 9908,
+     "v2_solid_voxels_dropped": 0,
+     "dropped_share_of_v2_solid": 0.0,
+     "pieces_attached": 7,
+     "pieces_dropped": 0,
+     "bridges_longer_than_flag": 0,
+     "longest_bridge_mm": 2.75,
+     "bridge_total_mm": 9.5
+    }
+   },
+   "MF191": {
+    "case": "MF8",
+    "subject": "MF191",
+    "params": {
+     "vox_mm": 0.25,
+     "cost": "1/(density + eps), x0.5 in white matter (FA > 0.25) or the footprint (density >= 0.1)",
+     "eps": 0.05,
+     "long_bridge_flag_mm": 10.0,
+     "min_piece_vox": 8,
+     "tube_radius_vox": 2,
+     "graph": "6-connected, inside the template brain mask",
+     "drop": "specks only (no distance cap: every charted piece is bridged)",
+     "pieces": "26-connected pieces of v2's connected solid (density > 0.5 grown through >= 0.25)"
+    },
+    "v2_solid": {
+     "voxels": 23762,
+     "pieces": 36,
+     "largest_share": 0.5788,
+     "piece_voxels": [
+      13754,
+      2717,
+      2036,
+      1040,
+      730,
+      607,
+      498,
+      403,
+      393,
+      191,
+      156,
+      136,
+      135,
+      123,
+      110,
+      107,
+      92,
+      74,
+      72,
+      51,
+      40,
+      33,
+      32,
+      31,
+      28,
+      24,
+      22,
+      21,
+      18,
+      17,
+      17,
+      15,
+      14,
+      12,
+      8,
+      5
+     ]
+    },
+    "attached": [
+     {
+      "piece": 19,
+      "voxels": 135,
+      "path_mm": 0.75,
+      "long": false,
+      "cost": 4.017,
+      "bridge_voxels": 47,
+      "added_voxels": 182
+     },
+     {
+      "piece": 18,
+      "voxels": 92,
+      "path_mm": 0.5,
+      "long": false,
+      "cost": 1.073,
+      "bridge_voxels": 35,
+      "added_voxels": 127
+     },
+     {
+      "piece": 24,
+      "voxels": 1040,
+      "path_mm": 0.5,
+      "long": false,
+      "cost": 1.292,
+      "bridge_voxels": 37,
+      "added_voxels": 1077
+     },
+     {
+      "piece": 29,
+      "voxels": 22,
+      "path_mm": 1.0,
+      "long": false,
+      "cost": 4.053,
+      "bridge_voxels": 65,
+      "added_voxels": 87
+     },
+     {
+      "piece": 16,
+      "voxels": 730,
+      "path_mm": 1.0,
+      "long": false,
+      "cost": 4.311,
+      "bridge_voxels": 60,
+      "added_voxels": 790
+     },
+     {
+      "piece": 33,
+      "voxels": 2717,
+      "path_mm": 1.75,
+      "long": false,
+      "cost": 9.37,
+      "bridge_voxels": 91,
+      "added_voxels": 2808
+     },
+     {
+      "piece": 36,
+      "voxels": 107,
+      "path_mm": 1.0,
+      "long": false,
+      "cost": 2.375,
+      "bridge_voxels": 53,
+      "added_voxels": 160
+     },
+     {
+      "piece": 14,
+      "voxels": 2036,
+      "path_mm": 1.75,
+      "long": false,
+      "cost": 9.883,
+      "bridge_voxels": 98,
+      "added_voxels": 2134
+     },
+     {
+      "piece": 22,
+      "voxels": 51,
+      "path_mm": 0.5,
+      "long": false,
+      "cost": 0.803,
+      "bridge_voxels": 31,
+      "added_voxels": 82
+     },
+     {
+      "piece": 13,
+      "voxels": 136,
+      "path_mm": 0.75,
+      "long": false,
+      "cost": 2.234,
+      "bridge_voxels": 53,
+      "added_voxels": 189
+     },
+     {
+      "piece": 15,
+      "voxels": 21,
+      "path_mm": 2.0,
+      "long": false,
+      "cost": 5.459,
+      "bridge_voxels": 103,
+      "added_voxels": 124
+     },
+     {
+      "piece": 17,
+      "voxels": 28,
+      "path_mm": 1.5,
+      "long": false,
+      "cost": 6.903,
+      "bridge_voxels": 87,
+      "added_voxels": 115
+     },
+     {
+      "piece": 5,
+      "voxels": 24,
+      "path_mm": 2.0,
+      "long": false,
+      "cost": 10.977,
+      "bridge_voxels": 117,
+      "added_voxels": 141
+     },
+     {
+      "piece": 1,
+      "voxels": 607,
+      "path_mm": 1.25,
+      "long": false,
+      "cost": 7.279,
+      "bridge_voxels": 69,
+      "added_voxels": 676
+     },
+     {
+      "piece": 34,
+      "voxels": 498,
+      "path_mm": 2.25,
+      "long": false,
+      "cost": 11.07,
+      "bridge_voxels": 112,
+      "added_voxels": 610
+     },
+     {
+      "piece": 35,
+      "voxels": 12,
+      "path_mm": 2.25,
+      "long": false,
+      "cost": 11.835,
+      "bridge_voxels": 130,
+      "added_voxels": 142
+     },
+     {
+      "piece": 23,
+      "voxels": 18,
+      "path_mm": 2.25,
+      "long": false,
+      "cost": 11.951,
+      "bridge_voxels": 123,
+      "added_voxels": 141
+     },
+     {
+      "piece": 8,
+      "voxels": 110,
+      "path_mm": 1.75,
+      "long": false,
+      "cost": 13.069,
+      "bridge_voxels": 95,
+      "added_voxels": 205
+     },
+     {
+      "piece": 30,
+      "voxels": 32,
+      "path_mm": 2.5,
+      "long": false,
+      "cost": 14.834,
+      "bridge_voxels": 133,
+      "added_voxels": 165
+     },
+     {
+      "piece": 21,
+      "voxels": 393,
+      "path_mm": 1.0,
+      "long": false,
+      "cost": 2.629,
+      "bridge_voxels": 51,
+      "added_voxels": 444
+     },
+     {
+      "piece": 20,
+      "voxels": 33,
+      "path_mm": 1.25,
+      "long": false,
+      "cost": 6.694,
+      "bridge_voxels": 77,
+      "added_voxels": 110
+     },
+     {
+      "piece": 4,
+      "voxels": 403,
+      "path_mm": 2.25,
+      "long": false,
+      "cost": 15.425,
+      "bridge_voxels": 106,
+      "added_voxels": 509
+     },
+     {
+      "piece": 7,
+      "voxels": 40,
+      "path_mm": 2.5,
+      "long": false,
+      "cost": 17.299,
+      "bridge_voxels": 112,
+      "added_voxels": 152
+     },
+     {
+      "piece": 10,
+      "voxels": 74,
+      "path_mm": 2.5,
+      "long": false,
+      "cost": 17.609,
+      "bridge_voxels": 131,
+      "added_voxels": 205
+     },
+     {
+      "piece": 12,
+      "voxels": 31,
+      "path_mm": 1.25,
+      "long": false,
+      "cost": 9.567,
+      "bridge_voxels": 75,
+      "added_voxels": 106
+     },
+     {
+      "piece": 26,
+      "voxels": 191,
+      "path_mm": 2.5,
+      "long": false,
+      "cost": 19.837,
+      "bridge_voxels": 129,
+      "added_voxels": 320
+     },
+     {
+      "piece": 28,
+      "voxels": 72,
+      "path_mm": 0.5,
+      "long": false,
+      "cost": 2.103,
+      "bridge_voxels": 36,
+      "added_voxels": 108
+     },
+     {
+      "piece": 27,
+      "voxels": 156,
+      "path_mm": 1.0,
+      "long": false,
+      "cost": 2.709,
+      "bridge_voxels": 51,
+      "added_voxels": 207
+     },
+     {
+      "piece": 25,
+      "voxels": 17,
+      "path_mm": 1.25,
+      "long": false,
+      "cost": 5.201,
+      "bridge_voxels": 75,
+      "added_voxels": 92
+     },
+     {
+      "piece": 31,
+      "voxels": 17,
+      "path_mm": 4.5,
+      "long": false,
+      "cost": 25.498,
+      "bridge_voxels": 233,
+      "added_voxels": 250
+     },
+     {
+      "piece": 32,
+      "voxels": 8,
+      "path_mm": 3.0,
+      "long": false,
+      "cost": 23.049,
+      "bridge_voxels": 172,
+      "added_voxels": 180
+     },
+     {
+      "piece": 6,
+      "voxels": 15,
+      "path_mm": 4.25,
+      "long": false,
+      "cost": 30.557,
+      "bridge_voxels": 213,
+      "added_voxels": 228
+     },
+     {
+      "piece": 9,
+      "voxels": 123,
+      "path_mm": 4.25,
+      "long": false,
+      "cost": 37.113,
+      "bridge_voxels": 218,
+      "added_voxels": 341
+     },
+     {
+      "piece": 11,
+      "voxels": 14,
+      "path_mm": 5.0,
+      "long": false,
+      "cost": 39.234,
+      "bridge_voxels": 246,
+      "added_voxels": 260
+     }
+    ],
+    "dropped": [
+     {
+      "piece": 3,
+      "voxels": 5,
+      "reason": "smaller than 8 voxels"
+     }
+    ],
+    "final": {
+     "voxels": 27221,
+     "mm3": 425.328,
+     "pieces": 1,
+     "inferred_voxels": 3464,
+     "inferred_mm3": 54.125,
+     "inferred_share": 0.1273,
+     "v2_solid_voxels_kept": 23757,
+     "v2_solid_voxels_dropped": 5,
+     "dropped_share_of_v2_solid": 0.0002,
+     "pieces_attached": 34,
+     "pieces_dropped": 1,
+     "bridges_longer_than_flag": 0,
+     "longest_bridge_mm": 5.0,
+     "bridge_total_mm": 64.25
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,4855 @@
+{
+ "data": {
+  "method": "The target comparison (30 Oct 2026, with the T2 + tensor arm): our MRI template as a registration target for ex vivo brains,\nagainst NMT v2 (sym, in vivo T1w) and CIVM-R (ex vivo b0), with ONE engine and ONE setting for all three targets.\n\nBrains\n  sectioned (13; out of sample for every target; the headline table): data/sub-<ID>/mri/<ID>_mri_b0_native x <ID>_mri_mask_native\n  template  (4, MF283-MF286; in sample for ours): mri/data/sub-<ID>/canonical_rebuild_handfrac/_native/b0_head_n4 x\n            model_mask_source_uint8 (the author's final masks; the construction's own b0 inputs)\nTargets (as the paper's mappings used them: mri/code/atlas_v2.py ATL; 30 Oct 2026), every channel multiplied by its brain mask here\n  nmt    NMT_v2.0_sym_SS (T1w) + NMT_v2.0_sym_brainmask\n  civmr  CIVM-R_b0_brain + CIVM-R_brain_mask; FA = CIVM-R_DTI_FA. Local use only: NOT_FOR_SHARING applies to its intensities and\n         anything derived from them (the warped images under mri/tc/r060/*/civmr/).\n  ours   template/mri/linc_mri_b0 + linc_mri_brainmask; T2 = linc_mri_T2, FA = linc_mri_FA\nArms\n  b0     every brain: its b0 <-> the target's image (nmt: b0 <-> T1w)\n  multi  the 4 template brains with the channels each target has, so NOT like-for-like across targets:\n         nmt: brain T2 <-> T1w;  civmr: b0 <-> b0 + FA <-> FA;  ours: b0 <-> b0 + T2 <-> T2 + FA <-> FA.\n         Brain T2 = t2/echo_n4 pulled to b0-native by reg/t2_to_dwi_v3 (of record), x the final mask; FA = dwi/dti_FA x the final mask.\nEngine (the recipe of the template <-> atlas mappings of record, atlas_v2.py, with the brains placed upright first)\n  upright P0 (rigid, native b0 world -> the canonical NMT-v2-stereotaxic frame of our template), as the R5 recipe places a b0:\n         sectioned brains: the frame bridge (template/bridge_run113_to_canonical) @ the FLIRT 6-dof placement of record\n         (data/sub-<ID>/mri/<ID>_mri2template.mat with <ID>_mri.nii.gz); template brains: landmarks/canonical.json T_subject_to_canonical.\n         Needed because ANTs starts from the centres of mass without a rotation search: five brains' b0 headers are 34-56 deg from\n         upright (the others 3-15 deg), and their starts failed in a first run (mri/tc/r060/start, b0: kept, not used).\n  start  S (brain world -> target world) = S' @ P0. S' = the best of three candidates from the two ANTs MI rigid+affine registrations\n         (preprocess_mri.affine_init) of the upright b0 (header P0 @ affine, no resampling), target fixed (fwd) and brain fixed (bwd):\n         fwd, bwd and their log-Euclidean mean (the mappings' rule); best = the highest Dice of the brain mask carried by the candidate\n         with the target's brain mask (target grid, every 2nd voxel). The mean alone failed where the two directions disagree (7 of 51\n         pairs by 5-14 mm: e.g. civmr MR256 fwd 0.93, bwd 0.58, mean 0.74). The multi arm reuses its pair's b0-arm start.\n         The solve gets the upright images RESAMPLED ONCE onto an axis-aligned 0.25 mm grid around the brain (mask box + 4 mm; images\n         cubic, clipped at 0 and masked; masks linear > 0.5), as the R5 recipe resamples its input once: the engine sizes its halfway\n         grid from the corners of each mask's VOXEL box, so a tilted voxel grid (native, or upright by header only) inflated it ~1.4x\n         per axis for the 34-56 deg brains (NMT MR253: 288-318 x 342-392 x 343-390) and ran out of memory on 48 GB cards. Those two\n         runs are in mri/tc/r060_up/_superseded_nativeB and _superseded_uprightheader, not used. The native b0 is reached by P0^-1.\n  solve  mri/code/symreg_upstream.py A = target, B = upright brain, S', --res 0.25 --smooth-warp-sigma 1.25 --max-gpu-frac 0.95; channel chunk 8\n         (4 on the 20 GB cards: memory only, the loss is summed over all chunks either way)\nFolders: targets/ and inputs/ in mri/tc/r060; everything from the upright starts on in mri/tc/r060_up (place/, start/, b0/, multi/,\nxfm/, logs/).\nRegistry entries (for the LGN/STN carries): mri/tc/r060_up/xfm/sub-<ID>/b0-native__to__{atlas-NMT_v2.0_sym, atlas-CIVM-R, mri-template}\n  = [affine ras_pull Hinv, warp ras_disp F, affine ras_pull Hinv, affine ras_pull P0^-1] (a2b of linc.link.symreg.maps, then upright\n  -> native; checked against it), files in place.\nMeasures (each target's own 0.25 mm grid; pairs of different brains)\n  b0_r       Pearson r of the two warped b0 images (cubic) inside both warped masks (linear > 0.5), minus a 1.5 mm rim (6 erosions at\n             0.25 mm: the rule of the paper's pairwise variant measures)\n  mask_dice  Dice of the two warped brain masks\n  per target and group: median, IQR (25th-75th percentile); per pair whether ours is higher than nmt / civmr. Groups: the 13 sectioned\n  brains (78 pairs, the headline), the 4 template brains (6 pairs, in sample for ours). Reference beside ours: the 13 brains through the\n  R5 of record (data/sub-<ID>/xfm/b0-native__to__mri-template, the b0_to_template engine, 0.35 mm).\n    <linc_template python> mri/code/r060_targets.py prep | place | affine <ID> <tgt> | choose | grid | jobs | cmd <arm> <tgt> <ID> [chunk] | registry | warps [arm] [jobs] | measure\n",
+  "channels": {
+   "b0": {
+    "nmt": "brain b0 <-> NMT v2 T1w",
+    "civmr": "brain b0 <-> CIVM-R b0",
+    "ours": "brain b0 <-> our b0"
+   },
+   "multi": {
+    "nmt": "brain T2 <-> NMT v2 T1w",
+    "civmr": "b0 <-> CIVM-R b0 + FA <-> CIVM-R FA",
+    "ours": "b0 <-> our b0 + T2 <-> our T2 + FA <-> our FA"
+   }
+  },
+  "note_multi": "the multi arm is NOT like-for-like: each target got the channels it has (channels.multi)",
+  "headline": "sectioned (13 brains, out of sample for every target), b0 arm",
+  "keys": {
+   "b0_r": "b0 Pearson r inside both warped masks minus a 1.5 mm rim",
+   "mask_dice": "Dice of the two warped brain masks",
+   "b0_r_in_target": "the same inside the target's brain mask",
+   "mask_dice_in_target": "Dice of the two masks cut to the target's brain mask"
+  },
+  "species": {
+   "note": "ours is built from 4 M. fascicularis brains (MF283-286); NMT v2 and CIVM-R are M. mulatta; of the 13 sectioned brains MF275/MF278/MF282 are M. fascicularis, the 10 MR brains M. mulatta",
+   "rhesus_pairs": "MR-MR pairs, 45 of the 78"
+  },
+  "target_extent_mm": {
+   "nmt": {
+    "xyz": [
+     58.8,
+     73.8,
+     47.5
+    ],
+    "volume_ml": 91.1
+   },
+   "civmr": {
+    "xyz": [
+     54.0,
+     70.8,
+     43.8
+    ],
+    "volume_ml": 74.3
+   },
+   "ours": {
+    "xyz": [
+     52.8,
+     62.5,
+     36.0
+    ],
+    "volume_ml": 51.7
+   }
+  },
+  "arms": {
+   "b0": {
+    "sectioned": {
+     "brains": [
+      "MF275",
+      "MF278",
+      "MF282",
+      "MR243",
+      "MR249",
+      "MR250",
+      "MR251",
+      "MR252",
+      "MR253",
+      "MR254",
+      "MR256",
+      "MR257",
+      "MR261"
+     ],
+     "pairs": 78,
+     "summary": {
+      "nmt": {
+       "b0_r": {
+        "n": 78,
+        "median": 0.6694,
+        "q25": 0.5542,
+        "q75": 0.7437
+       },
+       "mask_dice": {
+        "n": 78,
+        "median": 0.981,
+        "q25": 0.9795,
+        "q75": 0.9822
+       },
+       "b0_r_in_target": {
+        "n": 78,
+        "median": 0.6704,
+        "q25": 0.5547,
+        "q75": 0.7445
+       },
+       "mask_dice_in_target": {
+        "n": 78,
+        "median": 0.987,
+        "q25": 0.9854,
+        "q75": 0.9882
+       },
+       "rhesus_pairs": {
+        "b0_r": {
+         "n": 45,
+         "median": 0.7306,
+         "q25": 0.6231,
+         "q75": 0.7737
+        },
+        "mask_dice": {
+         "n": 45,
+         "median": 0.9812,
+         "q25": 0.9796,
+         "q75": 0.9825
+        },
+        "b0_r_in_target": {
+         "n": 45,
+         "median": 0.7313,
+         "q25": 0.6231,
+         "q75": 0.774
+        },
+        "mask_dice_in_target": {
+         "n": 45,
+         "median": 0.9865,
+         "q25": 0.985,
+         "q75": 0.9878
+        }
+       }
+      },
+      "civmr": {
+       "b0_r": {
+        "n": 78,
+        "median": 0.6834,
+        "q25": 0.5665,
+        "q75": 0.7446
+       },
+       "mask_dice": {
+        "n": 78,
+        "median": 0.981,
+        "q25": 0.9792,
+        "q75": 0.9821
+       },
+       "b0_r_in_target": {
+        "n": 78,
+        "median": 0.7198,
+        "q25": 0.6132,
+        "q75": 0.7679
+       },
+       "mask_dice_in_target": {
+        "n": 78,
+        "median": 0.9916,
+        "q25": 0.9903,
+        "q75": 0.9933
+       },
+       "rhesus_pairs": {
+        "b0_r": {
+         "n": 45,
+         "median": 0.7245,
+         "q25": 0.6239,
+         "q75": 0.7737
+        },
+        "mask_dice": {
+         "n": 45,
+         "median": 0.981,
+         "q25": 0.9791,
+         "q75": 0.9818
+        },
+        "b0_r_in_target": {
+         "n": 45,
+         "median": 0.7483,
+         "q25": 0.6041,
+         "q75": 0.7809
+        },
+        "mask_dice_in_target": {
+         "n": 45,
+         "median": 0.9911,
+         "q25": 0.9896,
+         "q75": 0.9922
+        }
+       }
+      },
+      "ours": {
+       "b0_r": {
+        "n": 78,
+        "median": 0.6927,
+        "q25": 0.5733,
+        "q75": 0.7512
+       },
+       "mask_dice": {
+        "n": 78,
+        "median": 0.9785,
+        "q25": 0.9766,
+        "q75": 0.9802
+       },
+       "b0_r_in_target": {
+        "n": 78,
+        "median": 0.7145,
+        "q25": 0.6239,
+        "q75": 0.7587
+       },
+       "mask_dice_in_target": {
+        "n": 78,
+        "median": 0.9899,
+        "q25": 0.9879,
+        "q75": 0.9917
+       },
+       "rhesus_pairs": {
+        "b0_r": {
+         "n": 45,
+         "median": 0.7389,
+         "q25": 0.6234,
+         "q75": 0.7702
+        },
+        "mask_dice": {
+         "n": 45,
+         "median": 0.9781,
+         "q25": 0.9758,
+         "q75": 0.9799
+        },
+        "b0_r_in_target": {
+         "n": 45,
+         "median": 0.7399,
+         "q25": 0.66,
+         "q75": 0.7783
+        },
+        "mask_dice_in_target": {
+         "n": 45,
+         "median": 0.9888,
+         "q25": 0.9866,
+         "q75": 0.9905
+        }
+       }
+      },
+      "ours_r5_of_record": {
+       "b0_r": {
+        "n": 78,
+        "median": 0.6718,
+        "q25": 0.5615,
+        "q75": 0.7309
+       },
+       "mask_dice": {
+        "n": 78,
+        "median": 0.9765,
+        "q25": 0.9728,
+        "q75": 0.9786
+       },
+       "b0_r_in_target": {
+        "n": 78,
+        "median": 0.6966,
+        "q25": 0.6095,
+        "q75": 0.7415
+       },
+       "mask_dice_in_target": {
+        "n": 78,
+        "median": 0.9873,
+        "q25": 0.9854,
+        "q75": 0.9893
+       },
+       "rhesus_pairs": {
+        "b0_r": {
+         "n": 45,
+         "median": 0.7189,
+         "q25": 0.6029,
+         "q75": 0.7569
+        },
+        "mask_dice": {
+         "n": 45,
+         "median": 0.9753,
+         "q25": 0.9715,
+         "q75": 0.9778
+        },
+        "b0_r_in_target": {
+         "n": 45,
+         "median": 0.7177,
+         "q25": 0.6396,
+         "q75": 0.7592
+        },
+        "mask_dice_in_target": {
+         "n": 45,
+         "median": 0.9864,
+         "q25": 0.9845,
+         "q75": 0.9876
+        }
+       }
+      },
+      "ours_higher": {
+       "vs_nmt": {
+        "b0_r": {
+         "pairs": 78,
+         "ours_higher": 58
+        },
+        "mask_dice": {
+         "pairs": 78,
+         "ours_higher": 0
+        },
+        "b0_r_in_target": {
+         "pairs": 78,
+         "ours_higher": 69
+        },
+        "mask_dice_in_target": {
+         "pairs": 78,
+         "ours_higher": 78
+        }
+       },
+       "vs_civmr": {
+        "b0_r": {
+         "pairs": 78,
+         "ours_higher": 55
+        },
+        "mask_dice": {
+         "pairs": 78,
+         "ours_higher": 0
+        },
+        "b0_r_in_target": {
+         "pairs": 78,
+         "ours_higher": 32
+        },
+        "mask_dice_in_target": {
+         "pairs": 78,
+         "ours_higher": 3
+        }
+       }
+      }
+     },
+     "per_pair": {
+      "nmt": [
+       {
+        "pair": [
+         "MF275",
+         "MF278"
+        ],
+        "b0_r": 0.6698,
+        "mask_dice": 0.9835,
+        "core_voxels": 4273307,
+        "b0_r_in_target": 0.6706,
+        "mask_dice_in_target": 0.9911,
+        "core_voxels_in_target": 4238377
+       },
+       {
+        "pair": [
+         "MF275",
+         "MF282"
+        ],
+        "b0_r": 0.722,
+        "mask_dice": 0.9832,
+        "core_voxels": 4263444,
+        "b0_r_in_target": 0.7236,
+        "mask_dice_in_target": 0.9904,
+        "core_voxels_in_target": 4228979
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR243"
+        ],
+        "b0_r": 0.7443,
+        "mask_dice": 0.9815,
+        "core_voxels": 4219217,
+        "b0_r_in_target": 0.7461,
+        "mask_dice_in_target": 0.9893,
+        "core_voxels_in_target": 4186972
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR249"
+        ],
+        "b0_r": 0.685,
+        "mask_dice": 0.9821,
+        "core_voxels": 4281317,
+        "b0_r_in_target": 0.6862,
+        "mask_dice_in_target": 0.9901,
+        "core_voxels_in_target": 4252406
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR250"
+        ],
+        "b0_r": 0.6927,
+        "mask_dice": 0.9809,
+        "core_voxels": 4207680,
+        "b0_r_in_target": 0.6938,
+        "mask_dice_in_target": 0.9886,
+        "core_voxels_in_target": 4184867
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR251"
+        ],
+        "b0_r": 0.6319,
+        "mask_dice": 0.9806,
+        "core_voxels": 4174250,
+        "b0_r_in_target": 0.6329,
+        "mask_dice_in_target": 0.9885,
+        "core_voxels_in_target": 4147126
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR252"
+        ],
+        "b0_r": 0.6581,
+        "mask_dice": 0.9798,
+        "core_voxels": 4164467,
+        "b0_r_in_target": 0.6592,
+        "mask_dice_in_target": 0.9876,
+        "core_voxels_in_target": 4141454
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR253"
+        ],
+        "b0_r": 0.3556,
+        "mask_dice": 0.9727,
+        "core_voxels": 3956894,
+        "b0_r_in_target": 0.3571,
+        "mask_dice_in_target": 0.9811,
+        "core_voxels_in_target": 3932643
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR254"
+        ],
+        "b0_r": 0.6755,
+        "mask_dice": 0.9801,
+        "core_voxels": 4013740,
+        "b0_r_in_target": 0.6764,
+        "mask_dice_in_target": 0.9878,
+        "core_voxels_in_target": 3992995
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR256"
+        ],
+        "b0_r": 0.665,
+        "mask_dice": 0.9792,
+        "core_voxels": 4085971,
+        "b0_r_in_target": 0.666,
+        "mask_dice_in_target": 0.9868,
+        "core_voxels_in_target": 4062497
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR257"
+        ],
+        "b0_r": 0.6567,
+        "mask_dice": 0.9794,
+        "core_voxels": 4135325,
+        "b0_r_in_target": 0.6582,
+        "mask_dice_in_target": 0.9872,
+        "core_voxels_in_target": 4110149
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR261"
+        ],
+        "b0_r": 0.6594,
+        "mask_dice": 0.9785,
+        "core_voxels": 4232835,
+        "b0_r_in_target": 0.6603,
+        "mask_dice_in_target": 0.9861,
+        "core_voxels_in_target": 4208634
+       },
+       {
+        "pair": [
+         "MF278",
+         "MF282"
+        ],
+        "b0_r": 0.6351,
+        "mask_dice": 0.9835,
+        "core_voxels": 4254611,
+        "b0_r_in_target": 0.637,
+        "mask_dice_in_target": 0.9902,
+        "core_voxels_in_target": 4225951
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR243"
+        ],
+        "b0_r": 0.5987,
+        "mask_dice": 0.9833,
+        "core_voxels": 4225019,
+        "b0_r_in_target": 0.5994,
+        "mask_dice_in_target": 0.9897,
+        "core_voxels_in_target": 4196667
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR249"
+        ],
+        "b0_r": 0.5501,
+        "mask_dice": 0.9837,
+        "core_voxels": 4263002,
+        "b0_r_in_target": 0.5507,
+        "mask_dice_in_target": 0.9899,
+        "core_voxels_in_target": 4237121
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR250"
+        ],
+        "b0_r": 0.5383,
+        "mask_dice": 0.9821,
+        "core_voxels": 4184854,
+        "b0_r_in_target": 0.5389,
+        "mask_dice_in_target": 0.988,
+        "core_voxels_in_target": 4164450
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR251"
+        ],
+        "b0_r": 0.4816,
+        "mask_dice": 0.982,
+        "core_voxels": 4159320,
+        "b0_r_in_target": 0.4822,
+        "mask_dice_in_target": 0.9882,
+        "core_voxels_in_target": 4134505
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR252"
+        ],
+        "b0_r": 0.5126,
+        "mask_dice": 0.9818,
+        "core_voxels": 4160910,
+        "b0_r_in_target": 0.5129,
+        "mask_dice_in_target": 0.9878,
+        "core_voxels_in_target": 4139895
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR253"
+        ],
+        "b0_r": 0.3698,
+        "mask_dice": 0.9738,
+        "core_voxels": 3943114,
+        "b0_r_in_target": 0.3715,
+        "mask_dice_in_target": 0.9807,
+        "core_voxels_in_target": 3920422
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR254"
+        ],
+        "b0_r": 0.5355,
+        "mask_dice": 0.981,
+        "core_voxels": 3986101,
+        "b0_r_in_target": 0.5358,
+        "mask_dice_in_target": 0.987,
+        "core_voxels_in_target": 3967711
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR256"
+        ],
+        "b0_r": 0.5041,
+        "mask_dice": 0.9802,
+        "core_voxels": 4064663,
+        "b0_r_in_target": 0.5046,
+        "mask_dice_in_target": 0.9862,
+        "core_voxels_in_target": 4043516
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR257"
+        ],
+        "b0_r": 0.5305,
+        "mask_dice": 0.9811,
+        "core_voxels": 4125929,
+        "b0_r_in_target": 0.531,
+        "mask_dice_in_target": 0.9872,
+        "core_voxels_in_target": 4103089
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR261"
+        ],
+        "b0_r": 0.5209,
+        "mask_dice": 0.9796,
+        "core_voxels": 4198877,
+        "b0_r_in_target": 0.5214,
+        "mask_dice_in_target": 0.9856,
+        "core_voxels_in_target": 4176594
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR243"
+        ],
+        "b0_r": 0.7302,
+        "mask_dice": 0.9825,
+        "core_voxels": 4235764,
+        "b0_r_in_target": 0.7319,
+        "mask_dice_in_target": 0.9891,
+        "core_voxels_in_target": 4208794
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR249"
+        ],
+        "b0_r": 0.6529,
+        "mask_dice": 0.9822,
+        "core_voxels": 4246626,
+        "b0_r_in_target": 0.6543,
+        "mask_dice_in_target": 0.9888,
+        "core_voxels_in_target": 4222377
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR250"
+        ],
+        "b0_r": 0.669,
+        "mask_dice": 0.9811,
+        "core_voxels": 4170501,
+        "b0_r_in_target": 0.6702,
+        "mask_dice_in_target": 0.9874,
+        "core_voxels_in_target": 4151944
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR251"
+        ],
+        "b0_r": 0.5725,
+        "mask_dice": 0.9816,
+        "core_voxels": 4174593,
+        "b0_r_in_target": 0.5735,
+        "mask_dice_in_target": 0.988,
+        "core_voxels_in_target": 4151889
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR252"
+        ],
+        "b0_r": 0.6479,
+        "mask_dice": 0.9809,
+        "core_voxels": 4168676,
+        "b0_r_in_target": 0.6493,
+        "mask_dice_in_target": 0.9873,
+        "core_voxels_in_target": 4149775
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR253"
+        ],
+        "b0_r": 0.3949,
+        "mask_dice": 0.9729,
+        "core_voxels": 3928149,
+        "b0_r_in_target": 0.395,
+        "mask_dice_in_target": 0.9799,
+        "core_voxels_in_target": 3907551
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR254"
+        ],
+        "b0_r": 0.6608,
+        "mask_dice": 0.9803,
+        "core_voxels": 3984943,
+        "b0_r_in_target": 0.6617,
+        "mask_dice_in_target": 0.9864,
+        "core_voxels_in_target": 3967103
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR256"
+        ],
+        "b0_r": 0.69,
+        "mask_dice": 0.9788,
+        "core_voxels": 4028068,
+        "b0_r_in_target": 0.6909,
+        "mask_dice_in_target": 0.9849,
+        "core_voxels_in_target": 4008912
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR257"
+        ],
+        "b0_r": 0.6725,
+        "mask_dice": 0.979,
+        "core_voxels": 4081579,
+        "b0_r_in_target": 0.674,
+        "mask_dice_in_target": 0.9853,
+        "core_voxels_in_target": 4060094
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR261"
+        ],
+        "b0_r": 0.6631,
+        "mask_dice": 0.9782,
+        "core_voxels": 4173822,
+        "b0_r_in_target": 0.6639,
+        "mask_dice_in_target": 0.9844,
+        "core_voxels_in_target": 4152853
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR249"
+        ],
+        "b0_r": 0.813,
+        "mask_dice": 0.9845,
+        "core_voxels": 4277039,
+        "b0_r_in_target": 0.8135,
+        "mask_dice_in_target": 0.9906,
+        "core_voxels_in_target": 4251990
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR250"
+        ],
+        "b0_r": 0.8416,
+        "mask_dice": 0.9838,
+        "core_voxels": 4200570,
+        "b0_r_in_target": 0.8421,
+        "mask_dice_in_target": 0.9896,
+        "core_voxels_in_target": 4181175
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR251"
+        ],
+        "b0_r": 0.7698,
+        "mask_dice": 0.9822,
+        "core_voxels": 4169165,
+        "b0_r_in_target": 0.7703,
+        "mask_dice_in_target": 0.9884,
+        "core_voxels_in_target": 4145581
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR252"
+        ],
+        "b0_r": 0.7989,
+        "mask_dice": 0.9833,
+        "core_voxels": 4178059,
+        "b0_r_in_target": 0.7994,
+        "mask_dice_in_target": 0.9891,
+        "core_voxels_in_target": 4157633
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR253"
+        ],
+        "b0_r": 0.4068,
+        "mask_dice": 0.9737,
+        "core_voxels": 3933543,
+        "b0_r_in_target": 0.4074,
+        "mask_dice_in_target": 0.9808,
+        "core_voxels_in_target": 3914280
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR254"
+        ],
+        "b0_r": 0.7692,
+        "mask_dice": 0.9816,
+        "core_voxels": 3988901,
+        "b0_r_in_target": 0.7699,
+        "mask_dice_in_target": 0.9874,
+        "core_voxels_in_target": 3970970
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR256"
+        ],
+        "b0_r": 0.7824,
+        "mask_dice": 0.9805,
+        "core_voxels": 4053901,
+        "b0_r_in_target": 0.7828,
+        "mask_dice_in_target": 0.9862,
+        "core_voxels_in_target": 4033389
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR257"
+        ],
+        "b0_r": 0.7391,
+        "mask_dice": 0.9813,
+        "core_voxels": 4103382,
+        "b0_r_in_target": 0.7404,
+        "mask_dice_in_target": 0.9873,
+        "core_voxels_in_target": 4081007
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR261"
+        ],
+        "b0_r": 0.7419,
+        "mask_dice": 0.9796,
+        "core_voxels": 4175473,
+        "b0_r_in_target": 0.7418,
+        "mask_dice_in_target": 0.9855,
+        "core_voxels_in_target": 4154495
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR250"
+        ],
+        "b0_r": 0.8273,
+        "mask_dice": 0.9849,
+        "core_voxels": 4261189,
+        "b0_r_in_target": 0.8275,
+        "mask_dice_in_target": 0.9902,
+        "core_voxels_in_target": 4242264
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR251"
+        ],
+        "b0_r": 0.7622,
+        "mask_dice": 0.9834,
+        "core_voxels": 4212096,
+        "b0_r_in_target": 0.7624,
+        "mask_dice_in_target": 0.9891,
+        "core_voxels_in_target": 4188852
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR252"
+        ],
+        "b0_r": 0.7849,
+        "mask_dice": 0.9835,
+        "core_voxels": 4206062,
+        "b0_r_in_target": 0.7852,
+        "mask_dice_in_target": 0.989,
+        "core_voxels_in_target": 4186989
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR253"
+        ],
+        "b0_r": 0.3599,
+        "mask_dice": 0.9745,
+        "core_voxels": 3981512,
+        "b0_r_in_target": 0.3607,
+        "mask_dice_in_target": 0.9813,
+        "core_voxels_in_target": 3963400
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR254"
+        ],
+        "b0_r": 0.7448,
+        "mask_dice": 0.9828,
+        "core_voxels": 4045080,
+        "b0_r_in_target": 0.7454,
+        "mask_dice_in_target": 0.9882,
+        "core_voxels_in_target": 4028251
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR256"
+        ],
+        "b0_r": 0.7499,
+        "mask_dice": 0.9824,
+        "core_voxels": 4135094,
+        "b0_r_in_target": 0.7503,
+        "mask_dice_in_target": 0.9878,
+        "core_voxels_in_target": 4116058
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR257"
+        ],
+        "b0_r": 0.7029,
+        "mask_dice": 0.9825,
+        "core_voxels": 4170929,
+        "b0_r_in_target": 0.7037,
+        "mask_dice_in_target": 0.9882,
+        "core_voxels_in_target": 4150447
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR261"
+        ],
+        "b0_r": 0.6652,
+        "mask_dice": 0.9812,
+        "core_voxels": 4267272,
+        "b0_r_in_target": 0.6653,
+        "mask_dice_in_target": 0.9866,
+        "core_voxels_in_target": 4247513
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR251"
+        ],
+        "b0_r": 0.7981,
+        "mask_dice": 0.9826,
+        "core_voxels": 4154125,
+        "b0_r_in_target": 0.7984,
+        "mask_dice_in_target": 0.988,
+        "core_voxels_in_target": 4136452
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR252"
+        ],
+        "b0_r": 0.825,
+        "mask_dice": 0.9834,
+        "core_voxels": 4144959,
+        "b0_r_in_target": 0.8254,
+        "mask_dice_in_target": 0.9883,
+        "core_voxels_in_target": 4129030
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR253"
+        ],
+        "b0_r": 0.3795,
+        "mask_dice": 0.9747,
+        "core_voxels": 3930528,
+        "b0_r_in_target": 0.3805,
+        "mask_dice_in_target": 0.9809,
+        "core_voxels_in_target": 3915514
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR254"
+        ],
+        "b0_r": 0.7787,
+        "mask_dice": 0.9827,
+        "core_voxels": 3985321,
+        "b0_r_in_target": 0.7793,
+        "mask_dice_in_target": 0.9875,
+        "core_voxels_in_target": 3971805
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR256"
+        ],
+        "b0_r": 0.7748,
+        "mask_dice": 0.9822,
+        "core_voxels": 4065935,
+        "b0_r_in_target": 0.7752,
+        "mask_dice_in_target": 0.987,
+        "core_voxels_in_target": 4050212
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR257"
+        ],
+        "b0_r": 0.7306,
+        "mask_dice": 0.9819,
+        "core_voxels": 4107439,
+        "b0_r_in_target": 0.7313,
+        "mask_dice_in_target": 0.987,
+        "core_voxels_in_target": 4091240
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR261"
+        ],
+        "b0_r": 0.689,
+        "mask_dice": 0.981,
+        "core_voxels": 4193288,
+        "b0_r_in_target": 0.6892,
+        "mask_dice_in_target": 0.986,
+        "core_voxels_in_target": 4177999
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR252"
+        ],
+        "b0_r": 0.7737,
+        "mask_dice": 0.9818,
+        "core_voxels": 4121267,
+        "b0_r_in_target": 0.774,
+        "mask_dice_in_target": 0.9874,
+        "core_voxels_in_target": 4103113
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR253"
+        ],
+        "b0_r": 0.3253,
+        "mask_dice": 0.9728,
+        "core_voxels": 3886030,
+        "b0_r_in_target": 0.3265,
+        "mask_dice_in_target": 0.9795,
+        "core_voxels_in_target": 3868520
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR254"
+        ],
+        "b0_r": 0.7254,
+        "mask_dice": 0.9805,
+        "core_voxels": 3930654,
+        "b0_r_in_target": 0.7259,
+        "mask_dice_in_target": 0.9859,
+        "core_voxels_in_target": 3915341
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR256"
+        ],
+        "b0_r": 0.7169,
+        "mask_dice": 0.9798,
+        "core_voxels": 4009614,
+        "b0_r_in_target": 0.7171,
+        "mask_dice_in_target": 0.9854,
+        "core_voxels_in_target": 3992226
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR257"
+        ],
+        "b0_r": 0.6966,
+        "mask_dice": 0.9797,
+        "core_voxels": 4060693,
+        "b0_r_in_target": 0.6976,
+        "mask_dice_in_target": 0.9855,
+        "core_voxels_in_target": 4041761
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR261"
+        ],
+        "b0_r": 0.6087,
+        "mask_dice": 0.9791,
+        "core_voxels": 4143491,
+        "b0_r_in_target": 0.6087,
+        "mask_dice_in_target": 0.9847,
+        "core_voxels_in_target": 4124968
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR253"
+        ],
+        "b0_r": 0.3689,
+        "mask_dice": 0.9727,
+        "core_voxels": 3870678,
+        "b0_r_in_target": 0.3696,
+        "mask_dice_in_target": 0.9791,
+        "core_voxels_in_target": 3855708
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR254"
+        ],
+        "b0_r": 0.7511,
+        "mask_dice": 0.9807,
+        "core_voxels": 3941951,
+        "b0_r_in_target": 0.7515,
+        "mask_dice_in_target": 0.9857,
+        "core_voxels_in_target": 3928540
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR256"
+        ],
+        "b0_r": 0.7677,
+        "mask_dice": 0.9799,
+        "core_voxels": 3998184,
+        "b0_r_in_target": 0.768,
+        "mask_dice_in_target": 0.985,
+        "core_voxels_in_target": 3982994
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR257"
+        ],
+        "b0_r": 0.7248,
+        "mask_dice": 0.9808,
+        "core_voxels": 4051188,
+        "b0_r_in_target": 0.7256,
+        "mask_dice_in_target": 0.9862,
+        "core_voxels_in_target": 4034701
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR261"
+        ],
+        "b0_r": 0.6351,
+        "mask_dice": 0.9786,
+        "core_voxels": 4106307,
+        "b0_r_in_target": 0.6352,
+        "mask_dice_in_target": 0.9837,
+        "core_voxels_in_target": 4090495
+       },
+       {
+        "pair": [
+         "MR253",
+         "MR254"
+        ],
+        "b0_r": 0.3595,
+        "mask_dice": 0.9755,
+        "core_voxels": 3808049,
+        "b0_r_in_target": 0.3601,
+        "mask_dice_in_target": 0.9818,
+        "core_voxels_in_target": 3795006
+       },
+       {
+        "pair": [
+         "MR253",
+         "MR256"
+        ],
+        "b0_r": 0.3457,
+        "mask_dice": 0.9752,
+        "core_voxels": 3870127,
+        "b0_r_in_target": 0.3458,
+        "mask_dice_in_target": 0.9813,
+        "core_voxels_in_target": 3854637
+       },
+       {
+        "pair": [
+         "MR253",
+         "MR257"
+        ],
+        "b0_r": 0.3215,
+        "mask_dice": 0.9749,
+        "core_voxels": 3908181,
+        "b0_r_in_target": 0.3218,
+        "mask_dice_in_target": 0.9812,
+        "core_voxels_in_target": 3891274
+       },
+       {
+        "pair": [
+         "MR253",
+         "MR261"
+        ],
+        "b0_r": 0.2958,
+        "mask_dice": 0.9737,
+        "core_voxels": 3963402,
+        "b0_r_in_target": 0.2961,
+        "mask_dice_in_target": 0.9801,
+        "core_voxels_in_target": 3948363
+       },
+       {
+        "pair": [
+         "MR254",
+         "MR256"
+        ],
+        "b0_r": 0.7393,
+        "mask_dice": 0.9821,
+        "core_voxels": 3904218,
+        "b0_r_in_target": 0.7396,
+        "mask_dice_in_target": 0.9868,
+        "core_voxels_in_target": 3890163
+       },
+       {
+        "pair": [
+         "MR254",
+         "MR257"
+        ],
+        "b0_r": 0.7108,
+        "mask_dice": 0.981,
+        "core_voxels": 3932444,
+        "b0_r_in_target": 0.7115,
+        "mask_dice_in_target": 0.9861,
+        "core_voxels_in_target": 3917272
+       },
+       {
+        "pair": [
+         "MR254",
+         "MR261"
+        ],
+        "b0_r": 0.6424,
+        "mask_dice": 0.9803,
+        "core_voxels": 3987313,
+        "b0_r_in_target": 0.6424,
+        "mask_dice_in_target": 0.9851,
+        "core_voxels_in_target": 3973080
+       },
+       {
+        "pair": [
+         "MR256",
+         "MR257"
+        ],
+        "b0_r": 0.7816,
+        "mask_dice": 0.9825,
+        "core_voxels": 4047602,
+        "b0_r_in_target": 0.782,
+        "mask_dice_in_target": 0.9876,
+        "core_voxels_in_target": 4030748
+       },
+       {
+        "pair": [
+         "MR256",
+         "MR261"
+        ],
+        "b0_r": 0.6231,
+        "mask_dice": 0.9819,
+        "core_voxels": 4119452,
+        "b0_r_in_target": 0.6231,
+        "mask_dice_in_target": 0.9868,
+        "core_voxels_in_target": 4103353
+       },
+       {
+        "pair": [
+         "MR257",
+         "MR261"
+        ],
+        "b0_r": 0.5664,
+        "mask_dice": 0.9812,
+        "core_voxels": 4181108,
+        "b0_r_in_target": 0.5668,
+        "mask_dice_in_target": 0.9865,
+        "core_voxels_in_target": 4163847
+       }
+      ],
+      "civmr": [
+       {
+        "pair": [
+         "MF275",
+         "MF278"
+        ],
+        "b0_r": 0.6947,
+        "mask_dice": 0.9841,
+        "core_voxels": 3556193,
+        "b0_r_in_target": 0.731,
+        "mask_dice_in_target": 0.9954,
+        "core_voxels_in_target": 2884450
+       },
+       {
+        "pair": [
+         "MF275",
+         "MF282"
+        ],
+        "b0_r": 0.7372,
+        "mask_dice": 0.9845,
+        "core_voxels": 3561150,
+        "b0_r_in_target": 0.7689,
+        "mask_dice_in_target": 0.9954,
+        "core_voxels_in_target": 2875381
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR243"
+        ],
+        "b0_r": 0.7591,
+        "mask_dice": 0.9829,
+        "core_voxels": 3505334,
+        "b0_r_in_target": 0.7989,
+        "mask_dice_in_target": 0.9949,
+        "core_voxels_in_target": 2847920
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR249"
+        ],
+        "b0_r": 0.6956,
+        "mask_dice": 0.9823,
+        "core_voxels": 3543048,
+        "b0_r_in_target": 0.7375,
+        "mask_dice_in_target": 0.9946,
+        "core_voxels_in_target": 2870521
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR250"
+        ],
+        "b0_r": 0.7053,
+        "mask_dice": 0.9814,
+        "core_voxels": 3476512,
+        "b0_r_in_target": 0.7499,
+        "mask_dice_in_target": 0.9937,
+        "core_voxels_in_target": 2846524
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR251"
+        ],
+        "b0_r": 0.6463,
+        "mask_dice": 0.9813,
+        "core_voxels": 3454537,
+        "b0_r_in_target": 0.6901,
+        "mask_dice_in_target": 0.9933,
+        "core_voxels_in_target": 2826689
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR252"
+        ],
+        "b0_r": 0.6774,
+        "mask_dice": 0.9806,
+        "core_voxels": 3439815,
+        "b0_r_in_target": 0.72,
+        "mask_dice_in_target": 0.9937,
+        "core_voxels_in_target": 2846977
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR253"
+        ],
+        "b0_r": 0.3472,
+        "mask_dice": 0.9728,
+        "core_voxels": 3264075,
+        "b0_r_in_target": 0.3604,
+        "mask_dice_in_target": 0.9867,
+        "core_voxels_in_target": 2732769
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR254"
+        ],
+        "b0_r": 0.6928,
+        "mask_dice": 0.9799,
+        "core_voxels": 3297404,
+        "b0_r_in_target": 0.7155,
+        "mask_dice_in_target": 0.9923,
+        "core_voxels_in_target": 2782368
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR256"
+        ],
+        "b0_r": 0.6832,
+        "mask_dice": 0.9789,
+        "core_voxels": 3359635,
+        "b0_r_in_target": 0.6969,
+        "mask_dice_in_target": 0.9916,
+        "core_voxels_in_target": 2819474
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR257"
+        ],
+        "b0_r": 0.6648,
+        "mask_dice": 0.9798,
+        "core_voxels": 3421896,
+        "b0_r_in_target": 0.6897,
+        "mask_dice_in_target": 0.9933,
+        "core_voxels_in_target": 2863058
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR261"
+        ],
+        "b0_r": 0.6769,
+        "mask_dice": 0.9794,
+        "core_voxels": 3521291,
+        "b0_r_in_target": 0.7085,
+        "mask_dice_in_target": 0.9917,
+        "core_voxels_in_target": 2877181
+       },
+       {
+        "pair": [
+         "MF278",
+         "MF282"
+        ],
+        "b0_r": 0.6595,
+        "mask_dice": 0.9845,
+        "core_voxels": 3547108,
+        "b0_r_in_target": 0.6741,
+        "mask_dice_in_target": 0.9954,
+        "core_voxels_in_target": 2870015
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR243"
+        ],
+        "b0_r": 0.6181,
+        "mask_dice": 0.9834,
+        "core_voxels": 3499725,
+        "b0_r_in_target": 0.6819,
+        "mask_dice_in_target": 0.9949,
+        "core_voxels_in_target": 2842496
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR249"
+        ],
+        "b0_r": 0.5717,
+        "mask_dice": 0.9831,
+        "core_voxels": 3521601,
+        "b0_r_in_target": 0.6523,
+        "mask_dice_in_target": 0.9944,
+        "core_voxels_in_target": 2860345
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR250"
+        ],
+        "b0_r": 0.5636,
+        "mask_dice": 0.9813,
+        "core_voxels": 3449181,
+        "b0_r_in_target": 0.6442,
+        "mask_dice_in_target": 0.9933,
+        "core_voxels_in_target": 2834145
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR251"
+        ],
+        "b0_r": 0.5144,
+        "mask_dice": 0.9817,
+        "core_voxels": 3433879,
+        "b0_r_in_target": 0.5913,
+        "mask_dice_in_target": 0.993,
+        "core_voxels_in_target": 2817187
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR252"
+        ],
+        "b0_r": 0.5349,
+        "mask_dice": 0.9813,
+        "core_voxels": 3434440,
+        "b0_r_in_target": 0.6057,
+        "mask_dice_in_target": 0.9936,
+        "core_voxels_in_target": 2838192
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR253"
+        ],
+        "b0_r": 0.349,
+        "mask_dice": 0.9729,
+        "core_voxels": 3245090,
+        "b0_r_in_target": 0.3452,
+        "mask_dice_in_target": 0.9863,
+        "core_voxels_in_target": 2723457
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR254"
+        ],
+        "b0_r": 0.5648,
+        "mask_dice": 0.9796,
+        "core_voxels": 3265119,
+        "b0_r_in_target": 0.6211,
+        "mask_dice_in_target": 0.9916,
+        "core_voxels_in_target": 2767900
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR256"
+        ],
+        "b0_r": 0.5333,
+        "mask_dice": 0.9787,
+        "core_voxels": 3331828,
+        "b0_r_in_target": 0.5856,
+        "mask_dice_in_target": 0.9911,
+        "core_voxels_in_target": 2804103
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR257"
+        ],
+        "b0_r": 0.5486,
+        "mask_dice": 0.9801,
+        "core_voxels": 3404201,
+        "b0_r_in_target": 0.5924,
+        "mask_dice_in_target": 0.9931,
+        "core_voxels_in_target": 2848206
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR261"
+        ],
+        "b0_r": 0.553,
+        "mask_dice": 0.9791,
+        "core_voxels": 3479833,
+        "b0_r_in_target": 0.6112,
+        "mask_dice_in_target": 0.9912,
+        "core_voxels_in_target": 2857132
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR243"
+        ],
+        "b0_r": 0.7448,
+        "mask_dice": 0.9843,
+        "core_voxels": 3531216,
+        "b0_r_in_target": 0.8,
+        "mask_dice_in_target": 0.9954,
+        "core_voxels_in_target": 2847304
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR249"
+        ],
+        "b0_r": 0.6659,
+        "mask_dice": 0.9828,
+        "core_voxels": 3521825,
+        "b0_r_in_target": 0.7303,
+        "mask_dice_in_target": 0.9943,
+        "core_voxels_in_target": 2853059
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR250"
+        ],
+        "b0_r": 0.6836,
+        "mask_dice": 0.9817,
+        "core_voxels": 3455525,
+        "b0_r_in_target": 0.7579,
+        "mask_dice_in_target": 0.9932,
+        "core_voxels_in_target": 2827967
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR251"
+        ],
+        "b0_r": 0.5915,
+        "mask_dice": 0.9822,
+        "core_voxels": 3462807,
+        "b0_r_in_target": 0.6712,
+        "mask_dice_in_target": 0.9931,
+        "core_voxels_in_target": 2812412
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR252"
+        ],
+        "b0_r": 0.6674,
+        "mask_dice": 0.9819,
+        "core_voxels": 3455034,
+        "b0_r_in_target": 0.7398,
+        "mask_dice_in_target": 0.9938,
+        "core_voxels_in_target": 2834269
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR253"
+        ],
+        "b0_r": 0.3977,
+        "mask_dice": 0.9732,
+        "core_voxels": 3245149,
+        "b0_r_in_target": 0.4228,
+        "mask_dice_in_target": 0.9863,
+        "core_voxels_in_target": 2718444
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR254"
+        ],
+        "b0_r": 0.674,
+        "mask_dice": 0.9803,
+        "core_voxels": 3283979,
+        "b0_r_in_target": 0.7155,
+        "mask_dice_in_target": 0.9917,
+        "core_voxels_in_target": 2761327
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR256"
+        ],
+        "b0_r": 0.7048,
+        "mask_dice": 0.9788,
+        "core_voxels": 3316704,
+        "b0_r_in_target": 0.7442,
+        "mask_dice_in_target": 0.9908,
+        "core_voxels_in_target": 2797007
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR257"
+        ],
+        "b0_r": 0.6814,
+        "mask_dice": 0.9799,
+        "core_voxels": 3385197,
+        "b0_r_in_target": 0.7175,
+        "mask_dice_in_target": 0.9925,
+        "core_voxels_in_target": 2839817
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR261"
+        ],
+        "b0_r": 0.6734,
+        "mask_dice": 0.9792,
+        "core_voxels": 3474606,
+        "b0_r_in_target": 0.7042,
+        "mask_dice_in_target": 0.9909,
+        "core_voxels_in_target": 2845763
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR249"
+        ],
+        "b0_r": 0.8152,
+        "mask_dice": 0.984,
+        "core_voxels": 3523991,
+        "b0_r_in_target": 0.8302,
+        "mask_dice_in_target": 0.9943,
+        "core_voxels_in_target": 2838811
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR250"
+        ],
+        "b0_r": 0.851,
+        "mask_dice": 0.9838,
+        "core_voxels": 3456464,
+        "b0_r_in_target": 0.8665,
+        "mask_dice_in_target": 0.9933,
+        "core_voxels_in_target": 2813067
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR251"
+        ],
+        "b0_r": 0.7737,
+        "mask_dice": 0.9828,
+        "core_voxels": 3435415,
+        "b0_r_in_target": 0.792,
+        "mask_dice_in_target": 0.9931,
+        "core_voxels_in_target": 2794504
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR252"
+        ],
+        "b0_r": 0.8122,
+        "mask_dice": 0.9834,
+        "core_voxels": 3436150,
+        "b0_r_in_target": 0.8295,
+        "mask_dice_in_target": 0.9937,
+        "core_voxels_in_target": 2814672
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR253"
+        ],
+        "b0_r": 0.3965,
+        "mask_dice": 0.9736,
+        "core_voxels": 3233439,
+        "b0_r_in_target": 0.4305,
+        "mask_dice_in_target": 0.9863,
+        "core_voxels_in_target": 2700701
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR254"
+        ],
+        "b0_r": 0.7773,
+        "mask_dice": 0.981,
+        "core_voxels": 3262113,
+        "b0_r_in_target": 0.7838,
+        "mask_dice_in_target": 0.9915,
+        "core_voxels_in_target": 2742006
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR256"
+        ],
+        "b0_r": 0.7874,
+        "mask_dice": 0.9803,
+        "core_voxels": 3320241,
+        "b0_r_in_target": 0.7969,
+        "mask_dice_in_target": 0.991,
+        "core_voxels_in_target": 2781400
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR257"
+        ],
+        "b0_r": 0.7438,
+        "mask_dice": 0.9817,
+        "core_voxels": 3381636,
+        "b0_r_in_target": 0.7703,
+        "mask_dice_in_target": 0.9927,
+        "core_voxels_in_target": 2821532
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR261"
+        ],
+        "b0_r": 0.7472,
+        "mask_dice": 0.9807,
+        "core_voxels": 3457580,
+        "b0_r_in_target": 0.7483,
+        "mask_dice_in_target": 0.9909,
+        "core_voxels_in_target": 2826609
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR250"
+        ],
+        "b0_r": 0.8234,
+        "mask_dice": 0.9839,
+        "core_voxels": 3491784,
+        "b0_r_in_target": 0.8291,
+        "mask_dice_in_target": 0.9936,
+        "core_voxels_in_target": 2835360
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR251"
+        ],
+        "b0_r": 0.7604,
+        "mask_dice": 0.9829,
+        "core_voxels": 3460619,
+        "b0_r_in_target": 0.7699,
+        "mask_dice_in_target": 0.9928,
+        "core_voxels_in_target": 2817518
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR252"
+        ],
+        "b0_r": 0.776,
+        "mask_dice": 0.9828,
+        "core_voxels": 3448808,
+        "b0_r_in_target": 0.7856,
+        "mask_dice_in_target": 0.9934,
+        "core_voxels_in_target": 2838762
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR253"
+        ],
+        "b0_r": 0.3625,
+        "mask_dice": 0.9734,
+        "core_voxels": 3259398,
+        "b0_r_in_target": 0.3784,
+        "mask_dice_in_target": 0.9862,
+        "core_voxels_in_target": 2718091
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR254"
+        ],
+        "b0_r": 0.7376,
+        "mask_dice": 0.9812,
+        "core_voxels": 3294923,
+        "b0_r_in_target": 0.7369,
+        "mask_dice_in_target": 0.9915,
+        "core_voxels_in_target": 2764124
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR256"
+        ],
+        "b0_r": 0.7409,
+        "mask_dice": 0.981,
+        "core_voxels": 3372989,
+        "b0_r_in_target": 0.7511,
+        "mask_dice_in_target": 0.9915,
+        "core_voxels_in_target": 2814814
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR257"
+        ],
+        "b0_r": 0.6968,
+        "mask_dice": 0.9816,
+        "core_voxels": 3424823,
+        "b0_r_in_target": 0.7264,
+        "mask_dice_in_target": 0.9929,
+        "core_voxels_in_target": 2853977
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR261"
+        ],
+        "b0_r": 0.6639,
+        "mask_dice": 0.9809,
+        "core_voxels": 3523223,
+        "b0_r_in_target": 0.6681,
+        "mask_dice_in_target": 0.9913,
+        "core_voxels_in_target": 2864301
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR251"
+        ],
+        "b0_r": 0.7943,
+        "mask_dice": 0.9824,
+        "core_voxels": 3408226,
+        "b0_r_in_target": 0.7911,
+        "mask_dice_in_target": 0.9922,
+        "core_voxels_in_target": 2801422
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR252"
+        ],
+        "b0_r": 0.8264,
+        "mask_dice": 0.9829,
+        "core_voxels": 3392837,
+        "b0_r_in_target": 0.8296,
+        "mask_dice_in_target": 0.9922,
+        "core_voxels_in_target": 2807532
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR253"
+        ],
+        "b0_r": 0.3726,
+        "mask_dice": 0.9743,
+        "core_voxels": 3216640,
+        "b0_r_in_target": 0.402,
+        "mask_dice_in_target": 0.9861,
+        "core_voxels_in_target": 2702582
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR254"
+        ],
+        "b0_r": 0.7799,
+        "mask_dice": 0.9821,
+        "core_voxels": 3249059,
+        "b0_r_in_target": 0.7797,
+        "mask_dice_in_target": 0.9914,
+        "core_voxels_in_target": 2747753
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR256"
+        ],
+        "b0_r": 0.7704,
+        "mask_dice": 0.9817,
+        "core_voxels": 3319823,
+        "b0_r_in_target": 0.7809,
+        "mask_dice_in_target": 0.9911,
+        "core_voxels_in_target": 2791563
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR257"
+        ],
+        "b0_r": 0.7245,
+        "mask_dice": 0.9818,
+        "core_voxels": 3373423,
+        "b0_r_in_target": 0.7649,
+        "mask_dice_in_target": 0.9919,
+        "core_voxels_in_target": 2830983
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR261"
+        ],
+        "b0_r": 0.689,
+        "mask_dice": 0.9815,
+        "core_voxels": 3458685,
+        "b0_r_in_target": 0.6909,
+        "mask_dice_in_target": 0.9906,
+        "core_voxels_in_target": 2842338
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR252"
+        ],
+        "b0_r": 0.7742,
+        "mask_dice": 0.982,
+        "core_voxels": 3379389,
+        "b0_r_in_target": 0.7749,
+        "mask_dice_in_target": 0.9923,
+        "core_voxels_in_target": 2788386
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR253"
+        ],
+        "b0_r": 0.3222,
+        "mask_dice": 0.9723,
+        "core_voxels": 3185054,
+        "b0_r_in_target": 0.3473,
+        "mask_dice_in_target": 0.985,
+        "core_voxels_in_target": 2684186
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR254"
+        ],
+        "b0_r": 0.7224,
+        "mask_dice": 0.9795,
+        "core_voxels": 3205000,
+        "b0_r_in_target": 0.7211,
+        "mask_dice_in_target": 0.99,
+        "core_voxels_in_target": 2722028
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR256"
+        ],
+        "b0_r": 0.7185,
+        "mask_dice": 0.979,
+        "core_voxels": 3275648,
+        "b0_r_in_target": 0.7252,
+        "mask_dice_in_target": 0.9898,
+        "core_voxels_in_target": 2766388
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR257"
+        ],
+        "b0_r": 0.6978,
+        "mask_dice": 0.9795,
+        "core_voxels": 3336397,
+        "b0_r_in_target": 0.7494,
+        "mask_dice_in_target": 0.9913,
+        "core_voxels_in_target": 2810458
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR261"
+        ],
+        "b0_r": 0.609,
+        "mask_dice": 0.979,
+        "core_voxels": 3414801,
+        "b0_r_in_target": 0.6032,
+        "mask_dice_in_target": 0.9896,
+        "core_voxels_in_target": 2819780
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR253"
+        ],
+        "b0_r": 0.3665,
+        "mask_dice": 0.9724,
+        "core_voxels": 3166219,
+        "b0_r_in_target": 0.3966,
+        "mask_dice_in_target": 0.9848,
+        "core_voxels_in_target": 2690796
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR254"
+        ],
+        "b0_r": 0.7551,
+        "mask_dice": 0.9797,
+        "core_voxels": 3212785,
+        "b0_r_in_target": 0.7555,
+        "mask_dice_in_target": 0.9902,
+        "core_voxels_in_target": 2744191
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR256"
+        ],
+        "b0_r": 0.7626,
+        "mask_dice": 0.9795,
+        "core_voxels": 3265152,
+        "b0_r_in_target": 0.7795,
+        "mask_dice_in_target": 0.9899,
+        "core_voxels_in_target": 2780514
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR257"
+        ],
+        "b0_r": 0.7211,
+        "mask_dice": 0.981,
+        "core_voxels": 3326622,
+        "b0_r_in_target": 0.7578,
+        "mask_dice_in_target": 0.9915,
+        "core_voxels_in_target": 2820885
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR261"
+        ],
+        "b0_r": 0.6386,
+        "mask_dice": 0.9791,
+        "core_voxels": 3383801,
+        "b0_r_in_target": 0.6191,
+        "mask_dice_in_target": 0.9895,
+        "core_voxels_in_target": 2827824
+       },
+       {
+        "pair": [
+         "MR253",
+         "MR254"
+        ],
+        "b0_r": 0.3505,
+        "mask_dice": 0.9748,
+        "core_voxels": 3103214,
+        "b0_r_in_target": 0.3928,
+        "mask_dice_in_target": 0.9857,
+        "core_voxels_in_target": 2652012
+       },
+       {
+        "pair": [
+         "MR253",
+         "MR256"
+        ],
+        "b0_r": 0.3369,
+        "mask_dice": 0.9747,
+        "core_voxels": 3160185,
+        "b0_r_in_target": 0.3827,
+        "mask_dice_in_target": 0.9858,
+        "core_voxels_in_target": 2688645
+       },
+       {
+        "pair": [
+         "MR253",
+         "MR257"
+        ],
+        "b0_r": 0.3157,
+        "mask_dice": 0.9738,
+        "core_voxels": 3205773,
+        "b0_r_in_target": 0.3705,
+        "mask_dice_in_target": 0.9861,
+        "core_voxels_in_target": 2720900
+       },
+       {
+        "pair": [
+         "MR253",
+         "MR261"
+        ],
+        "b0_r": 0.2878,
+        "mask_dice": 0.9742,
+        "core_voxels": 3266126,
+        "b0_r_in_target": 0.3001,
+        "mask_dice_in_target": 0.9861,
+        "core_voxels_in_target": 2731306
+       },
+       {
+        "pair": [
+         "MR254",
+         "MR256"
+        ],
+        "b0_r": 0.7343,
+        "mask_dice": 0.9809,
+        "core_voxels": 3171520,
+        "b0_r_in_target": 0.7355,
+        "mask_dice_in_target": 0.9902,
+        "core_voxels_in_target": 2728932
+       },
+       {
+        "pair": [
+         "MR254",
+         "MR257"
+        ],
+        "b0_r": 0.7068,
+        "mask_dice": 0.9802,
+        "core_voxels": 3208590,
+        "b0_r_in_target": 0.7197,
+        "mask_dice_in_target": 0.9907,
+        "core_voxels_in_target": 2757677
+       },
+       {
+        "pair": [
+         "MR254",
+         "MR261"
+        ],
+        "b0_r": 0.6373,
+        "mask_dice": 0.9799,
+        "core_voxels": 3268123,
+        "b0_r_in_target": 0.6297,
+        "mask_dice_in_target": 0.9896,
+        "core_voxels_in_target": 2768266
+       },
+       {
+        "pair": [
+         "MR256",
+         "MR257"
+        ],
+        "b0_r": 0.7671,
+        "mask_dice": 0.9818,
+        "core_voxels": 3310930,
+        "b0_r_in_target": 0.7929,
+        "mask_dice_in_target": 0.9916,
+        "core_voxels_in_target": 2816819
+       },
+       {
+        "pair": [
+         "MR256",
+         "MR261"
+        ],
+        "b0_r": 0.6239,
+        "mask_dice": 0.9818,
+        "core_voxels": 3384425,
+        "b0_r_in_target": 0.6041,
+        "mask_dice_in_target": 0.9909,
+        "core_voxels_in_target": 2831042
+       },
+       {
+        "pair": [
+         "MR257",
+         "MR261"
+        ],
+        "b0_r": 0.552,
+        "mask_dice": 0.9817,
+        "core_voxels": 3454347,
+        "b0_r_in_target": 0.5536,
+        "mask_dice_in_target": 0.9917,
+        "core_voxels_in_target": 2888116
+       }
+      ],
+      "ours": [
+       {
+        "pair": [
+         "MF275",
+         "MF278"
+        ],
+        "b0_r": 0.7107,
+        "mask_dice": 0.9832,
+        "core_voxels": 2287741,
+        "b0_r_in_target": 0.7284,
+        "mask_dice_in_target": 0.9951,
+        "core_voxels_in_target": 2143178
+       },
+       {
+        "pair": [
+         "MF275",
+         "MF282"
+        ],
+        "b0_r": 0.759,
+        "mask_dice": 0.9831,
+        "core_voxels": 2284204,
+        "b0_r_in_target": 0.7729,
+        "mask_dice_in_target": 0.9955,
+        "core_voxels_in_target": 2167028
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR243"
+        ],
+        "b0_r": 0.7668,
+        "mask_dice": 0.9805,
+        "core_voxels": 2241955,
+        "b0_r_in_target": 0.7815,
+        "mask_dice_in_target": 0.9941,
+        "core_voxels_in_target": 2109431
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR249"
+        ],
+        "b0_r": 0.6947,
+        "mask_dice": 0.979,
+        "core_voxels": 2274034,
+        "b0_r_in_target": 0.7243,
+        "mask_dice_in_target": 0.9928,
+        "core_voxels_in_target": 2123104
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR250"
+        ],
+        "b0_r": 0.7125,
+        "mask_dice": 0.9797,
+        "core_voxels": 2234129,
+        "b0_r_in_target": 0.7427,
+        "mask_dice_in_target": 0.9929,
+        "core_voxels_in_target": 2092151
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR251"
+        ],
+        "b0_r": 0.6584,
+        "mask_dice": 0.9798,
+        "core_voxels": 2211501,
+        "b0_r_in_target": 0.6955,
+        "mask_dice_in_target": 0.9927,
+        "core_voxels_in_target": 2078745
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR252"
+        ],
+        "b0_r": 0.6751,
+        "mask_dice": 0.9778,
+        "core_voxels": 2193482,
+        "b0_r_in_target": 0.709,
+        "mask_dice_in_target": 0.9917,
+        "core_voxels_in_target": 2067468
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR253"
+        ],
+        "b0_r": 0.3713,
+        "mask_dice": 0.9714,
+        "core_voxels": 2067183,
+        "b0_r_in_target": 0.3833,
+        "mask_dice_in_target": 0.9853,
+        "core_voxels_in_target": 1959109
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR254"
+        ],
+        "b0_r": 0.6961,
+        "mask_dice": 0.9781,
+        "core_voxels": 2081231,
+        "b0_r_in_target": 0.7225,
+        "mask_dice_in_target": 0.9913,
+        "core_voxels_in_target": 1976635
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR256"
+        ],
+        "b0_r": 0.6695,
+        "mask_dice": 0.9745,
+        "core_voxels": 2133358,
+        "b0_r_in_target": 0.6924,
+        "mask_dice_in_target": 0.9881,
+        "core_voxels_in_target": 2008315
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR257"
+        ],
+        "b0_r": 0.6694,
+        "mask_dice": 0.9779,
+        "core_voxels": 2186930,
+        "b0_r_in_target": 0.7095,
+        "mask_dice_in_target": 0.9912,
+        "core_voxels_in_target": 2058674
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR261"
+        ],
+        "b0_r": 0.6854,
+        "mask_dice": 0.9766,
+        "core_voxels": 2268418,
+        "b0_r_in_target": 0.7073,
+        "mask_dice_in_target": 0.9896,
+        "core_voxels_in_target": 2102559
+       },
+       {
+        "pair": [
+         "MF278",
+         "MF282"
+        ],
+        "b0_r": 0.6792,
+        "mask_dice": 0.9834,
+        "core_voxels": 2276460,
+        "b0_r_in_target": 0.6865,
+        "mask_dice_in_target": 0.9957,
+        "core_voxels_in_target": 2167510
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR243"
+        ],
+        "b0_r": 0.6268,
+        "mask_dice": 0.9821,
+        "core_voxels": 2240823,
+        "b0_r_in_target": 0.6539,
+        "mask_dice_in_target": 0.9944,
+        "core_voxels_in_target": 2116632
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR249"
+        ],
+        "b0_r": 0.5741,
+        "mask_dice": 0.9807,
+        "core_voxels": 2261249,
+        "b0_r_in_target": 0.6218,
+        "mask_dice_in_target": 0.9928,
+        "core_voxels_in_target": 2117605
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR250"
+        ],
+        "b0_r": 0.5698,
+        "mask_dice": 0.9807,
+        "core_voxels": 2214736,
+        "b0_r_in_target": 0.6173,
+        "mask_dice_in_target": 0.9928,
+        "core_voxels_in_target": 2084731
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR251"
+        ],
+        "b0_r": 0.5272,
+        "mask_dice": 0.981,
+        "core_voxels": 2201347,
+        "b0_r_in_target": 0.5783,
+        "mask_dice_in_target": 0.9927,
+        "core_voxels_in_target": 2076156
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR252"
+        ],
+        "b0_r": 0.5393,
+        "mask_dice": 0.9795,
+        "core_voxels": 2190223,
+        "b0_r_in_target": 0.5847,
+        "mask_dice_in_target": 0.9917,
+        "core_voxels_in_target": 2067725
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR253"
+        ],
+        "b0_r": 0.3662,
+        "mask_dice": 0.9721,
+        "core_voxels": 2058045,
+        "b0_r_in_target": 0.3774,
+        "mask_dice_in_target": 0.985,
+        "core_voxels_in_target": 1952720
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR254"
+        ],
+        "b0_r": 0.573,
+        "mask_dice": 0.9789,
+        "core_voxels": 2065108,
+        "b0_r_in_target": 0.6126,
+        "mask_dice_in_target": 0.991,
+        "core_voxels_in_target": 1969420
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR256"
+        ],
+        "b0_r": 0.5212,
+        "mask_dice": 0.9756,
+        "core_voxels": 2119626,
+        "b0_r_in_target": 0.5567,
+        "mask_dice_in_target": 0.9881,
+        "core_voxels_in_target": 2005065
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR257"
+        ],
+        "b0_r": 0.55,
+        "mask_dice": 0.9796,
+        "core_voxels": 2179784,
+        "b0_r_in_target": 0.5951,
+        "mask_dice_in_target": 0.9915,
+        "core_voxels_in_target": 2056523
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR261"
+        ],
+        "b0_r": 0.5654,
+        "mask_dice": 0.9773,
+        "core_voxels": 2243649,
+        "b0_r_in_target": 0.5944,
+        "mask_dice_in_target": 0.9896,
+        "core_voxels_in_target": 2096899
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR243"
+        ],
+        "b0_r": 0.7498,
+        "mask_dice": 0.9825,
+        "core_voxels": 2261936,
+        "b0_r_in_target": 0.778,
+        "mask_dice_in_target": 0.995,
+        "core_voxels_in_target": 2151753
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR249"
+        ],
+        "b0_r": 0.6723,
+        "mask_dice": 0.9799,
+        "core_voxels": 2255052,
+        "b0_r_in_target": 0.7055,
+        "mask_dice_in_target": 0.993,
+        "core_voxels_in_target": 2137585
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR250"
+        ],
+        "b0_r": 0.6947,
+        "mask_dice": 0.9807,
+        "core_voxels": 2212700,
+        "b0_r_in_target": 0.7333,
+        "mask_dice_in_target": 0.993,
+        "core_voxels_in_target": 2108299
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR251"
+        ],
+        "b0_r": 0.6146,
+        "mask_dice": 0.9811,
+        "core_voxels": 2216477,
+        "b0_r_in_target": 0.6592,
+        "mask_dice_in_target": 0.9933,
+        "core_voxels_in_target": 2105909
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR252"
+        ],
+        "b0_r": 0.6768,
+        "mask_dice": 0.9797,
+        "core_voxels": 2201537,
+        "b0_r_in_target": 0.7105,
+        "mask_dice_in_target": 0.9923,
+        "core_voxels_in_target": 2102847
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR253"
+        ],
+        "b0_r": 0.4063,
+        "mask_dice": 0.9726,
+        "core_voxels": 2051591,
+        "b0_r_in_target": 0.4155,
+        "mask_dice_in_target": 0.9851,
+        "core_voxels_in_target": 1970682
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR254"
+        ],
+        "b0_r": 0.6928,
+        "mask_dice": 0.9794,
+        "core_voxels": 2069027,
+        "b0_r_in_target": 0.7125,
+        "mask_dice_in_target": 0.9913,
+        "core_voxels_in_target": 1994725
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR256"
+        ],
+        "b0_r": 0.6926,
+        "mask_dice": 0.9752,
+        "core_voxels": 2099591,
+        "b0_r_in_target": 0.7171,
+        "mask_dice_in_target": 0.9878,
+        "core_voxels_in_target": 2009237
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR257"
+        ],
+        "b0_r": 0.694,
+        "mask_dice": 0.978,
+        "core_voxels": 2153219,
+        "b0_r_in_target": 0.7184,
+        "mask_dice_in_target": 0.9911,
+        "core_voxels_in_target": 2065338
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR261"
+        ],
+        "b0_r": 0.6741,
+        "mask_dice": 0.9766,
+        "core_voxels": 2227935,
+        "b0_r_in_target": 0.6954,
+        "mask_dice_in_target": 0.9894,
+        "core_voxels_in_target": 2107373
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR249"
+        ],
+        "b0_r": 0.81,
+        "mask_dice": 0.9809,
+        "core_voxels": 2250621,
+        "b0_r_in_target": 0.8192,
+        "mask_dice_in_target": 0.9926,
+        "core_voxels_in_target": 2095795
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR250"
+        ],
+        "b0_r": 0.851,
+        "mask_dice": 0.9817,
+        "core_voxels": 2206944,
+        "b0_r_in_target": 0.859,
+        "mask_dice_in_target": 0.9924,
+        "core_voxels_in_target": 2070317
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR251"
+        ],
+        "b0_r": 0.7911,
+        "mask_dice": 0.981,
+        "core_voxels": 2192130,
+        "b0_r_in_target": 0.8027,
+        "mask_dice_in_target": 0.9924,
+        "core_voxels_in_target": 2063947
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR252"
+        ],
+        "b0_r": 0.8134,
+        "mask_dice": 0.9808,
+        "core_voxels": 2184362,
+        "b0_r_in_target": 0.8264,
+        "mask_dice_in_target": 0.9916,
+        "core_voxels_in_target": 2058005
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR253"
+        ],
+        "b0_r": 0.4109,
+        "mask_dice": 0.9717,
+        "core_voxels": 2039198,
+        "b0_r_in_target": 0.423,
+        "mask_dice_in_target": 0.9845,
+        "core_voxels_in_target": 1939446
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR254"
+        ],
+        "b0_r": 0.784,
+        "mask_dice": 0.9793,
+        "core_voxels": 2051502,
+        "b0_r_in_target": 0.7895,
+        "mask_dice_in_target": 0.9907,
+        "core_voxels_in_target": 1955110
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR256"
+        ],
+        "b0_r": 0.7702,
+        "mask_dice": 0.976,
+        "core_voxels": 2095603,
+        "b0_r_in_target": 0.7783,
+        "mask_dice_in_target": 0.9876,
+        "core_voxels_in_target": 1980706
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR257"
+        ],
+        "b0_r": 0.7529,
+        "mask_dice": 0.9793,
+        "core_voxels": 2145797,
+        "b0_r_in_target": 0.7702,
+        "mask_dice_in_target": 0.9909,
+        "core_voxels_in_target": 2029313
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR261"
+        ],
+        "b0_r": 0.7438,
+        "mask_dice": 0.9773,
+        "core_voxels": 2208784,
+        "b0_r_in_target": 0.7619,
+        "mask_dice_in_target": 0.989,
+        "core_voxels_in_target": 2065223
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR250"
+        ],
+        "b0_r": 0.8152,
+        "mask_dice": 0.9813,
+        "core_voxels": 2242087,
+        "b0_r_in_target": 0.8225,
+        "mask_dice_in_target": 0.9914,
+        "core_voxels_in_target": 2074554
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR251"
+        ],
+        "b0_r": 0.768,
+        "mask_dice": 0.9803,
+        "core_voxels": 2211612,
+        "b0_r_in_target": 0.7777,
+        "mask_dice_in_target": 0.9911,
+        "core_voxels_in_target": 2059970
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR252"
+        ],
+        "b0_r": 0.7791,
+        "mask_dice": 0.9799,
+        "core_voxels": 2199358,
+        "b0_r_in_target": 0.7903,
+        "mask_dice_in_target": 0.9906,
+        "core_voxels_in_target": 2049999
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR253"
+        ],
+        "b0_r": 0.3669,
+        "mask_dice": 0.9713,
+        "core_voxels": 2064148,
+        "b0_r_in_target": 0.383,
+        "mask_dice_in_target": 0.9845,
+        "core_voxels_in_target": 1949000
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR254"
+        ],
+        "b0_r": 0.7396,
+        "mask_dice": 0.9788,
+        "core_voxels": 2080613,
+        "b0_r_in_target": 0.7423,
+        "mask_dice_in_target": 0.9899,
+        "core_voxels_in_target": 1962805
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR256"
+        ],
+        "b0_r": 0.7317,
+        "mask_dice": 0.9776,
+        "core_voxels": 2149576,
+        "b0_r_in_target": 0.7399,
+        "mask_dice_in_target": 0.9887,
+        "core_voxels_in_target": 2002850
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR257"
+        ],
+        "b0_r": 0.7035,
+        "mask_dice": 0.9792,
+        "core_voxels": 2191880,
+        "b0_r_in_target": 0.7177,
+        "mask_dice_in_target": 0.9905,
+        "core_voxels_in_target": 2048488
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR261"
+        ],
+        "b0_r": 0.6588,
+        "mask_dice": 0.9784,
+        "core_voxels": 2274493,
+        "b0_r_in_target": 0.7055,
+        "mask_dice_in_target": 0.9897,
+        "core_voxels_in_target": 2086758
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR251"
+        ],
+        "b0_r": 0.8129,
+        "mask_dice": 0.9814,
+        "core_voxels": 2180812,
+        "b0_r_in_target": 0.8114,
+        "mask_dice_in_target": 0.9911,
+        "core_voxels_in_target": 2033985
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR252"
+        ],
+        "b0_r": 0.8291,
+        "mask_dice": 0.9805,
+        "core_voxels": 2159158,
+        "b0_r_in_target": 0.833,
+        "mask_dice_in_target": 0.9905,
+        "core_voxels_in_target": 2029842
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR253"
+        ],
+        "b0_r": 0.3866,
+        "mask_dice": 0.9728,
+        "core_voxels": 2034902,
+        "b0_r_in_target": 0.4052,
+        "mask_dice_in_target": 0.9843,
+        "core_voxels_in_target": 1923858
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR254"
+        ],
+        "b0_r": 0.7872,
+        "mask_dice": 0.9803,
+        "core_voxels": 2047872,
+        "b0_r_in_target": 0.7896,
+        "mask_dice_in_target": 0.9903,
+        "core_voxels_in_target": 1939811
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR256"
+        ],
+        "b0_r": 0.7582,
+        "mask_dice": 0.978,
+        "core_voxels": 2105908,
+        "b0_r_in_target": 0.7597,
+        "mask_dice_in_target": 0.9873,
+        "core_voxels_in_target": 1968217
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR257"
+        ],
+        "b0_r": 0.7389,
+        "mask_dice": 0.9799,
+        "core_voxels": 2154767,
+        "b0_r_in_target": 0.7382,
+        "mask_dice_in_target": 0.99,
+        "core_voxels_in_target": 2010523
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR261"
+        ],
+        "b0_r": 0.6881,
+        "mask_dice": 0.9787,
+        "core_voxels": 2224943,
+        "b0_r_in_target": 0.7188,
+        "mask_dice_in_target": 0.9883,
+        "core_voxels_in_target": 2048689
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR252"
+        ],
+        "b0_r": 0.7895,
+        "mask_dice": 0.9799,
+        "core_voxels": 2150570,
+        "b0_r_in_target": 0.786,
+        "mask_dice_in_target": 0.9907,
+        "core_voxels_in_target": 2026499
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR253"
+        ],
+        "b0_r": 0.3318,
+        "mask_dice": 0.9711,
+        "core_voxels": 2009095,
+        "b0_r_in_target": 0.354,
+        "mask_dice_in_target": 0.9832,
+        "core_voxels_in_target": 1907592
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR254"
+        ],
+        "b0_r": 0.7517,
+        "mask_dice": 0.9781,
+        "core_voxels": 2015276,
+        "b0_r_in_target": 0.7521,
+        "mask_dice_in_target": 0.989,
+        "core_voxels_in_target": 1917954
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR256"
+        ],
+        "b0_r": 0.717,
+        "mask_dice": 0.9758,
+        "core_voxels": 2074743,
+        "b0_r_in_target": 0.7164,
+        "mask_dice_in_target": 0.9865,
+        "core_voxels_in_target": 1950311
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR257"
+        ],
+        "b0_r": 0.7271,
+        "mask_dice": 0.9784,
+        "core_voxels": 2128742,
+        "b0_r_in_target": 0.7028,
+        "mask_dice_in_target": 0.9894,
+        "core_voxels_in_target": 1999143
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR261"
+        ],
+        "b0_r": 0.6234,
+        "mask_dice": 0.9773,
+        "core_voxels": 2193085,
+        "b0_r_in_target": 0.66,
+        "mask_dice_in_target": 0.9878,
+        "core_voxels_in_target": 2031459
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR253"
+        ],
+        "b0_r": 0.3712,
+        "mask_dice": 0.971,
+        "core_voxels": 1991351,
+        "b0_r_in_target": 0.3925,
+        "mask_dice_in_target": 0.9831,
+        "core_voxels_in_target": 1894311
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR254"
+        ],
+        "b0_r": 0.7608,
+        "mask_dice": 0.9775,
+        "core_voxels": 2016689,
+        "b0_r_in_target": 0.7555,
+        "mask_dice_in_target": 0.9883,
+        "core_voxels_in_target": 1917826
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR256"
+        ],
+        "b0_r": 0.7485,
+        "mask_dice": 0.9752,
+        "core_voxels": 2056630,
+        "b0_r_in_target": 0.7492,
+        "mask_dice_in_target": 0.9862,
+        "core_voxels_in_target": 1940250
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR257"
+        ],
+        "b0_r": 0.7413,
+        "mask_dice": 0.9782,
+        "core_voxels": 2104737,
+        "b0_r_in_target": 0.7413,
+        "mask_dice_in_target": 0.9888,
+        "core_voxels_in_target": 1983618
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR261"
+        ],
+        "b0_r": 0.6295,
+        "mask_dice": 0.9756,
+        "core_voxels": 2153322,
+        "b0_r_in_target": 0.6778,
+        "mask_dice_in_target": 0.9866,
+        "core_voxels_in_target": 2015123
+       },
+       {
+        "pair": [
+         "MR253",
+         "MR254"
+        ],
+        "b0_r": 0.3645,
+        "mask_dice": 0.9735,
+        "core_voxels": 1940790,
+        "b0_r_in_target": 0.3809,
+        "mask_dice_in_target": 0.9845,
+        "core_voxels_in_target": 1851708
+       },
+       {
+        "pair": [
+         "MR253",
+         "MR256"
+        ],
+        "b0_r": 0.3362,
+        "mask_dice": 0.9725,
+        "core_voxels": 1986724,
+        "b0_r_in_target": 0.361,
+        "mask_dice_in_target": 0.9838,
+        "core_voxels_in_target": 1882292
+       },
+       {
+        "pair": [
+         "MR253",
+         "MR257"
+        ],
+        "b0_r": 0.311,
+        "mask_dice": 0.9716,
+        "core_voxels": 2025718,
+        "b0_r_in_target": 0.3331,
+        "mask_dice_in_target": 0.9843,
+        "core_voxels_in_target": 1920930
+       },
+       {
+        "pair": [
+         "MR253",
+         "MR261"
+        ],
+        "b0_r": 0.288,
+        "mask_dice": 0.9707,
+        "core_voxels": 2070877,
+        "b0_r_in_target": 0.3008,
+        "mask_dice_in_target": 0.9833,
+        "core_voxels_in_target": 1946948
+       },
+       {
+        "pair": [
+         "MR254",
+         "MR256"
+        ],
+        "b0_r": 0.7229,
+        "mask_dice": 0.9772,
+        "core_voxels": 1982634,
+        "b0_r_in_target": 0.7204,
+        "mask_dice_in_target": 0.987,
+        "core_voxels_in_target": 1882412
+       },
+       {
+        "pair": [
+         "MR254",
+         "MR257"
+        ],
+        "b0_r": 0.7218,
+        "mask_dice": 0.9781,
+        "core_voxels": 2019163,
+        "b0_r_in_target": 0.721,
+        "mask_dice_in_target": 0.9894,
+        "core_voxels_in_target": 1922674
+       },
+       {
+        "pair": [
+         "MR254",
+         "MR261"
+        ],
+        "b0_r": 0.6401,
+        "mask_dice": 0.9771,
+        "core_voxels": 2065385,
+        "b0_r_in_target": 0.6793,
+        "mask_dice_in_target": 0.988,
+        "core_voxels_in_target": 1947377
+       },
+       {
+        "pair": [
+         "MR256",
+         "MR257"
+        ],
+        "b0_r": 0.7602,
+        "mask_dice": 0.9785,
+        "core_voxels": 2103855,
+        "b0_r_in_target": 0.776,
+        "mask_dice_in_target": 0.9886,
+        "core_voxels_in_target": 1970854
+       },
+       {
+        "pair": [
+         "MR256",
+         "MR261"
+        ],
+        "b0_r": 0.6022,
+        "mask_dice": 0.978,
+        "core_voxels": 2161716,
+        "b0_r_in_target": 0.6336,
+        "mask_dice_in_target": 0.9881,
+        "core_voxels_in_target": 2002253
+       },
+       {
+        "pair": [
+         "MR257",
+         "MR261"
+        ],
+        "b0_r": 0.5405,
+        "mask_dice": 0.9795,
+        "core_voxels": 2230111,
+        "b0_r_in_target": 0.63,
+        "mask_dice_in_target": 0.9892,
+        "core_voxels_in_target": 2047381
+       }
+      ],
+      "ours_r5_of_record": [
+       {
+        "pair": [
+         "MF275",
+         "MF278"
+        ],
+        "b0_r": 0.6963,
+        "mask_dice": 0.984,
+        "core_voxels": 2281446,
+        "b0_r_in_target": 0.7147,
+        "mask_dice_in_target": 0.9936,
+        "core_voxels_in_target": 2136300
+       },
+       {
+        "pair": [
+         "MF275",
+         "MF282"
+        ],
+        "b0_r": 0.743,
+        "mask_dice": 0.9826,
+        "core_voxels": 2268698,
+        "b0_r_in_target": 0.7554,
+        "mask_dice_in_target": 0.9936,
+        "core_voxels_in_target": 2153819
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR243"
+        ],
+        "b0_r": 0.7434,
+        "mask_dice": 0.9801,
+        "core_voxels": 2226028,
+        "b0_r_in_target": 0.7587,
+        "mask_dice_in_target": 0.9917,
+        "core_voxels_in_target": 2092339
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR249"
+        ],
+        "b0_r": 0.6812,
+        "mask_dice": 0.9802,
+        "core_voxels": 2263552,
+        "b0_r_in_target": 0.7115,
+        "mask_dice_in_target": 0.9909,
+        "core_voxels_in_target": 2110221
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR250"
+        ],
+        "b0_r": 0.6841,
+        "mask_dice": 0.9786,
+        "core_voxels": 2221248,
+        "b0_r_in_target": 0.7147,
+        "mask_dice_in_target": 0.9904,
+        "core_voxels_in_target": 2074118
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR251"
+        ],
+        "b0_r": 0.6348,
+        "mask_dice": 0.9787,
+        "core_voxels": 2198309,
+        "b0_r_in_target": 0.6723,
+        "mask_dice_in_target": 0.9902,
+        "core_voxels_in_target": 2063259
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR252"
+        ],
+        "b0_r": 0.6481,
+        "mask_dice": 0.9777,
+        "core_voxels": 2176914,
+        "b0_r_in_target": 0.6828,
+        "mask_dice_in_target": 0.9889,
+        "core_voxels_in_target": 2046833
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR253"
+        ],
+        "b0_r": 0.3872,
+        "mask_dice": 0.9615,
+        "core_voxels": 2035211,
+        "b0_r_in_target": 0.3995,
+        "mask_dice_in_target": 0.9803,
+        "core_voxels_in_target": 1925173
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR254"
+        ],
+        "b0_r": 0.6662,
+        "mask_dice": 0.9761,
+        "core_voxels": 2057496,
+        "b0_r_in_target": 0.6926,
+        "mask_dice_in_target": 0.9879,
+        "core_voxels_in_target": 1952917
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR256"
+        ],
+        "b0_r": 0.6496,
+        "mask_dice": 0.9731,
+        "core_voxels": 2134121,
+        "b0_r_in_target": 0.6739,
+        "mask_dice_in_target": 0.9871,
+        "core_voxels_in_target": 2001031
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR257"
+        ],
+        "b0_r": 0.6374,
+        "mask_dice": 0.9766,
+        "core_voxels": 2170560,
+        "b0_r_in_target": 0.6825,
+        "mask_dice_in_target": 0.988,
+        "core_voxels_in_target": 2038868
+       },
+       {
+        "pair": [
+         "MF275",
+         "MR261"
+        ],
+        "b0_r": 0.6679,
+        "mask_dice": 0.9752,
+        "core_voxels": 2250572,
+        "b0_r_in_target": 0.6899,
+        "mask_dice_in_target": 0.9868,
+        "core_voxels_in_target": 2084834
+       },
+       {
+        "pair": [
+         "MF278",
+         "MF282"
+        ],
+        "b0_r": 0.6719,
+        "mask_dice": 0.9839,
+        "core_voxels": 2272533,
+        "b0_r_in_target": 0.6797,
+        "mask_dice_in_target": 0.9946,
+        "core_voxels_in_target": 2164574
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR243"
+        ],
+        "b0_r": 0.6156,
+        "mask_dice": 0.982,
+        "core_voxels": 2234102,
+        "b0_r_in_target": 0.6442,
+        "mask_dice_in_target": 0.9928,
+        "core_voxels_in_target": 2109095
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR249"
+        ],
+        "b0_r": 0.5686,
+        "mask_dice": 0.9812,
+        "core_voxels": 2252928,
+        "b0_r_in_target": 0.617,
+        "mask_dice_in_target": 0.9915,
+        "core_voxels_in_target": 2111251
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR250"
+        ],
+        "b0_r": 0.5592,
+        "mask_dice": 0.9783,
+        "core_voxels": 2204343,
+        "b0_r_in_target": 0.6078,
+        "mask_dice_in_target": 0.9901,
+        "core_voxels_in_target": 2072007
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR251"
+        ],
+        "b0_r": 0.5137,
+        "mask_dice": 0.9793,
+        "core_voxels": 2195066,
+        "b0_r_in_target": 0.5641,
+        "mask_dice_in_target": 0.9904,
+        "core_voxels_in_target": 2067852
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR252"
+        ],
+        "b0_r": 0.5293,
+        "mask_dice": 0.9785,
+        "core_voxels": 2177937,
+        "b0_r_in_target": 0.5773,
+        "mask_dice_in_target": 0.989,
+        "core_voxels_in_target": 2052934
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR253"
+        ],
+        "b0_r": 0.3691,
+        "mask_dice": 0.9624,
+        "core_voxels": 2031474,
+        "b0_r_in_target": 0.3852,
+        "mask_dice_in_target": 0.9807,
+        "core_voxels_in_target": 1927428
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR254"
+        ],
+        "b0_r": 0.5591,
+        "mask_dice": 0.9771,
+        "core_voxels": 2047173,
+        "b0_r_in_target": 0.6011,
+        "mask_dice_in_target": 0.9882,
+        "core_voxels_in_target": 1951631
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR256"
+        ],
+        "b0_r": 0.5063,
+        "mask_dice": 0.9727,
+        "core_voxels": 2121069,
+        "b0_r_in_target": 0.5452,
+        "mask_dice_in_target": 0.9873,
+        "core_voxels_in_target": 2001986
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR257"
+        ],
+        "b0_r": 0.5345,
+        "mask_dice": 0.9783,
+        "core_voxels": 2166496,
+        "b0_r_in_target": 0.586,
+        "mask_dice_in_target": 0.9889,
+        "core_voxels_in_target": 2041930
+       },
+       {
+        "pair": [
+         "MF278",
+         "MR261"
+        ],
+        "b0_r": 0.5589,
+        "mask_dice": 0.9765,
+        "core_voxels": 2229252,
+        "b0_r_in_target": 0.5898,
+        "mask_dice_in_target": 0.9875,
+        "core_voxels_in_target": 2085937
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR243"
+        ],
+        "b0_r": 0.7369,
+        "mask_dice": 0.9812,
+        "core_voxels": 2247249,
+        "b0_r_in_target": 0.7649,
+        "mask_dice_in_target": 0.993,
+        "core_voxels_in_target": 2137627
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR249"
+        ],
+        "b0_r": 0.6598,
+        "mask_dice": 0.9801,
+        "core_voxels": 2244000,
+        "b0_r_in_target": 0.6951,
+        "mask_dice_in_target": 0.9915,
+        "core_voxels_in_target": 2126994
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR250"
+        ],
+        "b0_r": 0.6791,
+        "mask_dice": 0.9774,
+        "core_voxels": 2195823,
+        "b0_r_in_target": 0.7176,
+        "mask_dice_in_target": 0.9903,
+        "core_voxels_in_target": 2091304
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR251"
+        ],
+        "b0_r": 0.5993,
+        "mask_dice": 0.9788,
+        "core_voxels": 2201775,
+        "b0_r_in_target": 0.6417,
+        "mask_dice_in_target": 0.9909,
+        "core_voxels_in_target": 2092272
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR252"
+        ],
+        "b0_r": 0.6644,
+        "mask_dice": 0.978,
+        "core_voxels": 2183074,
+        "b0_r_in_target": 0.6978,
+        "mask_dice_in_target": 0.9895,
+        "core_voxels_in_target": 2083456
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR253"
+        ],
+        "b0_r": 0.4291,
+        "mask_dice": 0.9626,
+        "core_voxels": 2022353,
+        "b0_r_in_target": 0.4392,
+        "mask_dice_in_target": 0.9808,
+        "core_voxels_in_target": 1941342
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR254"
+        ],
+        "b0_r": 0.6783,
+        "mask_dice": 0.9774,
+        "core_voxels": 2046151,
+        "b0_r_in_target": 0.6968,
+        "mask_dice_in_target": 0.9882,
+        "core_voxels_in_target": 1972255
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR256"
+        ],
+        "b0_r": 0.681,
+        "mask_dice": 0.9716,
+        "core_voxels": 2099960,
+        "b0_r_in_target": 0.7065,
+        "mask_dice_in_target": 0.987,
+        "core_voxels_in_target": 2006799
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR257"
+        ],
+        "b0_r": 0.6717,
+        "mask_dice": 0.9772,
+        "core_voxels": 2136566,
+        "b0_r_in_target": 0.6977,
+        "mask_dice_in_target": 0.9884,
+        "core_voxels_in_target": 2046136
+       },
+       {
+        "pair": [
+         "MF282",
+         "MR261"
+        ],
+        "b0_r": 0.6657,
+        "mask_dice": 0.9765,
+        "core_voxels": 2212251,
+        "b0_r_in_target": 0.6865,
+        "mask_dice_in_target": 0.9871,
+        "core_voxels_in_target": 2091746
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR249"
+        ],
+        "b0_r": 0.7926,
+        "mask_dice": 0.9804,
+        "core_voxels": 2238845,
+        "b0_r_in_target": 0.8025,
+        "mask_dice_in_target": 0.9909,
+        "core_voxels_in_target": 2083200
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR250"
+        ],
+        "b0_r": 0.8227,
+        "mask_dice": 0.9796,
+        "core_voxels": 2190839,
+        "b0_r_in_target": 0.8316,
+        "mask_dice_in_target": 0.9897,
+        "core_voxels_in_target": 2048957
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR251"
+        ],
+        "b0_r": 0.7628,
+        "mask_dice": 0.9795,
+        "core_voxels": 2180173,
+        "b0_r_in_target": 0.7758,
+        "mask_dice_in_target": 0.9899,
+        "core_voxels_in_target": 2047124
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR252"
+        ],
+        "b0_r": 0.7844,
+        "mask_dice": 0.9798,
+        "core_voxels": 2168075,
+        "b0_r_in_target": 0.8012,
+        "mask_dice_in_target": 0.9888,
+        "core_voxels_in_target": 2036616
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR253"
+        ],
+        "b0_r": 0.4303,
+        "mask_dice": 0.9612,
+        "core_voxels": 2009357,
+        "b0_r_in_target": 0.4431,
+        "mask_dice_in_target": 0.9801,
+        "core_voxels_in_target": 1907851
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR254"
+        ],
+        "b0_r": 0.7603,
+        "mask_dice": 0.9761,
+        "core_voxels": 2025075,
+        "b0_r_in_target": 0.7661,
+        "mask_dice_in_target": 0.9874,
+        "core_voxels_in_target": 1929674
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR256"
+        ],
+        "b0_r": 0.7588,
+        "mask_dice": 0.9719,
+        "core_voxels": 2090833,
+        "b0_r_in_target": 0.7672,
+        "mask_dice_in_target": 0.9864,
+        "core_voxels_in_target": 1972809
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR257"
+        ],
+        "b0_r": 0.7219,
+        "mask_dice": 0.9777,
+        "core_voxels": 2128383,
+        "b0_r_in_target": 0.7434,
+        "mask_dice_in_target": 0.9881,
+        "core_voxels_in_target": 2008289
+       },
+       {
+        "pair": [
+         "MR243",
+         "MR261"
+        ],
+        "b0_r": 0.7282,
+        "mask_dice": 0.976,
+        "core_voxels": 2190937,
+        "b0_r_in_target": 0.7494,
+        "mask_dice_in_target": 0.9867,
+        "core_voxels_in_target": 2047794
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR250"
+        ],
+        "b0_r": 0.791,
+        "mask_dice": 0.9796,
+        "core_voxels": 2227332,
+        "b0_r_in_target": 0.801,
+        "mask_dice_in_target": 0.9893,
+        "core_voxels_in_target": 2058339
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR251"
+        ],
+        "b0_r": 0.7498,
+        "mask_dice": 0.9794,
+        "core_voxels": 2200988,
+        "b0_r_in_target": 0.7592,
+        "mask_dice_in_target": 0.9892,
+        "core_voxels_in_target": 2047103
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR252"
+        ],
+        "b0_r": 0.7604,
+        "mask_dice": 0.9785,
+        "core_voxels": 2178273,
+        "b0_r_in_target": 0.7717,
+        "mask_dice_in_target": 0.9877,
+        "core_voxels_in_target": 2030084
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR253"
+        ],
+        "b0_r": 0.3839,
+        "mask_dice": 0.9612,
+        "core_voxels": 2031724,
+        "b0_r_in_target": 0.4021,
+        "mask_dice_in_target": 0.9796,
+        "core_voxels_in_target": 1915501
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR254"
+        ],
+        "b0_r": 0.7271,
+        "mask_dice": 0.9767,
+        "core_voxels": 2056688,
+        "b0_r_in_target": 0.7291,
+        "mask_dice_in_target": 0.9875,
+        "core_voxels_in_target": 1941429
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR256"
+        ],
+        "b0_r": 0.729,
+        "mask_dice": 0.9743,
+        "core_voxels": 2143321,
+        "b0_r_in_target": 0.7329,
+        "mask_dice_in_target": 0.9871,
+        "core_voxels_in_target": 1993944
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR257"
+        ],
+        "b0_r": 0.685,
+        "mask_dice": 0.9778,
+        "core_voxels": 2172571,
+        "b0_r_in_target": 0.7008,
+        "mask_dice_in_target": 0.9882,
+        "core_voxels_in_target": 2029116
+       },
+       {
+        "pair": [
+         "MR249",
+         "MR261"
+        ],
+        "b0_r": 0.6412,
+        "mask_dice": 0.9765,
+        "core_voxels": 2252212,
+        "b0_r_in_target": 0.6917,
+        "mask_dice_in_target": 0.9872,
+        "core_voxels_in_target": 2069886
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR251"
+        ],
+        "b0_r": 0.7795,
+        "mask_dice": 0.9786,
+        "core_voxels": 2167890,
+        "b0_r_in_target": 0.7775,
+        "mask_dice_in_target": 0.9883,
+        "core_voxels_in_target": 2015093
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR252"
+        ],
+        "b0_r": 0.7979,
+        "mask_dice": 0.9779,
+        "core_voxels": 2140155,
+        "b0_r_in_target": 0.805,
+        "mask_dice_in_target": 0.9876,
+        "core_voxels_in_target": 2005955
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR253"
+        ],
+        "b0_r": 0.4049,
+        "mask_dice": 0.9605,
+        "core_voxels": 2003827,
+        "b0_r_in_target": 0.42,
+        "mask_dice_in_target": 0.9793,
+        "core_voxels_in_target": 1888778
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR254"
+        ],
+        "b0_r": 0.7569,
+        "mask_dice": 0.9757,
+        "core_voxels": 2024838,
+        "b0_r_in_target": 0.7598,
+        "mask_dice_in_target": 0.987,
+        "core_voxels_in_target": 1915912
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR256"
+        ],
+        "b0_r": 0.7434,
+        "mask_dice": 0.973,
+        "core_voxels": 2100588,
+        "b0_r_in_target": 0.7458,
+        "mask_dice_in_target": 0.986,
+        "core_voxels_in_target": 1957790
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR257"
+        ],
+        "b0_r": 0.713,
+        "mask_dice": 0.9761,
+        "core_voxels": 2136919,
+        "b0_r_in_target": 0.7123,
+        "mask_dice_in_target": 0.9865,
+        "core_voxels_in_target": 1988554
+       },
+       {
+        "pair": [
+         "MR250",
+         "MR261"
+        ],
+        "b0_r": 0.6709,
+        "mask_dice": 0.9753,
+        "core_voxels": 2202801,
+        "b0_r_in_target": 0.7019,
+        "mask_dice_in_target": 0.9853,
+        "core_voxels_in_target": 2027321
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR252"
+        ],
+        "b0_r": 0.7591,
+        "mask_dice": 0.9782,
+        "core_voxels": 2132088,
+        "b0_r_in_target": 0.7546,
+        "mask_dice_in_target": 0.9882,
+        "core_voxels_in_target": 2005470
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR253"
+        ],
+        "b0_r": 0.3626,
+        "mask_dice": 0.9591,
+        "core_voxels": 1977215,
+        "b0_r_in_target": 0.3826,
+        "mask_dice_in_target": 0.9782,
+        "core_voxels_in_target": 1874110
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR254"
+        ],
+        "b0_r": 0.7198,
+        "mask_dice": 0.9745,
+        "core_voxels": 1992934,
+        "b0_r_in_target": 0.7236,
+        "mask_dice_in_target": 0.9857,
+        "core_voxels_in_target": 1894611
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR256"
+        ],
+        "b0_r": 0.7119,
+        "mask_dice": 0.9715,
+        "core_voxels": 2070687,
+        "b0_r_in_target": 0.7034,
+        "mask_dice_in_target": 0.985,
+        "core_voxels_in_target": 1942814
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR257"
+        ],
+        "b0_r": 0.7105,
+        "mask_dice": 0.9753,
+        "core_voxels": 2111391,
+        "b0_r_in_target": 0.6763,
+        "mask_dice_in_target": 0.9863,
+        "core_voxels_in_target": 1980247
+       },
+       {
+        "pair": [
+         "MR251",
+         "MR261"
+        ],
+        "b0_r": 0.603,
+        "mask_dice": 0.9741,
+        "core_voxels": 2172580,
+        "b0_r_in_target": 0.6396,
+        "mask_dice_in_target": 0.985,
+        "core_voxels_in_target": 2014199
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR253"
+        ],
+        "b0_r": 0.3862,
+        "mask_dice": 0.9589,
+        "core_voxels": 1951551,
+        "b0_r_in_target": 0.4082,
+        "mask_dice_in_target": 0.9773,
+        "core_voxels_in_target": 1853450
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR254"
+        ],
+        "b0_r": 0.7316,
+        "mask_dice": 0.9737,
+        "core_voxels": 1987168,
+        "b0_r_in_target": 0.7244,
+        "mask_dice_in_target": 0.9845,
+        "core_voxels_in_target": 1888547
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR256"
+        ],
+        "b0_r": 0.7385,
+        "mask_dice": 0.9698,
+        "core_voxels": 2044066,
+        "b0_r_in_target": 0.7358,
+        "mask_dice_in_target": 0.9838,
+        "core_voxels_in_target": 1925832
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR257"
+        ],
+        "b0_r": 0.7189,
+        "mask_dice": 0.9755,
+        "core_voxels": 2080772,
+        "b0_r_in_target": 0.7177,
+        "mask_dice_in_target": 0.9852,
+        "core_voxels_in_target": 1958382
+       },
+       {
+        "pair": [
+         "MR252",
+         "MR261"
+        ],
+        "b0_r": 0.6029,
+        "mask_dice": 0.973,
+        "core_voxels": 2127987,
+        "b0_r_in_target": 0.6557,
+        "mask_dice_in_target": 0.9835,
+        "core_voxels_in_target": 1991273
+       },
+       {
+        "pair": [
+         "MR253",
+         "MR254"
+        ],
+        "b0_r": 0.3772,
+        "mask_dice": 0.9629,
+        "core_voxels": 1900359,
+        "b0_r_in_target": 0.3916,
+        "mask_dice_in_target": 0.9793,
+        "core_voxels_in_target": 1810352
+       },
+       {
+        "pair": [
+         "MR253",
+         "MR256"
+        ],
+        "b0_r": 0.355,
+        "mask_dice": 0.9612,
+        "core_voxels": 1972175,
+        "b0_r_in_target": 0.3833,
+        "mask_dice_in_target": 0.9788,
+        "core_voxels_in_target": 1854923
+       },
+       {
+        "pair": [
+         "MR253",
+         "MR257"
+        ],
+        "b0_r": 0.3259,
+        "mask_dice": 0.9606,
+        "core_voxels": 1988371,
+        "b0_r_in_target": 0.3458,
+        "mask_dice_in_target": 0.9792,
+        "core_voxels_in_target": 1884659
+       },
+       {
+        "pair": [
+         "MR253",
+         "MR261"
+        ],
+        "b0_r": 0.3155,
+        "mask_dice": 0.9599,
+        "core_voxels": 2030769,
+        "b0_r_in_target": 0.3313,
+        "mask_dice_in_target": 0.9779,
+        "core_voxels_in_target": 1910136
+       },
+       {
+        "pair": [
+         "MR254",
+         "MR256"
+        ],
+        "b0_r": 0.7134,
+        "mask_dice": 0.9714,
+        "core_voxels": 1969295,
+        "b0_r_in_target": 0.7084,
+        "mask_dice_in_target": 0.9856,
+        "core_voxels_in_target": 1869673
+       },
+       {
+        "pair": [
+         "MR254",
+         "MR257"
+        ],
+        "b0_r": 0.6972,
+        "mask_dice": 0.9757,
+        "core_voxels": 1993049,
+        "b0_r_in_target": 0.6964,
+        "mask_dice_in_target": 0.9858,
+        "core_voxels_in_target": 1895038
+       },
+       {
+        "pair": [
+         "MR254",
+         "MR261"
+        ],
+        "b0_r": 0.6243,
+        "mask_dice": 0.9755,
+        "core_voxels": 2038908,
+        "b0_r_in_target": 0.6663,
+        "mask_dice_in_target": 0.9853,
+        "core_voxels_in_target": 1923344
+       },
+       {
+        "pair": [
+         "MR256",
+         "MR257"
+        ],
+        "b0_r": 0.7436,
+        "mask_dice": 0.9727,
+        "core_voxels": 2096747,
+        "b0_r_in_target": 0.7543,
+        "mask_dice_in_target": 0.9869,
+        "core_voxels_in_target": 1960367
+       },
+       {
+        "pair": [
+         "MR256",
+         "MR261"
+        ],
+        "b0_r": 0.5772,
+        "mask_dice": 0.9723,
+        "core_voxels": 2148565,
+        "b0_r_in_target": 0.6144,
+        "mask_dice_in_target": 0.9864,
+        "core_voxels_in_target": 1990500
+       },
+       {
+        "pair": [
+         "MR257",
+         "MR261"
+        ],
+        "b0_r": 0.5128,
+        "mask_dice": 0.9789,
+        "core_voxels": 2208209,
+        "b0_r_in_target": 0.6067,
+        "mask_dice_in_target": 0.9867,
+        "core_voxels_in_target": 2026428
+       }
+      ]
+     }
+    },
+    "template": {
+     "brains": [
+      "MF283",
+      "MF284",
+      "MF285",
+      "MF286"
+     ],
+     "pairs": 6,
+     "summary": {
+      "nmt": {
+       "b0_r": {
+        "n": 6,
+        "median": 0.7395,
+        "q25": 0.7063,
+        "q75": 0.7624
+       },
+       "mask_dice": {
+        "n": 6,
+        "median": 0.9829,
+        "q25": 0.9821,
+        "q75": 0.984
+       },
+       "b0_r_in_target": {
+        "n": 6,
+        "median": 0.74,
+        "q25": 0.7069,
+        "q75": 0.763
+       },
+       "mask_dice_in_target": {
+        "n": 6,
+        "median": 0.9874,
+        "q25": 0.9865,
+        "q75": 0.9885
+       }
+      },
+      "civmr": {
+       "b0_r": {
+        "n": 6,
+        "median": 0.7533,
+        "q25": 0.7248,
+        "q75": 0.7791
+       },
+       "mask_dice": {
+        "n": 6,
+        "median": 0.9846,
+        "q25": 0.9836,
+        "q75": 0.9856
+       },
+       "b0_r_in_target": {
+        "n": 6,
+        "median": 0.774,
+        "q25": 0.75,
+        "q75": 0.7939
+       },
+       "mask_dice_in_target": {
+        "n": 6,
+        "median": 0.9927,
+        "q25": 0.9921,
+        "q75": 0.9936
+       }
+      },
+      "ours": {
+       "b0_r": {
+        "n": 6,
+        "median": 0.7843,
+        "q25": 0.761,
+        "q75": 0.8044
+       },
+       "mask_dice": {
+        "n": 6,
+        "median": 0.9842,
+        "q25": 0.9841,
+        "q75": 0.9849
+       },
+       "b0_r_in_target": {
+        "n": 6,
+        "median": 0.7846,
+        "q25": 0.7611,
+        "q75": 0.805
+       },
+       "mask_dice_in_target": {
+        "n": 6,
+        "median": 0.9923,
+        "q25": 0.9919,
+        "q75": 0.9929
+       }
+      },
+      "ours_higher": {
+       "vs_nmt": {
+        "b0_r": {
+         "pairs": 6,
+         "ours_higher": 6
+        },
+        "mask_dice": {
+         "pairs": 6,
+         "ours_higher": 6
+        },
+        "b0_r_in_target": {
+         "pairs": 6,
+         "ours_higher": 6
+        },
+        "mask_dice_in_target": {
+         "pairs": 6,
+         "ours_higher": 6
+        }
+       },
+       "vs_civmr": {
+        "b0_r": {
+         "pairs": 6,
+         "ours_higher": 6
+        },
+        "mask_dice": {
+         "pairs": 6,
+         "ours_higher": 2
+        },
+        "b0_r_in_target": {
+         "pairs": 6,
+         "ours_higher": 6
+        },
+        "mask_dice_in_target": {
+         "pairs": 6,
+         "ours_higher": 1
+        }
+       }
+      }
+     },
+     "per_pair": {
+      "nmt": [
+       {
+        "pair": [
+         "MF283",
+         "MF284"
+        ],
+        "b0_r": 0.7636,
+        "mask_dice": 0.9833,
+        "core_voxels": 3934421,
+        "b0_r_in_target": 0.7642,
+        "mask_dice_in_target": 0.9876,
+        "core_voxels_in_target": 3919657
+       },
+       {
+        "pair": [
+         "MF283",
+         "MF285"
+        ],
+        "b0_r": 0.8004,
+        "mask_dice": 0.9842,
+        "core_voxels": 3948373,
+        "b0_r_in_target": 0.8007,
+        "mask_dice_in_target": 0.9888,
+        "core_voxels_in_target": 3930473
+       },
+       {
+        "pair": [
+         "MF283",
+         "MF286"
+        ],
+        "b0_r": 0.7202,
+        "mask_dice": 0.9818,
+        "core_voxels": 3872033,
+        "b0_r_in_target": 0.7208,
+        "mask_dice_in_target": 0.9862,
+        "core_voxels_in_target": 3859040
+       },
+       {
+        "pair": [
+         "MF284",
+         "MF285"
+        ],
+        "b0_r": 0.7588,
+        "mask_dice": 0.9842,
+        "core_voxels": 3943325,
+        "b0_r_in_target": 0.7592,
+        "mask_dice_in_target": 0.9888,
+        "core_voxels_in_target": 3928551
+       },
+       {
+        "pair": [
+         "MF284",
+         "MF286"
+        ],
+        "b0_r": 0.6876,
+        "mask_dice": 0.982,
+        "core_voxels": 3876858,
+        "b0_r_in_target": 0.6882,
+        "mask_dice_in_target": 0.9863,
+        "core_voxels_in_target": 3865388
+       },
+       {
+        "pair": [
+         "MF285",
+         "MF286"
+        ],
+        "b0_r": 0.7017,
+        "mask_dice": 0.9825,
+        "core_voxels": 3880013,
+        "b0_r_in_target": 0.7023,
+        "mask_dice_in_target": 0.9873,
+        "core_voxels_in_target": 3866739
+       }
+      ],
+      "civmr": [
+       {
+        "pair": [
+         "MF283",
+         "MF284"
+        ],
+        "b0_r": 0.7803,
+        "mask_dice": 0.9853,
+        "core_voxels": 3289428,
+        "b0_r_in_target": 0.7943,
+        "mask_dice_in_target": 0.9931,
+        "core_voxels_in_target": 2800704
+       },
+       {
+        "pair": [
+         "MF283",
+         "MF285"
+        ],
+        "b0_r": 0.8162,
+        "mask_dice": 0.9861,
+        "core_voxels": 3302039,
+        "b0_r_in_target": 0.8306,
+        "mask_dice_in_target": 0.9941,
+        "core_voxels_in_target": 2814833
+       },
+       {
+        "pair": [
+         "MF283",
+         "MF286"
+        ],
+        "b0_r": 0.7312,
+        "mask_dice": 0.9838,
+        "core_voxels": 3239150,
+        "b0_r_in_target": 0.7554,
+        "mask_dice_in_target": 0.992,
+        "core_voxels_in_target": 2784312
+       },
+       {
+        "pair": [
+         "MF284",
+         "MF285"
+        ],
+        "b0_r": 0.7754,
+        "mask_dice": 0.9857,
+        "core_voxels": 3299182,
+        "b0_r_in_target": 0.7927,
+        "mask_dice_in_target": 0.9938,
+        "core_voxels_in_target": 2802939
+       },
+       {
+        "pair": [
+         "MF284",
+         "MF286"
+        ],
+        "b0_r": 0.705,
+        "mask_dice": 0.9832,
+        "core_voxels": 3240023,
+        "b0_r_in_target": 0.7298,
+        "mask_dice_in_target": 0.9915,
+        "core_voxels_in_target": 2771180
+       },
+       {
+        "pair": [
+         "MF285",
+         "MF286"
+        ],
+        "b0_r": 0.7226,
+        "mask_dice": 0.9835,
+        "core_voxels": 3242796,
+        "b0_r_in_target": 0.7482,
+        "mask_dice_in_target": 0.9923,
+        "core_voxels_in_target": 2781005
+       }
+      ],
+      "ours": [
+       {
+        "pair": [
+         "MF283",
+         "MF284"
+        ],
+        "b0_r": 0.8071,
+        "mask_dice": 0.9843,
+        "core_voxels": 2083259,
+        "b0_r_in_target": 0.8078,
+        "mask_dice_in_target": 0.9923,
+        "core_voxels_in_target": 2067691
+       },
+       {
+        "pair": [
+         "MF283",
+         "MF285"
+        ],
+        "b0_r": 0.8393,
+        "mask_dice": 0.9852,
+        "core_voxels": 2081206,
+        "b0_r_in_target": 0.8396,
+        "mask_dice_in_target": 0.9932,
+        "core_voxels_in_target": 2062155
+       },
+       {
+        "pair": [
+         "MF283",
+         "MF286"
+        ],
+        "b0_r": 0.7724,
+        "mask_dice": 0.9838,
+        "core_voxels": 2056376,
+        "b0_r_in_target": 0.7724,
+        "mask_dice_in_target": 0.9916,
+        "core_voxels_in_target": 2044538
+       },
+       {
+        "pair": [
+         "MF284",
+         "MF285"
+        ],
+        "b0_r": 0.7963,
+        "mask_dice": 0.9851,
+        "core_voxels": 2084957,
+        "b0_r_in_target": 0.7968,
+        "mask_dice_in_target": 0.9931,
+        "core_voxels_in_target": 2065529
+       },
+       {
+        "pair": [
+         "MF284",
+         "MF286"
+        ],
+        "b0_r": 0.7458,
+        "mask_dice": 0.9841,
+        "core_voxels": 2065519,
+        "b0_r_in_target": 0.7463,
+        "mask_dice_in_target": 0.9917,
+        "core_voxels_in_target": 2050277
+       },
+       {
+        "pair": [
+         "MF285",
+         "MF286"
+        ],
+        "b0_r": 0.7572,
+        "mask_dice": 0.9842,
+        "core_voxels": 2059543,
+        "b0_r_in_target": 0.7574,
+        "mask_dice_in_target": 0.9923,
+        "core_voxels_in_target": 2045210
+       }
+      ]
+     }
+    }
+   },
+   "multi": {
+    "template": {
+     "brains": [
+      "MF283",
+      "MF284",
+      "MF285",
+      "MF286"
+     ],
+     "pairs": 6,
+     "summary": {
+      "nmt": {
+       "b0_r": {
+        "n": 6,
+        "median": 0.7325,
+        "q25": 0.699,
+        "q75": 0.7518
+       },
+       "mask_dice": {
+        "n": 6,
+        "median": 0.9831,
+        "q25": 0.9826,
+        "q75": 0.9839
+       },
+       "b0_r_in_target": {
+        "n": 6,
+        "median": 0.7329,
+        "q25": 0.6996,
+        "q75": 0.7523
+       },
+       "mask_dice_in_target": {
+        "n": 6,
+        "median": 0.9876,
+        "q25": 0.9869,
+        "q75": 0.9884
+       }
+      },
+      "civmr": {
+       "b0_r": {
+        "n": 6,
+        "median": 0.7473,
+        "q25": 0.7212,
+        "q75": 0.7707
+       },
+       "mask_dice": {
+        "n": 6,
+        "median": 0.9842,
+        "q25": 0.9837,
+        "q75": 0.9851
+       },
+       "b0_r_in_target": {
+        "n": 6,
+        "median": 0.7652,
+        "q25": 0.7458,
+        "q75": 0.788
+       },
+       "mask_dice_in_target": {
+        "n": 6,
+        "median": 0.9921,
+        "q25": 0.9918,
+        "q75": 0.9927
+       }
+      },
+      "ours": {
+       "b0_r": {
+        "n": 6,
+        "median": 0.7805,
+        "q25": 0.758,
+        "q75": 0.7997
+       },
+       "mask_dice": {
+        "n": 6,
+        "median": 0.9847,
+        "q25": 0.9843,
+        "q75": 0.985
+       },
+       "b0_r_in_target": {
+        "n": 6,
+        "median": 0.781,
+        "q25": 0.7583,
+        "q75": 0.8006
+       },
+       "mask_dice_in_target": {
+        "n": 6,
+        "median": 0.992,
+        "q25": 0.9917,
+        "q75": 0.9925
+       }
+      },
+      "ours_higher": {
+       "vs_nmt": {
+        "b0_r": {
+         "pairs": 6,
+         "ours_higher": 6
+        },
+        "mask_dice": {
+         "pairs": 6,
+         "ours_higher": 6
+        },
+        "b0_r_in_target": {
+         "pairs": 6,
+         "ours_higher": 6
+        },
+        "mask_dice_in_target": {
+         "pairs": 6,
+         "ours_higher": 6
+        }
+       },
+       "vs_civmr": {
+        "b0_r": {
+         "pairs": 6,
+         "ours_higher": 6
+        },
+        "mask_dice": {
+         "pairs": 6,
+         "ours_higher": 3
+        },
+        "b0_r_in_target": {
+         "pairs": 6,
+         "ours_higher": 6
+        },
+        "mask_dice_in_target": {
+         "pairs": 6,
+         "ours_higher": 2
+        }
+       }
+      }
+     },
+     "per_pair": {
+      "nmt": [
+       {
+        "pair": [
+         "MF283",
+         "MF284"
+        ],
+        "b0_r": 0.752,
+        "mask_dice": 0.9828,
+        "core_voxels": 3928597,
+        "b0_r_in_target": 0.7526,
+        "mask_dice_in_target": 0.9873,
+        "core_voxels_in_target": 3914853
+       },
+       {
+        "pair": [
+         "MF283",
+         "MF285"
+        ],
+        "b0_r": 0.7958,
+        "mask_dice": 0.9844,
+        "core_voxels": 3948453,
+        "b0_r_in_target": 0.7962,
+        "mask_dice_in_target": 0.9887,
+        "core_voxels_in_target": 3932740
+       },
+       {
+        "pair": [
+         "MF283",
+         "MF286"
+        ],
+        "b0_r": 0.7139,
+        "mask_dice": 0.9825,
+        "core_voxels": 3875317,
+        "b0_r_in_target": 0.7144,
+        "mask_dice_in_target": 0.9867,
+        "core_voxels_in_target": 3863219
+       },
+       {
+        "pair": [
+         "MF284",
+         "MF285"
+        ],
+        "b0_r": 0.751,
+        "mask_dice": 0.984,
+        "core_voxels": 3944867,
+        "b0_r_in_target": 0.7515,
+        "mask_dice_in_target": 0.9886,
+        "core_voxels_in_target": 3930802
+       },
+       {
+        "pair": [
+         "MF284",
+         "MF286"
+        ],
+        "b0_r": 0.6768,
+        "mask_dice": 0.9821,
+        "core_voxels": 3880234,
+        "b0_r_in_target": 0.6776,
+        "mask_dice_in_target": 0.9865,
+        "core_voxels_in_target": 3868279
+       },
+       {
+        "pair": [
+         "MF285",
+         "MF286"
+        ],
+        "b0_r": 0.694,
+        "mask_dice": 0.9834,
+        "core_voxels": 3893161,
+        "b0_r_in_target": 0.6946,
+        "mask_dice_in_target": 0.9879,
+        "core_voxels_in_target": 3880772
+       }
+      ],
+      "civmr": [
+       {
+        "pair": [
+         "MF283",
+         "MF284"
+        ],
+        "b0_r": 0.7708,
+        "mask_dice": 0.9846,
+        "core_voxels": 3264912,
+        "b0_r_in_target": 0.7845,
+        "mask_dice_in_target": 0.9922,
+        "core_voxels_in_target": 2786433
+       },
+       {
+        "pair": [
+         "MF283",
+         "MF285"
+        ],
+        "b0_r": 0.8085,
+        "mask_dice": 0.9858,
+        "core_voxels": 3278816,
+        "b0_r_in_target": 0.8238,
+        "mask_dice_in_target": 0.9935,
+        "core_voxels_in_target": 2805577
+       },
+       {
+        "pair": [
+         "MF283",
+         "MF286"
+        ],
+        "b0_r": 0.7241,
+        "mask_dice": 0.9837,
+        "core_voxels": 3219895,
+        "b0_r_in_target": 0.7457,
+        "mask_dice_in_target": 0.9917,
+        "core_voxels_in_target": 2776885
+       },
+       {
+        "pair": [
+         "MF284",
+         "MF285"
+        ],
+        "b0_r": 0.7705,
+        "mask_dice": 0.9853,
+        "core_voxels": 3271368,
+        "b0_r_in_target": 0.7891,
+        "mask_dice_in_target": 0.9929,
+        "core_voxels_in_target": 2787991
+       },
+       {
+        "pair": [
+         "MF284",
+         "MF286"
+        ],
+        "b0_r": 0.6988,
+        "mask_dice": 0.983,
+        "core_voxels": 3218199,
+        "b0_r_in_target": 0.7249,
+        "mask_dice_in_target": 0.991,
+        "core_voxels_in_target": 2759155
+       },
+       {
+        "pair": [
+         "MF285",
+         "MF286"
+        ],
+        "b0_r": 0.7202,
+        "mask_dice": 0.9837,
+        "core_voxels": 3222967,
+        "b0_r_in_target": 0.746,
+        "mask_dice_in_target": 0.992,
+        "core_voxels_in_target": 2773247
+       }
+      ],
+      "ours": [
+       {
+        "pair": [
+         "MF283",
+         "MF284"
+        ],
+        "b0_r": 0.8013,
+        "mask_dice": 0.9842,
+        "core_voxels": 2077253,
+        "b0_r_in_target": 0.8022,
+        "mask_dice_in_target": 0.9919,
+        "core_voxels_in_target": 2063531
+       },
+       {
+        "pair": [
+         "MF283",
+         "MF285"
+        ],
+        "b0_r": 0.8344,
+        "mask_dice": 0.9853,
+        "core_voxels": 2078760,
+        "b0_r_in_target": 0.8349,
+        "mask_dice_in_target": 0.9928,
+        "core_voxels_in_target": 2061645
+       },
+       {
+        "pair": [
+         "MF283",
+         "MF286"
+        ],
+        "b0_r": 0.766,
+        "mask_dice": 0.9843,
+        "core_voxels": 2055811,
+        "b0_r_in_target": 0.7662,
+        "mask_dice_in_target": 0.9916,
+        "core_voxels_in_target": 2045111
+       },
+       {
+        "pair": [
+         "MF284",
+         "MF285"
+        ],
+        "b0_r": 0.795,
+        "mask_dice": 0.9851,
+        "core_voxels": 2078442,
+        "b0_r_in_target": 0.7957,
+        "mask_dice_in_target": 0.9926,
+        "core_voxels_in_target": 2060717
+       },
+       {
+        "pair": [
+         "MF284",
+         "MF286"
+        ],
+        "b0_r": 0.7419,
+        "mask_dice": 0.9845,
+        "core_voxels": 2059690,
+        "b0_r_in_target": 0.7426,
+        "mask_dice_in_target": 0.9916,
+        "core_voxels_in_target": 2045904
+       },
+       {
+        "pair": [
+         "MF285",
+         "MF286"
+        ],
+        "b0_r": 0.7553,
+        "mask_dice": 0.9848,
+        "core_voxels": 2057883,
+        "b0_r_in_target": 0.7557,
+        "mask_dice_in_target": 0.9922,
+        "core_voxels_in_target": 2044749
+       }
+      ]
+     }
+    }
+   }
+  },
+  "registration_qc": {
+   "b0": {
+    "nmt": {
+     "n": 17,
+     "mid_mask_dice_after_median": 0.9799,
+     "mid_mask_dice_after_min": 0.9715,
+     "folds_fraction_max": 0.0
+    },
+    "civmr": {
+     "n": 17,
+     "mid_mask_dice_after_median": 0.9749,
+     "mid_mask_dice_after_min": 0.9682,
+     "folds_fraction_max": 0.0
+    },
+    "ours": {
+     "n": 17,
+     "mid_mask_dice_after_median": 0.9801,
+     "mid_mask_dice_after_min": 0.973,
+     "folds_fraction_max": 0.0
+    }
+   },
+   "multi": {
+    "nmt": {
+     "n": 4,
+     "mid_mask_dice_after_median": 0.9788,
+     "mid_mask_dice_after_min": 0.9761,
+     "folds_fraction_max": 0.0
+    },
+    "civmr": {
+     "n": 4,
+     "mid_mask_dice_after_median": 0.9781,
+     "mid_mask_dice_after_min": 0.977,
+     "folds_fraction_max": 0.0
+    },
+    "ours": {
+     "n": 4,
+     "mid_mask_dice_after_median": 0.9869,
+     "mid_mask_dice_after_min": 0.9861,
+     "folds_fraction_max": 0.0
+    }
+   },
+   "starts": {
+    "nmt": {
+     "chosen": {
+      "fwd": 8,
+      "bwd": 6,
+      "mean": 3
+     },
+     "mask_dice_min": 0.8514
+    },
+    "civmr": {
+     "chosen": {
+      "fwd": 6,
+      "bwd": 6,
+      "mean": 5
+     },
+     "mask_dice_min": 0.8749
+    },
+    "ours": {
+     "chosen": {
+      "fwd": 14,
+      "bwd": 2,
+      "mean": 1
+     },
+     "mask_dice_min": 0.8671
+    }
+   }
+  },
+  "lgnstn": {
+   "record": "lgnstn_targets_r060c",
+   "note": "LGN/STN centroid and surface distances of MM1-MM3 through these registrations (the blockface-to-b0 registration of record + the entries in mri/tc/r060_up/xfm); cite that record directly"
+  }
+ }
+}

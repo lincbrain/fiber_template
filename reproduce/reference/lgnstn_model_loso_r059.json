@@ -1,0 +1,405 @@
+{
+ "data": {
+  "method": [
+   "subject out (fold 0 = MR243 / MM1, fold 1 = MR252 / MM2, fold 2 = MR256 / MM3; labels/nnunet/folds_loso_532.json), from the folds'",
+   "own validation predictions (nnUNet_results/.../fold_<k>/validation/<case>.png) against the references (nnUNet_raw/.../labelsTr).",
+   "Per held-out case (a whole-section piece in the piece space TIRL registers, halved as in training) and nucleus (1 = LGN, 2 = STN; both",
+   "hemispheres in one class): Dice; per nucleus component (8-connected; one per hemisphere) matched to the nearest predicted component (centroids within 2 mm):",
+   "the centroid distance and the symmetric average surface distance (ASSD) of the matched pair; distances in mm on",
+   "the blockface piece grid (the canvas is the blockface piece at store level 0, 2 x 40 um for the MM brains after the halving). Pooled per",
+   "fold: Dice over all the fold's cases (sum of overlaps), the median case ASSD and component centroid distance, missed components (no",
+   "predicted component within 2 mm) and false-positive components (predicted, no reference within 2 mm).",
+   "Stains: MM1 and MM3 Lucifer yellow, MM2 fluorescein; the training subjects of each fold are the two others. No FR (Fluoro-Ruby)",
+   "histology has a reference (MF6, MF8 are FR): the model's performance on FR is not measured here.",
+   "-> paper/numbers/lgnstn_model_loso_r059.json",
+   "    mri/env/mmorf/bin/python labels/r059/loso_metrics_r059.py"
+  ],
+  "model": "Dataset532_LGNSTNnegdup nnUNetTrainer_100epochs nnUNetPlans_small 2d",
+  "px_mm": 0.08,
+  "folds": {
+   "MM1": {
+    "subject": "MR243",
+    "name": "MM1",
+    "stain": "LY",
+    "trained_on": [
+     "MR252",
+     "MR256"
+    ],
+    "cases": 91,
+    "structures": {
+     "LGN": {
+      "pooled_dice": 0.9096,
+      "cases_scored": 5,
+      "assd_mm_median": 0.142,
+      "centroid_mm_median": 0.155,
+      "centroid_mm_max": 1.148,
+      "components_matched": 8,
+      "components_missed": 0,
+      "false_positive_components": 14,
+      "false_positive_component_mm2": [
+       0.006,
+       0.006,
+       0.006,
+       0.006,
+       0.006,
+       0.006,
+       3.712,
+       0.006,
+       0.006,
+       0.006,
+       0.006,
+       0.006,
+       0.006,
+       0.006
+      ],
+      "cases_detail": [
+       {
+        "case": "MR243_s35nDF_0000",
+        "dice": 0.6578,
+        "assd_mm_matched": [
+         1.257,
+         0.337
+        ],
+        "ref_px": 8332,
+        "pred_px": 4426
+       },
+       {
+        "case": "MR243_s36nDF_0000",
+        "dice": 0.9553,
+        "assd_mm_matched": [
+         0.149,
+         0.118
+        ],
+        "ref_px": 12742,
+        "pred_px": 12363
+       },
+       {
+        "case": "MR243_s37nDF_0000",
+        "dice": 0.9649,
+        "assd_mm_matched": [
+         0.125,
+         0.12
+        ],
+        "ref_px": 15549,
+        "pred_px": 15689
+       },
+       {
+        "case": "MR243_s38nDF_0000",
+        "dice": 0.9496,
+        "assd_mm_matched": [
+         0.173,
+         0.135
+        ],
+        "ref_px": 11135,
+        "pred_px": 10891
+       },
+       {
+        "case": "MR243_s48nDF_0002",
+        "dice": 0.0,
+        "assd_mm_matched": [],
+        "ref_px": 0,
+        "pred_px": 593
+       }
+      ]
+     },
+     "STN": {
+      "pooled_dice": 0.8059,
+      "cases_scored": 4,
+      "assd_mm_median": 0.323,
+      "centroid_mm_median": 0.576,
+      "centroid_mm_max": 0.908,
+      "components_matched": 8,
+      "components_missed": 0,
+      "false_positive_components": 0,
+      "false_positive_component_mm2": [],
+      "cases_detail": [
+       {
+        "case": "MR243_s32nDF_0000",
+        "dice": 0.4721,
+        "assd_mm_matched": [
+         0.495,
+         0.442
+        ],
+        "ref_px": 718,
+        "pred_px": 1519
+       },
+       {
+        "case": "MR243_s33nDF_0000",
+        "dice": 0.8262,
+        "assd_mm_matched": [
+         0.367,
+         0.278
+        ],
+        "ref_px": 5129,
+        "pred_px": 4055
+       },
+       {
+        "case": "MR243_s34nDF_0000",
+        "dice": 0.9208,
+        "assd_mm_matched": [
+         0.085,
+         0.172
+        ],
+        "ref_px": 3575,
+        "pred_px": 4101
+       },
+       {
+        "case": "MR243_s35nDF_0000",
+        "dice": 0.6778,
+        "assd_mm_matched": [
+         0.208,
+         0.421
+        ],
+        "ref_px": 958,
+        "pred_px": 1559
+       }
+      ]
+     }
+    }
+   },
+   "MM2": {
+    "subject": "MR252",
+    "name": "MM2",
+    "stain": "FS",
+    "trained_on": [
+     "MR243",
+     "MR256"
+    ],
+    "cases": 40,
+    "structures": {
+     "LGN": {
+      "pooled_dice": 0.8397,
+      "cases_scored": 5,
+      "assd_mm_median": 0.181,
+      "centroid_mm_median": 0.24,
+      "centroid_mm_max": 1.243,
+      "components_matched": 7,
+      "components_missed": 3,
+      "false_positive_components": 0,
+      "false_positive_component_mm2": [],
+      "cases_detail": [
+       {
+        "case": "MR252_s35nDF_0000",
+        "dice": 0.5272,
+        "assd_mm_matched": [
+         0.688
+        ],
+        "ref_px": 3384,
+        "pred_px": 2523
+       },
+       {
+        "case": "MR252_s36nDF_0000",
+        "dice": 0.6403,
+        "assd_mm_matched": [
+         0.181
+        ],
+        "ref_px": 11729,
+        "pred_px": 5978
+       },
+       {
+        "case": "MR252_s37nDF_0000",
+        "dice": 0.9597,
+        "assd_mm_matched": [
+         0.147,
+         0.122
+        ],
+        "ref_px": 15972,
+        "pred_px": 15784
+       },
+       {
+        "case": "MR252_s38nDF_0000",
+        "dice": 0.938,
+        "assd_mm_matched": [
+         0.257,
+         0.155
+        ],
+        "ref_px": 14835,
+        "pred_px": 15219
+       },
+       {
+        "case": "MR252_s39nDF_0000",
+        "dice": 0.6664,
+        "assd_mm_matched": [
+         0.432
+        ],
+        "ref_px": 4260,
+        "pred_px": 3759
+       }
+      ]
+     },
+     "STN": {
+      "pooled_dice": 0.0,
+      "cases_scored": 4,
+      "assd_mm_median": null,
+      "centroid_mm_median": null,
+      "centroid_mm_max": null,
+      "components_matched": 0,
+      "components_missed": 8,
+      "false_positive_components": 0,
+      "false_positive_component_mm2": [],
+      "cases_detail": [
+       {
+        "case": "MR252_s31nDF_0000",
+        "dice": 0.0,
+        "assd_mm_matched": [],
+        "ref_px": 5627,
+        "pred_px": 0
+       },
+       {
+        "case": "MR252_s32nDF_0000",
+        "dice": 0.0,
+        "assd_mm_matched": [],
+        "ref_px": 2374,
+        "pred_px": 0
+       },
+       {
+        "case": "MR252_s34nDF_0000",
+        "dice": 0.0,
+        "assd_mm_matched": [],
+        "ref_px": 4321,
+        "pred_px": 0
+       },
+       {
+        "case": "MR252_s35nDF_0000",
+        "dice": 0.0,
+        "assd_mm_matched": [],
+        "ref_px": 1446,
+        "pred_px": 0
+       }
+      ]
+     }
+    }
+   },
+   "MM3": {
+    "subject": "MR256",
+    "name": "MM3",
+    "stain": "LY",
+    "trained_on": [
+     "MR243",
+     "MR252"
+    ],
+    "cases": 50,
+    "structures": {
+     "LGN": {
+      "pooled_dice": 0.8821,
+      "cases_scored": 6,
+      "assd_mm_median": 0.209,
+      "centroid_mm_median": 0.218,
+      "centroid_mm_max": 0.913,
+      "components_matched": 9,
+      "components_missed": 0,
+      "false_positive_components": 5,
+      "false_positive_component_mm2": [
+       4.25,
+       17.946,
+       5.402,
+       0.915,
+       0.006
+      ],
+      "cases_detail": [
+       {
+        "case": "MR256_s33nDF_0000",
+        "dice": 0.0,
+        "assd_mm_matched": [],
+        "ref_px": 0,
+        "pred_px": 664
+       },
+       {
+        "case": "MR256_s34nDF_0000",
+        "dice": 0.8768,
+        "assd_mm_matched": [
+         0.251,
+         0.277
+        ],
+        "ref_px": 6359,
+        "pred_px": 5251
+       },
+       {
+        "case": "MR256_s35nDF_0000",
+        "dice": 0.9338,
+        "assd_mm_matched": [
+         0.209,
+         0.188
+        ],
+        "ref_px": 11906,
+        "pred_px": 11129
+       },
+       {
+        "case": "MR256_s36nDF_0000",
+        "dice": 0.8671,
+        "assd_mm_matched": [
+         0.101,
+         0.111
+        ],
+        "ref_px": 15791,
+        "pred_px": 19227
+       },
+       {
+        "case": "MR256_s37nDF_0000",
+        "dice": 0.8809,
+        "assd_mm_matched": [
+         0.471,
+         0.271
+        ],
+        "ref_px": 12193,
+        "pred_px": 10061
+       },
+       {
+        "case": "MR256_s38nDF_0000",
+        "dice": 0.8833,
+        "assd_mm_matched": [
+         0.205
+        ],
+        "ref_px": 2174,
+        "pred_px": 1802
+       }
+      ]
+     },
+     "STN": {
+      "pooled_dice": 0.7876,
+      "cases_scored": 3,
+      "assd_mm_median": 0.206,
+      "centroid_mm_median": 0.416,
+      "centroid_mm_max": 0.654,
+      "components_matched": 6,
+      "components_missed": 0,
+      "false_positive_components": 0,
+      "false_positive_component_mm2": [],
+      "cases_detail": [
+       {
+        "case": "MR256_s31nDF_0000",
+        "dice": 0.8703,
+        "assd_mm_matched": [
+         0.124,
+         0.15
+        ],
+        "ref_px": 1911,
+        "pred_px": 1899
+       },
+       {
+        "case": "MR256_s32nDF_0000",
+        "dice": 0.8048,
+        "assd_mm_matched": [
+         0.437,
+         0.234
+        ],
+        "ref_px": 5310,
+        "pred_px": 4004
+       },
+       {
+        "case": "MR256_s33nDF_0000",
+        "dice": 0.6739,
+        "assd_mm_matched": [
+         0.63,
+         0.177
+        ],
+        "ref_px": 2759,
+        "pred_px": 1417
+       }
+      ]
+     }
+    }
+   }
+  }
+ }
+}

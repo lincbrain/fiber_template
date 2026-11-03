@@ -1,0 +1,2308 @@
+{
+ "data": {
+  "subjects": [
+   "MR243",
+   "MR252",
+   "MR256"
+  ],
+  "reference": "$LINC_PRODUCTS/template/mri/linc_mri_b0.nii.gz",
+  "primary_variant": "demons",
+  "min_voxels_real_sections": 50,
+  "anti_aliasing": "per source axis: Gaussian FWHM = max(source spacing, target voxel), then ONE linear resample, > 0.5 (orchestrator 2026-09-28)",
+  "bf_ap_spacing_mm": {
+   "MR243": 0.366,
+   "MR252": 0.045,
+   "MR256": 0.045
+  },
+  "one_voxel_reference": {
+   "rule": "Dice of the label vs itself shifted exactly one voxel (0.25 mm) along the grid axis closest to its thinnest principal axis (PCA of voxel world coords; integer shift, no interpolation; mean of +/-)",
+   "variant": "demons",
+   "LGN_dice": 0.8697,
+   "STN_dice": 0.7298,
+   "per_struct": {
+    "lhLGN": {
+     "MR243": 0.8619,
+     "GT": 0.8662,
+     "MR252": 0.8649,
+     "MR256": 0.8637
+    },
+    "lhSTN": {
+     "MR243": 0.6933,
+     "GT": 0.7094,
+     "MR252": 0.7532,
+     "MR256": 0.7415
+    },
+    "rhLGN": {
+     "MR243": 0.8712,
+     "GT": 0.8615,
+     "MR252": 0.8812,
+     "MR256": 0.875
+    },
+    "rhSTN": {
+     "MR243": 0.6941,
+     "GT": 0.7357,
+     "MR252": 0.7796,
+     "MR256": 0.717
+    }
+   }
+  },
+  "previous_carry": null,
+  "primary_rationale": "demons (whole volume) is primary: statistical adequacy, decided before comparing variants (orchestrator 2026-09-27); real-section scoring kept as a secondary row where both sides have >= 50 voxels (it scored higher, so the choice is conservative)",
+  "chain_override": "R1 of record per paper/numbers/r1_current_2026-10-03.json: MR243 r1v3, MR252 r1v3mr, MR256 r1v3mr",
+  "variants": {
+   "sheet_sdf": "sections rebuilt by plain SDF interpolation, ends extended half a spacing",
+   "demons": "demons-interpolated labels (labels/histo_interp.py), whole volume",
+   "demons_real_sections": "demons labels scored on real-section voxels only (provenance 1)"
+  },
+  "rows": [
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "lhLGN",
+    "a": "MR243",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.6414,
+    "assd_mm": 0.388,
+    "centroid_mm": 0.918,
+    "vol_ratio": 1.273,
+    "vox_a": 3093,
+    "vox_b": 2429,
+    "one_voxel_ref": {
+     "a": 0.8755,
+     "b": 0.8662,
+     "mean": 0.8708
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "lhLGN",
+    "a": "MR252",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.7033,
+    "assd_mm": 0.293,
+    "centroid_mm": 0.69,
+    "vol_ratio": 0.941,
+    "vox_a": 2286,
+    "vox_b": 2429,
+    "one_voxel_ref": {
+     "a": 0.8591,
+     "b": 0.8662,
+     "mean": 0.8626
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "lhLGN",
+    "a": "MR256",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.7012,
+    "assd_mm": 0.297,
+    "centroid_mm": 0.545,
+    "vol_ratio": 0.932,
+    "vox_a": 2263,
+    "vox_b": 2429,
+    "one_voxel_ref": {
+     "a": 0.8648,
+     "b": 0.8662,
+     "mean": 0.8655
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "lhLGN",
+    "a": "MR243",
+    "b": "MR252",
+    "dice": 0.7466,
+    "assd_mm": 0.279,
+    "centroid_mm": 0.299,
+    "vol_ratio": 1.353,
+    "vox_a": 3093,
+    "vox_b": 2286,
+    "one_voxel_ref": {
+     "a": 0.8755,
+     "b": 0.8591,
+     "mean": 0.8673
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "lhLGN",
+    "a": "MR243",
+    "b": "MR256",
+    "dice": 0.6706,
+    "assd_mm": 0.386,
+    "centroid_mm": 1.02,
+    "vol_ratio": 1.367,
+    "vox_a": 3093,
+    "vox_b": 2263,
+    "one_voxel_ref": {
+     "a": 0.8755,
+     "b": 0.8648,
+     "mean": 0.8701
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "lhLGN",
+    "a": "MR252",
+    "b": "MR256",
+    "dice": 0.6889,
+    "assd_mm": 0.335,
+    "centroid_mm": 0.722,
+    "vol_ratio": 1.01,
+    "vox_a": 2286,
+    "vox_b": 2263,
+    "one_voxel_ref": {
+     "a": 0.8591,
+     "b": 0.8648,
+     "mean": 0.8619
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "lhSTN",
+    "a": "MR243",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.5208,
+    "assd_mm": 0.303,
+    "centroid_mm": 0.932,
+    "vol_ratio": 1.202,
+    "vox_a": 459,
+    "vox_b": 382,
+    "one_voxel_ref": {
+     "a": 0.6362,
+     "b": 0.7094,
+     "mean": 0.6728
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "lhSTN",
+    "a": "MR252",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.5437,
+    "assd_mm": 0.305,
+    "centroid_mm": 0.989,
+    "vol_ratio": 1.484,
+    "vox_a": 567,
+    "vox_b": 382,
+    "one_voxel_ref": {
+     "a": 0.7354,
+     "b": 0.7094,
+     "mean": 0.7224
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "lhSTN",
+    "a": "MR256",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.6902,
+    "assd_mm": 0.173,
+    "centroid_mm": 0.243,
+    "vol_ratio": 1.154,
+    "vox_a": 441,
+    "vox_b": 382,
+    "one_voxel_ref": {
+     "a": 0.7234,
+     "b": 0.7094,
+     "mean": 0.7164
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "lhSTN",
+    "a": "MR243",
+    "b": "MR252",
+    "dice": 0.5361,
+    "assd_mm": 0.276,
+    "centroid_mm": 0.641,
+    "vol_ratio": 0.81,
+    "vox_a": 459,
+    "vox_b": 567,
+    "one_voxel_ref": {
+     "a": 0.6362,
+     "b": 0.7354,
+     "mean": 0.6858
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "lhSTN",
+    "a": "MR243",
+    "b": "MR256",
+    "dice": 0.5378,
+    "assd_mm": 0.296,
+    "centroid_mm": 0.711,
+    "vol_ratio": 1.041,
+    "vox_a": 459,
+    "vox_b": 441,
+    "one_voxel_ref": {
+     "a": 0.6362,
+     "b": 0.7234,
+     "mean": 0.6798
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "lhSTN",
+    "a": "MR252",
+    "b": "MR256",
+    "dice": 0.5079,
+    "assd_mm": 0.314,
+    "centroid_mm": 0.789,
+    "vol_ratio": 1.286,
+    "vox_a": 567,
+    "vox_b": 441,
+    "one_voxel_ref": {
+     "a": 0.7354,
+     "b": 0.7234,
+     "mean": 0.7294
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "rhLGN",
+    "a": "MR243",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.7009,
+    "assd_mm": 0.317,
+    "centroid_mm": 0.47,
+    "vol_ratio": 1.169,
+    "vox_a": 2676,
+    "vox_b": 2289,
+    "one_voxel_ref": {
+     "a": 0.8688,
+     "b": 0.8615,
+     "mean": 0.8652
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "rhLGN",
+    "a": "MR252",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.7073,
+    "assd_mm": 0.299,
+    "centroid_mm": 0.555,
+    "vol_ratio": 0.985,
+    "vox_a": 2255,
+    "vox_b": 2289,
+    "one_voxel_ref": {
+     "a": 0.8373,
+     "b": 0.8615,
+     "mean": 0.8494
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "rhLGN",
+    "a": "MR256",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.7772,
+    "assd_mm": 0.238,
+    "centroid_mm": 0.434,
+    "vol_ratio": 1.143,
+    "vox_a": 2616,
+    "vox_b": 2289,
+    "one_voxel_ref": {
+     "a": 0.8739,
+     "b": 0.8615,
+     "mean": 0.8677
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "rhLGN",
+    "a": "MR243",
+    "b": "MR252",
+    "dice": 0.7163,
+    "assd_mm": 0.299,
+    "centroid_mm": 0.48,
+    "vol_ratio": 1.187,
+    "vox_a": 2676,
+    "vox_b": 2255,
+    "one_voxel_ref": {
+     "a": 0.8688,
+     "b": 0.8373,
+     "mean": 0.8531
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "rhLGN",
+    "a": "MR243",
+    "b": "MR256",
+    "dice": 0.7389,
+    "assd_mm": 0.301,
+    "centroid_mm": 0.373,
+    "vol_ratio": 1.023,
+    "vox_a": 2676,
+    "vox_b": 2616,
+    "one_voxel_ref": {
+     "a": 0.8688,
+     "b": 0.8739,
+     "mean": 0.8714
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "rhLGN",
+    "a": "MR252",
+    "b": "MR256",
+    "dice": 0.7863,
+    "assd_mm": 0.233,
+    "centroid_mm": 0.217,
+    "vol_ratio": 0.862,
+    "vox_a": 2255,
+    "vox_b": 2616,
+    "one_voxel_ref": {
+     "a": 0.8373,
+     "b": 0.8739,
+     "mean": 0.8556
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "rhSTN",
+    "a": "MR243",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.6377,
+    "assd_mm": 0.218,
+    "centroid_mm": 0.336,
+    "vol_ratio": 1.127,
+    "vox_a": 452,
+    "vox_b": 401,
+    "one_voxel_ref": {
+     "a": 0.6504,
+     "b": 0.7357,
+     "mean": 0.693
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "rhSTN",
+    "a": "MR252",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.5833,
+    "assd_mm": 0.27,
+    "centroid_mm": 0.556,
+    "vol_ratio": 1.454,
+    "vox_a": 583,
+    "vox_b": 401,
+    "one_voxel_ref": {
+     "a": 0.765,
+     "b": 0.7357,
+     "mean": 0.7504
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "rhSTN",
+    "a": "MR256",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.6633,
+    "assd_mm": 0.193,
+    "centroid_mm": 0.234,
+    "vol_ratio": 0.97,
+    "vox_a": 389,
+    "vox_b": 401,
+    "one_voxel_ref": {
+     "a": 0.7352,
+     "b": 0.7357,
+     "mean": 0.7354
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "rhSTN",
+    "a": "MR243",
+    "b": "MR252",
+    "dice": 0.5295,
+    "assd_mm": 0.306,
+    "centroid_mm": 0.572,
+    "vol_ratio": 0.775,
+    "vox_a": 452,
+    "vox_b": 583,
+    "one_voxel_ref": {
+     "a": 0.6504,
+     "b": 0.765,
+     "mean": 0.7077
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "rhSTN",
+    "a": "MR243",
+    "b": "MR256",
+    "dice": 0.5922,
+    "assd_mm": 0.277,
+    "centroid_mm": 0.361,
+    "vol_ratio": 1.162,
+    "vox_a": 452,
+    "vox_b": 389,
+    "one_voxel_ref": {
+     "a": 0.6504,
+     "b": 0.7352,
+     "mean": 0.6928
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "sheet_sdf",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "rhSTN",
+    "a": "MR252",
+    "b": "MR256",
+    "dice": 0.5432,
+    "assd_mm": 0.308,
+    "centroid_mm": 0.464,
+    "vol_ratio": 1.499,
+    "vox_a": 583,
+    "vox_b": 389,
+    "one_voxel_ref": {
+     "a": 0.765,
+     "b": 0.7352,
+     "mean": 0.7501
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "lhLGN",
+    "a": "MR243",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.6469,
+    "assd_mm": 0.355,
+    "centroid_mm": 0.94,
+    "vol_ratio": 0.933,
+    "vox_a": 2267,
+    "vox_b": 2429,
+    "one_voxel_ref": {
+     "a": 0.8619,
+     "b": 0.8662,
+     "mean": 0.864
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "lhLGN",
+    "a": "MR252",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.7305,
+    "assd_mm": 0.259,
+    "centroid_mm": 0.652,
+    "vol_ratio": 0.844,
+    "vox_a": 2050,
+    "vox_b": 2429,
+    "one_voxel_ref": {
+     "a": 0.8649,
+     "b": 0.8662,
+     "mean": 0.8656
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "lhLGN",
+    "a": "MR256",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.6642,
+    "assd_mm": 0.331,
+    "centroid_mm": 0.537,
+    "vol_ratio": 0.791,
+    "vox_a": 1922,
+    "vox_b": 2429,
+    "one_voxel_ref": {
+     "a": 0.8637,
+     "b": 0.8662,
+     "mean": 0.8649
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "lhLGN",
+    "a": "MR243",
+    "b": "MR252",
+    "dice": 0.7834,
+    "assd_mm": 0.217,
+    "centroid_mm": 0.369,
+    "vol_ratio": 1.106,
+    "vox_a": 2267,
+    "vox_b": 2050,
+    "one_voxel_ref": {
+     "a": 0.8619,
+     "b": 0.8649,
+     "mean": 0.8634
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "lhLGN",
+    "a": "MR243",
+    "b": "MR256",
+    "dice": 0.6799,
+    "assd_mm": 0.362,
+    "centroid_mm": 1.017,
+    "vol_ratio": 1.18,
+    "vox_a": 2267,
+    "vox_b": 1922,
+    "one_voxel_ref": {
+     "a": 0.8619,
+     "b": 0.8637,
+     "mean": 0.8628
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "lhLGN",
+    "a": "MR252",
+    "b": "MR256",
+    "dice": 0.7231,
+    "assd_mm": 0.304,
+    "centroid_mm": 0.65,
+    "vol_ratio": 1.067,
+    "vox_a": 2050,
+    "vox_b": 1922,
+    "one_voxel_ref": {
+     "a": 0.8649,
+     "b": 0.8637,
+     "mean": 0.8643
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "lhSTN",
+    "a": "MR243",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.5696,
+    "assd_mm": 0.26,
+    "centroid_mm": 1.037,
+    "vol_ratio": 1.05,
+    "vox_a": 401,
+    "vox_b": 382,
+    "one_voxel_ref": {
+     "a": 0.6933,
+     "b": 0.7094,
+     "mean": 0.7014
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "lhSTN",
+    "a": "MR252",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.5607,
+    "assd_mm": 0.282,
+    "centroid_mm": 0.943,
+    "vol_ratio": 1.241,
+    "vox_a": 474,
+    "vox_b": 382,
+    "one_voxel_ref": {
+     "a": 0.7532,
+     "b": 0.7094,
+     "mean": 0.7313
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "lhSTN",
+    "a": "MR256",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.645,
+    "assd_mm": 0.193,
+    "centroid_mm": 0.178,
+    "vol_ratio": 0.851,
+    "vox_a": 325,
+    "vox_b": 382,
+    "one_voxel_ref": {
+     "a": 0.7415,
+     "b": 0.7094,
+     "mean": 0.7255
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "lhSTN",
+    "a": "MR243",
+    "b": "MR252",
+    "dice": 0.56,
+    "assd_mm": 0.272,
+    "centroid_mm": 0.489,
+    "vol_ratio": 0.846,
+    "vox_a": 401,
+    "vox_b": 474,
+    "one_voxel_ref": {
+     "a": 0.6933,
+     "b": 0.7532,
+     "mean": 0.7232
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "lhSTN",
+    "a": "MR243",
+    "b": "MR256",
+    "dice": 0.5565,
+    "assd_mm": 0.281,
+    "centroid_mm": 0.909,
+    "vol_ratio": 1.234,
+    "vox_a": 401,
+    "vox_b": 325,
+    "one_voxel_ref": {
+     "a": 0.6933,
+     "b": 0.7415,
+     "mean": 0.7174
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "lhSTN",
+    "a": "MR252",
+    "b": "MR256",
+    "dice": 0.4831,
+    "assd_mm": 0.36,
+    "centroid_mm": 0.784,
+    "vol_ratio": 1.458,
+    "vox_a": 474,
+    "vox_b": 325,
+    "one_voxel_ref": {
+     "a": 0.7532,
+     "b": 0.7415,
+     "mean": 0.7473
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "rhLGN",
+    "a": "MR243",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.7005,
+    "assd_mm": 0.295,
+    "centroid_mm": 0.432,
+    "vol_ratio": 0.912,
+    "vox_a": 2088,
+    "vox_b": 2289,
+    "one_voxel_ref": {
+     "a": 0.8712,
+     "b": 0.8615,
+     "mean": 0.8663
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "rhLGN",
+    "a": "MR252",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.7157,
+    "assd_mm": 0.283,
+    "centroid_mm": 0.639,
+    "vol_ratio": 0.853,
+    "vox_a": 1953,
+    "vox_b": 2289,
+    "one_voxel_ref": {
+     "a": 0.8812,
+     "b": 0.8615,
+     "mean": 0.8714
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "rhLGN",
+    "a": "MR256",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.7936,
+    "assd_mm": 0.217,
+    "centroid_mm": 0.411,
+    "vol_ratio": 1.076,
+    "vox_a": 2464,
+    "vox_b": 2289,
+    "one_voxel_ref": {
+     "a": 0.875,
+     "b": 0.8615,
+     "mean": 0.8682
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "rhLGN",
+    "a": "MR243",
+    "b": "MR252",
+    "dice": 0.6939,
+    "assd_mm": 0.301,
+    "centroid_mm": 0.519,
+    "vol_ratio": 1.069,
+    "vox_a": 2088,
+    "vox_b": 1953,
+    "one_voxel_ref": {
+     "a": 0.8712,
+     "b": 0.8812,
+     "mean": 0.8762
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "rhLGN",
+    "a": "MR243",
+    "b": "MR256",
+    "dice": 0.7395,
+    "assd_mm": 0.278,
+    "centroid_mm": 0.415,
+    "vol_ratio": 0.847,
+    "vox_a": 2088,
+    "vox_b": 2464,
+    "one_voxel_ref": {
+     "a": 0.8712,
+     "b": 0.875,
+     "mean": 0.8731
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "rhLGN",
+    "a": "MR252",
+    "b": "MR256",
+    "dice": 0.7657,
+    "assd_mm": 0.248,
+    "centroid_mm": 0.462,
+    "vol_ratio": 0.793,
+    "vox_a": 1953,
+    "vox_b": 2464,
+    "one_voxel_ref": {
+     "a": 0.8812,
+     "b": 0.875,
+     "mean": 0.8781
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "rhSTN",
+    "a": "MR243",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.719,
+    "assd_mm": 0.161,
+    "centroid_mm": 0.333,
+    "vol_ratio": 0.97,
+    "vox_a": 389,
+    "vox_b": 401,
+    "one_voxel_ref": {
+     "a": 0.6941,
+     "b": 0.7357,
+     "mean": 0.7149
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "rhSTN",
+    "a": "MR252",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.6222,
+    "assd_mm": 0.245,
+    "centroid_mm": 0.65,
+    "vol_ratio": 1.244,
+    "vox_a": 499,
+    "vox_b": 401,
+    "one_voxel_ref": {
+     "a": 0.7796,
+     "b": 0.7357,
+     "mean": 0.7576
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "rhSTN",
+    "a": "MR256",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.618,
+    "assd_mm": 0.223,
+    "centroid_mm": 0.386,
+    "vol_ratio": 0.776,
+    "vox_a": 311,
+    "vox_b": 401,
+    "one_voxel_ref": {
+     "a": 0.717,
+     "b": 0.7357,
+     "mean": 0.7264
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "rhSTN",
+    "a": "MR243",
+    "b": "MR252",
+    "dice": 0.5495,
+    "assd_mm": 0.29,
+    "centroid_mm": 0.578,
+    "vol_ratio": 0.78,
+    "vox_a": 389,
+    "vox_b": 499,
+    "one_voxel_ref": {
+     "a": 0.6941,
+     "b": 0.7796,
+     "mean": 0.7369
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "rhSTN",
+    "a": "MR243",
+    "b": "MR256",
+    "dice": 0.6286,
+    "assd_mm": 0.245,
+    "centroid_mm": 0.418,
+    "vol_ratio": 1.251,
+    "vox_a": 389,
+    "vox_b": 311,
+    "one_voxel_ref": {
+     "a": 0.6941,
+     "b": 0.717,
+     "mean": 0.7056
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "rhSTN",
+    "a": "MR252",
+    "b": "MR256",
+    "dice": 0.5753,
+    "assd_mm": 0.304,
+    "centroid_mm": 0.415,
+    "vol_ratio": 1.605,
+    "vox_a": 499,
+    "vox_b": 311,
+    "one_voxel_ref": {
+     "a": 0.7796,
+     "b": 0.717,
+     "mean": 0.7483
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "lhLGN",
+    "a": "MR243",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.7891,
+    "assd_mm": 0.105,
+    "centroid_mm": 0.492,
+    "vol_ratio": 1.483,
+    "vox_a": 878,
+    "vox_b": 592,
+    "one_voxel_ref": {
+     "a": 0.7289,
+     "b": 0.7044,
+     "mean": 0.7167
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "lhLGN",
+    "a": "MR252",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.8397,
+    "assd_mm": 0.155,
+    "centroid_mm": 0.357,
+    "vol_ratio": 1.339,
+    "vox_a": 75,
+    "vox_b": 56,
+    "one_voxel_ref": {
+     "a": 0.0267,
+     "b": 0.0179,
+     "mean": 0.0223
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "lhLGN",
+    "a": "MR256",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.7922,
+    "assd_mm": 0.136,
+    "centroid_mm": 0.311,
+    "vol_ratio": 1.369,
+    "vox_a": 89,
+    "vox_b": 65,
+    "one_voxel_ref": {
+     "a": 0.1798,
+     "b": 0.1846,
+     "mean": 0.1822
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "lhLGN",
+    "a": "MR243",
+    "b": "MR252",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": 10,
+    "vox_b": 10,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": 0.0,
+     "b": 0.0,
+     "mean": 0.0
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "lhLGN",
+    "a": "MR243",
+    "b": "MR256",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": 23,
+    "vox_b": 23,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": 0.0,
+     "b": 0.0,
+     "mean": 0.0
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "lhLGN",
+    "a": "MR252",
+    "b": "MR256",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": null,
+    "vox_b": null,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": null,
+     "b": null,
+     "mean": null
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "lhSTN",
+    "a": "MR243",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.64,
+    "assd_mm": 0.273,
+    "centroid_mm": 0.977,
+    "vol_ratio": 1.778,
+    "vox_a": 160,
+    "vox_b": 90,
+    "one_voxel_ref": {
+     "a": 0.5813,
+     "b": 0.5778,
+     "mean": 0.5796
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "lhSTN",
+    "a": "MR252",
+    "b": "GT(run113, Chiara)",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": 18,
+    "vox_b": 13,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": 0.0,
+     "b": 0.0,
+     "mean": 0.0
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "lhSTN",
+    "a": "MR256",
+    "b": "GT(run113, Chiara)",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": 16,
+    "vox_b": 6,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": 0.0625,
+     "b": 0.0,
+     "mean": 0.0312
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "lhSTN",
+    "a": "MR243",
+    "b": "MR252",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": 7,
+    "vox_b": 5,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": 0.0,
+     "b": 0.0,
+     "mean": 0.0
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "lhSTN",
+    "a": "MR243",
+    "b": "MR256",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": null,
+    "vox_b": null,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": null,
+     "b": null,
+     "mean": null
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "lhSTN",
+    "a": "MR252",
+    "b": "MR256",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": null,
+    "vox_b": null,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": null,
+     "b": null,
+     "mean": null
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "rhLGN",
+    "a": "MR243",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.8059,
+    "assd_mm": 0.094,
+    "centroid_mm": 0.3,
+    "vol_ratio": 1.411,
+    "vox_a": 793,
+    "vox_b": 562,
+    "one_voxel_ref": {
+     "a": 0.739,
+     "b": 0.7028,
+     "mean": 0.7209
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "rhLGN",
+    "a": "MR252",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.8193,
+    "assd_mm": 0.141,
+    "centroid_mm": 0.24,
+    "vol_ratio": 1.306,
+    "vox_a": 94,
+    "vox_b": 72,
+    "one_voxel_ref": {
+     "a": 0.1064,
+     "b": 0.1389,
+     "mean": 0.1226
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "rhLGN",
+    "a": "MR256",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.8584,
+    "assd_mm": 0.088,
+    "centroid_mm": 0.287,
+    "vol_ratio": 1.305,
+    "vox_a": 124,
+    "vox_b": 95,
+    "one_voxel_ref": {
+     "a": 0.3226,
+     "b": 0.3579,
+     "mean": 0.3402
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "rhLGN",
+    "a": "MR243",
+    "b": "MR252",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": 36,
+    "vox_b": 35,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": 0.0,
+     "b": 0.0,
+     "mean": 0.0
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "rhLGN",
+    "a": "MR243",
+    "b": "MR256",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": 24,
+    "vox_b": 24,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": 0.5417,
+     "b": 0.5,
+     "mean": 0.5209
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "rhLGN",
+    "a": "MR252",
+    "b": "MR256",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": 2,
+    "vox_b": 1,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": null,
+     "b": null,
+     "mean": null
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "rhSTN",
+    "a": "MR243",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.8016,
+    "assd_mm": 0.075,
+    "centroid_mm": 0.255,
+    "vol_ratio": 1.422,
+    "vox_a": 145,
+    "vox_b": 102,
+    "one_voxel_ref": {
+     "a": 0.4621,
+     "b": 0.4314,
+     "mean": 0.4467
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "rhSTN",
+    "a": "MR252",
+    "b": "GT(run113, Chiara)",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": 20,
+    "vox_b": 7,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": 0.0,
+     "b": 0.0,
+     "mean": 0.0
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "rhSTN",
+    "a": "MR256",
+    "b": "GT(run113, Chiara)",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": 11,
+    "vox_b": 8,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": 0.0,
+     "b": 0.0,
+     "mean": 0.0
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "rhSTN",
+    "a": "MR243",
+    "b": "MR252",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": null,
+    "vox_b": null,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": null,
+     "b": null,
+     "mean": null
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "rhSTN",
+    "a": "MR243",
+    "b": "MR256",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": 2,
+    "vox_b": 2,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": null,
+     "b": null,
+     "mean": null
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR243)",
+     "b0-native->mri-template (MR243)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "rhSTN",
+    "a": "MR252",
+    "b": "MR256",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": 1,
+    "vox_b": 1,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": null,
+     "b": null,
+     "mean": null
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-native->b0-native (MR252)",
+     "b0-native->mri-template (MR252)"
+    ],
+    "links_b": [
+     "bf-native->b0-native (MR256)",
+     "b0-native->mri-template (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   }
+  ]
+ }
+}

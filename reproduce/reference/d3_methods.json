@@ -1,0 +1,975 @@
+{
+ "data": {
+  "what": "d3 synthesis network and the completions of record (Methods numbers)",
+  "models": {
+   "mri": {
+    "run": "d3_full_A_s0",
+    "checkpoint_md5": "903ce67449dfdca4cd6fe9442d7dfba7",
+    "parameters": 5810945,
+    "architecture": {
+     "backbone": "MONAI BasicUNet at the input grid",
+     "features": [
+      32,
+      32,
+      64,
+      128,
+      256,
+      32
+     ],
+     "head_channels": 32,
+     "upsampling": "x2 transposed conv (kernel 2, stride 2) + two 3x3x3 conv blocks (instance norm, LeakyReLU 0.1) at the output grid, 1x1x1 conv, sigmoid",
+     "activation": "LeakyReLU 0.1",
+     "norm": "instance"
+    },
+    "grids": {
+     "frame": "run113",
+     "input_mm": 0.5,
+     "output_mm": 0.25,
+     "output_grid": "the input box's centre-aligned 2x refinement",
+     "patch_input_vox": 64,
+     "patch_output_vox": 128,
+     "patch_mm": 32.0
+    },
+    "training": {
+     "n_brains": 13,
+     "brains": [
+      "MF278",
+      "MF282",
+      "MR243",
+      "MR249",
+      "MR250",
+      "MR251",
+      "MR252",
+      "MR253",
+      "MR254",
+      "MR256",
+      "MR257",
+      "MR261",
+      "MF275"
+     ],
+     "extra_train": [
+      "MF275"
+     ],
+     "epochs": 80,
+     "epochs_logged": 80,
+     "patches_per_epoch": 500,
+     "batch": 2,
+     "optimizer": "Adam",
+     "lr": 0.0002,
+     "warmup_epochs": 5,
+     "schedule": "cosine decay after warm-up",
+     "ema_decay": 0.999,
+     "grad_clip": 1.0,
+     "loss": {
+      "l1": 1.0,
+      "gradient_l1": 0.2,
+      "one_minus_ms_ssim": 0.6
+     },
+     "augmentation": {
+      "rot": 0.17,
+      "scale": 0.12,
+      "trans_mm": 0.7,
+      "elastic_mm": 0.42,
+      "intens": true
+     },
+     "photographed_only": 0.5,
+     "wall_min": 55.5,
+     "gpu": "NVIDIA RTX 6000 Ada Generation",
+     "root": "canon_d3"
+    },
+    "input": "own b0 (0.5 mm), normalized by its own 0.5/99.5 percentiles over the completion brain, masked by it"
+   },
+   "no_mri": {
+    "run": "d3p_full_A_s0",
+    "checkpoint_md5": "02966dc253d265464ed65fa3a5a7679a",
+    "parameters": 5810945,
+    "architecture": {
+     "backbone": "MONAI BasicUNet at the input grid",
+     "features": [
+      32,
+      32,
+      64,
+      128,
+      256,
+      32
+     ],
+     "head_channels": 32,
+     "upsampling": "x2 transposed conv (kernel 2, stride 2) + two 3x3x3 conv blocks (instance norm, LeakyReLU 0.1) at the output grid, 1x1x1 conv, sigmoid",
+     "activation": "LeakyReLU 0.1",
+     "norm": "instance"
+    },
+    "grids": {
+     "frame": "run113",
+     "input_mm": 0.5,
+     "output_mm": 0.25,
+     "output_grid": "the input box's centre-aligned 2x refinement",
+     "patch_input_vox": 64,
+     "patch_output_vox": 128,
+     "patch_mm": 32.0
+    },
+    "training": {
+     "n_brains": 13,
+     "brains": [
+      "MF278",
+      "MF282",
+      "MR243",
+      "MR249",
+      "MR250",
+      "MR251",
+      "MR252",
+      "MR253",
+      "MR254",
+      "MR256",
+      "MR257",
+      "MR261",
+      "MF275"
+     ],
+     "extra_train": [
+      "MF275"
+     ],
+     "epochs": 80,
+     "epochs_logged": 80,
+     "patches_per_epoch": 500,
+     "batch": 2,
+     "optimizer": "Adam",
+     "lr": 0.0002,
+     "warmup_epochs": 5,
+     "schedule": "cosine decay after warm-up",
+     "ema_decay": 0.999,
+     "grad_clip": 1.0,
+     "loss": {
+      "l1": 1.0,
+      "gradient_l1": 0.2,
+      "one_minus_ms_ssim": 0.6
+     },
+     "augmentation": {
+      "rot": 0.17,
+      "scale": 0.12,
+      "trans_mm": 0.7,
+      "elastic_mm": 0.42,
+      "intens": true
+     },
+     "photographed_only": 0.5,
+     "wall_min": 55.7,
+     "gpu": "NVIDIA RTX 6000 Ada Generation",
+     "root": "canon_d3p_prod"
+    },
+    "input": "the S2 pseudo-b0 (the template b0 pulled into the brain), trained on the 13 MRI brains' PROD pseudo-b0s; deployed on the 8 with lo = 0, x = clip(b0 / hi) x brain (decision of 4 Oct, option 2: the training scaling)"
+   }
+  },
+  "finish": {
+   "join": "a PLANE per brain, the clean cut face z_f (clean_face.py, protocol v2.1 section 2); every voxel caudal of it is synthesized, including the photographed but incomplete tissue between the most caudal photographed plane and z_f",
+   "clean_face_rule": {
+    "tau": 0.95,
+    "window_mm": 40.0,
+    "margin_mm": 1.5,
+    "erode_mm": 1.0,
+    "grid": "flat deploy grid (axis 1 = A-P, caudal low)",
+    "complete": "real_mask covers >= tau of the brain mask eroded by erode_mm in the plane",
+    "z_c": "most caudal plane with every plane over the next window_mm complete",
+    "z_f": "z_c + margin_mm",
+    "dstar": "photographed volume of the planes [z_f, z_f + d*) = brain volume caudal of z_f"
+   },
+   "intensity": "one monotone (isotonic, PAVA) map per brain from the network output to the photographs' grey, fitted on the first 8 mm of fully photographed tissue (photo fraction >= 0.999) rostral of z_f; no per-column scaling, no clipped factor",
+   "recal_band_mm": 8.0,
+   "recal_photo_fraction": 0.999,
+   "crossfade": "cosine ramp over 2 mm rostral of z_f on retained photographed tissue: w = 0.5 - 0.5 cos(pi * clip(d / 2 mm, 0, 1)); completed = w * photograph + (1 - w) * synthesis",
+   "crossfade_mm": 2.0,
+   "colour": "constant chroma per brain (deploy.py's rule)",
+   "per_brain_keys": [
+    "z_f_mm_from_photographed_end",
+    "photographed_discarded_ml",
+    "true_gap_mm",
+    "missing_ml"
+   ]
+  },
+  "evaluation": {
+   "brains": {
+    "n_scored": 12,
+    "scored": [
+     "MF278",
+     "MF282",
+     "MR243",
+     "MR249",
+     "MR250",
+     "MR251",
+     "MR252",
+     "MR253",
+     "MR254",
+     "MR256",
+     "MR257",
+     "MR261"
+    ],
+    "never_held_out": [
+     "MF275"
+    ],
+    "why_12": "the 12 brains of the earlier synthesis study's evaluation; MF275 joined the training set later and is never held out, so every slab and fold stays paired brain by brain with the existing evaluation"
+   },
+   "slab": {
+    "rule": "per brain, the d* planes immediately rostral of the clean cut face z_f, where d* is the slab of complete photographed tissue whose photographed volume equals the brain volume missing caudal of z_f (clean_face.py)",
+    "training": "the leave-slab-out models never see any brain's slab: their training targets are the photographed tissue rostral of z_f + d*",
+    "simulated_cut": "z_f + d* (the slab's rostral edge); deployment as in the products: one isotonic map on the first 8 mm of photographed tissue rostral of the simulated cut, 2 mm cosine cross-fade",
+    "scored": "the photographed voxels (photo fraction >= 0.999) in the slab's first d* - 1 planes; the plane touching the retained tissue is not scored (as in the earlier study)",
+    "per_brain": {
+     "MF278": {
+      "z_f": 80,
+      "withheld_planes": 25,
+      "withheld_mm": 6.25,
+      "scored_planes": 24,
+      "scored_vox": 446763,
+      "scored_ml": 6.981
+     },
+     "MF282": {
+      "z_f": 87,
+      "withheld_planes": 36,
+      "withheld_mm": 9.0,
+      "scored_planes": 35,
+      "scored_vox": 593220,
+      "scored_ml": 9.269
+     },
+     "MR243": {
+      "z_f": 79,
+      "withheld_planes": 25,
+      "withheld_mm": 6.25,
+      "scored_planes": 24,
+      "scored_vox": 541206,
+      "scored_ml": 8.456
+     },
+     "MR249": {
+      "z_f": 67,
+      "withheld_planes": 22,
+      "withheld_mm": 5.5,
+      "scored_planes": 21,
+      "scored_vox": 426289,
+      "scored_ml": 6.661
+     },
+     "MR250": {
+      "z_f": 81,
+      "withheld_planes": 26,
+      "withheld_mm": 6.5,
+      "scored_planes": 25,
+      "scored_vox": 529002,
+      "scored_ml": 8.266
+     },
+     "MR251": {
+      "z_f": 70,
+      "withheld_planes": 22,
+      "withheld_mm": 5.5,
+      "scored_planes": 21,
+      "scored_vox": 411920,
+      "scored_ml": 6.436
+     },
+     "MR252": {
+      "z_f": 67,
+      "withheld_planes": 20,
+      "withheld_mm": 5.0,
+      "scored_planes": 19,
+      "scored_vox": 293580,
+      "scored_ml": 4.587
+     },
+     "MR253": {
+      "z_f": 71,
+      "withheld_planes": 21,
+      "withheld_mm": 5.25,
+      "scored_planes": 20,
+      "scored_vox": 267100,
+      "scored_ml": 4.173
+     },
+     "MR254": {
+      "z_f": 93,
+      "withheld_planes": 35,
+      "withheld_mm": 8.75,
+      "scored_planes": 34,
+      "scored_vox": 816972,
+      "scored_ml": 12.765
+     },
+     "MR256": {
+      "z_f": 70,
+      "withheld_planes": 23,
+      "withheld_mm": 5.75,
+      "scored_planes": 22,
+      "scored_vox": 473060,
+      "scored_ml": 7.392
+     },
+     "MR257": {
+      "z_f": 83,
+      "withheld_planes": 32,
+      "withheld_mm": 8.0,
+      "scored_planes": 31,
+      "scored_vox": 671663,
+      "scored_ml": 10.495
+     },
+     "MR261": {
+      "z_f": 69,
+      "withheld_planes": 20,
+      "withheld_mm": 5.0,
+      "scored_planes": 19,
+      "scored_vox": 221363,
+      "scored_ml": 3.459
+     }
+    },
+    "withheld_mm_median": 6.0,
+    "withheld_mm_range": [
+     5.0,
+     9.0
+    ],
+    "scored_ml_median": 7.1865000000000006,
+    "scored_ml_range": [
+     3.459,
+     12.765
+    ]
+   },
+   "models": {
+    "own_b0": "d3_lso_A_s0",
+    "pseudo_b0": "d3p_lso_A_s0",
+    "protocol": {
+     "d3_lso_A_s0": "lso",
+     "d3p_lso_A_s0": "lso"
+    },
+    "n_training_brains": {
+     "d3_lso_A_s0": 13,
+     "d3p_lso_A_s0": 13
+    }
+   },
+   "ssim": {
+    "citation": "wangImageQualityAssessment2004",
+    "implementation": "scikit-image 0.25.2 structural_similarity (2-D)",
+    "settings": "library defaults: 7 x 7 uniform window, K1 = 0.01, K2 = 0.03; data range 1 (photographs and predictions on [0, 1] by the brain's 1st/99th percentiles of retained photographed tissue)",
+    "aggregation": "per coronal slice over the bounding box of the scored voxels; the local SSIM map is averaged over the scored voxels only; the slice values are averaged over slices with >= 50 scored voxels and a box of >= 7 voxels per side"
+   },
+   "interval": {
+    "method": "paired bootstrap over brains: resample the brains with replacement, take the mean paired difference; 95 % = the 2.5th and 97.5th percentiles",
+    "n_boot": 10000,
+    "seed": "fixed per script (see each numbers file's script)",
+    "unit": "brain (12 per comparison)"
+   },
+   "sigma2_interp": {
+    "value": 0.002596967106607432,
+    "value_pseudo_file": 0.002596967106607432,
+    "n_brains": 12,
+    "per_brain": {
+     "MF278": 0.002888583345338702,
+     "MF282": 0.002606178866699338,
+     "MR243": 0.002196706598624587,
+     "MR249": 0.0025463425554335117,
+     "MR250": 0.002647420158609748,
+     "MR251": 0.0031283542048186064,
+     "MR252": 0.003081569680944085,
+     "MR253": 0.0032131897751241922,
+     "MR254": 0.0027704089879989624,
+     "MR256": 0.0022179419174790382,
+     "MR257": 0.0020706849172711372,
+     "MR261": 0.0017962242709472775
+    },
+    "definition": "per brain, the mean squared grey difference between each photographed voxel of the first scored plane past the simulated cut and its photographed neighbour 0.25 mm away along the anterior-posterior axis; averaged over the 12 brains; units = the products' grey",
+    "why_same_in_both_files": "it compares photographs with photographs, on the same slabs; no model enters it"
+   }
+  },
+  "per_brain": {
+   "MF275": {
+    "group": "mri",
+    "species": "fascicularis",
+    "model": "d3_full_A_s0",
+    "synth_frac": 0.26238,
+    "synth_ml": 14.203,
+    "brain_ml": 54.131,
+    "rim": {
+     "rostral_synth_ml": 1.426,
+     "rostral_share_of_synth": 0.1004,
+     "rostral_within_1mm_of_photographed": 0.9768,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.707
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 2.0,
+    "photographed_discarded_ml": 1.834,
+    "true_gap_mm": 17.75,
+    "missing_ml": 12.773
+   },
+   "MF278": {
+    "group": "mri",
+    "species": "fascicularis",
+    "model": "d3_full_A_s0",
+    "synth_frac": 0.15993,
+    "synth_ml": 8.632,
+    "brain_ml": 53.974,
+    "rim": {
+     "rostral_synth_ml": 1.46,
+     "rostral_share_of_synth": 0.1691,
+     "rostral_within_1mm_of_photographed": 0.985,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.559
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 2.0,
+    "photographed_discarded_ml": 1.719,
+    "true_gap_mm": 13.75,
+    "missing_ml": 7.166
+   },
+   "MF282": {
+    "group": "mri",
+    "species": "fascicularis",
+    "model": "d3_full_A_s0",
+    "synth_frac": 0.20381,
+    "synth_ml": 12.77,
+    "brain_ml": 62.657,
+    "rim": {
+     "rostral_synth_ml": 1.475,
+     "rostral_share_of_synth": 0.1155,
+     "rostral_within_1mm_of_photographed": 0.9829,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.559
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 3.5,
+    "photographed_discarded_ml": 2.65,
+    "true_gap_mm": 16.0,
+    "missing_ml": 11.291
+   },
+   "MR243": {
+    "group": "mri",
+    "species": "rhesus",
+    "model": "d3_full_A_s0",
+    "synth_frac": 0.14087,
+    "synth_ml": 10.457,
+    "brain_ml": 74.234,
+    "rim": {
+     "rostral_synth_ml": 1.743,
+     "rostral_share_of_synth": 0.1667,
+     "rostral_within_1mm_of_photographed": 0.9904,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.559
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 2.0,
+    "photographed_discarded_ml": 2.072,
+    "true_gap_mm": 13.5,
+    "missing_ml": 8.708
+   },
+   "MR249": {
+    "group": "mri",
+    "species": "rhesus",
+    "model": "d3_full_A_s0",
+    "synth_frac": 0.11276,
+    "synth_ml": 8.765,
+    "brain_ml": 77.731,
+    "rim": {
+     "rostral_synth_ml": 2.012,
+     "rostral_share_of_synth": 0.2295,
+     "rostral_within_1mm_of_photographed": 0.9601,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.791
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 2.0,
+    "photographed_discarded_ml": 1.846,
+    "true_gap_mm": 12.25,
+    "missing_ml": 6.746
+   },
+   "MR250": {
+    "group": "mri",
+    "species": "rhesus",
+    "model": "d3_full_A_s0",
+    "synth_frac": 0.13114,
+    "synth_ml": 10.849,
+    "brain_ml": 82.726,
+    "rim": {
+     "rostral_synth_ml": 1.579,
+     "rostral_share_of_synth": 0.1456,
+     "rostral_within_1mm_of_photographed": 0.9937,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.612
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 1.75,
+    "photographed_discarded_ml": 2.017,
+    "true_gap_mm": 14.25,
+    "missing_ml": 9.265
+   },
+   "MR251": {
+    "group": "mri",
+    "species": "rhesus",
+    "model": "d3_full_A_s0",
+    "synth_frac": 0.13086,
+    "synth_ml": 8.379,
+    "brain_ml": 64.025,
+    "rim": {
+     "rostral_synth_ml": 1.682,
+     "rostral_share_of_synth": 0.2008,
+     "rostral_within_1mm_of_photographed": 0.9775,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.75
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 2.0,
+    "photographed_discarded_ml": 1.759,
+    "true_gap_mm": 12.75,
+    "missing_ml": 6.69
+   },
+   "MR252": {
+    "group": "mri",
+    "species": "rhesus",
+    "model": "d3_full_A_s0",
+    "synth_frac": 0.09945,
+    "synth_ml": 8.105,
+    "brain_ml": 81.495,
+    "rim": {
+     "rostral_synth_ml": 1.88,
+     "rostral_share_of_synth": 0.232,
+     "rostral_within_1mm_of_photographed": 0.9911,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.612
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 2.0,
+    "photographed_discarded_ml": 1.777,
+    "true_gap_mm": 12.0,
+    "missing_ml": 6.214
+   },
+   "MR253": {
+    "group": "mri",
+    "species": "rhesus",
+    "model": "d3_full_A_s0",
+    "synth_frac": 0.10806,
+    "synth_ml": 6.174,
+    "brain_ml": 57.13,
+    "rim": {
+     "rostral_synth_ml": 1.344,
+     "rostral_share_of_synth": 0.2176,
+     "rostral_within_1mm_of_photographed": 0.9715,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.75
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 1.75,
+    "photographed_discarded_ml": 1.163,
+    "true_gap_mm": 12.5,
+    "missing_ml": 4.825
+   },
+   "MR254": {
+    "group": "mri",
+    "species": "rhesus",
+    "model": "d3_full_A_s0",
+    "synth_frac": 0.18339,
+    "synth_ml": 15.303,
+    "brain_ml": 83.446,
+    "rim": {
+     "rostral_synth_ml": 2.142,
+     "rostral_share_of_synth": 0.14,
+     "rostral_within_1mm_of_photographed": 0.9561,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.901
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 1.75,
+    "photographed_discarded_ml": 2.206,
+    "true_gap_mm": 17.25,
+    "missing_ml": 13.144
+   },
+   "MR256": {
+    "group": "mri",
+    "species": "rhesus",
+    "model": "d3_full_A_s0",
+    "synth_frac": 0.13172,
+    "synth_ml": 9.088,
+    "brain_ml": 68.996,
+    "rim": {
+     "rostral_synth_ml": 1.477,
+     "rostral_share_of_synth": 0.1625,
+     "rostral_within_1mm_of_photographed": 0.9782,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.707
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 1.75,
+    "photographed_discarded_ml": 1.892,
+    "true_gap_mm": 12.75,
+    "missing_ml": 7.605
+   },
+   "MR257": {
+    "group": "mri",
+    "species": "rhesus",
+    "model": "d3_full_A_s0",
+    "synth_frac": 0.17196,
+    "synth_ml": 12.284,
+    "brain_ml": 71.439,
+    "rim": {
+     "rostral_synth_ml": 1.612,
+     "rostral_share_of_synth": 0.1312,
+     "rostral_within_1mm_of_photographed": 0.9846,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.707
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 2.0,
+    "photographed_discarded_ml": 2.1,
+    "true_gap_mm": 16.5,
+    "missing_ml": 10.669
+   },
+   "MR261": {
+    "group": "mri",
+    "species": "rhesus",
+    "model": "d3_full_A_s0",
+    "synth_frac": 0.10111,
+    "synth_ml": 6.955,
+    "brain_ml": 68.789,
+    "rim": {
+     "rostral_synth_ml": 1.619,
+     "rostral_share_of_synth": 0.2328,
+     "rostral_within_1mm_of_photographed": 0.9958,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.612
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 2.0,
+    "photographed_discarded_ml": 1.426,
+    "true_gap_mm": 12.25,
+    "missing_ml": 5.333
+   },
+   "MF191": {
+    "group": "no_mri",
+    "species": "fascicularis",
+    "model": "d3p_full_A_s0",
+    "synth_frac": 0.0905,
+    "synth_ml": 5.135,
+    "brain_ml": 56.742,
+    "rim": {
+     "rostral_synth_ml": 0.646,
+     "rostral_share_of_synth": 0.1259,
+     "rostral_within_1mm_of_photographed": 1.0,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.354
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 1.75,
+    "photographed_discarded_ml": 1.713,
+    "true_gap_mm": 13.25,
+    "missing_ml": 4.488
+   },
+   "MF196": {
+    "group": "no_mri",
+    "species": "fascicularis",
+    "model": "d3p_full_A_s0",
+    "synth_frac": 0.10752,
+    "synth_ml": 10.323,
+    "brain_ml": 96.015,
+    "rim": {
+     "rostral_synth_ml": 0.823,
+     "rostral_share_of_synth": 0.0797,
+     "rostral_within_1mm_of_photographed": 1.0,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.354
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 1.75,
+    "photographed_discarded_ml": 2.365,
+    "true_gap_mm": 15.75,
+    "missing_ml": 9.501
+   },
+   "MF204": {
+    "group": "no_mri",
+    "species": "fascicularis",
+    "model": "d3p_full_A_s0",
+    "synth_frac": 0.14909,
+    "synth_ml": 10.237,
+    "brain_ml": 68.661,
+    "rim": {
+     "rostral_synth_ml": 0.626,
+     "rostral_share_of_synth": 0.0611,
+     "rostral_within_1mm_of_photographed": 1.0,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.354
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 1.75,
+    "photographed_discarded_ml": 2.239,
+    "true_gap_mm": 15.75,
+    "missing_ml": 9.607
+   },
+   "MR244": {
+    "group": "no_mri",
+    "species": "rhesus",
+    "model": "d3p_full_A_s0",
+    "synth_frac": 0.13306,
+    "synth_ml": 9.364,
+    "brain_ml": 70.376,
+    "rim": {
+     "rostral_synth_ml": 0.542,
+     "rostral_share_of_synth": 0.0579,
+     "rostral_within_1mm_of_photographed": 1.0,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.354
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 1.75,
+    "photographed_discarded_ml": 2.068,
+    "true_gap_mm": 15.5,
+    "missing_ml": 8.822
+   },
+   "MR247": {
+    "group": "no_mri",
+    "species": "rhesus",
+    "model": "d3p_full_A_s0",
+    "synth_frac": 0.0969,
+    "synth_ml": 6.737,
+    "brain_ml": 69.526,
+    "rim": {
+     "rostral_synth_ml": 0.589,
+     "rostral_share_of_synth": 0.0874,
+     "rostral_within_1mm_of_photographed": 1.0,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.354
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 1.75,
+    "photographed_discarded_ml": 1.746,
+    "true_gap_mm": 12.25,
+    "missing_ml": 6.147
+   },
+   "MR248": {
+    "group": "no_mri",
+    "species": "rhesus",
+    "model": "d3p_full_A_s0",
+    "synth_frac": 0.13061,
+    "synth_ml": 7.618,
+    "brain_ml": 58.325,
+    "rim": {
+     "rostral_synth_ml": 0.546,
+     "rostral_share_of_synth": 0.0716,
+     "rostral_within_1mm_of_photographed": 1.0,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.354
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 1.75,
+    "photographed_discarded_ml": 1.906,
+    "true_gap_mm": 14.0,
+    "missing_ml": 7.071
+   },
+   "MR263": {
+    "group": "no_mri",
+    "species": "rhesus",
+    "model": "d3p_full_A_s0",
+    "synth_frac": 0.06154,
+    "synth_ml": 4.35,
+    "brain_ml": 70.685,
+    "rim": {
+     "rostral_synth_ml": 0.785,
+     "rostral_share_of_synth": 0.1805,
+     "rostral_within_1mm_of_photographed": 1.0,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.354
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 1.75,
+    "photographed_discarded_ml": 1.651,
+    "true_gap_mm": 10.5,
+    "missing_ml": 3.562
+   },
+   "MR273": {
+    "group": "no_mri",
+    "species": "rhesus",
+    "model": "d3p_full_A_s0",
+    "synth_frac": 0.04982,
+    "synth_ml": 4.322,
+    "brain_ml": 86.765,
+    "rim": {
+     "rostral_synth_ml": 0.831,
+     "rostral_share_of_synth": 0.1923,
+     "rostral_within_1mm_of_photographed": 1.0,
+     "rostral_dist_mm_p50": 0.25,
+     "rostral_dist_mm_p95": 0.354
+    },
+    "checks": {
+     "provenance_le_photo_fraction": true,
+     "seam_depth_nonneg_exactly_rostral": true
+    },
+    "z_f_mm_from_photographed_end": 1.75,
+    "photographed_discarded_ml": 1.864,
+    "true_gap_mm": 11.25,
+    "missing_ml": 3.49
+   }
+  },
+  "groups": {
+   "mri": {
+    "n": 13,
+    "synth_frac_median": 0.13172,
+    "synth_frac_range": [
+     0.09945,
+     0.26238
+    ],
+    "synth_ml_median": 9.088,
+    "synth_ml_range": [
+     6.174,
+     15.303
+    ],
+    "z_f_mm_from_photographed_end_median": 2.0,
+    "z_f_mm_from_photographed_end_range": [
+     1.75,
+     3.5
+    ],
+    "photographed_discarded_ml_median": 1.846,
+    "photographed_discarded_ml_range": [
+     1.163,
+     2.65
+    ],
+    "rostral_synth_ml_median": 1.612,
+    "rostral_synth_ml_range": [
+     1.344,
+     2.142
+    ],
+    "rostral_share_of_synth_median": 0.1667,
+    "rostral_share_of_synth_range": [
+     0.1004,
+     0.2328
+    ],
+    "rostral_within_1mm_median": 0.9829
+   },
+   "no_mri": {
+    "n": 8,
+    "synth_frac_median": 0.10221,
+    "synth_frac_range": [
+     0.04982,
+     0.14909
+    ],
+    "synth_ml_median": 7.1775,
+    "synth_ml_range": [
+     4.322,
+     10.323
+    ],
+    "z_f_mm_from_photographed_end_median": 1.75,
+    "z_f_mm_from_photographed_end_range": [
+     1.75,
+     1.75
+    ],
+    "photographed_discarded_ml_median": 1.885,
+    "photographed_discarded_ml_range": [
+     1.651,
+     2.365
+    ],
+    "rostral_synth_ml_median": 0.636,
+    "rostral_synth_ml_range": [
+     0.542,
+     0.831
+    ],
+    "rostral_share_of_synth_median": 0.08355,
+    "rostral_share_of_synth_range": [
+     0.0579,
+     0.1923
+    ],
+    "rostral_within_1mm_median": 1.0
+   },
+   "all": {
+    "n": 21,
+    "synth_frac_median": 0.13086,
+    "synth_frac_range": [
+     0.04982,
+     0.26238
+    ],
+    "synth_ml_median": 8.765,
+    "synth_ml_range": [
+     4.322,
+     15.303
+    ],
+    "z_f_mm_from_photographed_end_median": 1.75,
+    "z_f_mm_from_photographed_end_range": [
+     1.75,
+     3.5
+    ],
+    "photographed_discarded_ml_median": 1.864,
+    "photographed_discarded_ml_range": [
+     1.163,
+     2.65
+    ],
+    "rostral_synth_ml_median": 1.46,
+    "rostral_synth_ml_range": [
+     0.542,
+     2.142
+    ],
+    "rostral_share_of_synth_median": 0.1456,
+    "rostral_share_of_synth_range": [
+     0.0579,
+     0.2328
+    ],
+    "rostral_within_1mm_median": 0.9911
+   }
+  },
+  "cite_for_performance": [
+   "d3_s1_comparison",
+   "d3_domain_shift",
+   "d3p_vs_d3_pseudo",
+   "d3p_norm_sensitivity",
+   "d42_d3u_vs_d3",
+   "d42_d4v_vs_v21",
+   "d42_d3_vs_d4v",
+   "d42_d3u_vs_d4v",
+   "d42_d3u_vs_v21",
+   "d3_A_sigma2_pred_flat",
+   "d3p_A_sigma2_pred_flat"
+  ],
+  "notes": {
+   "rim": "per_brain.<S>.rim: synthetic voxels rostral of the join plane (seam_depth >= 0), i.e. brain voxels outside the photographed outline (deploy real_mask): volume, share of the brain's synthetic tissue, fraction within 1 mm (3-D) of photographed tissue, distance percentiles",
+   "synth_frac": "synthesized share of the completion brain = synth_mask / brain on the 0.25 mm product grid (synth_mask = brain minus photographed tissue rostral of the clean cut face)"
+  }
+ }
+}

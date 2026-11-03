@@ -1,0 +1,841 @@
+{
+ "data": {
+  "rules": {
+   "footprint": "density >= 0.1 (what Fig. 9 shows)",
+   "solid": "density > 0.5",
+   "connected": "the connected pathway: density > 0.5 seeds grown through >= 0.25 (26-connected) plus the inferred bridges that join every piece into one pathway (tracer_connected_v2c; bundles; terminals keep the grown solid)"
+  },
+  "voxel_mm3": 0.015625,
+  "white_matter": "template FA > 0.25 in the template brain (linc_mri_wm_fa025)",
+  "internal_capsule": "SARM level 6 label 50 (ic) carried into the template; + 0.5 mm = 2 binary dilations (Fig. 9 c)",
+  "template_scale": {
+   "wm_volume_mm3": 20255.9,
+   "ic_volume_mm3": 308.2,
+   "ic_plus_0p5mm_volume_mm3": 530.0
+  },
+  "groups": {
+   "bundles": [
+    "Fiber_light_bundle",
+    "Fiber_moderate_bundle",
+    "Fiber_dense_bundle",
+    "Bundle"
+   ],
+   "terminals": [
+    "Terminal_light",
+    "Terminal_moderate",
+    "Terminal_dense"
+   ],
+   "left_out_of_the_figure": [
+    "Fibers"
+   ]
+  },
+  "cases": {
+   "MR243": {
+    "label": "MM1",
+    "classes": {
+     "Fiber_dense_bundle": {
+      "footprint": {
+       "voxels": 1021,
+       "volume_mm3": 15.953,
+       "share_in_wm": 0.9961,
+       "share_in_ic": 0.0039,
+       "share_in_ic_plus_0p5mm": 0.0245
+      },
+      "solid": {
+       "voxels": 411,
+       "volume_mm3": 6.422,
+       "share_in_wm": 1.0,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0219
+      }
+     },
+     "Fiber_light_bundle": {
+      "footprint": {
+       "voxels": 10652,
+       "volume_mm3": 166.438,
+       "share_in_wm": 0.8892,
+       "share_in_ic": 0.0088,
+       "share_in_ic_plus_0p5mm": 0.0116
+      },
+      "solid": {
+       "voxels": 4734,
+       "volume_mm3": 73.969,
+       "share_in_wm": 0.9406,
+       "share_in_ic": 0.0032,
+       "share_in_ic_plus_0p5mm": 0.0044
+      }
+     },
+     "Fiber_moderate_bundle": {
+      "footprint": {
+       "voxels": 6001,
+       "volume_mm3": 93.766,
+       "share_in_wm": 0.8887,
+       "share_in_ic": 0.1205,
+       "share_in_ic_plus_0p5mm": 0.206
+      },
+      "solid": {
+       "voxels": 2665,
+       "volume_mm3": 41.641,
+       "share_in_wm": 0.9261,
+       "share_in_ic": 0.1355,
+       "share_in_ic_plus_0p5mm": 0.2026
+      }
+     },
+     "Fibers": {
+      "footprint": {
+       "voxels": 75,
+       "volume_mm3": 1.172,
+       "share_in_wm": 0.9067,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0133
+      },
+      "solid": {
+       "voxels": 0,
+       "volume_mm3": 0.0,
+       "share_in_wm": null,
+       "share_in_ic": null,
+       "share_in_ic_plus_0p5mm": null
+      }
+     },
+     "Injection_site": {
+      "footprint": {
+       "voxels": 160,
+       "volume_mm3": 2.5,
+       "share_in_wm": 0.15,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      },
+      "solid": {
+       "voxels": 71,
+       "volume_mm3": 1.109,
+       "share_in_wm": 0.1408,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      }
+     },
+     "Terminal_dense": {
+      "footprint": {
+       "voxels": 7284,
+       "volume_mm3": 113.812,
+       "share_in_wm": 0.0988,
+       "share_in_ic": 0.0001,
+       "share_in_ic_plus_0p5mm": 0.0025
+      },
+      "solid": {
+       "voxels": 3919,
+       "volume_mm3": 61.234,
+       "share_in_wm": 0.0544,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0005
+      }
+     },
+     "Terminal_light": {
+      "footprint": {
+       "voxels": 2751,
+       "volume_mm3": 42.984,
+       "share_in_wm": 0.2505,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      },
+      "solid": {
+       "voxels": 769,
+       "volume_mm3": 12.016,
+       "share_in_wm": 0.2588,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      }
+     },
+     "Terminal_moderate": {
+      "footprint": {
+       "voxels": 4071,
+       "volume_mm3": 63.609,
+       "share_in_wm": 0.1997,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      },
+      "solid": {
+       "voxels": 1562,
+       "volume_mm3": 24.406,
+       "share_in_wm": 0.194,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      }
+     }
+    },
+    "groups": {
+     "bundles": {
+      "footprint": {
+       "voxels": 16930,
+       "volume_mm3": 264.531,
+       "share_in_wm": 0.8923,
+       "share_in_ic": 0.0469,
+       "share_in_ic_plus_0p5mm": 0.0794
+      },
+      "solid": {
+       "voxels": 8101,
+       "volume_mm3": 126.578,
+       "share_in_wm": 0.938,
+       "share_in_ic": 0.0478,
+       "share_in_ic_plus_0p5mm": 0.0722
+      },
+      "connected": {
+       "voxels": 13686,
+       "volume_mm3": 213.844,
+       "share_in_wm": 0.9122,
+       "share_in_ic": 0.0452,
+       "share_in_ic_plus_0p5mm": 0.074,
+       "inferred_voxels": 1047,
+       "inferred_mm3": 16.359,
+       "inferred_share": 0.0765,
+       "pieces": 1,
+       "pieces_attached": 7,
+       "pieces_dropped": 3,
+       "longest_bridge_mm": 8.5,
+       "bridges_longer_than_10mm": 0
+      }
+     },
+     "terminals": {
+      "footprint": {
+       "voxels": 13632,
+       "volume_mm3": 213.0,
+       "share_in_wm": 0.1565,
+       "share_in_ic": 0.0001,
+       "share_in_ic_plus_0p5mm": 0.0013
+      },
+      "solid": {
+       "voxels": 6480,
+       "volume_mm3": 101.25,
+       "share_in_wm": 0.1157,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0003
+      },
+      "connected": {
+       "voxels": 9896,
+       "volume_mm3": 154.625,
+       "share_in_wm": 0.1402,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0008
+      }
+     }
+    },
+    "groups_union_of_grades": {
+     "bundles": {
+      "footprint": {
+       "voxels": 16807,
+       "volume_mm3": 262.609,
+       "share_in_wm": 0.8921,
+       "share_in_ic": 0.0468,
+       "share_in_ic_plus_0p5mm": 0.0793
+      },
+      "solid": {
+       "voxels": 7807,
+       "volume_mm3": 121.984,
+       "share_in_wm": 0.9388,
+       "share_in_ic": 0.0482,
+       "share_in_ic_plus_0p5mm": 0.073
+      }
+     },
+     "terminals": {
+      "footprint": {
+       "voxels": 13547,
+       "volume_mm3": 211.672,
+       "share_in_wm": 0.1561,
+       "share_in_ic": 0.0001,
+       "share_in_ic_plus_0p5mm": 0.0013
+      },
+      "solid": {
+       "voxels": 6249,
+       "volume_mm3": 97.641,
+       "share_in_wm": 0.1143,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0003
+      }
+     }
+    }
+   },
+   "MR252": {
+    "label": "MM2",
+    "classes": {
+     "Bundle": {
+      "footprint": {
+       "voxels": 2466,
+       "volume_mm3": 38.531,
+       "share_in_wm": 0.925,
+       "share_in_ic": 0.2052,
+       "share_in_ic_plus_0p5mm": 0.2466
+      },
+      "solid": {
+       "voxels": 950,
+       "volume_mm3": 14.844,
+       "share_in_wm": 0.9495,
+       "share_in_ic": 0.1768,
+       "share_in_ic_plus_0p5mm": 0.2053
+      }
+     },
+     "Fiber_dense_bundle": {
+      "footprint": {
+       "voxels": 68,
+       "volume_mm3": 1.062,
+       "share_in_wm": 0.9559,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      },
+      "solid": {
+       "voxels": 13,
+       "volume_mm3": 0.203,
+       "share_in_wm": 0.9231,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      }
+     },
+     "Fiber_light_bundle": {
+      "footprint": {
+       "voxels": 1912,
+       "volume_mm3": 29.875,
+       "share_in_wm": 0.8457,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      },
+      "solid": {
+       "voxels": 1076,
+       "volume_mm3": 16.812,
+       "share_in_wm": 0.8773,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      }
+     },
+     "Fiber_moderate_bundle": {
+      "footprint": {
+       "voxels": 2224,
+       "volume_mm3": 34.75,
+       "share_in_wm": 0.9492,
+       "share_in_ic": 0.4861,
+       "share_in_ic_plus_0p5mm": 0.6052
+      },
+      "solid": {
+       "voxels": 1313,
+       "volume_mm3": 20.516,
+       "share_in_wm": 0.9673,
+       "share_in_ic": 0.5187,
+       "share_in_ic_plus_0p5mm": 0.607
+      }
+     },
+     "Fibers": {
+      "footprint": {
+       "voxels": 6,
+       "volume_mm3": 0.094,
+       "share_in_wm": 1.0,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.1667
+      },
+      "solid": {
+       "voxels": 0,
+       "volume_mm3": 0.0,
+       "share_in_wm": null,
+       "share_in_ic": null,
+       "share_in_ic_plus_0p5mm": null
+      }
+     },
+     "Injection_site": {
+      "footprint": {
+       "voxels": 97,
+       "volume_mm3": 1.516,
+       "share_in_wm": 0.2887,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      },
+      "solid": {
+       "voxels": 57,
+       "volume_mm3": 0.891,
+       "share_in_wm": 0.2982,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      }
+     }
+    },
+    "groups": {
+     "bundles": {
+      "footprint": {
+       "voxels": 4519,
+       "volume_mm3": 70.609,
+       "share_in_wm": 0.9088,
+       "share_in_ic": 0.2392,
+       "share_in_ic_plus_0p5mm": 0.2979
+      },
+      "solid": {
+       "voxels": 2676,
+       "volume_mm3": 41.812,
+       "share_in_wm": 0.9335,
+       "share_in_ic": 0.2545,
+       "share_in_ic_plus_0p5mm": 0.2978
+      },
+      "connected": {
+       "voxels": 4071,
+       "volume_mm3": 63.609,
+       "share_in_wm": 0.9268,
+       "share_in_ic": 0.2167,
+       "share_in_ic_plus_0p5mm": 0.2682,
+       "inferred_voxels": 478,
+       "inferred_mm3": 7.469,
+       "inferred_share": 0.1174,
+       "pieces": 1,
+       "pieces_attached": 9,
+       "pieces_dropped": 4,
+       "longest_bridge_mm": 1.75,
+       "bridges_longer_than_10mm": 0
+      }
+     }
+    },
+    "groups_union_of_grades": {
+     "bundles": {
+      "footprint": {
+       "voxels": 4518,
+       "volume_mm3": 70.594,
+       "share_in_wm": 0.9088,
+       "share_in_ic": 0.2393,
+       "share_in_ic_plus_0p5mm": 0.2979
+      },
+      "solid": {
+       "voxels": 2671,
+       "volume_mm3": 41.734,
+       "share_in_wm": 0.9334,
+       "share_in_ic": 0.255,
+       "share_in_ic_plus_0p5mm": 0.2984
+      }
+     }
+    }
+   },
+   "MR256": {
+    "label": "MM3",
+    "classes": {
+     "Fiber_dense_bundle": {
+      "footprint": {
+       "voxels": 456,
+       "volume_mm3": 7.125,
+       "share_in_wm": 0.8224,
+       "share_in_ic": 0.0307,
+       "share_in_ic_plus_0p5mm": 0.2149
+      },
+      "solid": {
+       "voxels": 156,
+       "volume_mm3": 2.438,
+       "share_in_wm": 0.8846,
+       "share_in_ic": 0.0449,
+       "share_in_ic_plus_0p5mm": 0.2628
+      }
+     },
+     "Fiber_light_bundle": {
+      "footprint": {
+       "voxels": 4774,
+       "volume_mm3": 74.594,
+       "share_in_wm": 0.8632,
+       "share_in_ic": 0.0121,
+       "share_in_ic_plus_0p5mm": 0.0159
+      },
+      "solid": {
+       "voxels": 2393,
+       "volume_mm3": 37.391,
+       "share_in_wm": 0.8909,
+       "share_in_ic": 0.0084,
+       "share_in_ic_plus_0p5mm": 0.0096
+      }
+     },
+     "Fiber_moderate_bundle": {
+      "footprint": {
+       "voxels": 8182,
+       "volume_mm3": 127.844,
+       "share_in_wm": 0.936,
+       "share_in_ic": 0.0471,
+       "share_in_ic_plus_0p5mm": 0.0897
+      },
+      "solid": {
+       "voxels": 4971,
+       "volume_mm3": 77.672,
+       "share_in_wm": 0.9553,
+       "share_in_ic": 0.0467,
+       "share_in_ic_plus_0p5mm": 0.0821
+      }
+     },
+     "Fibers": {
+      "footprint": {
+       "voxels": 8,
+       "volume_mm3": 0.125,
+       "share_in_wm": 0.875,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      },
+      "solid": {
+       "voxels": 0,
+       "volume_mm3": 0.0,
+       "share_in_wm": null,
+       "share_in_ic": null,
+       "share_in_ic_plus_0p5mm": null
+      }
+     },
+     "Terminal_dense": {
+      "footprint": {
+       "voxels": 1560,
+       "volume_mm3": 24.375,
+       "share_in_wm": 0.0731,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      },
+      "solid": {
+       "voxels": 769,
+       "volume_mm3": 12.016,
+       "share_in_wm": 0.0585,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      }
+     },
+     "Terminal_light": {
+      "footprint": {
+       "voxels": 1819,
+       "volume_mm3": 28.422,
+       "share_in_wm": 0.1897,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0016
+      },
+      "solid": {
+       "voxels": 697,
+       "volume_mm3": 10.891,
+       "share_in_wm": 0.2023,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      }
+     },
+     "Terminal_moderate": {
+      "footprint": {
+       "voxels": 4550,
+       "volume_mm3": 71.094,
+       "share_in_wm": 0.2191,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0007
+      },
+      "solid": {
+       "voxels": 2325,
+       "volume_mm3": 36.328,
+       "share_in_wm": 0.1832,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      }
+     }
+    },
+    "groups": {
+     "bundles": {
+      "footprint": {
+       "voxels": 12402,
+       "volume_mm3": 193.781,
+       "share_in_wm": 0.9045,
+       "share_in_ic": 0.033,
+       "share_in_ic_plus_0p5mm": 0.0676
+      },
+      "solid": {
+       "voxels": 7362,
+       "volume_mm3": 115.031,
+       "share_in_wm": 0.9334,
+       "share_in_ic": 0.034,
+       "share_in_ic_plus_0p5mm": 0.063
+      },
+      "connected": {
+       "voxels": 10452,
+       "volume_mm3": 163.312,
+       "share_in_wm": 0.9116,
+       "share_in_ic": 0.035,
+       "share_in_ic_plus_0p5mm": 0.0696,
+       "inferred_voxels": 544,
+       "inferred_mm3": 8.5,
+       "inferred_share": 0.052,
+       "pieces": 1,
+       "pieces_attached": 7,
+       "pieces_dropped": 0,
+       "longest_bridge_mm": 2.75,
+       "bridges_longer_than_10mm": 0
+      }
+     },
+     "terminals": {
+      "footprint": {
+       "voxels": 7209,
+       "volume_mm3": 112.641,
+       "share_in_wm": 0.1917,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0008
+      },
+      "solid": {
+       "voxels": 3639,
+       "volume_mm3": 56.859,
+       "share_in_wm": 0.1652,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      },
+      "connected": {
+       "voxels": 5355,
+       "volume_mm3": 83.672,
+       "share_in_wm": 0.1783,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0002
+      }
+     }
+    },
+    "groups_union_of_grades": {
+     "bundles": {
+      "footprint": {
+       "voxels": 12366,
+       "volume_mm3": 193.219,
+       "share_in_wm": 0.9048,
+       "share_in_ic": 0.0329,
+       "share_in_ic_plus_0p5mm": 0.0673
+      },
+      "solid": {
+       "voxels": 7299,
+       "volume_mm3": 114.047,
+       "share_in_wm": 0.9337,
+       "share_in_ic": 0.034,
+       "share_in_ic_plus_0p5mm": 0.063
+      }
+     },
+     "terminals": {
+      "footprint": {
+       "voxels": 7191,
+       "volume_mm3": 112.359,
+       "share_in_wm": 0.1918,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0008
+      },
+      "solid": {
+       "voxels": 3619,
+       "volume_mm3": 56.547,
+       "share_in_wm": 0.1655,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      }
+     }
+    }
+   },
+   "MF191": {
+    "label": "MF8",
+    "classes": {
+     "Fiber_dense_bundle": {
+      "footprint": {
+       "voxels": 14459,
+       "volume_mm3": 225.922,
+       "share_in_wm": 0.8797,
+       "share_in_ic": 0.0731,
+       "share_in_ic_plus_0p5mm": 0.1273
+      },
+      "solid": {
+       "voxels": 6318,
+       "volume_mm3": 98.719,
+       "share_in_wm": 0.927,
+       "share_in_ic": 0.0864,
+       "share_in_ic_plus_0p5mm": 0.1331
+      }
+     },
+     "Fiber_light_bundle": {
+      "footprint": {
+       "voxels": 6484,
+       "volume_mm3": 101.312,
+       "share_in_wm": 0.7563,
+       "share_in_ic": 0.0379,
+       "share_in_ic_plus_0p5mm": 0.0458
+      },
+      "solid": {
+       "voxels": 1705,
+       "volume_mm3": 26.641,
+       "share_in_wm": 0.7924,
+       "share_in_ic": 0.0317,
+       "share_in_ic_plus_0p5mm": 0.034
+      }
+     },
+     "Fiber_moderate_bundle": {
+      "footprint": {
+       "voxels": 14321,
+       "volume_mm3": 223.766,
+       "share_in_wm": 0.8153,
+       "share_in_ic": 0.0183,
+       "share_in_ic_plus_0p5mm": 0.0253
+      },
+      "solid": {
+       "voxels": 5847,
+       "volume_mm3": 91.359,
+       "share_in_wm": 0.8743,
+       "share_in_ic": 0.0092,
+       "share_in_ic_plus_0p5mm": 0.0115
+      }
+     },
+     "Fibers": {
+      "footprint": {
+       "voxels": 39425,
+       "volume_mm3": 616.016,
+       "share_in_wm": 0.6628,
+       "share_in_ic": 0.0117,
+       "share_in_ic_plus_0p5mm": 0.0172
+      },
+      "solid": {
+       "voxels": 5278,
+       "volume_mm3": 82.469,
+       "share_in_wm": 0.8958,
+       "share_in_ic": 0.021,
+       "share_in_ic_plus_0p5mm": 0.0256
+      }
+     },
+     "Injection_site": {
+      "footprint": {
+       "voxels": 709,
+       "volume_mm3": 11.078,
+       "share_in_wm": 0.2059,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      },
+      "solid": {
+       "voxels": 306,
+       "volume_mm3": 4.781,
+       "share_in_wm": 0.1405,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0
+      }
+     },
+     "Terminal_dense": {
+      "footprint": {
+       "voxels": 32565,
+       "volume_mm3": 508.828,
+       "share_in_wm": 0.1687,
+       "share_in_ic": 0.0042,
+       "share_in_ic_plus_0p5mm": 0.0139
+      },
+      "solid": {
+       "voxels": 18084,
+       "volume_mm3": 282.562,
+       "share_in_wm": 0.1325,
+       "share_in_ic": 0.0016,
+       "share_in_ic_plus_0p5mm": 0.0092
+      }
+     },
+     "Terminal_light": {
+      "footprint": {
+       "voxels": 19560,
+       "volume_mm3": 305.625,
+       "share_in_wm": 0.1715,
+       "share_in_ic": 0.0011,
+       "share_in_ic_plus_0p5mm": 0.0046
+      },
+      "solid": {
+       "voxels": 5003,
+       "volume_mm3": 78.172,
+       "share_in_wm": 0.1511,
+       "share_in_ic": 0.0002,
+       "share_in_ic_plus_0p5mm": 0.0036
+      }
+     },
+     "Terminal_moderate": {
+      "footprint": {
+       "voxels": 24127,
+       "volume_mm3": 376.984,
+       "share_in_wm": 0.1499,
+       "share_in_ic": 0.0005,
+       "share_in_ic_plus_0p5mm": 0.0055
+      },
+      "solid": {
+       "voxels": 8816,
+       "volume_mm3": 137.75,
+       "share_in_wm": 0.1118,
+       "share_in_ic": 0.0,
+       "share_in_ic_plus_0p5mm": 0.0036
+      }
+     }
+    },
+    "groups": {
+     "bundles": {
+      "footprint": {
+       "voxels": 32898,
+       "volume_mm3": 514.031,
+       "share_in_wm": 0.8227,
+       "share_in_ic": 0.0456,
+       "share_in_ic_plus_0p5mm": 0.0742
+      },
+      "solid": {
+       "voxels": 14409,
+       "volume_mm3": 225.141,
+       "share_in_wm": 0.8902,
+       "share_in_ic": 0.0473,
+       "share_in_ic_plus_0p5mm": 0.0696
+      },
+      "connected": {
+       "voxels": 27221,
+       "volume_mm3": 425.328,
+       "share_in_wm": 0.852,
+       "share_in_ic": 0.0492,
+       "share_in_ic_plus_0p5mm": 0.076,
+       "inferred_voxels": 3464,
+       "inferred_mm3": 54.125,
+       "inferred_share": 0.1273,
+       "pieces": 1,
+       "pieces_attached": 34,
+       "pieces_dropped": 1,
+       "longest_bridge_mm": 5.0,
+       "bridges_longer_than_10mm": 0
+      }
+     },
+     "terminals": {
+      "footprint": {
+       "voxels": 72497,
+       "volume_mm3": 1132.766,
+       "share_in_wm": 0.1681,
+       "share_in_ic": 0.0023,
+       "share_in_ic_plus_0p5mm": 0.0092
+      },
+      "solid": {
+       "voxels": 33707,
+       "volume_mm3": 526.672,
+       "share_in_wm": 0.1295,
+       "share_in_ic": 0.0009,
+       "share_in_ic_plus_0p5mm": 0.0066
+      },
+      "connected": {
+       "voxels": 53221,
+       "volume_mm3": 831.578,
+       "share_in_wm": 0.1519,
+       "share_in_ic": 0.0018,
+       "share_in_ic_plus_0p5mm": 0.0085
+      }
+     }
+    },
+    "groups_union_of_grades": {
+     "bundles": {
+      "footprint": {
+       "voxels": 32560,
+       "volume_mm3": 508.75,
+       "share_in_wm": 0.823,
+       "share_in_ic": 0.0458,
+       "share_in_ic_plus_0p5mm": 0.074
+      },
+      "solid": {
+       "voxels": 13698,
+       "volume_mm3": 214.031,
+       "share_in_wm": 0.8876,
+       "share_in_ic": 0.0477,
+       "share_in_ic_plus_0p5mm": 0.0705
+      }
+     },
+     "terminals": {
+      "footprint": {
+       "voxels": 71619,
+       "volume_mm3": 1119.047,
+       "share_in_wm": 0.1677,
+       "share_in_ic": 0.0023,
+       "share_in_ic_plus_0p5mm": 0.0092
+      },
+      "solid": {
+       "voxels": 31896,
+       "volume_mm3": 498.375,
+       "share_in_wm": 0.1297,
+       "share_in_ic": 0.0009,
+       "share_in_ic_plus_0p5mm": 0.0068
+      }
+     }
+    }
+   }
+  },
+  "labels": "labels/tracer_template_v2"
+ }
+}

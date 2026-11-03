@@ -1,0 +1,175 @@
+{
+ "data": {
+  "n": 21,
+  "vx_um": {
+   "range": [
+    20.0,
+    43.0
+   ]
+  },
+  "vz_um": {
+   "range": [
+    45.0,
+    870.0
+   ]
+  },
+  "nominal": {
+   "vx_um_range": [
+    20.0,
+    43.0
+   ],
+   "vz_um_range": [
+    50.0,
+    870.0
+   ]
+  },
+  "changed": [
+   "MF275",
+   "MF278",
+   "MF282",
+   "MR243",
+   "MR244",
+   "MR247",
+   "MR248",
+   "MR249",
+   "MR250",
+   "MR251",
+   "MR252",
+   "MR253",
+   "MR254",
+   "MR256",
+   "MR257",
+   "MR261",
+   "MR263",
+   "MR273"
+  ],
+  "per_brain": {
+   "MF191": {
+    "vx_um": 23.75,
+    "vz_um": 750.0,
+    "nominal_vx_um": 23.75,
+    "nominal_vz_um": 750.0
+   },
+   "MF196": {
+    "vx_um": 21.49,
+    "vz_um": 870.0,
+    "nominal_vx_um": 21.49,
+    "nominal_vz_um": 870.0
+   },
+   "MF204": {
+    "vx_um": 43.0,
+    "vz_um": 810.0,
+    "nominal_vx_um": 43.0,
+    "nominal_vz_um": 810.0
+   },
+   "MF275": {
+    "vx_um": 27.0,
+    "vz_um": 47.0,
+    "nominal_vx_um": 26.0,
+    "nominal_vz_um": 50.0
+   },
+   "MF278": {
+    "vx_um": 27.0,
+    "vz_um": 47.0,
+    "nominal_vx_um": 26.0,
+    "nominal_vz_um": 50.0
+   },
+   "MF282": {
+    "vx_um": 27.0,
+    "vz_um": 47.0,
+    "nominal_vx_um": 26.0,
+    "nominal_vz_um": 50.0
+   },
+   "MR243": {
+    "vx_um": 20.0,
+    "vz_um": 366.0,
+    "nominal_vx_um": 20.0,
+    "nominal_vz_um": 400.0
+   },
+   "MR244": {
+    "vx_um": 20.0,
+    "vz_um": 366.0,
+    "nominal_vx_um": 20.0,
+    "nominal_vz_um": 400.0
+   },
+   "MR247": {
+    "vx_um": 20.0,
+    "vz_um": 366.0,
+    "nominal_vx_um": 20.0,
+    "nominal_vz_um": 400.0
+   },
+   "MR248": {
+    "vx_um": 20.0,
+    "vz_um": 366.0,
+    "nominal_vx_um": 20.0,
+    "nominal_vz_um": 400.0
+   },
+   "MR249": {
+    "vx_um": 20.0,
+    "vz_um": 366.0,
+    "nominal_vx_um": 20.0,
+    "nominal_vz_um": 400.0
+   },
+   "MR250": {
+    "vx_um": 20.0,
+    "vz_um": 45.0,
+    "nominal_vx_um": 20.0,
+    "nominal_vz_um": 50.0
+   },
+   "MR251": {
+    "vx_um": 20.0,
+    "vz_um": 45.0,
+    "nominal_vx_um": 20.0,
+    "nominal_vz_um": 50.0
+   },
+   "MR252": {
+    "vx_um": 20.0,
+    "vz_um": 45.0,
+    "nominal_vx_um": 20.0,
+    "nominal_vz_um": 50.0
+   },
+   "MR253": {
+    "vx_um": 20.0,
+    "vz_um": 45.0,
+    "nominal_vx_um": 20.0,
+    "nominal_vz_um": 50.0
+   },
+   "MR254": {
+    "vx_um": 20.0,
+    "vz_um": 45.0,
+    "nominal_vx_um": 20.0,
+    "nominal_vz_um": 50.0
+   },
+   "MR256": {
+    "vx_um": 20.0,
+    "vz_um": 45.0,
+    "nominal_vx_um": 20.0,
+    "nominal_vz_um": 50.0
+   },
+   "MR257": {
+    "vx_um": 20.0,
+    "vz_um": 45.0,
+    "nominal_vx_um": 20.0,
+    "nominal_vz_um": 50.0
+   },
+   "MR261": {
+    "vx_um": 20.0,
+    "vz_um": 45.0,
+    "nominal_vx_um": 20.0,
+    "nominal_vz_um": 50.0
+   },
+   "MR263": {
+    "vx_um": 20.0,
+    "vz_um": 45.0,
+    "nominal_vx_um": 20.0,
+    "nominal_vz_um": 50.0
+   },
+   "MR273": {
+    "vx_um": 27.0,
+    "vz_um": 47.0,
+    "nominal_vx_um": 26.0,
+    "nominal_vz_um": 50.0
+   }
+  }
+ }
+}

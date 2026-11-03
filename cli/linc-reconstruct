@@ -1,0 +1,192 @@
+#!/usr/bin/env python3
+"""Reconstruct a brain's blockface photographs into a 3D volume (Methods, "Blockface reconstruction"; Fig. 3).
+
+    linc-reconstruct all      --subject <ID>         every step below, in order
+    linc-reconstruct photos   --subject <ID>         step 1: the photographs renamed (00_slices) and segmented by the 2D network
+                                                     (01_brainmask/00_predict), accepted as 01_final (hand corrections there survive);
+                                                     MF8 and MF9: then warped into their external series' frame (series.py)
+    linc-reconstruct stack    --subject <ID>         the photographs and their masks stacked (_work/)
+    linc-reconstruct prepare  --subject <ID> [--reuse-jumps]
+                                                     step 2 (the camera jumps, TIRL) and the rest of stage 3: the masks finalized,
+                                                     missing sections marked and pre-filled, small 3D components dropped, the stack
+                                                     cropped (02_blockface*), its background-intact twin, illumination and brightness,
+                                                     the exports (nii/)
+    linc-reconstruct mask     --subject <ID>         step 4: the 3D brain mask -> curated/<ID>_mask (a hand-edited
+                                                     curated/<ID>_mask_edited wins)
+    linc-reconstruct volume   --subject <ID> [--keep-work]
+                                                     steps 3, 5 and 6 (the reconstruction): <ID>_blockface.ome.zarr, <ID>_mask, <ID>_holes
+    linc-reconstruct tubes    --subject <ID> [--keep-work]
+                                                     step 6: the 3D marker tubes -> curated/<ID>_holes (a hand-edited
+                                                     curated/<ID>_holes_edited wins) and the tubes re-filled when they changed
+    linc-reconstruct spacing  --subject <ID>         the calibrated spacing (configs/subjects vx, vz) written into the headers
+    linc-reconstruct edit-photo-masks export|import --subject <ID>
+                                                     optional: hand-correct the 2D masks on the stacked photographs (fsleyes), then
+                                                     import them back (01_final) before `prepare`
+
+Hand corrections (all masks were corrected by hand where needed): after `prepare`, a brain mask edited on curated/<ID>_bg is saved
+as curated/<ID>_mask_edited.nii.gz; after `volume`, edited tubes as curated/<ID>_holes_edited.nii.gz (linc/blockface/curate.py folds
+edits made on the final grid back). configs/subjects/<ID>.yaml `masks_of_record` lists which masks of the paper's brains are hand edits.
+
+Segmentation (steps 1, 4, 6): configs/blockface.yaml `segmentation.engine`, one switch per task (photos, mask, tubes), or --engine:
+`--engine linc_segment` (every task of the step) or `--engine photos=linc_segment,mask=nnunet`. nnunet: the three nnU-Nets the paper's
+masks of record were made with (models/blockface_segmentation.md); linc_segment: the models wrap-up's networks (models/segmentation.md),
+run by cli/linc-segment with $LINC_SEGMENT_PYTHON (env/deep.yml), a task's default once its network passes the gate. The
+post-processing is the pipeline's own on both engines (linc/blockface/mask_rules.py), applied once: linc-segment runs with
+--postprocess none.
+Environment: LINC_DATA (outputs under $LINC_DATA/sub-<ID>/blockface/), LINC_RAW (the photographs), LINC_MODELS (segment/ and, for
+nnunet, nnUNet_results/), LINC_SEGMENT_PYTHON, and the external tools TIRL 3.6.3 (or 3.6.2, the paper's; beside the running Python), nifti-zarr 1.0.0rc6 and (for nnunet) nnU-Net 2.5.1
+(linc/blockface/external.py).
+Parameters: configs/blockface.yaml; per brain: configs/subjects/<ID>.yaml.
+"""
+import argparse
+import os
+import shutil
+import sys
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO))
+from linc.blockface import curate, external, jumps, photos, prepare, reconstruct, segment3d, series, spacing  # noqa: E402
+from linc.blockface.subject import Subject, params  # noqa: E402
+
+
+TASKS = ("photos", "mask", "tubes")
+ENGINES = ("linc_segment", "nnunet")
+
+
+def engine(a, task):
+    """The engine of one task (photos, mask, tubes): configs/blockface.yaml `segmentation.engine[task]` unless --engine overrides it,
+    linc_segment (the wrap-up networks) or nnunet (the networks the paper's masks of record were made with)."""
+    assert task in TASKS, task
+    e = params()["segmentation"]["engine"]
+    e = dict.fromkeys(TASKS, e) if isinstance(e, str) else dict(e)
+    e.update(parse_engine(getattr(a, "engine", None)))
+    assert e[task] in ENGINES, (task, e[task])
+    return e[task]
+
+
+def parse_engine(text):
+    """--engine: "linc_segment" | "nnunet" (every task) or "task=engine[,task=engine]" -> {task: engine}."""
+    if not text:
+        return {}
+    out = dict.fromkeys(TASKS, text) if "=" not in text else dict(kv.split("=", 1) for kv in text.split(","))
+    bad = sorted({t for t in out if t not in TASKS} | {v for v in out.values() if v not in ENGINES})
+    if bad:
+        raise SystemExit(f"--engine {text}: unknown {bad} (tasks {TASKS}, engines {ENGINES})")
+    return out
+
+
+def step_photos(cfg, a):
+    p = params()["photo_segmentation"]
+    photos.ingest(cfg)
+    if engine(a, "photos") == "linc_segment":   # the raw masks straight into 00_predict; normalize_masks applies the fill once
+        external.segment(params()["segmentation"]["models"]["photos"], cfg.slices, cfg.brainmask("00_predict"), native=True,
+                         postprocess="none")
+    else:
+        external.predict_2d(p, cfg.slices, cfg.brainmask_predict, cfg.brainmask("00_predict"), cfg.work)
+    photos.normalize_masks(cfg)
+    photos.finalize_brainmask(cfg)
+    shutil.rmtree(cfg.brainmask_predict, ignore_errors=True)
+    sa = cfg.yaml.get("series_alignment")
+    if sa:                                      # MF8, MF9: aligned to their external series instead of camera jumps
+        series.apply(cfg, os.path.join(cfg.root, sa["align"]), sa["frame_shape_px"])
+
+
+def step_stack(cfg, a):
+    photos.stack_blockface(cfg)
+    photos.stack_masks(cfg)
+
+
+def step_prepare(cfg, a):
+    if not a.reuse_jumps:
+        jumps.cut_jumps(cfg)
+        jumps.tirl_jumps(cfg)
+    jumps.register_jumps(cfg)
+    prepare.remove_background(cfg)
+    prepare.interpolate_missing(cfg)
+    prepare.filter_components_3d(cfg, frac=0.10)
+    prepare.crop_and_mask(cfg)
+    prepare.blockface_bg(cfg)
+    prepare.correct_shading(cfg)
+    prepare.harmonize_intensity(cfg)
+    prepare.export_stage3(cfg)
+
+
+def _seg3d(cfg, a, which, prep, post):
+    """which: "mask" or "tubes". The input (prep) and the post-processing (post) are the same for both engines."""
+    vs = params()["volume_segmentation"]
+    inp, out = os.path.join(cfg.seg3d_dir, "in"), os.path.join(cfg.seg3d_dir, "out")
+    prep(cfg)
+    if engine(a, which) == "linc_segment":
+        external.segment(params()["segmentation"]["models"][which], inp, out, postprocess="none")
+    else:
+        external.predict_3d(vs, vs["brain_mask_dataset" if which == "mask" else "tubes_dataset"], inp, out, cfg.work)
+    post(cfg)
+    shutil.rmtree(cfg.seg3d_dir, ignore_errors=True)
+
+
+def step_mask(cfg, a):
+    _seg3d(cfg, a, "mask", segment3d.prep_mask, segment3d.post_mask)
+
+
+def step_volume(cfg, a):
+    reconstruct.reconstruct(cfg)
+    if not a.keep_work:                         # the stacks and exports have had their last read
+        shutil.rmtree(cfg.work, ignore_errors=True); shutil.rmtree(cfg.nii_dir, ignore_errors=True)
+
+
+def step_tubes(cfg, a):
+    _seg3d(cfg, a, "tubes", segment3d.prep_holes, segment3d.post_holes)
+    if os.path.exists(cfg.holes_edited):        # `volume` already filled the hand-edited tubes: re-filling would be identical
+        print(f"[tubes] {os.path.basename(cfg.holes_edited)} present: `volume` already filled it; no re-fill")
+    else:
+        curate.reinpaint(cfg)
+    if not a.keep_work:
+        shutil.rmtree(cfg.work, ignore_errors=True)
+
+
+def step_spacing(cfg, a):
+    spacing.respace(cfg)
+
+
+def step_edit(cfg, a):
+    {"export": photos.export_for_editing, "import": photos.import_edited_masks}[a.action](cfg)
+
+
+STEPS = {"photos": step_photos, "stack": step_stack, "prepare": step_prepare, "mask": step_mask, "volume": step_volume,
+         "tubes": step_tubes, "spacing": step_spacing}
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sp = ap.add_subparsers(dest="step", required=True)
+    for name in ["all", *STEPS]:
+        s = sp.add_parser(name)
+        s.add_argument("--subject", required=True)
+        if name in ("all", "photos", "mask", "tubes"):
+            s.add_argument("--engine", default=None, metavar="ENGINE | TASK=ENGINE[,...]",
+                           help="override configs/blockface.yaml segmentation.engine: linc_segment or nnunet for every task, or per "
+                                "task, e.g. photos=linc_segment,mask=nnunet (nnunet: the networks of the masks of record)")
+        if name in ("all", "prepare"):
+            s.add_argument("--reuse-jumps", action="store_true", help="reuse _work/tirl_jumps (valid while 00_slices is unchanged)")
+        if name in ("all", "volume", "tubes"):
+            s.add_argument("--keep-work", action="store_true", help="keep _work/ and nii/ (dropped by default once read)")
+    e = sp.add_parser("edit-photo-masks")
+    e.add_argument("action", choices=["export", "import"]); e.add_argument("--subject", required=True)
+    a = ap.parse_args()
+    parse_engine(getattr(a, "engine", None))   # a bad --engine fails before any step runs
+    cfg = Subject(a.subject)
+    from linc import paths
+    paths.refuse_records(cfg.root, os.path.join(cfg.root, "curated"))    # a brain whose files link to the records: rebuild folder
+    if a.step == "edit-photo-masks":
+        return step_edit(cfg, a)
+    if a.step == "all":
+        for name, fn in STEPS.items():
+            print(f"=== {a.subject}: {name}", flush=True)
+            fn(cfg, a)
+        return
+    STEPS[a.step](cfg, a)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,78 @@
+# Caudal completion: the network that predicts the blockface tissue a brain's photographs lack, from its b0 image, and the join
+# with the photographs (paper Methods, "Registration to the brain's own MRI and caudal completion"; the network:
+# Gonzales et al. 2026, ISBI, "Completing unphotographed blockface ...").
+# The values are those of the networks and the completed volumes of record. Read by linc/completion and reproduce/numbers/d3_*.py.
+
+# --- grids ---
+input_mm: 0.5                    # the b0 on its frame grid ("coarse" box)
+output_mm: 0.25                  # the input box's center-aligned 2x refinement: output voxel 2k sits on input voxel k
+
+# --- network (the architecture is fixed in linc/completion/network.py; these are the sizes of record) ---
+features: [32, 32, 64, 128, 256, 32]   # MONAI BasicUNet feature counts at the input grid
+head: 32                         # channels of the x2 head and the two refinement blocks at the output grid
+
+# --- network input ---
+input_percentiles: [0.5, 99.5]   # own b0: x = clip((b0 - p0.5) / (p99.5 - p0.5), 0, 1) inside the completion brain, 0 outside
+stand_in_lo: 0.0                 # stand-in b0 (brains without MRI): lower limit fixed at 0, x = clip(b0 / p99.5, 0, 1); the scaling the
+                                 # stand-in network was trained with (its 13 training inputs all had p0.5 = 0)
+
+# --- prediction (sliding window) ---
+window: 64                       # input voxels per window side (32 mm); output windows 128^3
+overlap: 0.5
+blend: gaussian
+window_batch: 1
+
+# --- join with the photographs (Methods: "Before joining, the prediction's intensity was matched to the photographs, and the two
+#     were cross-faded over 2 mm") ---
+recal_mm: 8.0                    # one isotonic (PAVA) map prediction -> photographs, fitted on the first 8 mm of retained tissue
+                                 #   rostral of the cut, fully photographed voxels only
+fully_photographed: 0.999        # "fully photographed" = photo fraction >= 0.999 (the map's band and the scored slab voxels)
+pava_bins: 64                    #   on 64 quantile bins of the prediction
+fade_mm: 2.0                     # cosine cross-fade: w = 0.5 - 0.5 cos(pi * clip(d / 2 mm, 0, 1)), d = mm rostral of the cut
+
+# --- the join plane: the clean cut face, one plane per brain, parallel to the photographed sections (Methods: "from which the
+#     photographs were complete over the next 40 mm") ---
+clean_face:
+  tau: 0.95                      # a plane is complete when the photographs cover >= 95 % of the brain mask eroded by erode_mm
+  erode_mm: 1.0
+  window_mm: 40.0                # z_c = the most caudal plane from which every plane over the next 40 mm is complete
+  margin_mm: 1.5                 # z_f = z_c + 1.5 mm (the cut; everything caudal of it is predicted)
+
+# --- training (the recipe of the networks of record) ---
+training:
+  epochs: 80
+  patches_per_epoch: 500
+  batch: 2
+  lr: 2.0e-4                     # Adam; linear warm-up over 5 epochs, then cosine decay
+  warmup: 5
+  ema_decay: 0.999               # the released weights are the exponential moving average
+  clip: 1.0                      # gradient-norm clipping
+  w_l1: 1.0                      # loss = l1 + 0.2 gradient-l1 + 0.6 (1 - multi-scale SSIM), masked to the training targets
+  w_grad: 0.2
+  w_ssim: 0.6
+  ms_ssim_weights: [0.5, 0.3, 0.2]
+  photographed_only: 0.5         # targets: photographed voxels, minus those whose photographed share is < 0.5
+  valid_trim_mm: 0.25            # targets: minus each anterior-posterior column's caudal-most 0.25 mm of photographed tissue
+  patch_stride: 6                # patch centers: every 6th target voxel
+  num_workers: 8
+  augment:                       # one physical-space transform per sample, applied to input and target alike
+    rot: 0.17                    # rad, about each axis
+    scale: 0.12                  # per-axis scale
+    trans_mm: 0.7
+    elastic_mm: 0.42             # smooth field on an 8^3 lattice over the patch
+    intens: true                 # input only: contrast 0.15, brightness 0.1, bias field 0.15, noise 0.05
+  intensity: {contrast: 0.15, brightness: 0.1, noise: 0.05, bias: 0.15}
+  # LINC IDs (paper names): the 12 brains with MRI of the withheld-slab evaluation, MF278 (MF5), MF282 (MF7), MR243 (MM1),
+  # MR249 (MM4), MR250 (MM5), MR251 (MM6), MR252 (MM2), MR253 (MM7), MR254 (MM8), MR256 (MM3), MR257 (MM9), MR261 (MM10)
+  members: [MF278, MF282, MR243, MR249, MR250, MR251, MR252, MR253, MR254, MR256, MR257, MR261]
+  extra_train: [MF275]           # MF6: trained in every protocol, never held out (it joined the training set after the evaluation design)
+
+# --- withheld-slab evaluation (Methods: "a slab of photographed tissue as large as the brain's missing tissue was withheld and
+#     predicted by a network trained without it") ---
+evaluation:
+  ssim_min_slice_vox: 50         # SSIM per coronal slice over the scored voxels; slices with fewer scored voxels are skipped,
+  ssim_min_box: 7                #   and so are slices whose scored bounding box is narrower than the 7 x 7 SSIM window
+  sharp_sigma_mm: 0.5            # high-frequency content = image minus its Gaussian blur (sigma 0.5 mm)
+  min_sharp_vox: 200
+  min_bin_vox: 500               # depth bins (1 mm) with fewer scored voxels are not reported
+  n_boot: 10000                  # paired bootstrap over brains

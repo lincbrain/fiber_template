@@ -1,0 +1,83 @@
+cff-version: 1.2.0
+message: "If you use this code or the template, please cite the paper below."
+title: "fiber_template: code for a multimodal macaque template"
+repository-code: "https://github.com/ra-gonzales/fiber_template"
+type: software
+version: 0.1.0
+license: Apache-2.0
+authors:
+  - given-names: Ricardo A.
+    family-names: Gonzales
+    email: rgonzalesvera@mgh.harvard.edu
+    affiliation: "Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Harvard Medical School"
+  - given-names: Ermias
+    family-names: Habte
+  - given-names: Jingjing
+    family-names: Wu
+  - given-names: Ting
+    family-names: Gong
+  - given-names: Chiara
+    family-names: Maffei
+  - given-names: Marina R.
+    family-names: Celestine
+  - given-names: Neel
+    family-names: Dey
+  - given-names: Istvan N.
+    family-names: Huszar
+  - given-names: Guillem
+    family-names: París
+  - given-names: Jasmine
+    family-names: Shao
+  - given-names: Elissa
+    family-names: Bell
+  - given-names: Julia F.
+    family-names: Lehman
+  - given-names: Suzanne N.
+    family-names: Haber
+  - given-names: Yaël
+    family-names: Balbastre
+  - given-names: Anastasia
+    family-names: Yendiki
+keywords:
+  - macaque
+  - brain template
+  - common coordinate framework
+  - ex vivo diffusion MRI
+  - SANDI
+  - blockface
+  - histology
+preferred-citation:
+  type: article
+  title: "A multimodal macaque template for aligning ex vivo MRI and microscopy"
+  status: in-preparation
+  authors:
+    - given-names: Ricardo A.
+      family-names: Gonzales
+    - given-names: Ermias
+      family-names: Habte
+    - given-names: Jingjing
+      family-names: Wu
+    - given-names: Ting
+      family-names: Gong
+    - given-names: Chiara
+      family-names: Maffei
+    - given-names: Marina R.
+      family-names: Celestine
+    - given-names: Neel
+      family-names: Dey
+    - given-names: Istvan N.
+      family-names: Huszar
+    - given-names: Guillem
+      family-names: París
+    - given-names: Jasmine
+      family-names: Shao
+    - given-names: Elissa
+      family-names: Bell
+    - given-names: Julia F.
+      family-names: Lehman
+    - given-names: Suzanne N.
+      family-names: Haber
+    - given-names: Yaël
+      family-names: Balbastre
+    - given-names: Anastasia
+      family-names: Yendiki

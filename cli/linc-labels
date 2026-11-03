@@ -1,0 +1,179 @@
+#!/usr/bin/env python3
+"""Labels on histology -> blockface -> MRI template (paper Methods, "Histology registration and label propagation").
+
+    linc-labels push        --subject MR252 [--kind tracer|structures]   annotations through each piece's TIRL chain onto the blockface
+    linc-labels interpolate --subject MR252                              demons between consecutive sections (RGB + labels)
+    linc-labels carry       --subject MR252 [--entry DIR ...]            demons labels into the MRI template, one resample
+    linc-labels all         --subject MR252                              push (tracer) -> interpolate -> carry
+
+Inputs and outputs follow configs/labels.yaml (layout, relative to $LINC_DATA/sub-<ID>/); every path can be overridden. The push stage
+loads TIRL chains (TIRL 3.6.3 or 3.6.2), the interpolation needs SimpleITK. Route of `carry`, in PULL order (a template point goes first to last):
+  --entry DIR [--entry DIR ...]     registry entries (linc.xfm), each '<dir>' or '<dir>:inv'; given in IMAGE order (bf-native first)
+  --map DIR:NAME / --warp FILE:CONV[:SRC_GRID] / --ras-pull FILE     a precomputed pull map route, in PULL order (template first)
+  (neither: the registry's own chain bf-native -> mri-template for the subject, every link with passing QC).
+"""
+import argparse
+import sys
+import time
+from glob import glob
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from linc import paths, provenance  # noqa: E402
+from linc.histology import labels as LB  # noqa: E402
+
+
+def _p(v, default):
+    return Path(v) if v else default
+
+
+def cmd_push(a, cfg):
+    S = a.subject
+    L = lambda k: LB.layout(S, k, cfg)  # noqa: E731
+    grid = _p(a.grid, L("grid"))
+    reg = _p(a.registrations, L("registrations"))
+    mt = _p(a.match_table, L("match_table"))
+    i0 = a.first_photo if a.first_photo is not None else LB.first_photo(S)
+    t0 = time.time()
+    if a.kind == "tracer":
+        out = _p(a.out, L("labels") / "blockface" / "tracer")
+        ann, smap = _p(a.annotations, L("annotations")), _p(a.section_map, L("section_map"))
+        pm, bp = _p(a.piece_masks, L("piece_masks")), _p(a.blockface_pieces, L("blockface_pieces"))
+        rec, outs = LB.push_tracer(S, annotations_dir=ann, section_map=smap, match_table_path=mt, piece_masks=pm, blockface_pieces=bp,
+                                   registrations=reg, grid=grid, first_photo_number=i0, out_dir=out, cfg=cfg)
+        ins = [smap, mt, grid]
+    else:
+        out = _p(a.out, L("labels") / "blockface" / "structures")
+        sd, mv = _p(a.structures, L("structures")), _p(a.moving, L("moving"))
+        structs = cfg["push"]["structures"]
+        items, alog = LB.structures_stage_a(S, sd, mv, structs)
+        rec, outs = LB.push_structures(S, items, match_table_path=mt, registrations=reg, grid=grid, first_photo_number=i0, out_dir=out,
+                                       structs=structs, cfg=cfg)
+        rec["stage_a"] = alog
+        ins = [mt, grid, sd / "frame_map.json"]
+    for f in outs:
+        provenance.write_provenance(f, inputs=ins, wall_s=round(time.time() - t0, 1), extra=dict(stage="push", kind=a.kind), md5=False)
+    return outs
+
+
+def cmd_interpolate(a, cfg):
+    from linc.histology import interpolate as IP
+    S = a.subject
+    L = lambda k: LB.layout(S, k, cfg)  # noqa: E731
+    lab = a.labels or sorted(glob(str(L("labels") / "blockface" / "*" / f"{S}_*_bfnative_L2.nii.gz")))
+    out_for = (lambda p: a.out) if a.out else None
+    t0 = time.time()
+    method = getattr(a, "method", None) or cfg["interpolate"].get("method", "v2")
+    if method == "v2":
+        import yaml
+        from linc.histology import pieces
+        regions = _p(getattr(a, "regions", None), L("regions"))
+        scale = None
+        if getattr(a, "regions_frame", "reconstruction") == "reconstruction":
+            hcfg = yaml.safe_load((Path(LB.CONFIG).parent / "histology.yaml").read_text())
+            scale = pieces.regions_scale(LB.subject_config(S), (hcfg["regions"].get("made_at_spacing_um") or {}).get(S))
+        out = _p(a.out, L("labels") / "blockface" / "tracer")
+        rec, outs = IP.interpolate_v2(S, registrations=_p(a.registrations, L("registrations")), match_table_path=_p(a.match_table, L("match_table")),
+                                      first_photo_number=a.first_photo if a.first_photo is not None else LB.first_photo(S),
+                                      grid=_p(a.grid, L("grid")), label_files=lab, regions=regions, regions_scale=scale, out_dir=out, cfg=cfg)
+        for f in outs:
+            provenance.write_provenance(f, inputs=lab + [regions], wall_s=round(time.time() - t0, 1), extra=dict(stage="interpolate", method="v2", regions_scale=scale), md5=False)
+        return outs
+    rec, outs = IP.interpolate(S, registrations=_p(a.registrations, L("registrations")), match_table_path=_p(a.match_table, L("match_table")),
+                               first_photo_number=a.first_photo if a.first_photo is not None else LB.first_photo(S),
+                               grid=_p(a.grid, L("grid")), label_files=lab, interp_dir=_p(a.interp_dir, L("interp")), out_for=out_for, cfg=cfg)
+    for f in outs:
+        provenance.write_provenance(f, inputs=lab, wall_s=round(time.time() - t0, 1), extra=dict(stage="interpolate", method="v1"), md5=False)
+    return outs
+
+
+def cmd_carry(a, cfg):
+    from linc import xfm
+    from linc.histology import carry as CA
+    S = a.subject
+    L = lambda k: LB.layout(S, k, cfg)  # noqa: E731
+    C = cfg["carry"]
+    ref = Path(a.ref) if a.ref else paths.template_root() / C["ref"]
+    brain = Path(a.brain) if a.brain else paths.template_root() / C["brain"]
+    lab = a.labels or sorted(glob(str(L("labels") / "blockface" / "tracer" / f"{S}_*_bfnative_L2_demons.nii.gz")))
+    out = _p(a.out, L("labels") / "template" / "tracer")
+    chain = pull = desc = None
+    steps = []
+    for m in a.map or []:
+        d, n = m.rsplit(":", 1); steps.append(("map", d, n))
+    for w in a.warp or []:
+        steps.append(("warp",) + tuple(w.split(":")))
+    for r in a.ras_pull or []:
+        steps.append(("ras_pull", r))
+    if steps:
+        if a.entry:
+            raise SystemExit("give --entry (registry chain) or --map/--warp/--ras-pull (pull route), not both")
+        pull, desc = CA.pull_steps(steps)
+    elif a.entry:
+        links = []
+        for e in a.entry:
+            inv = e.endswith(":inv")
+            ent = xfm.Entry(e[:-4] if inv else e)
+            links.append(xfm.InverseEntry(ent) if inv else ent)
+        chain = xfm.Chain(links, strict=True)
+    else:
+        chain = xfm.Chain.between("bf-native", "mri-template", subject=S, strict=True)
+    t0 = time.time()
+    rec, outs = CA.carry(S, lab, ref=ref, brain=brain, out_dir=out, chain=chain, pull=pull, links=desc, cfg=cfg)
+    for f in outs:
+        provenance.write_provenance(f, inputs=lab + [ref], wall_s=round(time.time() - t0, 1),
+                                    extra=dict(stage="carry", route=rec["links"]), md5=False)
+    return outs
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument("--subject", required=True, help="LINC identifier, e.g. MR252")
+    common.add_argument("--grid", help="target blockface grid (default: layout grid)")
+    common.add_argument("--registrations", help="per-piece registration folders (default: layout registrations)")
+    common.add_argument("--match-table", help="section -> photograph table (default: layout match_table)")
+    common.add_argument("--first-photo", type=int, help="photograph number of blockface slice 0 (default: configs/subjects/<S>.yaml)")
+    common.add_argument("--out", help="output folder")
+    p = sub.add_parser("push", parents=[common])
+    p.add_argument("--kind", choices=["tracer", "structures"], default="tracer")
+    p.add_argument("--annotations"); p.add_argument("--section-map"); p.add_argument("--piece-masks"); p.add_argument("--blockface-pieces")
+    p.add_argument("--structures"); p.add_argument("--moving")
+    p = sub.add_parser("interpolate", parents=[common])
+    p.add_argument("--labels", nargs="*", help="label sheets (default: every *_bfnative_L2.nii.gz under labels/blockface/)")
+    p.add_argument("--interp-dir")
+    p.add_argument("--method", choices=["v2", "v1"], help="v2 = the interpolation of record since 3 Nov 2026 (groups, per-hemisphere pairing); v1 = per class, with the RGB volume (default: configs/labels.yaml interpolate.method)")
+    p.add_argument("--regions", help="v2: the atlas regions volume (default: layout regions)")
+    p.add_argument("--regions-frame", choices=["reconstruction", "current"], default="reconstruction",
+                   help="v2: the regions' frame: the spacing they were made at (configs/histology.yaml regions.made_at_spacing_um, scaled to the brain's calibrated frame) or the grid's own")
+    for name in ("carry", "all"):
+        p = sub.add_parser(name, parents=[common])
+        p.add_argument("--labels", nargs="*", help="dense labels (default: labels/blockface/tracer/*_bfnative_L2_demons.nii.gz)")
+        p.add_argument("--ref"); p.add_argument("--brain")
+        p.add_argument("--entry", action="append"); p.add_argument("--map", action="append")
+        p.add_argument("--warp", action="append"); p.add_argument("--ras-pull", action="append")
+        if name == "all":
+            p.add_argument("--interp-dir")
+            for k in ("annotations", "section_map", "piece_masks", "blockface_pieces"):
+                p.add_argument("--" + k.replace("_", "-"))
+    a = ap.parse_args(argv)
+    cfg = LB.config()
+    if a.cmd == "push":
+        cmd_push(a, cfg)
+    elif a.cmd == "interpolate":
+        cmd_interpolate(a, cfg)
+    elif a.cmd == "carry":
+        cmd_carry(a, cfg)
+    else:                                                     # all: default folders between the stages
+        out = a.out
+        a.out, a.kind = None, "tracer"
+        cmd_push(a, cfg)
+        a.labels = None
+        cmd_interpolate(a, cfg)
+        a.labels, a.out = None, out
+        cmd_carry(a, cfg)
+
+
+if __name__ == "__main__":
+    main()

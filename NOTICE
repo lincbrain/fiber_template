@@ -1,0 +1,11 @@
+fiber_template
+Copyright 2026 The General Hospital Corporation (Massachusetts General Hospital)
+
+Licensed under the Apache License, Version 2.0 (LICENSE).
+
+Third-party code in this repository keeps its own terms:
+- linc/construction/patches/: scripted edits to the FMRIB multimodal template-construction driver
+  (git.fmrib.ox.ac.uk/cart/mm-template-construction, commit f4907f4), holding only our own lines (apply_edits.py and the two
+  .edits.json files). The driver's repository carries no license, and none of its text is included.
+- env/nnunetv2-2.5.1_record.patch: a patch to nnU-Net 2.5.1 (https://github.com/MIC-DKFZ/nnUNet), Apache License 2.0.
+- TIRL and its script packages are not included; `env/install.sh` installs them from a local copy of their sources.

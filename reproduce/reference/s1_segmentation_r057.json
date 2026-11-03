@@ -1,0 +1,215 @@
+{
+ "data": {
+  "mask2d": {
+   "dataset": "Dataset500_SLICE",
+   "task": "brain vs background in each blockface photograph",
+   "input": "RGB photograph",
+   "training_photographs": 149,
+   "trained": "2024-12-26 (before this project; source brains not recorded)",
+   "deployed": "fold 0 alone, unchanged (models/blockface_segmentation.md)",
+   "dice_vs_curated": {
+    "mean": 0.9741,
+    "sd": 0.015,
+    "worst": 0.9233
+   },
+   "n_brains_scored": 14,
+   "cross_validated": false,
+   "note": "01_final (Dataset500) is not cross-validated; quote 11_ctxcv as the CV number"
+  },
+  "mask3d": {
+   "task": "brain vs background in the aligned color stack",
+   "input": "RGB stack, 0.32 mm in-plane, 0.40 mm between sections",
+   "rounds": [
+    {
+     "round": 1,
+     "dataset": "Dataset501_BFmask",
+     "brains": 1,
+     "date": "2026-08-10",
+     "added": [
+      "MR243"
+     ],
+     "source": "round 1 QC report 'Blockface brain-mask model - QC (iteration 1)' (10 Aug 2026; not kept as a project file)"
+    },
+    {
+     "round": 2,
+     "dataset": "Dataset502_BFmask2",
+     "brains": 2,
+     "date": "2026-08-11",
+     "added": [
+      "MR250"
+     ],
+     "source": "round 2 QC report 'iteration 2 (2 samples, ResEnc)' (11 Aug 2026; not kept as a project file): 'trained on 2 hand-edited samples'"
+    },
+    {
+     "round": 3,
+     "dataset": "Dataset503_BFmask3",
+     "brains": 4,
+     "date": "2026-08-12",
+     "added": [
+      "MR244",
+      "MR248"
+     ],
+     "source": "round 3 QC report 'iteration 3 (4 samples)' (12 Aug 2026; not kept as a project file): '4 curated samples'"
+    },
+    {
+     "round": 4,
+     "dataset": "Dataset504_BFmask4",
+     "brains": 8,
+     "date": "2026-08-13",
+     "added": [
+      "MF278",
+      "MR249",
+      "MR251",
+      "MR252"
+     ],
+     "source": "round 4 QC report 'iteration 4' (13 Aug 2026; not kept as a project file): description and heading '8 curated samples' (title stale); project log 13 Aug"
+    },
+    {
+     "round": 5,
+     "dataset": "Dataset506_BFmask5",
+     "brains": 12,
+     "date": "2026-08-14",
+     "cases": [
+      "BF243",
+      "BF244",
+      "BF247",
+      "BF248",
+      "BF249",
+      "BF250",
+      "BF251",
+      "BF252",
+      "BF253",
+      "BF254",
+      "BF256",
+      "BFF278",
+      "BFval"
+     ],
+     "brain_names": [
+      "MM1",
+      "MM11",
+      "MM12",
+      "MM13",
+      "MM4",
+      "MM5",
+      "MM6",
+      "MM2",
+      "MM7",
+      "MM8",
+      "MM3",
+      "MF5"
+     ],
+     "source": "models/nnUNet_raw/Dataset506_BFmask5/imagesTr (recomputed)"
+    }
+   ],
+   "n_rounds": 5,
+   "validation": {
+    "dataset": "Dataset506_BFmask5",
+    "fold": 0,
+    "n_val": 1,
+    "dice_mean": 0.9912362648230365,
+    "iou_mean": 0.9826248012862473,
+    "per_case": {
+     "BFval": 0.9912362648230365
+    }
+   },
+   "first_brains": 1,
+   "last_brains": 12
+  },
+  "tubes3d": {
+   "task": "the drilled marker tubes in the masked color brain",
+   "input": "masked RGB brain, 0.32 x 0.32 x 0.40 mm",
+   "rounds": [
+    {
+     "round": 1,
+     "dataset": "holes1",
+     "brains": 1,
+     "date": "2026-08-14",
+     "added": [
+      "MF278"
+     ],
+     "source": "project log 13-14 Aug (MF278 painted by hand)"
+    },
+    {
+     "round": 2,
+     "dataset": "Dataset507_holes2",
+     "brains": 4,
+     "date": "2026-08-14",
+     "cases": [
+      "H243",
+      "H244",
+      "H247",
+      "H278",
+      "H278v"
+     ],
+     "brain_names": [
+      "MM1",
+      "MM11",
+      "MM12",
+      "MF5"
+     ],
+     "source": "imagesTr (recomputed)"
+    },
+    {
+     "round": 3,
+     "dataset": "Dataset508_holes3",
+     "brains": 16,
+     "date": "2026-08-19",
+     "cases": [
+      "H243",
+      "H244",
+      "H247",
+      "H248",
+      "H249",
+      "H250",
+      "H251",
+      "H252",
+      "H253",
+      "H254",
+      "H256",
+      "H257",
+      "H263",
+      "H273",
+      "H278",
+      "H282"
+     ],
+     "brain_names": [
+      "MM1",
+      "MM11",
+      "MM12",
+      "MM13",
+      "MM4",
+      "MM5",
+      "MM6",
+      "MM2",
+      "MM7",
+      "MM8",
+      "MM3",
+      "MM9",
+      "MM14",
+      "MM15",
+      "MF5",
+      "MF7"
+     ],
+     "source": "imagesTr (recomputed)"
+    }
+   ],
+   "n_rounds": 3,
+   "validation": {
+    "dataset": "Dataset508_holes3",
+    "fold": 0,
+    "n_val": 4,
+    "dice_mean": 0.7101354716652717,
+    "iou_mean": 0.5515256602576012,
+    "per_case": {
+     "H243": 0.7600870584295999,
+     "H252": 0.6703170762765822,
+     "H253": 0.7044082469529559,
+     "H257": 0.7057295050019489
+    }
+   },
+   "first_brains": 1,
+   "last_brains": 16
+  },
+  "loop": "each round's network segmented every brain; the predictions of the brains added next were corrected by hand and joined the training set; the final masks of every brain were checked and corrected by hand where needed (masks_of_record)"
+ }
+}

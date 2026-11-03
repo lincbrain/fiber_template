@@ -1,0 +1,164 @@
+# Histology -> blockface registration (paper Methods, "Histology registration and label propagation").
+# Read by linc/histology/{match,pieces,register}.py and cli/linc-histology. Every value is the one the products of record used
+# (the analysis project's "final arm": code/histo.py, code/register.py, labels/seg_from_regions.py, labels/histo_masks_par.py,
+# labels/tirl_worker.py, labels/histo_rgb.py and code/tirl/tirlparam_histo2bf.yml).
+
+# --- inputs (Methods, "Histology registration and label propagation": sections and the match table) ---
+section_glob: "*nDF.jp2"          # the histology sections of one series inside the histology source folder
+section_regex: "_s(\\d+)"         # the section number inside a section file name (the match table is keyed by it)
+match_table_skip_header: 1        # the match table's first line is a header
+match_table_min_fields: 10        # rows: lower, upper, then (multiplier, adder) for whole, left, right, cerebellum
+match_table_separators: "[,;.:]+" # field separators accepted by the parser
+pieces:                           # piece suffix of a matched photo -> (piece class, file tag, match-table column)
+  whole: {suffix: "",       cls: 0, tag: "0000", column: 0}
+  left:  {suffix: "_left",  cls: 1, tag: "0001", column: 1}
+  right: {suffix: "_right", cls: 2, tag: "0002", column: 2}
+  cere:  {suffix: "_cere",  cls: 3, tag: "0003", column: 3}
+store_level: 0                    # matched photographs are cut from the blockface store's full-resolution level
+whole_from_table_default: "no_corpus_callosum_range"
+                                  # a whole-section row is kept whole when the brain has no corpus-callosum range (ccs = cce = 0);
+                                  # in the analysis this was "a rule-written match table and ccs = cce = 0", identical for every brain
+
+# --- pieces from atlas regions (Methods, "Histology registration and label propagation": piece partition) ---
+regions:
+  sample_level: 1                 # regions are sampled through the world affine of the store's level 1 (the analysis' L2 nifti)
+  punch_hole_label: 4             # punch holes count as the left hemisphere, where they are drilled
+  punch_hole_as: 1
+  anatomical: {left: 1, right: 2, cerebellum: 3}
+  fill_unlabeled_tissue: nearest  # tissue outside the regions gets the label of the nearest labeled pixel
+  mask_scale: 50                  # partition PNGs store class * 50 (visible: 0, 50, 100, 150)
+  # The spacing (um) each brain's regions volume of the paper was made at: its nominal spacing before the 2 Oct calibration
+  # (paper/numbers bf_spacing_used.per_brain nominal_*). linc-histology scales the regions by calibrated / this, per axis, about the
+  # world origin (pieces.regions_scale). A brain not listed here has its regions on the current frame (factor 1).
+  made_at_spacing_um:
+    MR243: {vx: 20.0, vz: 400.0}      # MM1: section axis x 0.915
+    MR252: {vx: 20.0, vz: 50.0}       # MM2: x 0.9
+    MR256: {vx: 20.0, vz: 50.0}       # MM3: x 0.9
+    MF278: {vx: 26.0, vz: 50.0}       # MF5: in plane x 1.0385, section axis x 0.94
+    MF275: {vx: 26.0, vz: 50.0}       # MF6: in plane x 1.0385, section axis x 0.94
+    MF191: {vx: 23.75, vz: 750.0}     # MF8: x 1.0
+geometric_split:                  # two physically separate side-by-side lobes (frontal pole) are split geometrically
+  enabled: true
+  second_component_min_fraction: 0.2   # the second-largest tissue component must be >= this fraction of the largest
+  cerebellum_majority: 0.5             # components whose pixels are > this fraction cerebellum are left alone
+
+# --- histology tissue masks (Methods, "Histology registration and label propagation": tissue masks) ---
+masks:
+  jp2_rlevel: 6                   # JPEG 2000 resolution level read (or the coarsest level when the file has fewer)
+  band: 1                         # green band
+  pad_px: 20                      # zero border added before thresholding
+  enhance_std_threshold: 18       # contrast factor 1.2 when the band's standard deviation is below this, else 1.0
+  enhance_low_contrast: 1.2
+  enhance_default: 1.0
+  enhance_offset: 140             # added to every nonzero pixel after the contrast stretch (then Otsu)
+  two_pieces_min_ratio: 0.4       # a second contour longer than this fraction of the first makes a two-piece section
+  dilate_kernel: 3                # one 3 x 3 dilation of each piece mask
+  dilate_iterations: 1
+
+# --- moving and fixed images (Methods, "Histology registration and label propagation": registration inputs) ---
+moving:
+  jp2_rlevel: 6                   # same level as the masks
+  band: 2                         # blue band (what TIRL registers)
+  border_margin_px: 2             # tissue bounding boxes keep a 2 px margin
+  grow: 1.2                       # the histology box grows by 1.2x while it fits inside the blockface piece's box ...
+  shrink: 0.9                     # ... then shrinks by 0.9x until it fits
+fixed:
+  contrast: 1.6                   # blockface piece contrast boost, then grayscale
+
+# --- TIRL (Methods, "Histology registration and label propagation": per-piece 2D registration) ---
+tirl:
+  executable: tirl                # found on PATH (TIRL 3.6.2 environment)
+  script: linc.h2b                # tirl linc.h2b --config <piece>/tirlparam.yml --verbose, run as `tirl <its path>` (below)
+  script_module: tirlscripts.mgh.linc.histology_to_block   # the module linc.h2b names; its path needs no `tirl register`
+  version: "3.6.2"                # checked before running (import tirl; tirl.__version__ in the executable's interpreter)
+  also_accepted: ["3.6.3"]        # the source env/tirl.yml builds: code-identical to 3.6.2 but the version strings (its header)
+  resolution_mm: 0.034            # pixel size given to both images (moving and fixed share one pixel grid)
+  threads: 12                     # OMP/MKL/OpenBLAS/NumExpr threads per piece in the run of record
+  done_file: fixed4_nonlinear.timg   # a piece with this file is complete (resume rule)
+  # The TIRL configuration of record (code/tirl/tirlparam_histo2bf.yml, md5 bff132fa455caf2cea1c2804f1c6ec81). Per piece,
+  # histology.file / block.file, both resolutions, general.outputdir / logfile / paramlogfile and general.system are set.
+  config:
+    header:
+      author: Istvan N Huszar
+      title: LINC Microscopy to blockface image registration script
+      description: Adapted for the LINC Project at the request of Professor Anastasia Yendiki.
+    general:
+      system: linux
+      direction: b2h
+      stages: [rotation, rigid, affine, nonlinear]
+      isotropic: true
+      outputdir: null
+      loglevel: debug
+      warnings: false
+      verbose: true
+      name: histology_to_block
+      logfile: null
+      paramlogfile: null
+    histology:
+      file: null
+      pages: [0]
+      resolution: null
+      dtype: u1
+      storage: mem
+      mask: {file: null, automask: {thr: 0, uthr: 1}, function: null, normalise: true}
+      preview: false
+      export: true
+      snapshot: true
+    block:
+      file: null
+      resolution: null
+      dtype: u1
+      storage: mem
+      mask: {file: null, automask: {thr: 0, uthr: 1}, function: null, normalise: true}
+      preview: false
+      export: false
+      snapshot: false
+    preprocessing:
+      block: []
+      histology: []
+    regparams:
+      init:
+        rotation: {mode: deg, x0: 0.0, lb: -180, ub: 180}
+        scale: {x0: 1.0, lb: 0.7, ub: 1.3}
+        translation: {x0: [0.0, 0.0], lb: [-5.0, -5.0], ub: [5.0, 5.0]}
+        affine:
+          x0: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
+          lb: [0.95, -0.2, -1.0, -0.2, 0.95, -1.0]
+          ub: [1.05, 0.2, 1.0, 0.2, 1.05, 1.0]
+        nonlinear: {x0: 0.0, lb: null, ub: null}
+      rotsearch:                  # stage 1: coarse rotation search (5 deg steps at 1/4 scale), then BOBYQA
+        scale: 0.25
+        coarse: 5
+        opt_step: 0.5
+        xtol_abs: [0.001, 0.001, 0.001, 0.001]
+        xtol_rel: 0.01
+        visualise: false
+      rigid:                      # stage 2: rotation, isotropic scale, translation
+        scaling: [16, 8, 4, 2]
+        smoothing: [0, 0, 0, 0]
+        opt_step: 0.1
+        xtol_abs: [0.001, 0.001, 0.001, 0.001]
+        xtol_rel: 0.01
+        visualise: false
+      affine:                     # stage 3: 2D affine
+        scaling: [8, 4, 2]
+        smoothing: [0, 0, 0]
+        opt_step: 0.1
+        xtol_abs: [0.001, 0.001, 0.001, 0.001, 0.001, 0.001]
+        xtol_rel: 0.01
+        visualise: false
+      nonlinear:                  # stage 4: dense displacement field
+        sigma: 1
+        truncate: 1.5
+        regweight: 0.3
+        scaling: [16, 8, 4, 2, 1]
+        smoothing: [0, 0, 0, 0, 0]
+        xtol_abs: 0.1
+        xtol_rel: 0.01
+        maxiter: [50, 50, 50, 25, 25]
+        visualise: false
+
+# --- registered RGB (Methods, "Histology registration and label propagation": registered sections) ---
+rgb:
+  outside_value: 0                # outside the moving image's domain (the grayscale TIRL snapshot uses 255 for it)
+  domain_marker: 7                # constant carried with nearest interpolation to mark the moving domain

@@ -1,0 +1,123 @@
+diff -ruN a/nnunetv2/imageio/natural_image_reader_writer.py b/nnunetv2/imageio/natural_image_reader_writer.py
+--- a/nnunetv2/imageio/natural_image_reader_writer.py
++++ b/nnunetv2/imageio/natural_image_reader_writer.py
+@@ -56,6 +56,8 @@
+             print('Image files:')
+             print(image_fnames)
+             raise RuntimeError()
++        
++        images = [np.array(img).astype(np.float32) for img in images]
+         return np.vstack(images, dtype=np.float32, casting='unsafe'), {'spacing': (999, 1, 1)}
+ 
+     def read_seg(self, seg_fname: str) -> Tuple[np.ndarray, dict]:
+diff -ruN a/nnunetv2/preprocessing/cropping/cropping.py b/nnunetv2/preprocessing/cropping/cropping.py
+--- a/nnunetv2/preprocessing/cropping/cropping.py
++++ b/nnunetv2/preprocessing/cropping/cropping.py
+@@ -2,7 +2,8 @@
+ from scipy.ndimage import binary_fill_holes
+ 
+ # Hello! crop_to_nonzero is the function you are looking for. Ignore the rest.
+-from acvl_utils.cropping_and_padding.bounding_boxes import get_bbox_from_mask, crop_to_bbox, bounding_box_to_slice
++# from acvl_utils.cropping_and_padding.bounding_boxes import get_bbox_from_mask, crop_to_bbox, bounding_box_to_slice
++from acvl_utils.cropping_and_padding.bounding_boxes import get_bbox_from_mask, bounding_box_to_slice
+ 
+ 
+ def create_nonzero_mask(data):
+diff -ruN a/nnunetv2/training/nnUNetTrainer/nnUNetTrainer.py b/nnunetv2/training/nnUNetTrainer/nnUNetTrainer.py
+--- a/nnunetv2/training/nnUNetTrainer/nnUNetTrainer.py
++++ b/nnunetv2/training/nnUNetTrainer/nnUNetTrainer.py
+@@ -679,6 +679,7 @@
+                                         sampling_probabilities=None, pad_sides=None, transforms=val_transforms)
+ 
+         allowed_num_processes = get_allowed_n_proc_DA()
++        allowed_num_processes = 0    
+         if allowed_num_processes == 0:
+             mt_gen_train = SingleThreadedAugmenter(dl_tr, None)
+             mt_gen_val = SingleThreadedAugmenter(dl_val, None)
+diff -ruN a/nnunetv2/training/nnUNetTrainer/variants/data_augmentation/nnUNetTrainerDA5_shortsched.py b/nnunetv2/training/nnUNetTrainer/variants/data_augmentation/nnUNetTrainerDA5_shortsched.py
+--- a/nnunetv2/training/nnUNetTrainer/variants/data_augmentation/nnUNetTrainerDA5_shortsched.py
++++ b/nnunetv2/training/nnUNetTrainer/variants/data_augmentation/nnUNetTrainerDA5_shortsched.py
+@@ -0,0 +1,38 @@
++"""DA5 augmentation on a shorter, fully-annealed schedule.
++
++nnU-Net ships heavy augmentation (nnUNetTrainerDA5) and it ships short schedules
++(nnUNetTrainer_500epochs and friends), but never the two together: every epoch variant subclasses
++the PLAIN trainer, so picking one silently drops back to default augmentation.
++
++This matters when there is a deadline. nnU-Net's learning rate follows a polynomial decay over
++`num_epochs`, so simply killing a 1000-epoch run early leaves the weights at a LR that was still
++mid-schedule -- the model never anneals. Declaring the shorter budget up front lets the schedule
++complete, which is a strictly better model than the same wall-clock spent on a truncated long run.
++
++Additive only: new file, new class names, nothing existing is touched. Remove the file to revert.
++Source of record: LINC_template/code/mrimask/trainers/ -- install.sh copies it into the env.
++"""
++import torch
++
++from nnunetv2.training.nnUNetTrainer.variants.data_augmentation.nnUNetTrainerDA5 import nnUNetTrainerDA5
++
++
++class nnUNetTrainerDA5_600epochs(nnUNetTrainerDA5):
++    def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict,
++                 unpack_dataset: bool = True, device: torch.device = torch.device('cuda')):
++        super().__init__(plans, configuration, fold, dataset_json, unpack_dataset, device)
++        self.num_epochs = 600
++
++
++class nnUNetTrainerDA5_400epochs(nnUNetTrainerDA5):
++    def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict,
++                 unpack_dataset: bool = True, device: torch.device = torch.device('cuda')):
++        super().__init__(plans, configuration, fold, dataset_json, unpack_dataset, device)
++        self.num_epochs = 400
++
++
++class nnUNetTrainerDA5_250epochs(nnUNetTrainerDA5):
++    def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict,
++                 unpack_dataset: bool = True, device: torch.device = torch.device('cuda')):
++        super().__init__(plans, configuration, fold, dataset_json, unpack_dataset, device)
++        self.num_epochs = 250
+diff -ruN a/nnunetv2/training/nnUNetTrainer/variants/training_length/nnUNetTrainer_120epochs.py b/nnunetv2/training/nnUNetTrainer/variants/training_length/nnUNetTrainer_120epochs.py
+--- a/nnunetv2/training/nnUNetTrainer/variants/training_length/nnUNetTrainer_120epochs.py
++++ b/nnunetv2/training/nnUNetTrainer/variants/training_length/nnUNetTrainer_120epochs.py
+@@ -0,0 +1,11 @@
++import torch
++from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
++
++
++class nnUNetTrainer_120epochs(nnUNetTrainer):
++    # Blockface brain-mask iteration-3 overnight run (4 curated samples), sized so the poly-LR schedule
++    # fully anneals within the user's 8-10h window. Added 2026-08-12; safe to remove.
++    def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, unpack_dataset: bool = True,
++                 device: torch.device = torch.device('cuda')):
++        super().__init__(plans, configuration, fold, dataset_json, unpack_dataset, device)
++        self.num_epochs = 120
+diff -ruN a/nnunetv2/training/nnUNetTrainer/variants/training_length/nnUNetTrainer_150epochs.py b/nnunetv2/training/nnUNetTrainer/variants/training_length/nnUNetTrainer_150epochs.py
+--- a/nnunetv2/training/nnUNetTrainer/variants/training_length/nnUNetTrainer_150epochs.py
++++ b/nnunetv2/training/nnUNetTrainer/variants/training_length/nnUNetTrainer_150epochs.py
+@@ -0,0 +1,11 @@
++import torch
++from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
++
++
++class nnUNetTrainer_150epochs(nnUNetTrainer):
++    # Custom epoch count for the blockface brain-mask iteration-2 overnight run (sized so the poly-LR
++    # schedule fully anneals within the available time on this GPU). Added 2026-08-10; safe to remove.
++    def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, unpack_dataset: bool = True,
++                 device: torch.device = torch.device('cuda')):
++        super().__init__(plans, configuration, fold, dataset_json, unpack_dataset, device)
++        self.num_epochs = 150
+diff -ruN a/nnunetv2/training/nnUNetTrainer/variants/training_length/nnUNetTrainer_210epochs.py b/nnunetv2/training/nnUNetTrainer/variants/training_length/nnUNetTrainer_210epochs.py
+--- a/nnunetv2/training/nnUNetTrainer/variants/training_length/nnUNetTrainer_210epochs.py
++++ b/nnunetv2/training/nnUNetTrainer/variants/training_length/nnUNetTrainer_210epochs.py
+@@ -0,0 +1,11 @@
++import torch
++from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
++
++
++class nnUNetTrainer_210epochs(nnUNetTrainer):
++    # Blockface brain-mask iteration-4 (8 curated samples), longer run within the user's 12-17h window.
++    # Added 2026-08-12; safe to remove.
++    def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, unpack_dataset: bool = True,
++                 device: torch.device = torch.device('cuda')):
++        super().__init__(plans, configuration, fold, dataset_json, unpack_dataset, device)
++        self.num_epochs = 210

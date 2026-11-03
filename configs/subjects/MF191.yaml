@@ -1,0 +1,51 @@
+# MF191: the per-brain inputs of its blockface reconstruction, as used for the paper (from the analysis project's
+# code/config.py + code/macaque_datasets.xlsx). Hand inputs: spacing (vx, vz um), camera jumps, missing sections and the
+# caudal cutoff (see linc/blockface/subject.py). `raw` is relative to $LINC_RAW.
+subject: MF191
+raw: blockface_curated/MF191
+raw_glob: '*.JPG'
+raw_regex: DSC_(\d+)\.JPG
+idx_range: [4, 80]
+reduce: mean
+rotate180: false
+vx: 23.75
+vz: 750.0
+jumps: []
+missing: []
+histo_vx: 0.0
+histo_vz: 0.0
+ccs: 0
+cce: 0
+mri: ''
+stack_pad: 560
+# jump_mode: how the listed camera jumps were corrected (affine: TIRL rotation -> rigid -> affine per pair; the release implements
+# this mode). MF8 (MF191) lists no jumps: its photographs were aligned to an external series (linc/blockface/series.py).
+jump_mode: translation
+# reconstruction_spacing_um: the pixel size and section step the volume was REBUILT at (its pixels depend on them, e.g. the
+# intensity smoothing width in sections); vx/vz above are the calibrated spacing written into the headers afterwards by a
+# header-only rescaling about the world origin (linc/blockface/spacing.py; pixels unchanged). Equal for a new brain.
+# curation_f: native sections per curated (0.40 mm) slice of the hand-edit grid, pinned at the reconstruction spacing.
+reconstruction_spacing_um: {vx: 23.75, vz: 600}
+curation_f: 1
+# series_alignment: this brain's photographs were aligned to its external, already aligned series (a rescue step; the fit
+# needed that series and its own mask network, and is not part of the release). linc/blockface/series.py replays the recorded
+# per-section transforms (align: the record, relative to sub-<ID>/blockface/) onto the frame of frame_shape_px (rows, cols).
+series_alignment:
+  align: wvig/align.json
+  frame_shape_px:
+  - 1992
+  - 2304
+# masks_of_record: the masks this brain's reconstruction of record used, and which of them were corrected by hand (paths
+# relative to sub-<ID>/blockface/). A hand-edited curated file wins over the 3D models' outputs in linc-reconstruct.
+masks_of_record:
+  photo_masks_2d:
+    folder: 01_final_prealign
+    hand_edited: true
+    note: the 2D model's output with 11 sections corrected by hand, on the original photographs; 01_brainmask/01_final holds
+      them warped with the photographs into the external series' frame
+  brain_mask_3d:
+    file: curated/MF191_mask_edited.nii.gz
+    hand_edited: true
+  tubes_3d:
+    file: curated/MF191_holes_edited.nii.gz
+    hand_edited: true

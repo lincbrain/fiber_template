@@ -1,0 +1,37 @@
+{
+ "data": {
+  "method": [
+   "terminals; the single-fiber \"Fibers\" class left out), per case, from labels/push_tracer/<S>/push_tracer_<S>.json (per piece and class:",
+   "pixels on the blockface at L2). A section counts when any of its registered pieces carries >= 1 L2 pixel of a shown class. Also the",
+   "same count with Fibers, and with every class drawn on the section (px_section > 0) whether or not it survived the registration.",
+   "-> paper/numbers/tracer_sections_r054.json"
+  ],
+  "cases": {
+   "MR243": {
+    "shown_classes": 36,
+    "with_fibers": 36,
+    "drawn_shown_classes": 36
+   },
+   "MR252": {
+    "shown_classes": 27,
+    "with_fibers": 27,
+    "drawn_shown_classes": 27
+   },
+   "MR256": {
+    "shown_classes": 36,
+    "with_fibers": 36,
+    "drawn_shown_classes": 36
+   },
+   "MF191": {
+    "shown_classes": 30,
+    "with_fibers": 32,
+    "drawn_shown_classes": 30
+   }
+  },
+  "total": {
+   "shown_classes": 129,
+   "with_fibers": 131,
+   "drawn_shown_classes": 129
+  }
+ }
+}

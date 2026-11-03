@@ -1,0 +1,308 @@
+{
+ "file": "template_construction_v1/run_template_construction.py",
+ "commit": "f4907f4",
+ "source_md5": "d075950cc3dee21b4104594a377d831c",
+ "result_md5": "f70f7da56b9cafceafebaa540fbd9328",
+ "n_edits": 23,
+ "edits": [
+  {
+   "start": 12,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "# LINC COPY: run_template_construction.py + the --rotwarp patch (tensor warping); selected by run_template.sh when <run>/USE_ROTWARP exists\n"
+   ]
+  },
+  {
+   "start": 169,
+   "n_old": 1,
+   "old_sha256": "63ad8e85349fe11819885976ef96cbe3f6f65c288b290713acadbdf9a9280388",
+   "new": [
+    "\n",
+    "    # LOCAL CHANGE (fiber_template): check for the bias fields HERE, at run time, not at script-generation\n",
+    "    # time in the caller. The bias fields are produced by the MMORF jobs that this averaging job\n",
+    "    # depends on, so whether they exist when the caller builds the command depends entirely on the\n",
+    "    # fsl_sub backend: the shell plugin runs jobs synchronously (they exist), SGE/Slurm submit\n",
+    "    # asynchronously (they do not). A generation-time check therefore silently disables bias\n",
+    "    # correction on a cluster while appearing to work locally. Run time is always correct.\n",
+    "    if biasfield_paths is not None:\n",
+    "        missing = [q for q in biasfield_paths if not os.path.exists(q)]\n",
+    "        if missing:\n",
+    "            print(f'WARNING: {len(missing)}/{len(biasfield_paths)} bias fields do not exist - '\n",
+    "                  f'averaging WITHOUT bias correction. First missing: {missing[0]}')\n",
+    "            biasfield_paths = None\n",
+    "\n"
+   ]
+  },
+  {
+   "start": 245,
+   "n_old": 1,
+   "old_sha256": "8870527fcd5ab61ec6c2b7a98d33b805ed7dc6cbdbb08b703db111ff581f8ea9",
+   "new": [
+    "# LOCAL CHANGE (fiber_template): threads defaults to None, not 1. fsl_sub maps threads -> \n",
+    "# FSLSUB_PARALLEL, and the shell plugin's _get_cores() clamps the multiprocessing Pool to\n",
+    "# that value when it is > 0. threads=1 therefore made EVERY array job -- MMORF and every\n",
+    "# CPU stage -- run strictly serially on a 48-core machine, and made --batch/array_limit a\n",
+    "# no-op, because parallel_limit can only LOWER available_cores, never raise it from 1.\n",
+    "# Measured: 8 x \"sleep 10\" as an array task took 80.1 s with threads=1. threads=None sets\n",
+    "# FSLSUB_PARALLEL=0, which _get_cores() ignores, restoring Pool(n_cores); array_limit then\n",
+    "# does what its help text says and caps concurrent MMORF tasks per step.\n",
+    "def submitJob(command, name, log_dir, queue, wait_for=None, array_task=False, array_limit=None, coprocessor=None, coprocessor_class=None, coprocessor_multi=\"1\", threads=None, export_var=None):\n"
+   ]
+  },
+  {
+   "start": 270,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "                   array_limit=array_limit,   # LOCAL CHANGE (fiber_template): cap concurrent array tasks\n",
+    "\n"
+   ]
+  },
+  {
+   "start": 511,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "        'resume_from': [('-resume', '--resume_from'), '<STEP[:IT]>'],\n"
+   ]
+  },
+  {
+   "start": 514,
+   "n_old": 1,
+   "old_sha256": "14b856519f4bba5cd6a958c4794d3d958ef2447cd21275792caad553989575d9",
+   "new": [
+    "        'fslsub_conf': [('-fslsub_conf','--fslsub_conf'), '<string>'],\n",
+    "        # LOCAL CHANGES (fiber_template) -- see LOCAL_CHANGES.md\n",
+    "        'batch': [('-b', '--batch'), '<int> [<int> ...]'],\n",
+    "        'quant_scalar_mods': [('-qsc', '--quant_scalar_mods'), '<int> [<int> ...]']\n"
+   ]
+  },
+  {
+   "start": 517,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "        'resume_from': 'LOCAL (fiber_template): restart an interrupted nonlinear stage at STEP[:IT], skipping every earlier (step, iteration). Every iteration boundary is already a complete checkpoint: MMORF has no warp input (--warp_out only), so each iteration re-registers every subject from scratch against the current template, and the ONLY state carried forward is the template written by the previous iteration. Use with -aff False -nln True.',\n"
+   ]
+  },
+  {
+   "start": 520,
+   "n_old": 1,
+   "old_sha256": "8c34614af5cf4eab94555e727a831364f137df34d28afd1f91cba465cbc7aa86",
+   "new": [
+    "        'fslsub_conf': 'Path that will be assigned to the FSLSUB_CONF environment variable.',\n",
+    "        'batch': 'Max number of concurrent MMORF tasks per resolution step (fsl_sub array_limit). '\n",
+    "                 'One int for all steps, or one per step. Default: unlimited. Controls GPU memory '\n",
+    "                 'use only - it does not change any result.',\n",
+    "        'quant_scalar_mods': '1-based indices of scalar modalities that are QUANTITATIVE. Their '\n",
+    "                             'voxel values are physical quantities, so they are averaged without '\n",
+    "                             'intensity normalisation and without bias-field division.'\n"
+   ]
+  },
+  {
+   "start": 530,
+   "n_old": 1,
+   "old_sha256": "f69c2a0ee1239e78fc4706d7315df5f2cb1199a57fe7dbd47fca4a6393b3a7e6",
+   "new": [
+    "        if key in ('batch', 'quant_scalar_mods'):        # LOCAL CHANGE (fiber_template): typed int lists\n",
+    "            parser.add_argument(*flags_optional[key][0], help=help_optional[key],\n",
+    "                                metavar=flags_optional[key][1], required=False,\n",
+    "                                nargs='+', type=int)\n",
+    "        else:\n",
+    "            parser.add_argument(*flags_optional[key][0], help=help_optional[key], metavar=flags_optional[key][1], required=False, nargs='*')\n"
+   ]
+  },
+  {
+   "start": 555,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "\n",
+    "        # LOCAL CHANGE (fiber_template): resume an interrupted run. Nothing needs to be checkpointed --\n",
+    "        # the per-iteration templates on disk ARE the checkpoints, because MMORF takes no warp\n",
+    "        # input and so each iteration starts from the template alone. This only skips the\n",
+    "        # (step, iteration) pairs already done. Safe with the fsl_sub shell backend, which runs\n",
+    "        # each job synchronously, so no cross-iteration job dependency is broken by skipping.\n",
+    "        resume_at = None\n",
+    "        if getattr(args, 'resume_from', None):\n",
+    "            spec = args.resume_from[0] if isinstance(args.resume_from, list) else args.resume_from\n",
+    "            parts = str(spec).split(':')\n",
+    "            resume_at = (int(parts[0]), int(parts[1]) if len(parts) > 1 else 1)\n",
+    "            print('RESUMING at step {} iteration {} -- earlier iterations will be skipped'\n",
+    "                  .format(*resume_at))\n",
+    "\n",
+    "        # LOCAL CHANGE (fiber_template): per-step cap on concurrent MMORF array tasks. fsl_sub's shell\n",
+    "        # plugin maps array_limit -> parallel_limit -> multiprocessing Pool size, so this bounds\n",
+    "        # how many MMORF processes share the GPU. It changes scheduling only, never a result.\n",
+    "        n_steps = int(args.n_resolutions[0])\n",
+    "        if args.batch is None:\n",
+    "            gpu_batch_sizes = [None] * n_steps\n",
+    "        elif len(args.batch) == 1:\n",
+    "            gpu_batch_sizes = list(args.batch) * n_steps\n",
+    "        elif len(args.batch) == n_steps:\n",
+    "            gpu_batch_sizes = list(args.batch)\n",
+    "        else:\n",
+    "            sys.exit(f\"--batch takes 1 or {n_steps} integers (one per resolution step), \"\n",
+    "                     f\"got {len(args.batch)}\")\n",
+    "        if any(b is not None and b < 1 for b in gpu_batch_sizes):\n",
+    "            sys.exit('--batch values must be >= 1')\n"
+   ]
+  },
+  {
+   "start": 575,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "\n",
+    "    # LOCAL CHANGE (fiber_template): quantitative scalar modalities. frac1/frac2/std1/std2 are physical\n",
+    "    # quantities, not arbitrary-units anatomical contrasts: dividing them by a bias field or\n",
+    "    # rescaling them with `fslmaths -inm 1000` destroys the very thing they measure. Tags are\n",
+    "    # 1-based to match scalar_mod_tags = ['scalar_mod_{:02}'.format(i+1) ...].\n",
+    "    quant_scalar_idx = sorted(set(args.quant_scalar_mods or []))\n",
+    "    if quant_scalar_idx:\n",
+    "        n_scalar = len(args.input_scalar)\n",
+    "        bad = [i for i in quant_scalar_idx if i < 1 or i > n_scalar]\n",
+    "        if bad:\n",
+    "            sys.exit(f'--quant_scalar_mods indices {bad} are out of range: there are '\n",
+    "                     f'{n_scalar} scalar modalities, so valid indices are 1..{n_scalar}')\n",
+    "    quant_scalar_tags = {'scalar_mod_{:02}'.format(i) for i in quant_scalar_idx}\n",
+    "    if quant_scalar_tags:\n",
+    "        print('Quantitative scalar modalities (no bias division, no intensity normalisation): '\n",
+    "              + ', '.join(sorted(quant_scalar_tags)))\n"
+   ]
+  },
+  {
+   "start": 604,
+   "n_old": 1,
+   "old_sha256": "1700a3529bdc7bda6b6d5a38d177e609c88526247ae8a12c8773b6b8437e6591",
+   "new": [
+    "            tree = tree.update(**{tensor_mod_tags[i]+'_dir': mod})   # UPSTREAM BUG: was [0]\n"
+   ]
+  },
+  {
+   "start": 845,
+   "n_old": 1,
+   "old_sha256": "e95b286fee3b573b50b5a53051bccb6e7b04f78e7cda60cc148d44e9172a3441",
+   "new": [
+    "                    norm_flag = (mod not in quant_scalar_tags)   # LOCAL CHANGE (fiber_template)\n",
+    "                    cmd += func_to_cmd(averageImages, args=(img_paths, aff_template_path, None, 'mean', norm_flag), tmp_dir=script_dir, \n"
+   ]
+  },
+  {
+   "start": 854,
+   "n_old": 1,
+   "old_sha256": "e95b286fee3b573b50b5a53051bccb6e7b04f78e7cda60cc148d44e9172a3441",
+   "new": [
+    "                    norm_flag = (mod not in quant_scalar_tags)   # LOCAL CHANGE (fiber_template)\n",
+    "                    cmd += func_to_cmd(averageImages, args=(img_paths, aff_template_path, None, 'mean', norm_flag), tmp_dir=script_dir, \n"
+   ]
+  },
+  {
+   "start": 899,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "            if gpu_batch_sizes[s] is not None:      # LOCAL CHANGE (fiber_template)\n",
+    "                print(f'Step {step}: limiting concurrent MMORF tasks to {gpu_batch_sizes[s]}')\n"
+   ]
+  },
+  {
+   "start": 901,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "                if resume_at is not None and (step, it) < resume_at:\n",
+    "                    it_total += 1\n",
+    "                    print('\\nStep ID: {}  Iteration ID: {}  -- SKIPPED (resume)'.format(step, it))\n",
+    "                    continue\n"
+   ]
+  },
+  {
+   "start": 1057,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "                        # LOCAL CHANGE (fiber_template): LINC_SKIP_DONE_MMORF=1 with -resume S:I skips, AT THE RESUME POINT\n",
+    "                        # ONLY, the MMORF tasks whose outputs (warp, jacobian, bias: --bias_out is a PREFIX, MMORF\n",
+    "                        # writes <prefix>_<k>.nii.gz) already exist from the interrupted\n",
+    "                        # run of that same (step, iteration): same config, same reference template. The task line\n",
+    "                        # becomes a no-op so array numbering is unchanged. Off by default. See LOCAL_CHANGES.md 5.\n",
+    "                        done_outs = [mmorf_args_mov['warp_out'], mmorf_args_mov['jac_det_out'], mmorf_args_mov['bias_out']]\n",
+    "                        if (os.environ.get('LINC_SKIP_DONE_MMORF') == '1' and resume_at is not None\n",
+    "                                and (step, it) == resume_at\n",
+    "                                and all(os.path.exists(p) or __import__('glob').glob(p + '_*.nii.gz') for p in done_outs)):\n",
+    "                            print('  {}: outputs present from the interrupted run -- MMORF task skipped'.format(id))\n",
+    "                            mmorf_script = 'true\\n'\n"
+   ]
+  },
+  {
+   "start": 1072,
+   "n_old": 1,
+   "old_sha256": "293989ba440677bdb4b8e9acef0def91f25b5fc806dd315acabec547cc4e3d75",
+   "new": [
+    "                                        array_task=True, array_limit=gpu_batch_sizes[s], coprocessor='cuda', coprocessor_class=None, coprocessor_multi=\"1\", threads=None, export_var=[export_var_str['SINGULARITY_BIND']])\n"
+   ]
+  },
+  {
+   "start": 1178,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "                            # LINC PATCH (fiber_template, 2026-09-30, tensor reorientation): FSL vecreg -w applies\n",
+    "                            # the field's rotation x the REFERENCE voxel size in mm (25 % on the 0.25 mm grid; records\n",
+    "                            # vecreg_warp_rotation_scaling.json and vecreg_rotation_fraction_mri.json). --rotwarp with the\n",
+    "                            # same relative field divided by the voxel size applies the full rotation. vecreg stays the only tensor warper.\n",
+    "                            _fld = tree.get('mmorf_warp_resampled_unbiased_full_mod')\n",
+    "                            _rot = _fld.replace('.nii.gz', '_rotwarp.nii.gz')\n",
+    "                            _vx = float(nib.load(standard_space).header.get_zooms()[0])\n",
+    "                            cmd += '; ' + 'fslmaths ' + _fld + ' -div ' + repr(_vx) + ' ' + _rot\n"
+   ]
+  },
+  {
+   "start": 1181,
+   "n_old": 1,
+   "old_sha256": "0a6ff9fde9850585bca76c9f6a12152e66cea1ae9056726016dd26d9783920ca",
+   "new": [
+    "                                      ' -w ' + _fld + \\\n",
+    "                                      ' --rotwarp=' + _rot + \\\n"
+   ]
+  },
+  {
+   "start": 1183,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "                            cmd += '; ' + 'rm -f ' + _rot\n"
+   ]
+  },
+  {
+   "start": 1213,
+   "n_old": 1,
+   "old_sha256": "2f5f7e0bf0494bfde28eaba1e7060eaae2eb813dde1c64b97e236e208f684d42",
+   "new": [
+    "                            # LOCAL CHANGE (fiber_template): quantitative modalities get neither bias\n",
+    "                            # division nor intensity normalisation. The two are decoupled on\n",
+    "                            # purpose -- a missing bias field is handled at run time inside\n",
+    "                            # averageImages and must not silently switch normalisation off too.\n",
+    "                            norm_flag = (mod not in quant_scalar_tags)\n",
+    "                            bias_arg = None if (mod in quant_scalar_tags) else biasfield_paths\n",
+    "                            cmd += func_to_cmd(averageImages, args=(img_paths, template_path, bias_arg, 'mean', norm_flag), tmp_dir=script_dir, \n"
+   ]
+  },
+  {
+   "start": 1224,
+   "n_old": 1,
+   "old_sha256": "2f5f7e0bf0494bfde28eaba1e7060eaae2eb813dde1c64b97e236e208f684d42",
+   "new": [
+    "                            # LOCAL CHANGE (fiber_template): quantitative modalities get neither bias\n",
+    "                            # division nor intensity normalisation. The two are decoupled on\n",
+    "                            # purpose -- a missing bias field is handled at run time inside\n",
+    "                            # averageImages and must not silently switch normalisation off too.\n",
+    "                            norm_flag = (mod not in quant_scalar_tags)\n",
+    "                            bias_arg = None if (mod in quant_scalar_tags) else biasfield_paths\n",
+    "                            cmd += func_to_cmd(averageImages, args=(img_paths, template_path, bias_arg, 'mean', norm_flag), tmp_dir=script_dir, \n"
+   ]
+  }
+ ]
+}

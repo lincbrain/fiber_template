@@ -1,0 +1,895 @@
+{
+ "data": {
+  "method": [
+   "MR256, MR249, MR250, MR251, MR253, MR254, MR257, MR261).",
+   "  curated     data/_lcn_src/data/curated/<S>/dwi.nii.gz (the series whose volume 0 is the b0 image used): number of volumes and voxel",
+   "              size from the header.",
+   "  raw Bruker  where a raw ParaVision session survives ($LINC_RAW/mri_mm/<session>/<scan>/{method,acqp}): the",
+   "              diffusion scans with Method=daiDtiEpi: PVM_SpatResol (mm), PVM_EchoTime, PVM_RepetitionTime (ms), PVM_DwNDiffExp",
+   "              (number of diffusion experiments), and BF1 (MHz; 200.3 MHz = 4.7 T proton frequency) from acqp. Unpacked exports named",
+   "              *.daiDtiEpi.* ($LINC_RAW/macaque_mri/<S>/unpack) are listed as Bruker-method evidence without parameters.",
+   "-> paper/numbers/mm_mri_check_r054.json",
+   "    mri/env/mmorf/bin/python paper/scripts/mm_mri_check_r054.py"
+  ],
+  "brains": {
+   "MR243": {
+    "curated_n_volumes": 515,
+    "curated_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "raw_bruker_daiDtiEpi_scans": [],
+    "unpacked_daiDtiEpi_exports": [],
+    "raw_verified": false
+   },
+   "MR252": {
+    "curated_n_volumes": 515,
+    "curated_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "raw_bruker_daiDtiEpi_scans": [],
+    "unpacked_daiDtiEpi_exports": [],
+    "raw_verified": false
+   },
+   "MR256": {
+    "curated_n_volumes": 515,
+    "curated_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "raw_bruker_daiDtiEpi_scans": [
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/10/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "6",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/11/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/12/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/13/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "12",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/14/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "30",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/15/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/16/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/17/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "8",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/18/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/19/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "48",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/20/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "6",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/21/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "48",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/22/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "36",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/23/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/24/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/25/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "48",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/26/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/27/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/28/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "30",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/6/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "1",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/7/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "6",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/8/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "12",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR256_02172015.uh/9/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "8",
+      "bf1_mhz": null
+     }
+    ],
+    "unpacked_daiDtiEpi_exports": [],
+    "raw_verified": true
+   },
+   "MR249": {
+    "curated_n_volumes": 515,
+    "curated_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "raw_bruker_daiDtiEpi_scans": [],
+    "unpacked_daiDtiEpi_exports": [
+     "009.daiDtiEpi.bvals"
+    ],
+    "raw_verified": false
+   },
+   "MR250": {
+    "curated_n_volumes": 515,
+    "curated_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "raw_bruker_daiDtiEpi_scans": [],
+    "unpacked_daiDtiEpi_exports": [],
+    "raw_verified": false
+   },
+   "MR251": {
+    "curated_n_volumes": 515,
+    "curated_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "raw_bruker_daiDtiEpi_scans": [],
+    "unpacked_daiDtiEpi_exports": [],
+    "raw_verified": false
+   },
+   "MR253": {
+    "curated_n_volumes": 515,
+    "curated_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "raw_bruker_daiDtiEpi_scans": [
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/10/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "12",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/11/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "8",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/12/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "6",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/13/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/14/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/15/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "12",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/16/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "30",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/17/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/18/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/19/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "8",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/20/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/21/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "48",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/22/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "6",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/23/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "48",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/24/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "36",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/25/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/26/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/27/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "48",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/28/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/29/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/30/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "30",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/8/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "1",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR253_2014_1114/9/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "6",
+      "bf1_mhz": null
+     }
+    ],
+    "unpacked_daiDtiEpi_exports": [],
+    "raw_verified": true
+   },
+   "MR254": {
+    "curated_n_volumes": 515,
+    "curated_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "raw_bruker_daiDtiEpi_scans": [
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/10/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "6",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/11/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/12/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/13/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "12",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/14/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "30",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/15/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/16/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/17/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "8",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/18/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/19/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "48",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/20/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "6",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/21/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "48",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/22/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "36",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/23/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/24/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/25/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "48",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/26/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/27/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/28/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "30",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/6/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "1",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/7/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "6",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/8/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "12",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR254_2014_1126/9/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "8",
+      "bf1_mhz": null
+     }
+    ],
+    "unpacked_daiDtiEpi_exports": [],
+    "raw_verified": true
+   },
+   "MR257": {
+    "curated_n_volumes": 515,
+    "curated_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "raw_bruker_daiDtiEpi_scans": [
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/10/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "8",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/11/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "6",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/12/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/13/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/14/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "12",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/15/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "30",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/16/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/17/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/18/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "8",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/19/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/20/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "48",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/21/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "6",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/22/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "48",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/23/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "36",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/24/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/25/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/26/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "48",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/27/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/28/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "24",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/29/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "30",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/7/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "1",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/8/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "6",
+      "bf1_mhz": null
+     },
+     {
+      "method": "$LINC_RAW/mri_mm/MR257_02192015/9/method",
+      "spat_resol_mm": "0.7 0.7 0.7",
+      "echo_time_ms": "0.3168",
+      "rep_time_ms": "750",
+      "n_diff_exp": "12",
+      "bf1_mhz": null
+     }
+    ],
+    "unpacked_daiDtiEpi_exports": [],
+    "raw_verified": true
+   },
+   "MR261": {
+    "curated_n_volumes": 515,
+    "curated_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "raw_bruker_daiDtiEpi_scans": [],
+    "unpacked_daiDtiEpi_exports": [
+     "006.daiDtiEpi.bvals"
+    ],
+    "raw_verified": false
+   }
+  },
+  "summary": {
+   "curated_515_volumes_0p7mm": [
+    "MR243",
+    "MR252",
+    "MR256",
+    "MR249",
+    "MR250",
+    "MR251",
+    "MR253",
+    "MR254",
+    "MR257",
+    "MR261"
+   ],
+   "raw_session_read": [
+    "MR256",
+    "MR253",
+    "MR254",
+    "MR257"
+   ],
+   "unpacked_bruker_export": [
+    "MR249",
+    "MR261"
+   ]
+  }
+ }
+}

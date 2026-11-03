@@ -1,0 +1,157 @@
+{
+ "data": {
+  "measure": "distance (mm, histology frame) between the blockface tube mapped through the piece's TIRL chain and the tube hole detected in the histology at JP2 level 3 within 1 mm (labels/tube_landmarks_native.py); paired on pieces found in both arms",
+  "per_subject": {
+   "MR243": {
+    "pieces_with_bf_tube": 67,
+    "found_inpainted": 56,
+    "found_preinpaint": 55,
+    "paired": 55,
+    "inpainted": {
+     "n": 55,
+     "median_mm": 0.138,
+     "p95_mm": 0.517,
+     "mean_mm": 0.188
+    },
+    "preinpaint": {
+     "n": 55,
+     "median_mm": 0.084,
+     "p95_mm": 0.441,
+     "mean_mm": 0.124
+    },
+    "paired_diff_median_mm": -0.056,
+    "preinpaint_better": 41,
+    "preinpaint_worse": 14
+   },
+   "MR252": {
+    "pieces_with_bf_tube": 36,
+    "found_inpainted": 29,
+    "found_preinpaint": 30,
+    "paired": 29,
+    "inpainted": {
+     "n": 29,
+     "median_mm": 0.259,
+     "p95_mm": 0.589,
+     "mean_mm": 0.295
+    },
+    "preinpaint": {
+     "n": 29,
+     "median_mm": 0.128,
+     "p95_mm": 0.277,
+     "mean_mm": 0.145
+    },
+    "paired_diff_median_mm": -0.144,
+    "preinpaint_better": 20,
+    "preinpaint_worse": 9
+   },
+   "MR256": {
+    "pieces_with_bf_tube": 39,
+    "found_inpainted": 33,
+    "found_preinpaint": 33,
+    "paired": 33,
+    "inpainted": {
+     "n": 33,
+     "median_mm": 0.233,
+     "p95_mm": 0.539,
+     "mean_mm": 0.268
+    },
+    "preinpaint": {
+     "n": 33,
+     "median_mm": 0.111,
+     "p95_mm": 0.294,
+     "mean_mm": 0.131
+    },
+    "paired_diff_median_mm": -0.137,
+    "preinpaint_better": 28,
+    "preinpaint_worse": 5
+   },
+   "MF278": {
+    "pieces_with_bf_tube": 58,
+    "found_inpainted": 43,
+    "found_preinpaint": 44,
+    "paired": 42,
+    "inpainted": {
+     "n": 42,
+     "median_mm": 0.327,
+     "p95_mm": 0.746,
+     "mean_mm": 0.334
+    },
+    "preinpaint": {
+     "n": 42,
+     "median_mm": 0.189,
+     "p95_mm": 0.397,
+     "mean_mm": 0.202
+    },
+    "paired_diff_median_mm": -0.146,
+    "preinpaint_better": 36,
+    "preinpaint_worse": 6
+   },
+   "MF275": {
+    "pieces_with_bf_tube": 42,
+    "found_inpainted": 32,
+    "found_preinpaint": 35,
+    "paired": 32,
+    "inpainted": {
+     "n": 32,
+     "median_mm": 0.415,
+     "p95_mm": 0.701,
+     "mean_mm": 0.409
+    },
+    "preinpaint": {
+     "n": 32,
+     "median_mm": 0.281,
+     "p95_mm": 0.649,
+     "mean_mm": 0.302
+    },
+    "paired_diff_median_mm": -0.129,
+    "preinpaint_better": 26,
+    "preinpaint_worse": 6
+   },
+   "MF191": {
+    "pieces_with_bf_tube": 43,
+    "found_inpainted": 8,
+    "found_preinpaint": 9,
+    "paired": 8,
+    "inpainted": {
+     "n": 8,
+     "median_mm": 0.567,
+     "p95_mm": 0.738,
+     "mean_mm": 0.537
+    },
+    "preinpaint": {
+     "n": 8,
+     "median_mm": 0.593,
+     "p95_mm": 0.781,
+     "mean_mm": 0.587
+    },
+    "paired_diff_median_mm": -0.004,
+    "preinpaint_better": 4,
+    "preinpaint_worse": 4
+   }
+  },
+  "pooled": {
+   "searched_pieces_with_bf_tube": 285,
+   "found_preinpaint": 206,
+   "found_inpainted": 201,
+   "paired": 199,
+   "detection_rate_preinpaint": 0.723,
+   "denominator_rule": "searched = pieces whose blockface slice carries a tube; found = hole detected within 1 mm",
+   "inpainted": {
+    "n": 199,
+    "median_mm": 0.271,
+    "p95_mm": 0.655,
+    "mean_mm": 0.297
+   },
+   "preinpaint": {
+    "n": 199,
+    "median_mm": 0.137,
+    "p95_mm": 0.546,
+    "mean_mm": 0.192
+   },
+   "paired_diff_median_mm": -0.095,
+   "preinpaint_better": 155,
+   "preinpaint_worse": 44
+  },
+  "target_of_record": "pre-inpaint (user decision 2026-09-26, physical grounds)"
+ }
+}

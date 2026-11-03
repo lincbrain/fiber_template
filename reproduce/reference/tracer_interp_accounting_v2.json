@@ -1,0 +1,247 @@
+{
+ "data": {
+  "method": [
+   "The between-section interpolation of the tracer labels, accounted per case (paper: Results, tracer labels; Supplementary S2): the",
+   "successor of tracer_interp_accounting_r058d for the chain of record since 3 Nov 2026 (the per-hemisphere demons interpolation,",
+   "cli/linc-labels interpolate). Keys the paper reads: cases.<S>.{slice_mm, sections, labeled_sections, pairs_by_status.<status>.pairs}.",
+   "The interpolation pairs section slices PER HEMISPHERE. For the whole-section view of this record, each pair of consecutive section",
+   "slices (a, b) is \"interpolated\" when a pair covered it in at least one hemisphere, \"adjacent\" when b - a = 1 (nothing to fill) and",
+   "otherwise \"skipped: footprints differ (partial section)\" (the per-hemisphere footprint Dice < 0.8 in both hemispheres; no pair is",
+   "skipped for its gap). The per-hemisphere statuses and the pairs gained over the earlier record (interpolated now, not before) are kept",
+   "beside. labeled_sections = sections whose sheets carry a bundle, terminal or injection-site label (the single-fiber class left out).",
+   "Inputs (products_mri): `tracer_v2_bfnative`/<S>/interp_v2.json (the interpolation's own record) and <S>_{Bundles,Terminals,Injection_site}",
+   "_bfnative_L2.nii.gz (the group sheets on the blockface grid); `numbers_of_record`/tracer_interp_accounting_r058d.json (the earlier",
+   "record, for slice_mm and the comparison)."
+  ],
+  "cases": {
+   "MR243": {
+    "slice_mm": 0.366,
+    "sections": 54,
+    "labeled_sections": 35,
+    "pairs_by_status": {
+     "interpolated": {
+      "pairs": 52
+     },
+     "adjacent": {
+      "pairs": 0
+     },
+     "skipped: footprints differ (partial section)": {
+      "pairs": 1
+     }
+    },
+    "per_hemisphere": {
+     "left": {
+      "interpolated": 52,
+      "adjacent": 0,
+      "skipped: gap > 2.5 mm": 0,
+      "skipped: footprints differ (partial section)": 1
+     },
+     "right": {
+      "interpolated": 52,
+      "adjacent": 0,
+      "skipped: gap > 2.5 mm": 0,
+      "skipped: footprints differ (partial section)": 1
+     }
+    },
+    "v2_pairs": 52,
+    "slices_interpolated": 104,
+    "gained_vs_record": [
+     [
+      5,
+      8
+     ],
+     [
+      8,
+      11
+     ]
+    ],
+    "record": {
+     "sections": 54,
+     "labeled_sections": 35,
+     "pairs_by_status": {
+      "skipped: footprints differ (partial section)": 3,
+      "interpolated": 50
+     }
+    }
+   },
+   "MR252": {
+    "slice_mm": 0.045,
+    "sections": 43,
+    "labeled_sections": 27,
+    "pairs_by_status": {
+     "interpolated": {
+      "pairs": 40
+     },
+     "adjacent": {
+      "pairs": 0
+     },
+     "skipped: footprints differ (partial section)": {
+      "pairs": 2
+     }
+    },
+    "per_hemisphere": {
+     "left": {
+      "interpolated": 32,
+      "adjacent": 0,
+      "skipped: gap > 2.5 mm": 1,
+      "skipped: footprints differ (partial section)": 2
+     },
+     "right": {
+      "interpolated": 40,
+      "adjacent": 0,
+      "skipped: gap > 2.5 mm": 0,
+      "skipped: footprints differ (partial section)": 1
+     }
+    },
+    "v2_pairs": 41,
+    "slices_interpolated": 967,
+    "gained_vs_record": [
+     [
+      111,
+      135
+     ],
+     [
+      159,
+      183
+     ],
+     [
+      159,
+      207
+     ],
+     [
+      255,
+      279
+     ],
+     [
+      303,
+      327
+     ],
+     [
+      327,
+      351
+     ]
+    ],
+    "record": {
+     "sections": 43,
+     "labeled_sections": 27,
+     "pairs_by_status": {
+      "interpolated": 35,
+      "skipped: footprints differ (partial section)": 7
+     }
+    }
+   },
+   "MR256": {
+    "slice_mm": 0.045,
+    "sections": 39,
+    "labeled_sections": 36,
+    "pairs_by_status": {
+     "interpolated": {
+      "pairs": 37
+     },
+     "adjacent": {
+      "pairs": 0
+     },
+     "skipped: footprints differ (partial section)": {
+      "pairs": 1
+     }
+    },
+    "per_hemisphere": {
+     "left": {
+      "interpolated": 37,
+      "adjacent": 0,
+      "skipped: gap > 2.5 mm": 0,
+      "skipped: footprints differ (partial section)": 1
+     },
+     "right": {
+      "interpolated": 37,
+      "adjacent": 0,
+      "skipped: gap > 2.5 mm": 0,
+      "skipped: footprints differ (partial section)": 1
+     }
+    },
+    "v2_pairs": 37,
+    "slices_interpolated": 851,
+    "gained_vs_record": [],
+    "record": {
+     "sections": 39,
+     "labeled_sections": 36,
+     "pairs_by_status": {
+      "skipped: footprints differ (partial section)": 1,
+      "interpolated": 37
+     }
+    }
+   },
+   "MF191": {
+    "slice_mm": 0.75,
+    "sections": 45,
+    "labeled_sections": 33,
+    "pairs_by_status": {
+     "interpolated": {
+      "pairs": 22
+     },
+     "adjacent": {
+      "pairs": 18
+     },
+     "skipped: footprints differ (partial section)": {
+      "pairs": 4
+     }
+    },
+    "per_hemisphere": {
+     "left": {
+      "interpolated": 25,
+      "adjacent": 10,
+      "skipped: gap > 2.5 mm": 0,
+      "skipped: footprints differ (partial section)": 5
+     },
+     "right": {
+      "interpolated": 24,
+      "adjacent": 7,
+      "skipped: gap > 2.5 mm": 2,
+      "skipped: footprints differ (partial section)": 4
+     }
+    },
+    "v2_pairs": 28,
+    "slices_interpolated": 29,
+    "gained_vs_record": [
+     [
+      12,
+      15
+     ],
+     [
+      15,
+      17
+     ],
+     [
+      16,
+      18
+     ],
+     [
+      17,
+      19
+     ],
+     [
+      18,
+      20
+     ],
+     [
+      19,
+      21
+     ],
+     [
+      20,
+      22
+     ]
+    ],
+    "record": {
+     "sections": 45,
+     "labeled_sections": 33,
+     "pairs_by_status": {
+      "adjacent": 18,
+      "interpolated": 22,
+      "skipped: footprints differ (partial section)": 4
+     }
+    }
+   }
+  }
+ }
+}

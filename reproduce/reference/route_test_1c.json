@@ -1,0 +1,2887 @@
+{
+ "data": {
+  "n_rows": 16,
+  "rows": [
+   {
+    "target": "pair_0",
+    "template": "d1cs2_pair_0",
+    "subject": "MF278",
+    "role": "fold held-out",
+    "gates": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->b0-native:pass",
+      "b0-native->mri-template:pass",
+      "link pair_0: composition outline WARN, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "route_a": {
+     "tag": "route1c_pair_0_A",
+     "config": {
+      "pca_channels": 8,
+      "resolution": 0.25,
+      "engine": "upstream",
+      "loss": "cc",
+      "lr": 1.0,
+      "smooth_grad_sigma": 1.5,
+      "smooth_warp_sigma": 1.25
+     }
+    },
+    "route_b": "R1 r1v3mr + R5",
+    "eval_vox": 709745,
+    "A": {
+     "pair_ncc": 0.8444019329342625,
+     "pair_dice": 0.9986715116800328,
+     "pairwise": {
+      "MR251": {
+       "ncc": 0.8444019329342625,
+       "dice": 0.9986715116800328,
+       "eval_vox": 709712
+      }
+     },
+     "edge_mean": 0.5835310014014705,
+     "nmi": 1.1449941340080108,
+     "env_dice": 0.389940800494166,
+     "ncc_template": 0.9137460831027633
+    },
+    "B": {
+     "pair_ncc": 0.790901362335863,
+     "pair_dice": 0.9995433281489446,
+     "pairwise": {
+      "MR251": {
+       "ncc": 0.790901362335863,
+       "dice": 0.9995433281489446,
+       "eval_vox": 709712
+      }
+     },
+     "edge_mean": 0.6213612040902019,
+     "nmi": 1.1210608442647714,
+     "env_dice": 0.38826758950731927,
+     "ncc_template": 0.8826926928002855
+    }
+   },
+   {
+    "target": "pair_0",
+    "template": "d1cs2_pair_0",
+    "subject": "MR251",
+    "role": "fold held-out",
+    "gates": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->b0-native:pass",
+      "b0-native->mri-template:pass",
+      "link pair_0: composition outline WARN, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "route_a": {
+     "tag": "route1c_pair_0_A",
+     "config": {
+      "pca_channels": 8,
+      "resolution": 0.25,
+      "engine": "upstream",
+      "loss": "cc",
+      "lr": 1.0,
+      "smooth_grad_sigma": 1.5,
+      "smooth_warp_sigma": 1.25
+     }
+    },
+    "route_b": "R1 r1v3 + R5",
+    "eval_vox": 709809,
+    "A": {
+     "pair_ncc": 0.8444019329342625,
+     "pair_dice": 0.9986715116800328,
+     "pairwise": {
+      "MF278": {
+       "ncc": 0.8444019329342625,
+       "dice": 0.9986715116800328,
+       "eval_vox": 709712
+      }
+     },
+     "edge_mean": 0.6005464037167831,
+     "nmi": 1.1230821334782213,
+     "env_dice": 0.3891386203755251,
+     "ncc_template": 0.9031407009899646
+    },
+    "B": {
+     "pair_ncc": 0.790901362335863,
+     "pair_dice": 0.9995433281489446,
+     "pairwise": {
+      "MF278": {
+       "ncc": 0.790901362335863,
+       "dice": 0.9995433281489446,
+       "eval_vox": 709712
+      }
+     },
+     "edge_mean": 0.6781227789120142,
+     "nmi": 1.1079277743456588,
+     "env_dice": 0.3882763745606485,
+     "ncc_template": 0.8739933832829502
+    }
+   },
+   {
+    "target": "pair_1",
+    "template": "d1cs2_pair_1",
+    "subject": "MF282",
+    "role": "fold held-out",
+    "gates": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->b0-native:pass",
+      "b0-native->mri-template:pass",
+      "link pair_1: composition outline WARN, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "route_a": {
+     "tag": "route1c_pair_1_A",
+     "config": {
+      "pca_channels": 8,
+      "resolution": 0.25,
+      "engine": "upstream",
+      "loss": "cc",
+      "lr": 1.0,
+      "smooth_grad_sigma": 1.5,
+      "smooth_warp_sigma": 1.25
+     }
+    },
+    "route_b": "R1 r1v3 + R5",
+    "eval_vox": 794805,
+    "A": {
+     "pair_ncc": 0.8085297837625944,
+     "pair_dice": 0.9995601598942444,
+     "pairwise": {
+      "MR243": {
+       "ncc": 0.8085297837625944,
+       "dice": 0.9995601598942444,
+       "eval_vox": 794739
+      }
+     },
+     "edge_mean": 0.8597025901431063,
+     "nmi": 1.1034683315541742,
+     "env_dice": 0.4334881685087645,
+     "ncc_template": 0.8717215259812376
+    },
+    "B": {
+     "pair_ncc": 0.7841555511457938,
+     "pair_dice": 0.9995752641204277,
+     "pairwise": {
+      "MR243": {
+       "ncc": 0.7841555511457938,
+       "dice": 0.9995752641204277,
+       "eval_vox": 794739
+      }
+     },
+     "edge_mean": 1.1058865284261141,
+     "nmi": 1.0975344401805416,
+     "env_dice": 0.4327442558342682,
+     "ncc_template": 0.8502308067748336
+    }
+   },
+   {
+    "target": "pair_1",
+    "template": "d1cs2_pair_1",
+    "subject": "MR243",
+    "role": "fold held-out",
+    "gates": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->b0-native:pass",
+      "b0-native->mri-template:pass",
+      "link pair_1: composition outline WARN, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "route_a": {
+     "tag": "route1c_pair_1_A",
+     "config": {
+      "pca_channels": 8,
+      "resolution": 0.25,
+      "engine": "upstream",
+      "loss": "cc",
+      "lr": 1.0,
+      "smooth_grad_sigma": 1.5,
+      "smooth_warp_sigma": 1.25
+     }
+    },
+    "route_b": "R1 r1v3 + R5",
+    "eval_vox": 795000,
+    "A": {
+     "pair_ncc": 0.8085297837625944,
+     "pair_dice": 0.9995601598942444,
+     "pairwise": {
+      "MF282": {
+       "ncc": 0.8085297837625944,
+       "dice": 0.9995601598942444,
+       "eval_vox": 794739
+      }
+     },
+     "edge_mean": 0.8817900327594083,
+     "nmi": 1.1402997222385989,
+     "env_dice": 0.4332997387113083,
+     "ncc_template": 0.924773728374361
+    },
+    "B": {
+     "pair_ncc": 0.7841555511457938,
+     "pair_dice": 0.9995752641204277,
+     "pairwise": {
+      "MF282": {
+       "ncc": 0.7841555511457938,
+       "dice": 0.9995752641204277,
+       "eval_vox": 794739
+      }
+     },
+     "edge_mean": 0.9128958915349876,
+     "nmi": 1.1254789452171121,
+     "env_dice": 0.43272437206737757,
+     "ncc_template": 0.9077808494980659
+    }
+   },
+   {
+    "target": "pair_2",
+    "template": "d1cs2_pair_2",
+    "subject": "MR250",
+    "role": "fold held-out",
+    "gates": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->b0-native:pass",
+      "b0-native->mri-template:pass",
+      "link pair_2: composition outline PASS, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "route_a": {
+     "tag": "route1c_pair_2_A",
+     "config": {
+      "pca_channels": 8,
+      "resolution": 0.25,
+      "engine": "upstream",
+      "loss": "cc",
+      "lr": 1.0,
+      "smooth_grad_sigma": 1.5,
+      "smooth_warp_sigma": 1.25
+     }
+    },
+    "route_b": "R1 r1v3 + R5",
+    "eval_vox": 617838,
+    "A": {
+     "pair_ncc": 0.8326226528660616,
+     "pair_dice": 0.9998397971990116,
+     "pairwise": {
+      "MR256": {
+       "ncc": 0.8326226528660616,
+       "dice": 0.9998397971990116,
+       "eval_vox": 617623
+      }
+     },
+     "edge_mean": 0.6829246840767502,
+     "nmi": 1.1336549959348736,
+     "env_dice": 0.3568753665788001,
+     "ncc_template": 0.9070331158939202
+    },
+    "B": {
+     "pair_ncc": 0.7853075360931371,
+     "pair_dice": 0.9992355533913143,
+     "pairwise": {
+      "MR256": {
+       "ncc": 0.7853075360931371,
+       "dice": 0.9992355533913143,
+       "eval_vox": 617623
+      }
+     },
+     "edge_mean": 0.6353835450561024,
+     "nmi": 1.120680494116831,
+     "env_dice": 0.3576436714907613,
+     "ncc_template": 0.8753988110691752
+    }
+   },
+   {
+    "target": "pair_2",
+    "template": "d1cs2_pair_2",
+    "subject": "MR256",
+    "role": "fold held-out",
+    "gates": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->b0-native:pass",
+      "b0-native->mri-template:pass",
+      "link pair_2: composition outline PASS, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "route_a": {
+     "tag": "route1c_pair_2_A",
+     "config": {
+      "pca_channels": 8,
+      "resolution": 0.25,
+      "engine": "upstream",
+      "loss": "cc",
+      "lr": 1.0,
+      "smooth_grad_sigma": 1.5,
+      "smooth_warp_sigma": 1.25
+     }
+    },
+    "route_b": "R1 r1v3mr + R5",
+    "eval_vox": 617674,
+    "A": {
+     "pair_ncc": 0.8326226528660616,
+     "pair_dice": 0.9998397971990116,
+     "pairwise": {
+      "MR250": {
+       "ncc": 0.8326226528660616,
+       "dice": 0.9998397971990116,
+       "eval_vox": 617623
+      }
+     },
+     "edge_mean": 0.9297383442725488,
+     "nmi": 1.123006958309038,
+     "env_dice": 0.35695044331475523,
+     "ncc_template": 0.9054644615813843
+    },
+    "B": {
+     "pair_ncc": 0.7853075360931371,
+     "pair_dice": 0.9992355533913143,
+     "pairwise": {
+      "MR250": {
+       "ncc": 0.7853075360931371,
+       "dice": 0.9992355533913143,
+       "eval_vox": 617623
+      }
+     },
+     "edge_mean": 0.9665533260891532,
+     "nmi": 1.109081262900086,
+     "env_dice": 0.35765668295956554,
+     "ncc_template": 0.879488261189395
+    }
+   },
+   {
+    "target": "pair_3",
+    "template": "d1cs2_pair_3",
+    "subject": "MR249",
+    "role": "fold held-out",
+    "gates": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->b0-native:pass",
+      "b0-native->mri-template:pass",
+      "link pair_3: composition outline PASS, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "route_a": {
+     "tag": "route1c_pair_3_A",
+     "config": {
+      "pca_channels": 8,
+      "resolution": 0.25,
+      "engine": "upstream",
+      "loss": "cc",
+      "lr": 1.0,
+      "smooth_grad_sigma": 1.5,
+      "smooth_warp_sigma": 1.25
+     }
+    },
+    "route_b": "R1 r1v3mr + R5",
+    "eval_vox": 625083,
+    "A": {
+     "pair_ncc": 0.7578782722664519,
+     "pair_dice": 0.9996451687311033,
+     "pairwise": {
+      "MR253": {
+       "ncc": 0.7578782722664519,
+       "dice": 0.9996451687311033,
+       "eval_vox": 624836
+      }
+     },
+     "edge_mean": 0.5133824981341516,
+     "nmi": 1.132557457671415,
+     "env_dice": 0.3504754503783125,
+     "ncc_template": 0.9134457789222804
+    },
+    "B": {
+     "pair_ncc": 0.6727485821782968,
+     "pair_dice": 0.9982263727892069,
+     "pairwise": {
+      "MR253": {
+       "ncc": 0.6727485821782968,
+       "dice": 0.9982263727892069,
+       "eval_vox": 624836
+      }
+     },
+     "edge_mean": 0.5718149090737099,
+     "nmi": 1.117707315694178,
+     "env_dice": 0.35377473279358185,
+     "ncc_template": 0.8815774426757338
+    }
+   },
+   {
+    "target": "pair_3",
+    "template": "d1cs2_pair_3",
+    "subject": "MR253",
+    "role": "fold held-out",
+    "gates": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->b0-native:pass",
+      "b0-native->mri-template:pass",
+      "link pair_3: composition outline PASS, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "route_a": {
+     "tag": "route1c_pair_3_A",
+     "config": {
+      "pca_channels": 8,
+      "resolution": 0.25,
+      "engine": "upstream",
+      "loss": "cc",
+      "lr": 1.0,
+      "smooth_grad_sigma": 1.5,
+      "smooth_warp_sigma": 1.25
+     }
+    },
+    "route_b": "R1 r1v3 + R5",
+    "eval_vox": 625132,
+    "A": {
+     "pair_ncc": 0.7578782722664519,
+     "pair_dice": 0.9996451687311033,
+     "pairwise": {
+      "MR249": {
+       "ncc": 0.7578782722664519,
+       "dice": 0.9996451687311033,
+       "eval_vox": 624836
+      }
+     },
+     "edge_mean": 0.7063395545221192,
+     "nmi": 1.118976355835064,
+     "env_dice": 0.3505894927303118,
+     "ncc_template": 0.8739677595368338
+    },
+    "B": {
+     "pair_ncc": 0.6727485821782968,
+     "pair_dice": 0.9982263727892069,
+     "pairwise": {
+      "MR249": {
+       "ncc": 0.6727485821782968,
+       "dice": 0.9982263727892069,
+       "eval_vox": 624836
+      }
+     },
+     "edge_mean": 0.8515171444305132,
+     "nmi": 1.0835034750705157,
+     "env_dice": 0.3542481112044829,
+     "ncc_template": 0.8008115051271724
+    }
+   },
+   {
+    "target": "pair_4",
+    "template": "d1cs2_pair_4",
+    "subject": "MR257",
+    "role": "fold held-out",
+    "gates": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->b0-native:pass",
+      "b0-native->mri-template:pass",
+      "link pair_4: composition outline PASS, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "route_a": {
+     "tag": "route1c_pair_4_A",
+     "config": {
+      "pca_channels": 8,
+      "resolution": 0.25,
+      "engine": "upstream",
+      "loss": "cc",
+      "lr": 1.0,
+      "smooth_grad_sigma": 1.5,
+      "smooth_warp_sigma": 1.25
+     }
+    },
+    "route_b": "R1 r1v3m + R5",
+    "eval_vox": 717581,
+    "A": {
+     "pair_ncc": 0.7959286514578224,
+     "pair_dice": 0.9994611993311034,
+     "pairwise": {
+      "MR261": {
+       "ncc": 0.7959286514578224,
+       "dice": 0.9994611993311034,
+       "eval_vox": 716815
+      }
+     },
+     "edge_mean": 0.5903644788687683,
+     "nmi": 1.1156368788974045,
+     "env_dice": 0.4033657808630885,
+     "ncc_template": 0.8914795765218181
+    },
+    "B": {
+     "pair_ncc": 0.7429038327782244,
+     "pair_dice": 0.9990111424725472,
+     "pairwise": {
+      "MR261": {
+       "ncc": 0.7429038327782244,
+       "dice": 0.9990111424725472,
+       "eval_vox": 716815
+      }
+     },
+     "edge_mean": 0.743451838368926,
+     "nmi": 1.1065668645817528,
+     "env_dice": 0.4041478324241458,
+     "ncc_template": 0.8675565305955836
+    }
+   },
+   {
+    "target": "pair_4",
+    "template": "d1cs2_pair_4",
+    "subject": "MR261",
+    "role": "fold held-out",
+    "gates": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->b0-native:pass",
+      "b0-native->mri-template:pass",
+      "link pair_4: composition outline PASS, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "route_a": {
+     "tag": "route1c_pair_4_A",
+     "config": {
+      "pca_channels": 8,
+      "resolution": 0.25,
+      "engine": "upstream",
+      "loss": "cc",
+      "lr": 1.0,
+      "smooth_grad_sigma": 1.5,
+      "smooth_warp_sigma": 1.25
+     }
+    },
+    "route_b": "R1 r1v3mr + R5",
+    "eval_vox": 716957,
+    "A": {
+     "pair_ncc": 0.7959286514578224,
+     "pair_dice": 0.9994611993311034,
+     "pairwise": {
+      "MR257": {
+       "ncc": 0.7959286514578224,
+       "dice": 0.9994611993311034,
+       "eval_vox": 716815
+      }
+     },
+     "edge_mean": 0.6057692385635147,
+     "nmi": 1.1214196732255939,
+     "env_dice": 0.40364235328229775,
+     "ncc_template": 0.8980900713382564
+    },
+    "B": {
+     "pair_ncc": 0.7429038327782244,
+     "pair_dice": 0.9990111424725472,
+     "pairwise": {
+      "MR257": {
+       "ncc": 0.7429038327782244,
+       "dice": 0.9990111424725472,
+       "eval_vox": 716815
+      }
+     },
+     "edge_mean": 0.664281793748181,
+     "nmi": 1.1091736124992457,
+     "env_dice": 0.4038380083361496,
+     "ncc_template": 0.8548251266604809
+    }
+   },
+   {
+    "target": "pair_5",
+    "template": "d1cs2_pair_5",
+    "subject": "MR252",
+    "role": "fold held-out",
+    "gates": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->b0-native:pass",
+      "b0-native->mri-template:pass",
+      "link pair_5: composition outline PASS, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "route_a": {
+     "tag": "route1c_pair_5_A",
+     "config": {
+      "pca_channels": 8,
+      "resolution": 0.25,
+      "engine": "upstream",
+      "loss": "cc",
+      "lr": 1.0,
+      "smooth_grad_sigma": 1.5,
+      "smooth_warp_sigma": 1.25
+     }
+    },
+    "route_b": "R1 r1v3mr + R5",
+    "eval_vox": 665997,
+    "A": {
+     "pair_ncc": 0.8367040106113645,
+     "pair_dice": 0.9998355217334532,
+     "pairwise": {
+      "MR254": {
+       "ncc": 0.8367040106113645,
+       "dice": 0.9998355217334532,
+       "eval_vox": 665751
+      }
+     },
+     "edge_mean": 0.7313290200634364,
+     "nmi": 1.128826397722285,
+     "env_dice": 0.3881412160341744,
+     "ncc_template": 0.9113645157619318
+    },
+    "B": {
+     "pair_ncc": 0.7834346337834821,
+     "pair_dice": 0.9989950002312761,
+     "pairwise": {
+      "MR254": {
+       "ncc": 0.7834346337834821,
+       "dice": 0.9989950002312761,
+       "eval_vox": 665751
+      }
+     },
+     "edge_mean": 0.5918190687025698,
+     "nmi": 1.1162942881144062,
+     "env_dice": 0.3856943065042463,
+     "ncc_template": 0.8806172684977502
+    }
+   },
+   {
+    "target": "pair_5",
+    "template": "d1cs2_pair_5",
+    "subject": "MR254",
+    "role": "fold held-out",
+    "gates": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->b0-native:pass",
+      "b0-native->mri-template:pass",
+      "link pair_5: composition outline PASS, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "route_a": {
+     "tag": "route1c_pair_5_A",
+     "config": {
+      "pca_channels": 8,
+      "resolution": 0.25,
+      "engine": "upstream",
+      "loss": "cc",
+      "lr": 1.0,
+      "smooth_grad_sigma": 1.5,
+      "smooth_warp_sigma": 1.25
+     }
+    },
+    "route_b": "R1 r1v3mr + R5",
+    "eval_vox": 665894,
+    "A": {
+     "pair_ncc": 0.8367040106113645,
+     "pair_dice": 0.9998355217334532,
+     "pairwise": {
+      "MR252": {
+       "ncc": 0.8367040106113645,
+       "dice": 0.9998355217334532,
+       "eval_vox": 665751
+      }
+     },
+     "edge_mean": 1.028254335996461,
+     "nmi": 1.1170906771998688,
+     "env_dice": 0.38818216790651694,
+     "ncc_template": 0.8819847824345788
+    },
+    "B": {
+     "pair_ncc": 0.7834346337834821,
+     "pair_dice": 0.9989950002312761,
+     "pairwise": {
+      "MR252": {
+       "ncc": 0.7834346337834821,
+       "dice": 0.9989950002312761,
+       "eval_vox": 665751
+      }
+     },
+     "edge_mean": 0.9931844278270673,
+     "nmi": 1.1144457662415266,
+     "env_dice": 0.3859240398638442,
+     "ncc_template": 0.8556544570027691
+    }
+   },
+   {
+    "target": "final",
+    "template": "d1cs2_final",
+    "subject": "MF191",
+    "role": "test brain",
+    "gates": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->mri-template:pass",
+      "link final: composition outline PASS, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "route_a": {
+     "tag": "route1c_final_A",
+     "config": {
+      "pca_channels": 8,
+      "resolution": 0.25,
+      "engine": "upstream",
+      "loss": "cc",
+      "lr": 1.0,
+      "smooth_grad_sigma": 1.5,
+      "smooth_warp_sigma": 1.25
+     }
+    },
+    "route_b": "S2 prod_s125 (no MRI)",
+    "eval_vox": 585714,
+    "A": {
+     "pair_ncc": 0.7663294767006731,
+     "pair_dice": 0.9930625607219884,
+     "pairwise": {
+      "MF196": {
+       "ncc": 0.727105962026229,
+       "dice": 0.9997746336323543,
+       "eval_vox": 585631
+      },
+      "MF275": {
+       "ncc": 0.7760512752043253,
+       "dice": 0.9802972418141022,
+       "eval_vox": 585408
+      },
+      "MR263": {
+       "ncc": 0.7958311928714651,
+       "dice": 0.9991158067195086,
+       "eval_vox": 585656
+      }
+     },
+     "edge_mean": 0.7832027333320465,
+     "nmi": 1.095772179670915,
+     "env_dice": 0.34055779022237287,
+     "ncc_template": 0.8506395881963654
+    },
+    "B": {
+     "pair_ncc": 0.7508273241173228,
+     "pair_dice": 0.9950294627641757,
+     "pairwise": {
+      "MF196": {
+       "ncc": 0.7273866118294551,
+       "dice": 0.9997057507703646,
+       "eval_vox": 585631
+      },
+      "MF275": {
+       "ncc": 0.7458163132753369,
+       "dice": 0.9857443356779683,
+       "eval_vox": 585408
+      },
+      "MR263": {
+       "ncc": 0.7792790472471761,
+       "dice": 0.9996383018441943,
+       "eval_vox": 585656
+      }
+     },
+     "edge_mean": 0.8415103784822826,
+     "nmi": 1.092137930081015,
+     "env_dice": 0.34306293600624577,
+     "ncc_template": 0.8343331213772053
+    }
+   },
+   {
+    "target": "final",
+    "template": "d1cs2_final",
+    "subject": "MF196",
+    "role": "test brain",
+    "gates": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->mri-template:pass",
+      "link final: composition outline PASS, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "route_a": {
+     "tag": "route1c_final_A",
+     "config": {
+      "pca_channels": 8,
+      "resolution": 0.25,
+      "engine": "upstream",
+      "loss": "cc",
+      "lr": 1.0,
+      "smooth_grad_sigma": 1.5,
+      "smooth_warp_sigma": 1.25
+     }
+    },
+    "route_b": "S2 prod_s125 (no MRI)",
+    "eval_vox": 585743,
+    "A": {
+     "pair_ncc": 0.8011600535041321,
+     "pair_dice": 0.9931418219743068,
+     "pairwise": {
+      "MF191": {
+       "ncc": 0.727105962026229,
+       "dice": 0.9997746336323543,
+       "eval_vox": 585631
+      },
+      "MF275": {
+       "ncc": 0.8142327380063371,
+       "dice": 0.9803617915091464,
+       "eval_vox": 585431
+      },
+      "MR263": {
+       "ncc": 0.8621414604798303,
+       "dice": 0.9992890407814198,
+       "eval_vox": 585683
+      }
+     },
+     "edge_mean": 0.8374029656412593,
+     "nmi": 1.1241618206987318,
+     "env_dice": 0.34045721718563093,
+     "ncc_template": 0.899368369570716
+    },
+    "B": {
+     "pair_ncc": 0.7927046425300112,
+     "pair_dice": 0.9950990274711359,
+     "pairwise": {
+      "MF191": {
+       "ncc": 0.7273866118294551,
+       "dice": 0.9997057507703646,
+       "eval_vox": 585631
+      },
+      "MF275": {
+       "ncc": 0.7931358427418779,
+       "dice": 0.98576380719795,
+       "eval_vox": 585431
+      },
+      "MR263": {
+       "ncc": 0.8575914730187005,
+       "dice": 0.999827524445093,
+       "eval_vox": 585683
+      }
+     },
+     "edge_mean": 0.8934700322744249,
+     "nmi": 1.1188481389956506,
+     "env_dice": 0.34295833258927066,
+     "ncc_template": 0.8856012992659158
+    }
+   },
+   {
+    "target": "final",
+    "template": "d1cs2_final",
+    "subject": "MF275",
+    "role": "test brain",
+    "gates": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->b0-native:pass",
+      "b0-native->mri-template:pass",
+      "link final: composition outline PASS, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "route_a": {
+     "tag": "route1c_final_A",
+     "config": {
+      "pca_channels": 8,
+      "resolution": 0.25,
+      "engine": "upstream",
+      "loss": "cc",
+      "lr": 1.0,
+      "smooth_grad_sigma": 1.5,
+      "smooth_warp_sigma": 1.25
+     }
+    },
+    "route_b": "R1 r1v3 + R5",
+    "eval_vox": 585508,
+    "A": {
+     "pair_ncc": 0.7984681456580157,
+     "pair_dice": 0.9804696635974265,
+     "pairwise": {
+      "MF191": {
+       "ncc": 0.7760512752043253,
+       "dice": 0.9802972418141022,
+       "eval_vox": 585408
+      },
+      "MF196": {
+       "ncc": 0.8142327380063371,
+       "dice": 0.9803617915091464,
+       "eval_vox": 585431
+      },
+      "MR263": {
+       "ncc": 0.8051204237633849,
+       "dice": 0.9807499574690308,
+       "eval_vox": 585497
+      }
+     },
+     "edge_mean": 0.5682876312776449,
+     "nmi": 1.1078274247142128,
+     "env_dice": 0.3516498990464532,
+     "ncc_template": 0.8691480022827205
+    },
+    "B": {
+     "pair_ncc": 0.7729689806364223,
+     "pair_dice": 0.9857890672868569,
+     "pairwise": {
+      "MF191": {
+       "ncc": 0.7458163132753369,
+       "dice": 0.9857443356779683,
+       "eval_vox": 585408
+      },
+      "MF196": {
+       "ncc": 0.7931358427418779,
+       "dice": 0.98576380719795,
+       "eval_vox": 585431
+      },
+      "MR263": {
+       "ncc": 0.779954785892052,
+       "dice": 0.9858590589846524,
+       "eval_vox": 585497
+      }
+     },
+     "edge_mean": 0.634684429935765,
+     "nmi": 1.0991722481594806,
+     "env_dice": 0.3508187478411235,
+     "ncc_template": 0.8478162075359307
+    }
+   },
+   {
+    "target": "final",
+    "template": "d1cs2_final",
+    "subject": "MR263",
+    "role": "test brain",
+    "gates": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->mri-template:pass",
+      "link final: composition outline PASS, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "route_a": {
+     "tag": "route1c_final_A",
+     "config": {
+      "pca_channels": 8,
+      "resolution": 0.25,
+      "engine": "upstream",
+      "loss": "cc",
+      "lr": 1.0,
+      "smooth_grad_sigma": 1.5,
+      "smooth_warp_sigma": 1.25
+     }
+    },
+    "route_b": "S2 prod_s125 (no MRI)",
+    "eval_vox": 585772,
+    "A": {
+     "pair_ncc": 0.8210310257048934,
+     "pair_dice": 0.9930516016566532,
+     "pairwise": {
+      "MF191": {
+       "ncc": 0.7958311928714651,
+       "dice": 0.9991158067195086,
+       "eval_vox": 585656
+      },
+      "MF196": {
+       "ncc": 0.8621414604798303,
+       "dice": 0.9992890407814198,
+       "eval_vox": 585683
+      },
+      "MF275": {
+       "ncc": 0.8051204237633849,
+       "dice": 0.9807499574690308,
+       "eval_vox": 585497
+      }
+     },
+     "edge_mean": 0.602141702098536,
+     "nmi": 1.1161316451089875,
+     "env_dice": 0.34084611568338286,
+     "ncc_template": 0.9093294340593255
+    },
+    "B": {
+     "pair_ncc": 0.8056084353859762,
+     "pair_dice": 0.9951082950913133,
+     "pairwise": {
+      "MF191": {
+       "ncc": 0.7792790472471761,
+       "dice": 0.9996383018441943,
+       "eval_vox": 585656
+      },
+      "MF196": {
+       "ncc": 0.8575914730187005,
+       "dice": 0.999827524445093,
+       "eval_vox": 585683
+      },
+      "MF275": {
+       "ncc": 0.779954785892052,
+       "dice": 0.9858590589846524,
+       "eval_vox": 585497
+      }
+     },
+     "edge_mean": 0.5573663893193703,
+     "nmi": 1.1123262830071194,
+     "env_dice": 0.34300815195671264,
+     "ncc_template": 0.8912316764135437
+    }
+   }
+  ],
+  "design": "descriptive: design 1c's six pair folds (the pair as the unit) + its final average with the four test brains; route A = direct (1c's R3 settings), route B = R1 + R5 (S2 for the test brains without MRI) + the target's own mapping from the MRI template (composition of member warps)",
+  "pairs": {
+   "pair_0": {
+    "brains": [
+     "MF278",
+     "MR251"
+    ],
+    "A": {
+     "ncc": 0.8444019329342625,
+     "dice": 0.9986715116800328
+    },
+    "B": {
+     "ncc": 0.790901362335863,
+     "dice": 0.9995433281489446
+    },
+    "A_minus_B": {
+     "ncc": 0.05350057059839952,
+     "dice": -0.000871816468911879
+    },
+    "gates_passed": true
+   },
+   "pair_1": {
+    "brains": [
+     "MF282",
+     "MR243"
+    ],
+    "A": {
+     "ncc": 0.8085297837625944,
+     "dice": 0.9995601598942444
+    },
+    "B": {
+     "ncc": 0.7841555511457938,
+     "dice": 0.9995752641204277
+    },
+    "A_minus_B": {
+     "ncc": 0.024374232616800606,
+     "dice": -1.5104226183337843e-05
+    },
+    "gates_passed": true
+   },
+   "pair_2": {
+    "brains": [
+     "MR250",
+     "MR256"
+    ],
+    "A": {
+     "ncc": 0.8326226528660616,
+     "dice": 0.9998397971990116
+    },
+    "B": {
+     "ncc": 0.7853075360931371,
+     "dice": 0.9992355533913143
+    },
+    "A_minus_B": {
+     "ncc": 0.04731511677292455,
+     "dice": 0.0006042438076973022
+    },
+    "gates_passed": true
+   },
+   "pair_3": {
+    "brains": [
+     "MR249",
+     "MR253"
+    ],
+    "A": {
+     "ncc": 0.7578782722664519,
+     "dice": 0.9996451687311033
+    },
+    "B": {
+     "ncc": 0.6727485821782968,
+     "dice": 0.9982263727892069
+    },
+    "A_minus_B": {
+     "ncc": 0.08512969008815507,
+     "dice": 0.0014187959418964224
+    },
+    "gates_passed": true
+   },
+   "pair_4": {
+    "brains": [
+     "MR257",
+     "MR261"
+    ],
+    "A": {
+     "ncc": 0.7959286514578224,
+     "dice": 0.9994611993311034
+    },
+    "B": {
+     "ncc": 0.7429038327782244,
+     "dice": 0.9990111424725472
+    },
+    "A_minus_B": {
+     "ncc": 0.053024818679598074,
+     "dice": 0.0004500568585562581
+    },
+    "gates_passed": true
+   },
+   "pair_5": {
+    "brains": [
+     "MR252",
+     "MR254"
+    ],
+    "A": {
+     "ncc": 0.8367040106113645,
+     "dice": 0.9998355217334532
+    },
+    "B": {
+     "ncc": 0.7834346337834821,
+     "dice": 0.9989950002312761
+    },
+    "A_minus_B": {
+     "ncc": 0.05326937682788235,
+     "dice": 0.0008405215021771717
+    },
+    "gates_passed": true
+   }
+  },
+  "pairs_A_minus_B": {
+   "ncc": {
+    "n": 6,
+    "min": 0.024374232616800606,
+    "median": 0.05314709775374021,
+    "max": 0.08512969008815507
+   },
+   "dice": {
+    "n": 6,
+    "min": -0.000871816468911879,
+    "median": 0.0005271503331267802,
+    "max": 0.0014187959418964224
+   },
+   "n_folds": 6,
+   "n_gates_passed": 6
+  },
+  "test_brains": {
+   "brains": [
+    "MF191",
+    "MF196",
+    "MF275",
+    "MR263"
+   ],
+   "pairwise": {
+    "A": [
+     {
+      "a": "MF191",
+      "b": "MF196",
+      "ncc": 0.727105962026229,
+      "dice": 0.9997746336323543,
+      "eval_vox": 585631
+     },
+     {
+      "a": "MF191",
+      "b": "MF275",
+      "ncc": 0.7760512752043253,
+      "dice": 0.9802972418141022,
+      "eval_vox": 585408
+     },
+     {
+      "a": "MF191",
+      "b": "MR263",
+      "ncc": 0.7958311928714651,
+      "dice": 0.9991158067195086,
+      "eval_vox": 585656
+     },
+     {
+      "a": "MF196",
+      "b": "MF275",
+      "ncc": 0.8142327380063371,
+      "dice": 0.9803617915091464,
+      "eval_vox": 585431
+     },
+     {
+      "a": "MF196",
+      "b": "MR263",
+      "ncc": 0.8621414604798303,
+      "dice": 0.9992890407814198,
+      "eval_vox": 585683
+     },
+     {
+      "a": "MF275",
+      "b": "MR263",
+      "ncc": 0.8051204237633849,
+      "dice": 0.9807499574690308,
+      "eval_vox": 585497
+     }
+    ],
+    "B": [
+     {
+      "a": "MF191",
+      "b": "MF196",
+      "ncc": 0.7273866118294551,
+      "dice": 0.9997057507703646,
+      "eval_vox": 585631
+     },
+     {
+      "a": "MF191",
+      "b": "MF275",
+      "ncc": 0.7458163132753369,
+      "dice": 0.9857443356779683,
+      "eval_vox": 585408
+     },
+     {
+      "a": "MF191",
+      "b": "MR263",
+      "ncc": 0.7792790472471761,
+      "dice": 0.9996383018441943,
+      "eval_vox": 585656
+     },
+     {
+      "a": "MF196",
+      "b": "MF275",
+      "ncc": 0.7931358427418779,
+      "dice": 0.98576380719795,
+      "eval_vox": 585431
+     },
+     {
+      "a": "MF196",
+      "b": "MR263",
+      "ncc": 0.8575914730187005,
+      "dice": 0.999827524445093,
+      "eval_vox": 585683
+     },
+     {
+      "a": "MF275",
+      "b": "MR263",
+      "ncc": 0.779954785892052,
+      "dice": 0.9858590589846524,
+      "eval_vox": 585497
+     }
+    ]
+   },
+   "ncc": {
+    "A": {
+     "n": 6,
+     "min": 0.727105962026229,
+     "median": 0.800475808317425,
+     "max": 0.8621414604798303
+    },
+    "B": {
+     "n": 6,
+     "min": 0.7273866118294551,
+     "median": 0.7796169165696141,
+     "max": 0.8575914730187005
+    }
+   },
+   "dice": {
+    "A": {
+     "n": 6,
+     "min": 0.9802972418141022,
+     "median": 0.9899328820942697,
+     "max": 0.9997746336323543
+    },
+    "B": {
+     "n": 6,
+     "min": 0.9857443356779683,
+     "median": 0.9927486804144234,
+     "max": 0.999827524445093
+    }
+   },
+   "MF275": {
+    "A": {
+     "pair_ncc": 0.7984681456580157,
+     "pair_dice": 0.9804696635974265,
+     "edge_mean": 0.5682876312776449,
+     "env_dice": 0.3516498990464532,
+     "nmi": 1.1078274247142128,
+     "ncc_template": 0.8691480022827205
+    },
+    "B": {
+     "pair_ncc": 0.7729689806364223,
+     "pair_dice": 0.9857890672868569,
+     "edge_mean": 0.634684429935765,
+     "env_dice": 0.3508187478411235,
+     "nmi": 1.0991722481594806,
+     "ncc_template": 0.8478162075359307
+    },
+    "route_b": "R1 r1v3 + R5",
+    "gates": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->b0-native:pass",
+      "b0-native->mri-template:pass",
+      "link final: composition outline PASS, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    }
+   },
+   "route_b": {
+    "MF191": "S2 prod_s125 (no MRI)",
+    "MF196": "S2 prod_s125 (no MRI)",
+    "MF275": "R1 r1v3 + R5",
+    "MR263": "S2 prod_s125 (no MRI)"
+   },
+   "gates": {
+    "MF191": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->mri-template:pass",
+      "link final: composition outline PASS, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "MF196": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->mri-template:pass",
+      "link final: composition outline PASS, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "MF275": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->b0-native:pass",
+      "b0-native->mri-template:pass",
+      "link final: composition outline PASS, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    },
+    "MR263": {
+     "A": true,
+     "B": true,
+     "B_links": [
+      "bf-native->mri-template:pass",
+      "link final: composition outline PASS, inverse residual p99 0.000 mm (gate: not FAIL, < 0.1)"
+     ]
+    }
+   }
+  },
+  "paired_differences": {
+   "pair_ncc": [
+    {
+     "subject": "MF278",
+     "target": "pair_0",
+     "A_minus_B": 0.05350057059839952,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR251",
+     "target": "pair_0",
+     "A_minus_B": 0.05350057059839952,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF282",
+     "target": "pair_1",
+     "A_minus_B": 0.024374232616800606,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR243",
+     "target": "pair_1",
+     "A_minus_B": 0.024374232616800606,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR250",
+     "target": "pair_2",
+     "A_minus_B": 0.04731511677292455,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR256",
+     "target": "pair_2",
+     "A_minus_B": 0.04731511677292455,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR249",
+     "target": "pair_3",
+     "A_minus_B": 0.08512969008815507,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR253",
+     "target": "pair_3",
+     "A_minus_B": 0.08512969008815507,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR257",
+     "target": "pair_4",
+     "A_minus_B": 0.053024818679598074,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR261",
+     "target": "pair_4",
+     "A_minus_B": 0.053024818679598074,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR252",
+     "target": "pair_5",
+     "A_minus_B": 0.05326937682788235,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR254",
+     "target": "pair_5",
+     "A_minus_B": 0.05326937682788235,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF191",
+     "target": "final",
+     "A_minus_B": 0.015502152583350304,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF196",
+     "target": "final",
+     "A_minus_B": 0.008455410974120947,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF275",
+     "target": "final",
+     "A_minus_B": 0.02549916502159344,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR263",
+     "target": "final",
+     "A_minus_B": 0.01542259031891724,
+     "gates_passed": true
+    }
+   ],
+   "pair_dice": [
+    {
+     "subject": "MF278",
+     "target": "pair_0",
+     "A_minus_B": -0.000871816468911879,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR251",
+     "target": "pair_0",
+     "A_minus_B": -0.000871816468911879,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF282",
+     "target": "pair_1",
+     "A_minus_B": -1.5104226183337843e-05,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR243",
+     "target": "pair_1",
+     "A_minus_B": -1.5104226183337843e-05,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR250",
+     "target": "pair_2",
+     "A_minus_B": 0.0006042438076973022,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR256",
+     "target": "pair_2",
+     "A_minus_B": 0.0006042438076973022,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR249",
+     "target": "pair_3",
+     "A_minus_B": 0.0014187959418964224,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR253",
+     "target": "pair_3",
+     "A_minus_B": 0.0014187959418964224,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR257",
+     "target": "pair_4",
+     "A_minus_B": 0.0004500568585562581,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR261",
+     "target": "pair_4",
+     "A_minus_B": 0.0004500568585562581,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR252",
+     "target": "pair_5",
+     "A_minus_B": 0.0008405215021771717,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR254",
+     "target": "pair_5",
+     "A_minus_B": 0.0008405215021771717,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF191",
+     "target": "final",
+     "A_minus_B": -0.001966902042187302,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF196",
+     "target": "final",
+     "A_minus_B": -0.0019572054968290953,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF275",
+     "target": "final",
+     "A_minus_B": -0.005319403689430402,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR263",
+     "target": "final",
+     "A_minus_B": -0.002056693434660084,
+     "gates_passed": true
+    }
+   ],
+   "edge_mean": [
+    {
+     "subject": "MF278",
+     "target": "pair_0",
+     "A_minus_B": -0.037830202688731385,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR251",
+     "target": "pair_0",
+     "A_minus_B": -0.07757637519523108,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF282",
+     "target": "pair_1",
+     "A_minus_B": -0.24618393828300777,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR243",
+     "target": "pair_1",
+     "A_minus_B": -0.031105858775579365,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR250",
+     "target": "pair_2",
+     "A_minus_B": 0.04754113902064783,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR256",
+     "target": "pair_2",
+     "A_minus_B": -0.036814981816604475,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR249",
+     "target": "pair_3",
+     "A_minus_B": -0.05843241093955831,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR253",
+     "target": "pair_3",
+     "A_minus_B": -0.14517758990839402,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR257",
+     "target": "pair_4",
+     "A_minus_B": -0.15308735950015773,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR261",
+     "target": "pair_4",
+     "A_minus_B": -0.05851255518466625,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR252",
+     "target": "pair_5",
+     "A_minus_B": 0.13950995136086652,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR254",
+     "target": "pair_5",
+     "A_minus_B": 0.035069908169393815,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF191",
+     "target": "final",
+     "A_minus_B": -0.05830764515023612,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF196",
+     "target": "final",
+     "A_minus_B": -0.05606706663316563,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF275",
+     "target": "final",
+     "A_minus_B": -0.0663967986581201,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR263",
+     "target": "final",
+     "A_minus_B": 0.04477531277916569,
+     "gates_passed": true
+    }
+   ],
+   "env_dice": [
+    {
+     "subject": "MF278",
+     "target": "pair_0",
+     "A_minus_B": 0.0016732109868467515,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR251",
+     "target": "pair_0",
+     "A_minus_B": 0.0008622458148765944,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF282",
+     "target": "pair_1",
+     "A_minus_B": 0.0007439126744963054,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR243",
+     "target": "pair_1",
+     "A_minus_B": 0.0005753666439307081,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR250",
+     "target": "pair_2",
+     "A_minus_B": -0.0007683049119612262,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR256",
+     "target": "pair_2",
+     "A_minus_B": -0.0007062396448103136,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR249",
+     "target": "pair_3",
+     "A_minus_B": -0.0032992824152693334,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR253",
+     "target": "pair_3",
+     "A_minus_B": -0.0036586184741710936,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR257",
+     "target": "pair_4",
+     "A_minus_B": -0.0007820515610573175,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR261",
+     "target": "pair_4",
+     "A_minus_B": -0.00019565505385182869,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR252",
+     "target": "pair_5",
+     "A_minus_B": 0.0024469095299280985,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR254",
+     "target": "pair_5",
+     "A_minus_B": 0.0022581280426727246,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF191",
+     "target": "final",
+     "A_minus_B": -0.0025051457838728974,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF196",
+     "target": "final",
+     "A_minus_B": -0.002501115403639731,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF275",
+     "target": "final",
+     "A_minus_B": 0.0008311512053297276,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR263",
+     "target": "final",
+     "A_minus_B": -0.0021620362733297815,
+     "gates_passed": true
+    }
+   ],
+   "nmi": [
+    {
+     "subject": "MF278",
+     "target": "pair_0",
+     "A_minus_B": 0.023933289743239383,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR251",
+     "target": "pair_0",
+     "A_minus_B": 0.015154359132562467,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF282",
+     "target": "pair_1",
+     "A_minus_B": 0.005933891373632649,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR243",
+     "target": "pair_1",
+     "A_minus_B": 0.014820777021486764,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR250",
+     "target": "pair_2",
+     "A_minus_B": 0.012974501818042716,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR256",
+     "target": "pair_2",
+     "A_minus_B": 0.013925695408952166,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR249",
+     "target": "pair_3",
+     "A_minus_B": 0.014850141977237108,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR253",
+     "target": "pair_3",
+     "A_minus_B": 0.035472880764548353,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR257",
+     "target": "pair_4",
+     "A_minus_B": 0.009070014315651687,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR261",
+     "target": "pair_4",
+     "A_minus_B": 0.012246060726348151,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR252",
+     "target": "pair_5",
+     "A_minus_B": 0.01253210960787876,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR254",
+     "target": "pair_5",
+     "A_minus_B": 0.0026449109583421837,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF191",
+     "target": "final",
+     "A_minus_B": 0.003634249589899996,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF196",
+     "target": "final",
+     "A_minus_B": 0.005313681703081219,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF275",
+     "target": "final",
+     "A_minus_B": 0.008655176554732247,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR263",
+     "target": "final",
+     "A_minus_B": 0.003805362101868104,
+     "gates_passed": true
+    }
+   ],
+   "ncc_template": [
+    {
+     "subject": "MF278",
+     "target": "pair_0",
+     "A_minus_B": 0.03105339030247778,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR251",
+     "target": "pair_0",
+     "A_minus_B": 0.029147317707014397,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF282",
+     "target": "pair_1",
+     "A_minus_B": 0.021490719206403996,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR243",
+     "target": "pair_1",
+     "A_minus_B": 0.01699287887629508,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR250",
+     "target": "pair_2",
+     "A_minus_B": 0.03163430482474505,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR256",
+     "target": "pair_2",
+     "A_minus_B": 0.025976200391989224,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR249",
+     "target": "pair_3",
+     "A_minus_B": 0.031868336246546614,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR253",
+     "target": "pair_3",
+     "A_minus_B": 0.07315625440966145,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR257",
+     "target": "pair_4",
+     "A_minus_B": 0.02392304592623451,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR261",
+     "target": "pair_4",
+     "A_minus_B": 0.04326494467777542,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR252",
+     "target": "pair_5",
+     "A_minus_B": 0.030747247264181543,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR254",
+     "target": "pair_5",
+     "A_minus_B": 0.026330325431809687,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF191",
+     "target": "final",
+     "A_minus_B": 0.016306466819160148,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF196",
+     "target": "final",
+     "A_minus_B": 0.013767070304800177,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF275",
+     "target": "final",
+     "A_minus_B": 0.02133179474678981,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR263",
+     "target": "final",
+     "A_minus_B": 0.01809775764578181,
+     "gates_passed": true
+    }
+   ]
+  },
+  "paired_differences_all_rows": {
+   "pair_ncc": [
+    {
+     "subject": "MF278",
+     "target": "pair_0",
+     "A_minus_B": 0.05350057059839952,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR251",
+     "target": "pair_0",
+     "A_minus_B": 0.05350057059839952,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF282",
+     "target": "pair_1",
+     "A_minus_B": 0.024374232616800606,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR243",
+     "target": "pair_1",
+     "A_minus_B": 0.024374232616800606,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR250",
+     "target": "pair_2",
+     "A_minus_B": 0.04731511677292455,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR256",
+     "target": "pair_2",
+     "A_minus_B": 0.04731511677292455,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR249",
+     "target": "pair_3",
+     "A_minus_B": 0.08512969008815507,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR253",
+     "target": "pair_3",
+     "A_minus_B": 0.08512969008815507,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR257",
+     "target": "pair_4",
+     "A_minus_B": 0.053024818679598074,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR261",
+     "target": "pair_4",
+     "A_minus_B": 0.053024818679598074,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR252",
+     "target": "pair_5",
+     "A_minus_B": 0.05326937682788235,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR254",
+     "target": "pair_5",
+     "A_minus_B": 0.05326937682788235,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF191",
+     "target": "final",
+     "A_minus_B": 0.015502152583350304,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF196",
+     "target": "final",
+     "A_minus_B": 0.008455410974120947,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF275",
+     "target": "final",
+     "A_minus_B": 0.02549916502159344,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR263",
+     "target": "final",
+     "A_minus_B": 0.01542259031891724,
+     "gates_passed": true
+    }
+   ],
+   "pair_dice": [
+    {
+     "subject": "MF278",
+     "target": "pair_0",
+     "A_minus_B": -0.000871816468911879,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR251",
+     "target": "pair_0",
+     "A_minus_B": -0.000871816468911879,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF282",
+     "target": "pair_1",
+     "A_minus_B": -1.5104226183337843e-05,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR243",
+     "target": "pair_1",
+     "A_minus_B": -1.5104226183337843e-05,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR250",
+     "target": "pair_2",
+     "A_minus_B": 0.0006042438076973022,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR256",
+     "target": "pair_2",
+     "A_minus_B": 0.0006042438076973022,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR249",
+     "target": "pair_3",
+     "A_minus_B": 0.0014187959418964224,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR253",
+     "target": "pair_3",
+     "A_minus_B": 0.0014187959418964224,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR257",
+     "target": "pair_4",
+     "A_minus_B": 0.0004500568585562581,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR261",
+     "target": "pair_4",
+     "A_minus_B": 0.0004500568585562581,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR252",
+     "target": "pair_5",
+     "A_minus_B": 0.0008405215021771717,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR254",
+     "target": "pair_5",
+     "A_minus_B": 0.0008405215021771717,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF191",
+     "target": "final",
+     "A_minus_B": -0.001966902042187302,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF196",
+     "target": "final",
+     "A_minus_B": -0.0019572054968290953,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF275",
+     "target": "final",
+     "A_minus_B": -0.005319403689430402,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR263",
+     "target": "final",
+     "A_minus_B": -0.002056693434660084,
+     "gates_passed": true
+    }
+   ],
+   "edge_mean": [
+    {
+     "subject": "MF278",
+     "target": "pair_0",
+     "A_minus_B": -0.037830202688731385,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR251",
+     "target": "pair_0",
+     "A_minus_B": -0.07757637519523108,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF282",
+     "target": "pair_1",
+     "A_minus_B": -0.24618393828300777,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR243",
+     "target": "pair_1",
+     "A_minus_B": -0.031105858775579365,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR250",
+     "target": "pair_2",
+     "A_minus_B": 0.04754113902064783,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR256",
+     "target": "pair_2",
+     "A_minus_B": -0.036814981816604475,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR249",
+     "target": "pair_3",
+     "A_minus_B": -0.05843241093955831,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR253",
+     "target": "pair_3",
+     "A_minus_B": -0.14517758990839402,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR257",
+     "target": "pair_4",
+     "A_minus_B": -0.15308735950015773,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR261",
+     "target": "pair_4",
+     "A_minus_B": -0.05851255518466625,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR252",
+     "target": "pair_5",
+     "A_minus_B": 0.13950995136086652,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR254",
+     "target": "pair_5",
+     "A_minus_B": 0.035069908169393815,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF191",
+     "target": "final",
+     "A_minus_B": -0.05830764515023612,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF196",
+     "target": "final",
+     "A_minus_B": -0.05606706663316563,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF275",
+     "target": "final",
+     "A_minus_B": -0.0663967986581201,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR263",
+     "target": "final",
+     "A_minus_B": 0.04477531277916569,
+     "gates_passed": true
+    }
+   ],
+   "env_dice": [
+    {
+     "subject": "MF278",
+     "target": "pair_0",
+     "A_minus_B": 0.0016732109868467515,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR251",
+     "target": "pair_0",
+     "A_minus_B": 0.0008622458148765944,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF282",
+     "target": "pair_1",
+     "A_minus_B": 0.0007439126744963054,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR243",
+     "target": "pair_1",
+     "A_minus_B": 0.0005753666439307081,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR250",
+     "target": "pair_2",
+     "A_minus_B": -0.0007683049119612262,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR256",
+     "target": "pair_2",
+     "A_minus_B": -0.0007062396448103136,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR249",
+     "target": "pair_3",
+     "A_minus_B": -0.0032992824152693334,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR253",
+     "target": "pair_3",
+     "A_minus_B": -0.0036586184741710936,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR257",
+     "target": "pair_4",
+     "A_minus_B": -0.0007820515610573175,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR261",
+     "target": "pair_4",
+     "A_minus_B": -0.00019565505385182869,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR252",
+     "target": "pair_5",
+     "A_minus_B": 0.0024469095299280985,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR254",
+     "target": "pair_5",
+     "A_minus_B": 0.0022581280426727246,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF191",
+     "target": "final",
+     "A_minus_B": -0.0025051457838728974,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF196",
+     "target": "final",
+     "A_minus_B": -0.002501115403639731,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF275",
+     "target": "final",
+     "A_minus_B": 0.0008311512053297276,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR263",
+     "target": "final",
+     "A_minus_B": -0.0021620362733297815,
+     "gates_passed": true
+    }
+   ],
+   "nmi": [
+    {
+     "subject": "MF278",
+     "target": "pair_0",
+     "A_minus_B": 0.023933289743239383,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR251",
+     "target": "pair_0",
+     "A_minus_B": 0.015154359132562467,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF282",
+     "target": "pair_1",
+     "A_minus_B": 0.005933891373632649,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR243",
+     "target": "pair_1",
+     "A_minus_B": 0.014820777021486764,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR250",
+     "target": "pair_2",
+     "A_minus_B": 0.012974501818042716,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR256",
+     "target": "pair_2",
+     "A_minus_B": 0.013925695408952166,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR249",
+     "target": "pair_3",
+     "A_minus_B": 0.014850141977237108,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR253",
+     "target": "pair_3",
+     "A_minus_B": 0.035472880764548353,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR257",
+     "target": "pair_4",
+     "A_minus_B": 0.009070014315651687,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR261",
+     "target": "pair_4",
+     "A_minus_B": 0.012246060726348151,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR252",
+     "target": "pair_5",
+     "A_minus_B": 0.01253210960787876,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR254",
+     "target": "pair_5",
+     "A_minus_B": 0.0026449109583421837,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF191",
+     "target": "final",
+     "A_minus_B": 0.003634249589899996,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF196",
+     "target": "final",
+     "A_minus_B": 0.005313681703081219,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF275",
+     "target": "final",
+     "A_minus_B": 0.008655176554732247,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR263",
+     "target": "final",
+     "A_minus_B": 0.003805362101868104,
+     "gates_passed": true
+    }
+   ],
+   "ncc_template": [
+    {
+     "subject": "MF278",
+     "target": "pair_0",
+     "A_minus_B": 0.03105339030247778,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR251",
+     "target": "pair_0",
+     "A_minus_B": 0.029147317707014397,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF282",
+     "target": "pair_1",
+     "A_minus_B": 0.021490719206403996,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR243",
+     "target": "pair_1",
+     "A_minus_B": 0.01699287887629508,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR250",
+     "target": "pair_2",
+     "A_minus_B": 0.03163430482474505,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR256",
+     "target": "pair_2",
+     "A_minus_B": 0.025976200391989224,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR249",
+     "target": "pair_3",
+     "A_minus_B": 0.031868336246546614,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR253",
+     "target": "pair_3",
+     "A_minus_B": 0.07315625440966145,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR257",
+     "target": "pair_4",
+     "A_minus_B": 0.02392304592623451,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR261",
+     "target": "pair_4",
+     "A_minus_B": 0.04326494467777542,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR252",
+     "target": "pair_5",
+     "A_minus_B": 0.030747247264181543,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR254",
+     "target": "pair_5",
+     "A_minus_B": 0.026330325431809687,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF191",
+     "target": "final",
+     "A_minus_B": 0.016306466819160148,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF196",
+     "target": "final",
+     "A_minus_B": 0.013767070304800177,
+     "gates_passed": true
+    },
+    {
+     "subject": "MF275",
+     "target": "final",
+     "A_minus_B": 0.02133179474678981,
+     "gates_passed": true
+    },
+    {
+     "subject": "MR263",
+     "target": "final",
+     "A_minus_B": 0.01809775764578181,
+     "gates_passed": true
+    }
+   ]
+  },
+  "gating": "paired values use only rows whose route-A regqc gate passed and whose route-B links all passed QC (R1, R5 or S2) with the target's composition link not FAIL (outline) and inverted to < 0.1 mm p99; *_all_rows is descriptive",
+  "links": {
+   "pair_0": {
+    "maps": {
+     "full": {
+      "L": "full_L.txt",
+      "d": "full_d.nii.gz",
+      "convention": "src_world = L @ (x + d(x)), x = tgt world RAS mm; d RAS mm"
+     }
+    },
+    "src": "mri-template",
+    "dst": "bf-template:d1cs2_pair_0",
+    "engine": "composition of the target's member warps (mri/code/s5_compose.py, members with an R5), inverted onto the 0.5 mm 1c frame (xfmtools.invert_field, 40 fixed-point iterations)",
+    "compose": "$LINC_PRODUCTS/bftemplate/cv/route1c/pair_0/compose",
+    "run": "$LINC_PRODUCTS/bftemplate/d1c/pair_0/pub/d1cs2_pair_0",
+    "inverse_residual_mm_in_brain": {
+     "median": 0.0,
+     "p99": 2.1532049021945526e-06,
+     "max": 1.899890358997298
+    },
+    "compose_outline": "WARN",
+    "compose_outline_reasons": [
+     "ventral undershoot p99 2.69 mm (warn)"
+    ],
+    "compose_spread_mm_in_mri_mask": {
+     "p50": 0.6182419120963738,
+     "p95": 1.3184756970545828,
+     "max": 2.8567485504370302
+    },
+    "compose_members": [
+     "MF282",
+     "MF282f",
+     "MR243",
+     "MR243f",
+     "MR249",
+     "MR249f",
+     "MR250",
+     "MR250f",
+     "MR252",
+     "MR252f",
+     "MR253",
+     "MR253f",
+     "MR254",
+     "MR254f",
+     "MR256",
+     "MR256f",
+     "MR257",
+     "MR257f",
+     "MR261",
+     "MR261f"
+    ]
+   },
+   "pair_1": {
+    "maps": {
+     "full": {
+      "L": "full_L.txt",
+      "d": "full_d.nii.gz",
+      "convention": "src_world = L @ (x + d(x)), x = tgt world RAS mm; d RAS mm"
+     }
+    },
+    "src": "mri-template",
+    "dst": "bf-template:d1cs2_pair_1",
+    "engine": "composition of the target's member warps (mri/code/s5_compose.py, members with an R5), inverted onto the 0.5 mm 1c frame (xfmtools.invert_field, 40 fixed-point iterations)",
+    "compose": "$LINC_PRODUCTS/bftemplate/cv/route1c/pair_1/compose",
+    "run": "$LINC_PRODUCTS/bftemplate/d1c/pair_1/pub/d1cs2_pair_1",
+    "inverse_residual_mm_in_brain": {
+     "median": 0.0,
+     "p99": 2.1457672119140625e-06,
+     "max": 2.253628363524533
+    },
+    "compose_outline": "WARN",
+    "compose_outline_reasons": [
+     "ventral undershoot p99 2.55 mm (warn)"
+    ],
+    "compose_spread_mm_in_mri_mask": {
+     "p50": 0.6183418395701878,
+     "p95": 1.272858242525917,
+     "max": 2.7840002070798207
+    },
+    "compose_members": [
+     "MF278",
+     "MF278f",
+     "MR249",
+     "MR249f",
+     "MR250",
+     "MR250f",
+     "MR251",
+     "MR251f",
+     "MR252",
+     "MR252f",
+     "MR253",
+     "MR253f",
+     "MR254",
+     "MR254f",
+     "MR256",
+     "MR256f",
+     "MR257",
+     "MR257f",
+     "MR261",
+     "MR261f"
+    ]
+   },
+   "pair_2": {
+    "maps": {
+     "full": {
+      "L": "full_L.txt",
+      "d": "full_d.nii.gz",
+      "convention": "src_world = L @ (x + d(x)), x = tgt world RAS mm; d RAS mm"
+     }
+    },
+    "src": "mri-template",
+    "dst": "bf-template:d1cs2_pair_2",
+    "engine": "composition of the target's member warps (mri/code/s5_compose.py, members with an R5), inverted onto the 0.5 mm 1c frame (xfmtools.invert_field, 40 fixed-point iterations)",
+    "compose": "$LINC_PRODUCTS/bftemplate/cv/route1c/pair_2/compose",
+    "run": "$LINC_PRODUCTS/bftemplate/d1c/pair_2/pub/d1cs2_pair_2",
+    "inverse_residual_mm_in_brain": {
+     "median": 0.0,
+     "p99": 2.1399644697923947e-06,
+     "max": 0.057037657694159735
+    },
+    "compose_outline": "PASS",
+    "compose_outline_reasons": [],
+    "compose_spread_mm_in_mri_mask": {
+     "p50": 0.6132162795229308,
+     "p95": 1.2373769142818316,
+     "max": 2.5662199269888255
+    },
+    "compose_members": [
+     "MF278",
+     "MF278f",
+     "MF282",
+     "MF282f",
+     "MR243",
+     "MR243f",
+     "MR249",
+     "MR249f",
+     "MR251",
+     "MR251f",
+     "MR252",
+     "MR252f",
+     "MR253",
+     "MR253f",
+     "MR254",
+     "MR254f",
+     "MR257",
+     "MR257f",
+     "MR261",
+     "MR261f"
+    ]
+   },
+   "pair_3": {
+    "maps": {
+     "full": {
+      "L": "full_L.txt",
+      "d": "full_d.nii.gz",
+      "convention": "src_world = L @ (x + d(x)), x = tgt world RAS mm; d RAS mm"
+     }
+    },
+    "src": "mri-template",
+    "dst": "bf-template:d1cs2_pair_3",
+    "engine": "composition of the target's member warps (mri/code/s5_compose.py, members with an R5), inverted onto the 0.5 mm 1c frame (xfmtools.invert_field, 40 fixed-point iterations)",
+    "compose": "$LINC_PRODUCTS/bftemplate/cv/route1c/pair_3/compose",
+    "run": "$LINC_PRODUCTS/bftemplate/d1c/pair_3/pub/d1cs2_pair_3",
+    "inverse_residual_mm_in_brain": {
+     "median": 0.0,
+     "p99": 2.1457672119140625e-06,
+     "max": 0.37236430515980684
+    },
+    "compose_outline": "PASS",
+    "compose_outline_reasons": [],
+    "compose_spread_mm_in_mri_mask": {
+     "p50": 0.5379201057045573,
+     "p95": 0.9690162332848583,
+     "max": 2.0483341602009104
+    },
+    "compose_members": [
+     "MF278",
+     "MF278f",
+     "MF282",
+     "MF282f",
+     "MR243",
+     "MR243f",
+     "MR250",
+     "MR250f",
+     "MR251",
+     "MR251f",
+     "MR252",
+     "MR252f",
+     "MR254",
+     "MR254f",
+     "MR256",
+     "MR256f",
+     "MR257",
+     "MR257f",
+     "MR261",
+     "MR261f"
+    ]
+   },
+   "pair_4": {
+    "maps": {
+     "full": {
+      "L": "full_L.txt",
+      "d": "full_d.nii.gz",
+      "convention": "src_world = L @ (x + d(x)), x = tgt world RAS mm; d RAS mm"
+     }
+    },
+    "src": "mri-template",
+    "dst": "bf-template:d1cs2_pair_4",
+    "engine": "composition of the target's member warps (mri/code/s5_compose.py, members with an R5), inverted onto the 0.5 mm 1c frame (xfmtools.invert_field, 40 fixed-point iterations)",
+    "compose": "$LINC_PRODUCTS/bftemplate/cv/route1c/pair_4/compose",
+    "run": "$LINC_PRODUCTS/bftemplate/d1c/pair_4/pub/d1cs2_pair_4",
+    "inverse_residual_mm_in_brain": {
+     "median": 0.0,
+     "p99": 2.143398793283725e-06,
+     "max": 0.09940977940489595
+    },
+    "compose_outline": "PASS",
+    "compose_outline_reasons": [],
+    "compose_spread_mm_in_mri_mask": {
+     "p50": 0.6126662144318384,
+     "p95": 1.2613849040461254,
+     "max": 2.7310249743812527
+    },
+    "compose_members": [
+     "MF278",
+     "MF278f",
+     "MF282",
+     "MF282f",
+     "MR243",
+     "MR243f",
+     "MR249",
+     "MR249f",
+     "MR250",
+     "MR250f",
+     "MR251",
+     "MR251f",
+     "MR252",
+     "MR252f",
+     "MR253",
+     "MR253f",
+     "MR254",
+     "MR254f",
+     "MR256",
+     "MR256f"
+    ]
+   },
+   "pair_5": {
+    "maps": {
+     "full": {
+      "L": "full_L.txt",
+      "d": "full_d.nii.gz",
+      "convention": "src_world = L @ (x + d(x)), x = tgt world RAS mm; d RAS mm"
+     }
+    },
+    "src": "mri-template",
+    "dst": "bf-template:d1cs2_pair_5",
+    "engine": "composition of the target's member warps (mri/code/s5_compose.py, members with an R5), inverted onto the 0.5 mm 1c frame (xfmtools.invert_field, 40 fixed-point iterations)",
+    "compose": "$LINC_PRODUCTS/bftemplate/cv/route1c/pair_5/compose",
+    "run": "$LINC_PRODUCTS/bftemplate/d1c/pair_5/pub/d1cs2_pair_5",
+    "inverse_residual_mm_in_brain": {
+     "median": 0.0,
+     "p99": 2.1399644697923947e-06,
+     "max": 0.1653275861394257
+    },
+    "compose_outline": "PASS",
+    "compose_outline_reasons": [],
+    "compose_spread_mm_in_mri_mask": {
+     "p50": 0.6066654540340637,
+     "p95": 1.2504449024870665,
+     "max": 2.8300931980733135
+    },
+    "compose_members": [
+     "MF278",
+     "MF278f",
+     "MF282",
+     "MF282f",
+     "MR243",
+     "MR243f",
+     "MR249",
+     "MR249f",
+     "MR250",
+     "MR250f",
+     "MR251",
+     "MR251f",
+     "MR253",
+     "MR253f",
+     "MR256",
+     "MR256f",
+     "MR257",
+     "MR257f",
+     "MR261",
+     "MR261f"
+    ]
+   },
+   "final": {
+    "maps": {
+     "full": {
+      "L": "full_L.txt",
+      "d": "full_d.nii.gz",
+      "convention": "src_world = L @ (x + d(x)), x = tgt world RAS mm; d RAS mm"
+     }
+    },
+    "src": "mri-template",
+    "dst": "bf-template:d1cs2_final",
+    "engine": "composition of the target's member warps (mri/code/s5_compose.py, members with an R5), inverted onto the 0.5 mm 1c frame (xfmtools.invert_field, 40 fixed-point iterations)",
+    "compose": "$LINC_PRODUCTS/bftemplate/cv/route1c/final/compose",
+    "run": "$LINC_PRODUCTS/bftemplate/d1c/final/tc/d1cs2_final",
+    "inverse_residual_mm_in_brain": {
+     "median": 0.0,
+     "p99": 2.1441626675634416e-06,
+     "max": 0.2741707235602462
+    },
+    "compose_outline": "PASS",
+    "compose_outline_reasons": [],
+    "compose_spread_mm_in_mri_mask": {
+     "p50": 0.6173840376769661,
+     "p95": 1.2003927541907242,
+     "max": 2.708947627250098
+    },
+    "compose_members": [
+     "MF278",
+     "MF278f",
+     "MF282",
+     "MF282f",
+     "MR243",
+     "MR243f",
+     "MR249",
+     "MR249f",
+     "MR250",
+     "MR250f",
+     "MR251",
+     "MR251f",
+     "MR252",
+     "MR252f",
+     "MR253",
+     "MR253f",
+     "MR254",
+     "MR254f",
+     "MR256",
+     "MR256f",
+     "MR257",
+     "MR257f",
+     "MR261",
+     "MR261f"
+    ]
+   }
+  },
+  "lgn_stn": "not available: no pair of design 1c has two labeled brains (MR243 pair 1, MR256 pair 2, MR252 pair 5)",
+  "notes": [
+   "5 Oct 2026: (i) the test brains without MRI take their S2 placement as their MRI route; MF275 reported separately; (ii) the targets' mapping from the MRI template = the composition of their member warps"
+  ]
+ }
+}

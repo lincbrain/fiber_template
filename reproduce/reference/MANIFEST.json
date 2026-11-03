@@ -1,0 +1,213 @@
+{
+ "note": "The paper's numbers records (data blocks only; provenance stripped of host and user paths). Reference for reproduce/check_numbers.py. md5_of_record = the md5 of the full record of record in the analysis project.",
+ "records": {
+  "atlas_final_v2_summary": {
+   "md5_of_record": "4ae51b4ffeee292cb2a920b639ce3f8a",
+   "created": "2026-10-06T10:03:45-04:00"
+  },
+  "bf_camera_exif": {
+   "md5_of_record": "da71dc1cfa092467e0e83e58afdc08ec",
+   "created": "2026-10-14T21:53:59-04:00"
+  },
+  "bf_cohort": {
+   "md5_of_record": "6f47d49c18e88a5a552e98a477f04e44",
+   "created": "2026-09-28T12:24:14-04:00"
+  },
+  "bf_sanity": {
+   "md5_of_record": "16d2ec6b9d5a3dd04496ddfabca1f423",
+   "created": "2026-09-27T04:10:20-04:00"
+  },
+  "bf_spacing_used": {
+   "md5_of_record": "81de404187f1b5e62a36f76b1db5390a",
+   "created": "2026-10-14T21:26:53-04:00"
+  },
+  "bf_species": {
+   "md5_of_record": "32f64fd19fa67cbbfa26dc08a9653888",
+   "created": "2026-09-29T09:10:36-04:00"
+  },
+  "bf_template_metrics_d2b": {
+   "md5_of_record": "9efbb49457151c9e7142371f1dde5449",
+   "created": "2026-10-05T15:34:14-04:00"
+  },
+  "d2_s2_validation_prod_s125": {
+   "md5_of_record": "507d481bf3b4cca45d0b0985fd3cfb2b",
+   "created": "2026-10-04T04:39:51-04:00"
+  },
+  "d3_domain_shift": {
+   "md5_of_record": "9eefcde2e6119d73948e88337100b437",
+   "created": "2026-10-04T01:39:25-04:00"
+  },
+  "d3_methods": {
+   "md5_of_record": "f937d634f1ebc55cc56423872bece9be",
+   "created": "2026-10-07T08:49:00-04:00"
+  },
+  "d3_predicted_share": {
+   "md5_of_record": "4d2e7cbb57979ed2b1a4d309cbfdc4a4",
+   "created": "2026-10-14T21:16:48-04:00"
+  },
+  "d3p_vs_d3_pseudo": {
+   "md5_of_record": "ca91d713c3ac1cfc46367fa2610e57d6",
+   "created": "2026-10-04T02:46:27-04:00"
+  },
+  "fig_histology_simple": {
+   "md5_of_record": "9ecb760ba319cc0e3de66307ebaaa683",
+   "created": "2026-09-30T23:53:59-0400"
+  },
+  "fig_routes_1c_section": {
+   "md5_of_record": "9d2cff80349b25c710373ce7bb41698e",
+   "created": "2026-10-14T21:59:52-04:00"
+  },
+  "fig_tracer_r058": {
+   "md5_of_record": "8bab6175e9d2adedf272eac34897a4de",
+   "created": "2026-10-30T18:10:18-04:00"
+  },
+  "histo_pixel_sizes_r057": {
+   "md5_of_record": "4bdd6130dc070cedfb24acc3b4a033f1",
+   "created": "2026-10-30T12:39:44-04:00"
+  },
+  "histo_tube_landmarks": {
+   "md5_of_record": "89fe2721099c3a338a0c398c4d9401f0",
+   "created": "2026-09-28T12:02:18-04:00"
+  },
+  "labels_overlap_current": {
+   "md5_of_record": "24c350e9164e88c195ecab23e8601878",
+   "created": "2026-10-05T15:40:53-04:00"
+  },
+  "lgnstn_b0_visibility_r059": {
+   "md5_of_record": "7e94d304c21f0a8a91c742567947975a",
+   "created": "2026-10-30T18:00:54-04:00"
+  },
+  "lgnstn_budget_r059": {
+   "md5_of_record": "355d8b121aaa4ac2e05f3e161cc8cbdf",
+   "created": "2026-10-30T14:48:10-04:00"
+  },
+  "lgnstn_geometry_current": {
+   "md5_of_record": "ce39ee2b3ff4526b805dd5e9c6118140",
+   "created": "2026-10-05T15:48:56-04:00"
+  },
+  "lgnstn_midplane_planes_r059": {
+   "md5_of_record": "2d0a7944bee7b373cc30081808048519",
+   "created": "2026-10-30T19:06:19-04:00"
+  },
+  "lgnstn_model_agreement_r059": {
+   "md5_of_record": "65190239f441873c70f4ab28714ede34",
+   "created": "2026-10-30T17:59:39-04:00"
+  },
+  "lgnstn_model_loso_r059": {
+   "md5_of_record": "50879c9f9544cebd4f1f1f1ea1b40f83",
+   "created": "2026-10-30T16:06:48-04:00"
+  },
+  "lgnstn_targets_r060b": {
+   "md5_of_record": "9d61cde5c34e873fafcd4fe6bfab9c68",
+   "created": "2026-10-30T20:11:44-04:00"
+  },
+  "lgnstn_targets_r060c": {
+   "md5_of_record": "5c0823c1b5e5acaf3da0f8fbc42f50cf",
+   "created": "2026-11-01T10:36:22-05:00"
+  },
+  "lobo_t2_rebuild": {
+   "md5_of_record": "1704de29dc8d54911e91452186986f7a",
+   "created": "2026-10-04T21:36:44-04:00"
+  },
+  "mm_mri_check_r054": {
+   "md5_of_record": "5b70168bef0d63e08ad847558eb3ded0",
+   "created": "2026-10-14T22:09:29-04:00"
+  },
+  "mri_recipe": {
+   "md5_of_record": "6d90639a7171e0b24937469d802c5f3a",
+   "created": "2026-09-28T12:08:36-04:00"
+  },
+  "precision_weights_b1_d2b_s8": {
+   "md5_of_record": "81e18e2af9177d4b1983e6fee9516927",
+   "created": "2026-10-05T07:36:40-04:00"
+  },
+  "r057_missing_extent": {
+   "md5_of_record": "55b5410c9d4f97eeff62dd512561f776",
+   "created": "2026-10-30T12:00:14-04:00"
+  },
+  "r057_mri_facts_b": {
+   "md5_of_record": "b66f10df3ae98c6ee8323f4cd1f200a3",
+   "created": "2026-11-01T12:41:28-05:00"
+  },
+  "r057_s1_synthesis": {
+   "md5_of_record": "348387dd62cd384aef8ebb8d309b4f75",
+   "created": "2026-10-30T13:47:37-04:00"
+  },
+  "r060_target_comparison": {
+   "md5_of_record": "dc5108d8dbe3c574f7f1b82e41ddb16b",
+   "created": "2026-10-30T20:17:32-04:00"
+  },
+  "r1_edge_summary": {
+   "md5_of_record": "93a49ec75a15a2cec686495ad05041f8",
+   "created": "2026-10-14T21:25:38-04:00"
+  },
+  "registration_qc_histo2bf_20261001": {
+   "md5_of_record": "455e17267eafe6790a785ea429e7e600",
+   "created": "2026-10-01T03:30:47-04:00"
+  },
+  "route_test_1c": {
+   "md5_of_record": "c004efd62e57f0898ea9180318baed65",
+   "created": "2026-10-05T18:10:02-04:00"
+  },
+  "s1_perbrain_r057": {
+   "md5_of_record": "f937f63bfefa98e61ea7f72013b0d1ce",
+   "created": "2026-10-30T12:24:14-04:00"
+  },
+  "s1_segmentation_r057": {
+   "md5_of_record": "be105e3f33d85fba6ae699a615c134cf",
+   "created": "2026-10-30T12:24:53-04:00"
+  },
+  "s5_link_d2bs8": {
+   "md5_of_record": "90635da1f2a31b679a66051b736144ef",
+   "created": "2026-10-05T23:35:19-04:00"
+  },
+  "table1_rebuild": {
+   "md5_of_record": "3da68fd6155ece50aaa1e5e8c229d9b7",
+   "created": "2026-10-04T11:55:47-04:00"
+  },
+  "table_specimens_check_r054": {
+   "md5_of_record": "b2aa17dc244fede9808eda53eeb97848",
+   "created": "2026-10-14T21:32:28-04:00"
+  },
+  "tirl_sweep_r058": {
+   "md5_of_record": "d2eca76a8fdc42b774e2e680567a4fe3",
+   "created": "2026-11-01T12:19:31-05:00"
+  },
+  "tirl_sweep_r058b": {
+   "md5_of_record": "06d86df25989872b650ee4c765e53359",
+   "created": "2026-11-01T16:24:40-05:00"
+  },
+  "tracer_alic_topography_r058d": {
+   "md5_of_record": "53a68ad64b7b0586f1cb4c724b32bc8c",
+   "created": "2026-10-30T18:36:02-04:00"
+  },
+  "tracer_label_volumes_r058d": {
+   "md5_of_record": "5ba81eb6933bfd1f0e6081f902bbc3d2",
+   "created": "2026-10-30T18:35:18-04:00"
+  },
+  "tracer_sections_r054": {
+   "md5_of_record": "e87cd1ad5c5659309bb4adc62a1d08ca",
+   "created": "2026-10-14T21:14:33-04:00"
+  },
+  "tracer_template_current_all": {
+   "md5_of_record": "da046aa0876653fcf8387a101e93d256",
+   "created": "2026-10-07T09:00:10-04:00"
+  },
+  "tube_mf8_check_r054": {
+   "md5_of_record": "f18d93286d937c192eaf49f1b0173ff6",
+   "created": "2026-10-14T22:13:09-04:00"
+  },
+  "tube_offsets_r054": {
+   "md5_of_record": "b2afaf2bca6f62adc5908e1f68d3805f",
+   "created": "2026-10-14T21:58:40-04:00"
+  },
+  "variability_rebuild_rb_final": {
+   "md5_of_record": "a0710338b30fbeb772ef095b36ecbe40",
+   "created": "2026-10-04T04:02:21-04:00"
+  },
+  "variants_leave_self_out_rebuild_fa025": {
+   "md5_of_record": "71b60525b707371eff3d5066ab17e6cc",
+   "created": "2026-10-14T22:01:25-04:00"
+  }
+ }
+}

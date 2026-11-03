@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# MMORF for the blockface template's construction: put this folder FIRST on PATH when running the patched driver
+# (linc/construction/blockface_build.py driver_command). Every call runs MMORF 1.0.1 ($LINC_MMORF_EXE, its mmorf_cuda executable) with
+# the driver's arguments, except TPL's (the MRI template's b0, a b0-only member whose blockface image and cost are 0): an all-zero
+# moving image or mask makes MMORF's cost NaN, so for TPL's call only
+#   --config X                  -> X with the blockface lambda_scalar 0 at every level and no blockface bias (tpl_cfg.py)
+#   blockface --img_mov_scalar  -> <TPL>/BF/BF_mmorf_image.nii.gz (a stand-in, TPL's own b0: weight 0, never averaged)
+#   blockface --mask_mov_scalar -> <TPL>/BF/BF_mmorf_mask.nii.gz (ones)
+#   after rc 0: <bias_out>_0.nii.gz = ones (MMORF writes no blockface bias when it is not estimated; a missing file would make the
+#                                   driver average EVERY input's blockface without bias correction)
+# (blockface_build.py tpl-standins writes the two stand-ins.) The driver's own TPL files are untouched, so TPL enters the blockface
+# average at eps x 0. Ported from the analysis project's bftemplate/d2b/dispatch/mmorf (its TPL rewrite, unchanged; that dispatcher
+# also spread the calls over several hosts' GPUs, a scheduling convenience that does not change the results and is not released).
+set -u
+EXE=${LINC_MMORF_EXE:?set LINC_MMORF_EXE to the mmorf_cuda executable of MMORF 1.0.1}
+HERE=$(cd "$(dirname "$0")" && pwd)
+tpl=0; bias=""
+for x in "$@"; do case "$x" in */BF/TPL/BF/BF_unbiased_brain.nii.gz) tpl=1;; esac; done
+if [ $tpl = 1 ]; then
+  new=(); prev=""
+  for x in "$@"; do
+    y="$x"
+    case "$prev" in
+      --config) y="$(dirname "$x")/$(basename "${x%.ini}")_tpl.ini"
+                python3 "$HERE/tpl_cfg.py" "$x" "$y" 0 || { echo "TPL config FAILED from $x" >&2; exit 3; } ;;
+      --img_mov_scalar) case "$x" in */BF/TPL/BF/BF_unbiased_brain.nii.gz) y="${x%BF_unbiased_brain.nii.gz}BF_mmorf_image.nii.gz";; esac ;;
+      --mask_mov_scalar) case "$x" in */BF/TPL/BF/BF_brain_mask.nii.gz) y="${x%BF_brain_mask.nii.gz}BF_mmorf_mask.nii.gz";; esac ;;
+      --bias_out) bias="$x" ;;
+    esac
+    new+=("$y"); prev="$x"
+  done
+  set -- "${new[@]}"
+fi
+"$EXE" "$@"; rc=$?
+if [ $tpl = 1 ] && [ $rc -eq 0 ] && [ -n "$bias" ] && [ ! -e "${bias}_0.nii.gz" ]; then
+  FSLOUTPUTTYPE=NIFTI_GZ "${FSLDIR:?set FSLDIR}/bin/fslmaths" "${bias}_1.nii.gz" -mul 0 -add 1 "${bias}_0.nii.gz" || rc=4
+fi
+exit $rc

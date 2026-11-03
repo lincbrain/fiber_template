@@ -1,0 +1,42 @@
+# Products of record read by the caudal-completion reproduce scripts (reproduce/numbers/d3_*.py).
+# Paths are relative to $LINC_PRODUCTS (linc/paths.py products()). For validation, LINC_PRODUCTS = the analysis project, so these
+# are its own folders; a data release remaps them here only.
+
+# --- records of the analysis that later records read as inputs (dated snapshots, never rewritten) ---
+numbers_of_record: paper/numbers                 # d3_methods.json (read by d3_predicted_share), d3_A_sigma2_pred.json, d3p_A_sigma2_pred.json
+
+# --- the networks: one folder per network with last.pt (weights + training configuration), config.json, train_log.jsonl ---
+completion_runs: isbi2027/runs                   # d3_full_A_s0 (brains with MRI), d3p_full_A_s0 (stand-in b0), d3_lso_A_s0 / d3p_lso_A_s0
+                                                 # (leave slab out: the withheld-slab evaluation). A data release ships the copies
+                                                 # without machine paths, isbi2027/runs_public (models/completion_checksum_map.tsv)
+completion_eval: isbi2027/eval_v3                # d3_lso_A_s0.json: the withheld-slab evaluation of record (slab geometry per brain);
+                                                 # d3p_lso_A_s0.json (d3p_vs_d3_pseudo); d3_cv{0..5}_A_s0.json and their saved
+                                                 # predictions pred/d3_cv<k>_A_s0_<ID>_deployed.nii.gz (s_synthesis_depth)
+
+# --- the prepared brains (the networks' inputs; layout: linc/completion/__init__.py) and their join-plane records ---
+completion_inputs: isbi2027/data                 # canon_d3/<ID> (13 brains with MRI, own b0), canon_d3n_prod/<ID> (8 without MRI,
+                                                 # stand-in b0) and canon_d3n_prod_lo0/<ID> (the same, input as deployed: lower limit 0);
+                                                 # cache_<batch>/clean_face.json (the clean cut face of each brain)
+
+# --- the completed volumes of record (21 brains) and the masks the blockface template's construction reads ---
+completed: synthesis/out_d3_full                 # <ID>/<ID>_{bf_completed, synth_mask, seam_depth, ...}.nii.gz; summary_d3{,p}_full_A_s0.json
+completed_masks: synthesis/cache_d3              # <ID>/deploy/{brain, real_mask}.nii.gz (product grid)
+
+# --- per-brain data: the stand-in b0 carried into each brain with MRI (the domain-shift test) ---
+brain_data: data                                 # sub-<ID>/mri/nonlinear_s2val/<ID>_mri_full.nii.gz
+
+# --- Supplementary S1 (r057_s1_synthesis; figures s_synthesis_depth, s_synthesis_gallery): the network's own validation, tau^2 ---
+isbi_numbers: isbi2027_repo/isbi2027/numbers     # {table1,extra,results,data,compute}_v3.json, brain_labels_v4.json: the number records of
+                                                 # the network's own paper (dated snapshots; their evaluations are not part of this release)
+precision_tau2: bftemplate/d2b/s8/precision_d2bs8/tau2.json   # how the between-brain variance tau^2 was measured (the precision rule)
+
+# --- Supplementary S3 (lgnstn_budget_r059; figure s_lgnstn): the LGN/STN labels in the MRI template, the SARM reference ---
+lgnstn_labels: labels/push_current               # <ID>/<ID>_<struct>_mri-template_mask{,_demons}.nii.gz, <ID>_<struct>_bfnative_L2.nii.gz
+template_mri: template/mri                       # linc_mri_{b0,T2}.nii.gz (the template grid)
+sarm_in_template: mri/tc/atlas_v2/NMT_v2.0_sym/SARM_level6_in_template.nii.gz   # SARM level 6 carried from NMT v2 (nearest neighbor)
+sarm_key: labels/r058_nmt_tables/SARM_key_all.txt
+lgnstn_slab: labels/r059_L4/slab                 # the SARM nuclei split by hemisphere (SARM_<struct>_mri-template.nii.gz) and the slab
+                                                 # labels of record, as reproduce/numbers/lgnstn_budget_r059.py writes them (read by s_lgnstn)
+# the prepared folders of record, one per brain (cli/linc-complete --brain <folder>/<ID>; docs/walkthrough.md)
+completion_prepared: isbi2027/data/canon_d3                  # the 13 brains with MRI, their own b0
+completion_prepared_standin: isbi2027/data/canon_d3n_prod_lo0 # the 8 brains without MRI, the stand-in b0 as deployed (lower limit 0)

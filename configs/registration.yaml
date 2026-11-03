@@ -1,0 +1,67 @@
+# Parameters of the paper's registrations (Methods, "Image registration" and "Registration to the brain's own MRI and caudal
+# completion"; the route test's direct route). Read by linc/registration/ and cli/linc-register.
+
+# The registration of a brain's blockface to its own b0 (R1 v3, linc/registration/to_own_mri.py)
+to_own_mri:
+  b0_placement_search_deg: 90      # the b0 placed rigidly on the MRI template's 0.5 mm grid: FLIRT 6 dof, correlation ratio, +-90 deg
+  iso_mm: 0.15                     # the blockface's isotropic pair (luminance + mask) read by the linear stage
+  linear_resolution_mm: 0.5        # the linear fits run on the masked blockface anti-aliased to 0.5 mm
+  slab_inset_mm: 0.5               # the cost is restricted to the photographed slab, this far inside both end faces
+  dof7_iterations: 3               # FLIRT 7 dof (correlation ratio, no search), re-weighted each iteration
+  dof9_iterations: 10              # then 9 dof: rotation, translation and a scale along each axis
+  resolution_mm: 0.25              # the deformable stage's working grid
+  pad_rule: "4.5:8"                # >= 4.5 mm of zeros around the brains on the 0.5 mm b0 lattice (>= 4.0 mm at 0.25 mm), dims a multiple of 8
+  product_level: 1                 # the products are pulled from this level of the final blockface pyramid
+  product_normalize: true          # the products are divided by the pulled photographed support (>= 0.5; no dark rim at the
+                                   # photographed end), and each brain's native_end_crop_mm (configs/subjects) is applied first
+  featurereg:                      # linc/registration/featurereg.py (the other engine parameters at their defaults)
+    smooth_warp_sigma: 1.25        # warp smoothing (voxels)
+    smooth_grad_sigma: 1.5         # gradient smoothing (voxels)
+    lr: 1.0                        # Adam step
+    loss: cc                       # local normalized cross-correlation over the feature channels, background included
+    gate_features_by_mask: false   # the feature channels are not multiplied by the masks
+
+# A brain's blockface registered directly into a template (linc/registration/direct.py)
+direct:
+  to_blockface_template:           # route A of the route test: onto a blockface template (given at 0.5 mm; refined 2x for the deformable)
+    cut_margin_mm: -1.0            # the template cut to the placed brain's A-P extent, 1 mm inside both faces
+    flat_cut_mm: -2.0              # the template's flat brainstem cut (canonical z, through the run-113 -> canonical bridge), on both inputs
+    pad_rule: "4:8"                # >= 4 mm of zeros on every side of the 0.25 mm registration grid, dims a multiple of 8
+    resolution_mm: 0.25
+    product_level: 1
+    featurereg:                    # the masks gate the feature channels (the engine's default)
+      smooth_warp_sigma: 1.25
+      smooth_grad_sigma: 1.5
+      lr: 1.0
+      loss: cc
+  direct_placement:                # onto the MRI template's b0 (0.25 mm), for the brains without MRI
+    cut_margin_mm: -1.0
+    flat_cut_mm: -2.0              # canonical z (the MRI template's own frame)
+    pad_rule: "4.5:8"
+    dof9_scale_range: [0.6, 1.25]  # the 9-dof stage is kept only if every scale lies in this range
+    resolution_mm: 0.25
+    product_level: 1
+    featurereg:
+      smooth_warp_sigma: 1.25
+      smooth_grad_sigma: 1.5
+      lr: 1.0
+      loss: cc
+      gate_features_by_mask: false
+
+# The registration QC (linc/registration/qc.py, `linc-register qc`; Methods, "Evaluation of the pathway"): the gate of the analysis
+# project's code/regqc.py. The outline check's thresholds are configs/link.yaml `outline`.
+qc:
+  scale_lo: 0.9                    # same-animal registrations: every principal scale of the linear part in [0.9, 1.1]
+  scale_hi: 1.1
+  rot_yz_deg: 30.0                 # |rotation about y|, |about z| below this (after the optional 180-degree absorption)
+  ncc_min: 0.6                     # NCC in the evaluation mask (the 1 mm interior of both masks)
+  cross_modal_ncc_min: 0.25        # -NCC for an inverted-contrast pair (blockface vs b0): calibrated on the 12 production R1
+                                   # registrations and deliberate gross errors (every 10/30/180-degree rotation and 4 mm shift <= 0.238)
+  folds_max: 0                     # folded voxels allowed inside the fixed brain mask
+  drift_flag_p95_mm: 6.0           # the displacement's p95 inside the fixed brain mask: flagged above this,
+  drift_fail_p95_mm: 8.0           # failed above this (calibrated on 95 rows: good R1 2.1-4.9 mm, gross failures 9.35-12.31 mm)
+  cross_animal:                    # a registration to a template made of other animals: an isotropic size difference is physiology
+    aniso_max: 1.10                # anisotropy (max/min scale) gated at this (reported only for blockface -> MRI template placements)
+    iso_lo: 0.80                   # isotropic scale in [0.80, 1.25]
+    iso_hi: 1.25
+

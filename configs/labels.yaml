@@ -1,0 +1,67 @@
+# Labels on histology: pushed onto the blockface, interpolated between sections, carried into the MRI template
+# (paper Methods, "Histology registration and label propagation"). Read by linc/histology/{labels,interpolate,carry}.py and
+# cli/linc-labels. Paths are relative to $LINC_DATA/sub-<ID>/ (CONVENTIONS.md); "{S}" is the LINC identifier.
+
+# --- per-brain layout of the inputs and outputs ---
+layout:
+  annotations: histology/annotations            # one OME-Zarr per annotation class, <class>.ome.zarr: (c, z, y, x) stacks
+                                                # aligned with the histology image stack (LINC rawdata micr/masks/)
+  section_map: histology/section_map.tsv        # stack index z -> section id, section number, level-0 extent (h0, w0)
+  match_table: histology/match_table.txt        # section number -> blockface photograph number per piece (whole, left,
+                                                # right, cerebellum): rows "lo,hi,mul,add,..." (photo = num * mul + add)
+  # the histology -> blockface registration's output folder (cli/linc-histology --out = histology/registration):
+  piece_masks: histology/registration/tissue_masks   # <section>_<NNNN>.png: tissue mask of each histology piece (level 6)
+  blockface_pieces: histology/registration/pieces    # <section>_<NNNN>.png: the blockface piece each histology piece is registered to
+  registrations: histology/registration/tirl         # <piece>/: TIRL chain (moving.timg, fixed4_nonlinear.timg) and the
+                                                     # registered RGB (moving4_nonlinear_rgb.png)
+  grid: blockface/{S}_blockface_L2.nii.gz       # the target grid: level 1 of the reconstructed store (cols, slices, rows)
+  moving: histology/registration/moving         # <piece>.png: each piece's moving image (the registration's input)
+  structures: histology/structures              # LGN/STN: the annotators' stack histo_L6.nii.gz, one histo_L6_<struct>.nii.gz
+                                                # per structure, frame_map.json {frame: section number}, transforms/
+                                                # f<frame>_<piece>.tfm (frame -> moving grid, SimpleITK) and fitted_moving/
+                                                # <piece>.png (the moving rendering each transform was fitted on)
+  labels: labels                                # outputs: labels/blockface/{tracer,structures}/ (pushed and interpolated),
+                                                # labels/template/{tracer,structures}/ (carried)
+  interp: histology/interp                      # interpolated histology RGB, its provenance channel and interp.json
+  regions: histology/regions.nii.gz             # the atlas regions on the blockface frame (left 1, right 2, cerebellum 3,
+                                                # punch holes 4): the hemispheres of the v2 interpolation (made at the spacing
+                                                # configs/histology.yaml regions.made_at_spacing_um lists, else the grid's)
+
+# --- push (Methods: annotations follow each piece's registration onto its blockface slice) ---
+push:
+  annotation_level: 6                           # pyramid level the annotations are read at (2^6 x the level-0 pixel)
+  exclude_classes: [Outline]                    # the tissue outline is not a tracer class
+  pool: 2                                       # max-pool factor from the blockface piece grid (store level 0) to the
+                                                # target grid (store level 1)
+  outside_code: 255                             # TIRL's value outside the moving domain (mapped to background)
+  structures: [lhLGN, lhSTN, rhLGN, rhSTN]      # the solid labels pushed in two stages
+
+# --- interpolation between sections (Methods: demons between consecutive labeled sections; label SDF blend) ---
+interpolate:
+  method: v2                                    # v2 (since 3 Nov 2026): groups, per-hemisphere pairing, end extension;
+                                                # v1: the per-class interpolation of the earlier records (and the RGB volume)
+  hemisphere_min_share: 0.05                    # v2: a slice holds a hemisphere when >= this share of its footprint lies in it
+  gap_mm_max: 2.5                               # pairs farther apart than this are not interpolated
+  footprint_dice_min: 0.8                       # nor pairs whose tissue footprints disagree (a partial section)
+  upsample: 4                                   # the reconstruction's demons schedule (below) is scaled by this to the
+                                                # label grid (80 um in-plane)
+  far: 60.0                                     # signed distance (pixels) of a label absent from a section
+  luminance: [0.299, 0.587, 0.114]              # RGB -> luminance (Rec. 601) for the demons input
+  demons:                                       # multi-resolution symmetric-forces demons (the reconstruction's schedule)
+    shrink: [4, 2, 1]                           # x upsample
+    sigma: [2, 1, 0]                            # x upsample (pixels)
+    iters: 200
+    dev: 1.5                                    # field smoothing (standard deviation)
+    dilate: 15                                  # x upsample / 4: dilation (pixels) of the footprint union masking the input
+
+# --- carry into the MRI template (Methods: one anti-aliased linear resample) ---
+carry:
+  ref: mri/linc_mri_T2.nii.gz                   # the template grid ($LINC_TEMPLATE/...)
+  brain: mri/linc_mri_brainmask.nii.gz          # the template brain mask (QC only)
+  template_voxel_mm: 0.25                       # MRI template voxel
+  crop_margin_mm: 2.0                           # each label is cropped to its bounding box plus this margin
+  foot: 0.1                                     # footprint threshold on the carried density (~ one annotated source voxel
+                                                # inside a template voxel)
+  solid: 0.5                                    # the solid-label threshold (density > solid)
+  aa_rule: "per source axis: Gaussian FWHM = max(source spacing, target voxel), then ONE linear resample"
+  slab: 8                                       # template slices per evaluation of a pull map
