@@ -66,7 +66,7 @@ On a GPU, `predict` needs about 9 GB of free memory for `bf_mask3d` and `bf_hole
 Each card lists them in full. In short:
 - **All four:** they were trained on this project's brains, camera setups and MRI acquisitions; a new setup, stain or contrast needs
   checking against a few hand-made masks.
-- **`mri_brainmask`:** it was trained on b0 and T2-weighted images only. Its masks are used as predicted, like the hand-made masks,
+- **`mri_brainmask`:** it was trained on b0 and T2-weighted images only. Its masks are used as predicted, like the masks of record,
   which leave the spaces inside the brain unfilled; a few held-out masks had small detached parts, which `--postprocess
   largest_component` removes.
 - **`bf_mask2d`:** its labels are the volumes' masks, one label section for several photographs, so they lag the photograph where

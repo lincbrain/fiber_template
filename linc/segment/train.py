@@ -2,7 +2,7 @@
 the shipped model). The recipe is nnU-Net's (Isensee et al. 2021), reimplemented with the augmentation on the GPU.
 
 You need
-  a task file: the cases (each an image and its hand-made label), the five folds (the brains each fold holds out) and the task's
+  a task file: the cases (each an image and its label, a mask of record), the five folds (the brains each fold holds out) and the task's
   settings. The four of record are configs/segment/<model>.json (mri_brainmask, bf_mask2d, bf_mask3d, bf_holes); their images and
   labels are read under $LINC_PRODUCTS. A CUDA GPU: about 2 h per run on an RTX 6000 Ada.
 

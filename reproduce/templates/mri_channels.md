@@ -27,7 +27,7 @@ Per brain, under `$LINC_DATA/sub-<ID>/` (file names: `prep.layout` in the config
 | diffusion series (bias-corrected; volume 0 = b0), the eddy-corrected series + `.ecclog`, b-table, fit mask | `linc.construction.mri_raw dwi` (the diffusion scans) |
 | 32-echo MSME (denoised) | `linc.construction.mri_raw msme` |
 | SANDI fit `est.fracs.mean` / `est.fracs.std` + the micro session's diffusion series | `linc.construction.mri_raw dt2` (the microstructure session) |
-| hand-drawn masks: dwi, T2, micro (one per session) | released with the data |
+| brain masks: dwi, T2, micro (one per session; from the masks' network loop, edited by hand at the end) | released with the data |
 | the **final** hand-edited brain mask on the b0 grid (values exactly {0, 1}) | released with the data (`<ID>_mask_EDIT`) |
 | `xfm/t2-native__to__b0-native/`, `xfm/micro-native__to__b0-native/` (one ITK displacement field each; the initial affine is inside it) | `linc.construction.mri_register t2` / `micro` (ANTs affine, then anatomix + FireANTs) |
 | the brain → NMT_v2.0_sym ITK affine and the SARM level-6 labels transformed to the b0 grid | `linc.construction.mri_register nmt` (NMT registered to the b0) |
@@ -37,7 +37,7 @@ Per brain, under `$LINC_DATA/sub-<ID>/` (file names: `prep.layout` in the config
 For each of MF283, MF284, MF285, MF286 (`$ID`):
 
 ```bash
-# staging, from mri_raw's folders <raw>/dwi, msme, dt2 (the hand masks in place under masks/): raw images under their hand
+# staging, from mri_raw's folders <raw>/dwi, msme, dt2 (the brain masks in place under masks/): raw images under their hand
 # mask's header; N4 b0 and T2; echo 5 of the MSME; SANDI fractions renormalized; the tensor's files under dwi/raw/
 python -m linc.construction.mri_prep stage --subject $ID --raw <raw>
 # the tensor (config prep.tensor_bmax): dtifit on the eddy-corrected b <= 4800 volumes, rotated + gradient-checked b-vectors

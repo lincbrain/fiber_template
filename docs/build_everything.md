@@ -33,7 +33,7 @@ and numbers records to `$LINC_NUMBERS`.
 | a new brain without MRI in the blockface template | `cli/linc-register blockface-template` | `registration.yaml` | linc, GPU | about 15 minutes |
 | a brain's histology, registered to its photographs | `cli/linc-histology all` | `histology.yaml` | tirl | about 2 hours |
 | a brain's labels in the template | `cli/linc-labels push`, `interpolate`, `carry`, `connect` | `labels.yaml` | tirl, then linc | about 40 minutes |
-| a segmentation network, trained on the hand-drawn and hand-corrected masks | `cli/linc-segment stage` (the blockface networks' training cases), then `cli/linc-segment train --task configs/segment/<model>.json --fold all` | `segment/<model>.json` | deep, GPU with about 10 GB free | about 2 hours per network |
+| a segmentation network, trained on the masks drawn or corrected by hand | `cli/linc-segment stage` (the blockface networks' training cases), then `cli/linc-segment train --task configs/segment/<model>.json --fold all` | `segment/<model>.json` | deep, GPU with about 10 GB free | about 2 hours per network |
 | the synthesis network, trained on each brain's b0 and photographs | `cli/linc-complete train --root <prepared folders>` | `completion.yaml` | deep, GPU with about 8 GB free | about 1 hour per network |
 | the numbers records | `make numbers`, `make numbers-gpu`, `make numbers-figures` | `reproduce/numbers/` | each record's own | `docs/reproduce.md` |
 | the figures | `make figures` | `figures.yaml` | linc; viz3d for Fig. 10 | `docs/reproduce.md` |

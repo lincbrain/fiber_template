@@ -17,10 +17,10 @@ N4         ANTs N4BiasFieldCorrection with the recipe's parameters (`prep.n4`: f
            [80x60x40,1e-7]); skipped with a message when ANTs is not found (the uncorrected image is normalized instead)
 Every step and its tool (path, version, or "not found: skipped") is written to <output>.provenance.json beside the main output.
 Then: `linc-register mri --subject <ID> --place-b0 <main output> <mask> --new-brain` (the b0 placed on the template's 0.5 mm frame).
-Validated 3 Nov 2026 on MF283 (MF1), ANTs 2.5.4: with the hand masks of record, the b0 path reproduces dwi/b0_brain.nii.gz,
+Validated 3 Nov 2026 on MF283 (MF1), ANTs 2.5.4: with the brain masks of record, the b0 path reproduces dwi/b0_brain.nii.gz,
 dwi/b0_brain_n4.nii.gz and its bias field, and the T2 path (echo 5 of the MSME, --volume 4) t2/echo.nii.gz, t2/echo_n4.nii.gz, its bias
 and t2/echo_n4_brain.nii.gz, voxel for voxel (0 voxels differ, same headers; N4 is deterministic here). Without a mask, the network's
-mask has Dice 0.980 with the hand mask (2.9 s on an RTX 6000 Ada), the whole b0 path takes 22 s wall, and `linc-register`'s
+mask has Dice 0.980 with the mask of record (2.9 s on an RTX 6000 Ada), the whole b0 path takes 22 s wall, and `linc-register`'s
 placement of its outputs on the template's 0.5 mm frame gives a placed mask with Dice 0.94 against the frame's silhouette.
 --denoise adds about 10 CPU-minutes (DenoiseImage, 0.25 mm b0). Without ANTs, both optional steps are skipped with a message.
 """

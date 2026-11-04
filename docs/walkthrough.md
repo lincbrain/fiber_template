@@ -35,7 +35,7 @@ The command takes 23 s: 2 s for the network's brain mask on the GPU and about 4 
 
 It ends by printing the next command for the brain it prepared, its first registration; section 3 shows it for MM2. `docs/mri.md` gives the options.
 
-With the brain's hand-made mask, `masks/dwi_brain_mask.nii.gz`, it reproduces the paper's preprocessed files of MF1 voxel for voxel
+With the brain's hand-edited mask, `masks/dwi_brain_mask.nii.gz`, it reproduces the paper's preprocessed files of MF1 voxel for voxel
 (32 s, on a CPU):
 
 ```bash

@@ -393,8 +393,8 @@ def main(model):
 
     # ---- ceiling (T1)
     if raw.get("annotator_ceiling"):                                      # the task key's name is historical: masks, not annotators
-        out["ceiling"] = dict(raw["annotator_ceiling"], what="three independent hand masks per brain, drawn on the dwi, T2 and micro "
-                              "images of MF283-286 and compared on one grid (not three annotators)")
+        out["ceiling"] = dict(raw["annotator_ceiling"], what="three hand-edited masks per brain, on the dwi, T2 and micro images of MF283-286, from the same procedure, compared on one grid (not three annotators)",
+                              source="MF283-286, three hand-edited masks each (dwi, T2, micro), compared on one grid")
 
     # ---- the shipped ("all") model
     if done.get(FOLDS_ALL):

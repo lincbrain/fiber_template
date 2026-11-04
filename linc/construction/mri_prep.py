@@ -3,9 +3,9 @@
 Each of the four MRI brains (MF1-MF4 = LINC MF283-MF286) has three sessions on three grids: diffusion (b0 and tensor, 0.25 mm: the
 reference grid), T2 (multi-echo MSME, 0.5 mm) and SANDI microstructure (0.5 mm). The steps, in order:
 
-  1. staging (`stage`, from linc.construction.mri_raw's outputs): each raw image under its hand mask's header (the masks were drawn
+  1. staging (`stage`, from linc.construction.mri_raw's outputs): each raw image under its brain mask's header (the masks were drawn
      after re-origining, so the mask affine is the authority; same array, no resampling); b0 and T2 N4-corrected; echo 5 of the MSME
-     is the T2 image; SANDI fractions renormalized to sum 1 inside the micro hand mask; the tensor's diffusion files under dwi/raw/.
+     is the T2 image; SANDI fractions renormalized to sum 1 inside the micro brain mask; the tensor's diffusion files under dwi/raw/.
   2. the D9 tensor (`tensor_d9`): dtifit on the eddy-corrected b <= 4800 volumes (1 b0 + 42 DWIs), b-vectors rotated by each
      volume's eddy_correct matrix (polar part), axis convention from MRtrix dwigradcheck; staged on the dwi grid.
   3. the within-MRI registrations T2 -> b0 and micro -> b0 (one ITK displacement field each, the initial affine inside it) are
@@ -14,8 +14,8 @@ reference grid), T2 (multi-echo MSME, 0.5 mm) and SANDI microstructure (0.5 mm).
   5. the construction inputs (`prepare`): every payload resampled ONCE onto the canonical grid (antsApplyTransforms with the
      canonical rigid first, then the within-MRI warp), every channel cut to the brain's final hand-edited mask:
        t2_modelmask  T2 head x final mask, 1-99 percentile -> (0, 4095]
-       frac1, frac2  the hand-mask SANDI fractions (renormalized on the carried micro mask) x final mask; voxels of the final mask
-                     outside the micro hand mask (~1 %) have no values and stay 0 (never filled)
+       frac1, frac2  the session-mask SANDI fractions (renormalized on the carried micro mask) x final mask; voxels of the final mask
+                     outside the micro brain mask (~1 %) have no values and stay 0 (never filled)
        tensor_vr     the D9 tensor through FSL vecreg -t (the canonical rigid as a FLIRT matrix; vecreg reorients), x final mask
        b0            the N4-corrected b0 head x final mask (normalized like T2)
        model_mask    the final mask (lossless uint8 copy; the mask file itself is never modified)
@@ -140,7 +140,7 @@ def mask_image(src, mask, dst, normalize=False):
 
 
 def normalize_fracs_and_weights(b):
-    """frac1 + frac2 = 1 inside the micro hand mask; the SDs scaled the same way and turned into precision weights."""
+    """frac1 + frac2 = 1 inside the micro brain mask; the SDs scaled the same way and turned into precision weights."""
     f1, f2 = nib.load(str(b("frac1_raw"))), nib.load(str(b("frac2_raw")))
     s1, s2 = nib.load(str(b("std1_raw"))), nib.load(str(b("std2_raw")))
     mask = nib.load(str(b("micro_mask"))).get_fdata(dtype=np.float32) > 0
@@ -174,7 +174,7 @@ def normalize_fracs_and_weights(b):
 
 
 def stage_raw(b, dwi_series, msme, micro_series):
-    """Raw data onto the hand-mask grids (the three hand masks in place under masks/). dwi_series / micro_series: the
+    """Raw data onto the brain masks' grids (the three session masks in place under masks/). dwi_series / micro_series: the
     bias-corrected 4-D diffusion series (volume 0 = b0); msme: the denoised 32-echo MSME."""
     for d in ("dwi", "t2", "micro"):
         (b.mri_root / d).mkdir(parents=True, exist_ok=True)
@@ -188,7 +188,7 @@ def stage_raw(b, dwi_series, msme, micro_series):
 
 
 def stage_dwi(b):
-    """b0 x dwi hand mask, N4, normalized (the b0 of the canonical frame and of the within-MRI registrations)."""
+    """b0 x dwi brain mask, N4, normalized (the b0 of the canonical frame and of the within-MRI registrations)."""
     mask = b("dwi_mask")
     brain = b.mri_root / "dwi" / "b0_brain.nii.gz"
     mask_image(b("b0"), mask, brain)
@@ -229,7 +229,7 @@ def stage(b, raw):
         raise SystemExit(f"{b('b0')} exists: this brain is staged already")
     missing = [str(b(k)) for k in ("dwi_mask", "t2_mask", "micro_mask") if not b(k).exists()]
     if missing:
-        raise SystemExit("the hand masks are inputs: missing " + ", ".join(missing))
+        raise SystemExit("the brain masks are inputs: missing " + ", ".join(missing))
     stage_raw(b, d / "dwi_biascorr.nii.gz", t / "msme_denoised_las.nii.gz", m / "dwi_biascorr.nii.gz")
     stage_dwi(b); stage_t2(b)
     sandi = m / "microstructure" / "SANDIdot"
@@ -246,7 +246,7 @@ def tensor_d9(eddy_series, ecclog, bvecs, bvals, fit_mask, dwi_mask, out_dir, th
     """dtifit on the eddy-corrected b <= bmax volumes with rotated, gradient-checked b-vectors, staged onto the dwi grid.
 
     eddy_series: the denoised, eddy_correct-ed 4-D series (all acquired volumes) and its .ecclog; bvecs / bvals: the acquired
-    gradient table; fit_mask: the fit support; dwi_mask: the dwi hand mask (its header = the dwi grid). Writes
+    gradient table; fit_mask: the fit support; dwi_mask: the dwi brain mask (its header = the dwi grid). Writes
     out_dir/tensor_d9_dwigrid.nii.gz (+ run.json with the QC against current_tensor when given)."""
     from scipy.linalg import polar
     od = Path(out_dir); od.mkdir(parents=True, exist_ok=True)
@@ -387,13 +387,13 @@ def prepare(b, final_mask, tensor, out, canonical_json=None, check_inputs=True):
         n = nib.load(str(out / src))
         m = np.asanyarray(nib.load(str(out / mask_name)).dataobj) > 0.5
         nib.save(nib.Nifti1Image(C.extract(n, m), n.affine, n.header), str(out / dst))
-    C.renormalise_compositional(out)                                            # hand-mask fractions on the carried micro mask
+    C.renormalise_compositional(out)                                            # session-mask fractions on the carried micro mask
     rd = lambda f: np.asanyarray(nib.load(str(out / f)).dataobj)                # noqa: E731
     mm = rd("model_mask.nii.gz") > 0.5
     os.replace(out / "b0.nii.gz", out / "b0_dwimask.nii.gz")
     bh = nib.load(str(out / "b0_head.nii.gz"))
     nib.save(nib.Nifti1Image(C.extract(bh, mm), bh.affine, bh.header), str(out / "b0.nii.gz"))
-    for k in (1, 2):                                                            # hand-mask fractions x final mask
+    for k in (1, 2):                                                            # session-mask fractions x final mask
         os.replace(out / f"frac{k}.nii.gz", out / f"frac{k}_handmask.nii.gz")
         fi = nib.load(str(out / f"frac{k}_handmask.nii.gz")); a = np.asanyarray(fi.dataobj).astype(np.float32)
         a[~mm] = 0

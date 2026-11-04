@@ -53,7 +53,7 @@ $PY cli/linc-register mri --subject <ID> --place-b0 $M/dwi/b0_brain_n4.nii.gz $M
 
 For a T2-weighted image, give `$M/t2/echo_n4_brain.nii.gz` and `$M/masks/t2_brain_mask.nii.gz` there.
 
-On one brain of the paper (`sub-MF283`, MF1 in the paper), with its hand-made masks, the b0 and the T2-weighted paths reproduce the
+On one brain of the paper (`sub-MF283`, MF1 in the paper), with its hand-edited masks, the b0 and the T2-weighted paths reproduce the
 paper's preprocessed files voxel for voxel. The b0 path took 19 s and the T2-weighted path 24 s of wall time (N4 about 4 CPU-minutes);
 the network's mask added 3 s on a GPU, and `--denoise` 31 s. On the CPU, the network's mask of that 0.25 mm b0 took 40 s and
 differed from the GPU's in 14 voxels.

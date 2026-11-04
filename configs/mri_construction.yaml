@@ -82,7 +82,7 @@ raw:
 prep:
   layout:                                  # per-brain MRI files, relative to the brain's MRI folder (default $LINC_DATA/sub-<ID>/mri)
     b0: dwi/b0.nii.gz                      # diffusion b0, 0.25 mm: every brain's reference grid
-    b0_n4_brain: dwi/b0_brain_n4.nii.gz    # b0 x dwi hand mask, N4-corrected, normalized
+    b0_n4_brain: dwi/b0_brain_n4.nii.gz    # b0 x dwi brain mask, N4-corrected, normalized
     b0_n4_bias: dwi/b0_brain_n4_bias.nii.gz
     dwi_mask: masks/dwi_brain_mask.nii.gz
     t2_echo: t2/echo.nii.gz                # echo 5 of the 32-echo MSME (0.5 mm)
@@ -94,7 +94,7 @@ prep:
     frac2_raw: micro/frac2_brain.nii.gz
     std1_raw: micro/std1_brain.nii.gz
     std2_raw: micro/std2_brain.nii.gz
-    frac1: micro/frac1_brain_norm.nii.gz   # SANDI fractions renormalized to sum 1 inside the micro hand mask
+    frac1: micro/frac1_brain_norm.nii.gz   # SANDI fractions renormalized to sum 1 inside the micro brain mask
     frac2: micro/frac2_brain_norm.nii.gz
     micro_mask: masks/micro_brain_mask.nii.gz
     # the build driver's inputs (reproduce/templates/build_mri_channels.py; added 3 Nov 2026, the names above unchanged):

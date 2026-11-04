@@ -1682,8 +1682,8 @@
    "dice": 0.978,
    "dice_sd": 0.0038,
    "hd95_mm": 0.85,
-   "source": "code/mrimask/label_ceiling.py: MF283-286, three hand masks each (dwi, T2, micro) compared on one grid",
-   "what": "three independent hand masks per brain, drawn on the dwi, T2 and micro images of MF283-286 and compared on one grid (not three annotators)"
+   "source": "MF283-286, three hand-edited masks each (dwi, T2, micro), compared on one grid",
+   "what": "three hand-edited masks per brain, on the dwi, T2 and micro images of MF283-286, from the same procedure, compared on one grid (not three annotators)"
   },
   "all_model": {
    "run": "models_wrapup/runs/mri_brainmask/fold_all",

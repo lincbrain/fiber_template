@@ -96,7 +96,7 @@ You get
   in --out (a new folder): imagesTr/, labelsTr/ (bf_holes also masksTr/) and <model>.json, the task file pointed at these cases, with
   the same folds and rules. Train with `cli/linc-segment train --task <out>/<model>.json --fold <0-4|all>`.
 
-mri_brainmask needs no staging: its task file reads the images and hand-made masks where they are.""")
+mri_brainmask needs no staging: its task file reads the images and masks of record where they are.""")
     ap.add_argument("--task", required=True, type=Path, help="configs/segment/<model>.json")
     ap.add_argument("--out", required=True, type=Path, help="a new folder for the cases")
     a = ap.parse_args(argv)

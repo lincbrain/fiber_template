@@ -3,7 +3,7 @@ build, the brain's links up to the template.
 
 You need
   the brain's staged MRI folder (linc.construction.mri_prep stage, or the data release): dwi/b0_brain_n4, t2/echo_n4_brain,
-  micro/b0_brain_n4 and the three hand masks (masks/); for nmt, NMT v2.0 sym with its SARM labels (configs/link.yaml
+  micro/b0_brain_n4 and the three session masks (masks/); for nmt, NMT v2.0 sym with its SARM labels (configs/link.yaml
   `atlas_reference`: the published templates are downloaded, not redistributed); ANTs 2.5.4 (ANTSPATH); env/anatomix.yml
   ($ANATOMIX_PYTHON) and a GPU.
 

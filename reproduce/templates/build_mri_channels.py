@@ -5,7 +5,7 @@ You need, for every brain of configs/mri_construction.yaml `inputs`, under $LINC
   either its Bruker sessions under $LINC_RAW (the config's `raw`; the raw-* and stage-* steps make the next two items from them)
   or, from the data release, mri/dwi/raw/: the denoised, eddy-corrected diffusion series with its .ecclog, b-vectors, b-values and
   fit mask, and mri/dwi/, t2/, micro/: the staged b0, the 32-echo MSME and the SANDI fractions (start with --from tensor-<ID>);
-  mri/masks/: the hand masks of each session and the final hand-edited brain mask (inputs drawn by hand); from the data release
+  mri/masks/: each session's brain mask and the final brain mask (from the masks' network loop, edited by hand at the end; inputs of the build); from the data release
   or made by the nmt-, t2reg- and microreg-<ID> steps: mri/landmarks/ (the SARM labels and the brain -> NMT v2 affine on the b0
   grid) and xfm/t2-native__to__b0-native, xfm/micro-native__to__b0-native (the within-brain registrations);
   FSL (FSLDIR), ANTs (ANTSPATH), MRtrix (MRTRIX), for the raw steps Julia (JULIA, env/julia) and TORTOISE (TORTOISE, a GPU), and

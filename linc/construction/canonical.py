@@ -333,7 +333,7 @@ def canonical_frame_nmt(R_nmt, normal, anchor_subject, anchor_canonical):
 def write_frames_nmt(b0_n4_brain, dwi_mask, landmarks_json, nmt_affine, out_json, subject=None, refine=True):
     """The brain's rigid map into the canonical frame -> canonical.json (T_subject_to_canonical, RAS 4 x 4).
 
-    b0_n4_brain, dwi_mask: the brain's b0 (N4, brain-extracted) and its dwi hand mask; landmarks_json: AC/PC (`landmarks_from_labels`);
+    b0_n4_brain, dwi_mask: the brain's b0 (N4, brain-extracted) and its dwi brain mask; landmarks_json: AC/PC (`landmarks_from_labels`);
     nmt_affine: the subject -> NMT ITK affine (fixed = subject, moving = NMT)."""
     c = _c()
     lm = json.loads(Path(landmarks_json).read_text())
