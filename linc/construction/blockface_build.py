@@ -4,7 +4,7 @@ code, and the two run folders.
 
 You need
   each brain's volume with its missing sections synthesized (linc/completion), with its photographed fraction, color, brain mask
-  and b0; the MRI template's b0; the patched template construction driver (LINC_TEMPLATE_DRIVER: the template_construction_v1
+  and b0; the MRI template's b0; the patched template construction driver (LINC_BLOCKFACE_DRIVER: the template_construction_v1
   folder of an mm-template-construction checkout at f4907f4, edited with
   linc/construction/patches/mm-template-construction_v1_blockface.edits.json by apply_edits.py); members, grids and parameters:
   configs/blockface_template.yaml.
@@ -98,9 +98,9 @@ def _canon_grid(canon):
 
 
 def _driver_dir():
-    d = os.environ.get("LINC_TEMPLATE_DRIVER")
+    d = os.environ.get("LINC_BLOCKFACE_DRIVER")
     if not d or not os.path.exists(os.path.join(d, "run_template_construction.py")):
-        raise RuntimeError("set LINC_TEMPLATE_DRIVER to the patched template_construction_v1 folder (" + DRIVER_PATCHED + ")")
+        raise RuntimeError("set LINC_BLOCKFACE_DRIVER to the patched template_construction_v1 folder (" + DRIVER_PATCHED + ")")
     if "MASKW" not in open(os.path.join(d, "run_template_construction.py")).read():   # the MRI build's driver would run, and average without the weights
         raise RuntimeError(f"{d} is not the blockface template's driver: it has no mask-weighted construction (" + DRIVER_PATCHED + ")")
     return d
@@ -1015,6 +1015,34 @@ def driver_command(run, extra=()):
              "-aff", "True", "-nln", "True", *extra])
 
 
+def cmd_member_warps(a):
+    """Every member's step-8 warp beside the template, and their list, d2_member_warps.json (the link's consistency check and member-entries
+    read them): each warp as MMORF wrote it, the grid an FSL warp needs, and where it is valid, by the rule of the template's construction."""
+    run, it, canon2, out = ab(a.run), ab(a.iteration), ab(a.canon2), ab(a.out)
+    os.makedirs(f"{out}/warps", exist_ok=True)
+    W = TCFG["members"]; nomri = set(W["without_mri"]); tpl = W["template_member"]; rows = []
+    for sid in json.load(open(f"{run}/run_spec.json"))["subject_ids"]:
+        mirror = sid != tpl and sid.endswith("f"); S = sid[:-1] if mirror else sid
+        src, o = f"{it}/{sid}_scalar_mod_01_to_template_warp_resampled_unbiased_full.nii.gz", f"{out}/warps/{sid}_{a.arm}_warp.nii.gz"
+        shutil.copy2(src, o)
+        row = dict(member=sid, subject=S, mirror=mirror, file=o, md5=md5(o), source=src, convention="fsl_rel", src_grid=f"{canon2}/{S}/t1_grey{'_flip' if mirror else ''}.nii.gz",
+                   direction="pull: template point inside the step-8 box -> this input's canon point (xfm.Warp(file, 'fsl_rel', src_grid))",
+                   grid="step-8 box (0.25 mm; a sub-box of the published grid, embed.json offset)")
+        if S == tpl:
+            row["link"] = "THE LINK: MRI template -> 2b template (step 8). The warp contains TPL's construction affine and its MMORF warp; TPL's canon world = the MRI template placed in the run-113 world by template/bridge_run113_to_canonical"
+            row["warp_validity"] = dict(valid_in="the MRI template's brain above the D11 plane (TPL: b0-only member; the link)", reason="TPL's b0 cost is 0 below the D11 plane (cut-face rule)")
+        elif S in nomri:
+            row["warp_validity"] = dict(valid_in="photographed tissue only",
+                                        reason="the author's step-8 rule (~23:2x): this brain's step-8 b0 cost = its blockface cost where not fully photographed, so in its never-photographed (synthetic) tissue neither channel drives the warp; the members outline check shows undershoot there (MF191/MF196/MF204/MR244 FAIL, 100 % of the far undershoot borders photographed fraction 0)",
+                                        never_photographed_tissue=f"use plan A's warp: {ab(a.plan_a_iteration)}/{sid}_scalar_mod_01_to_template_warp_resampled_unbiased_full.nii.gz",
+                                        evidence=["qc/d2b/undershoot_vs_photo_d2bs8.json", "qc/d2b/members_brain_outline_d2bs8.json", "qc/d2b/members_brain_outline_d2bA.json"])
+        else:
+            row["warp_validity"] = dict(valid_in="whole brain", reason="its own MRI's b0 drives the never-photographed tissue at full weight at step 8 too")
+        rows.append(row)
+    json.dump(dict(data=rows, iteration=it, run=run, created=dt.datetime.now().astimezone().isoformat(timespec="seconds")), open(f"{out}/d2_member_warps.json", "w"), indent=1)
+    print(f"{len(rows)} member warps -> {out}/warps, {out}/d2_member_warps.json", flush=True)
+
+
 def cmd_member_entries(a):
     """The registry entries bf-native -> bf-template of the template's brains without MRI, the route the paper's labels of MF8 took: the
     template point through the member's step-8 warp to its canon point, then the inverse of its rigid placement to the blockface. The warp
@@ -1091,6 +1119,9 @@ def main(argv=None):
     p.add_argument("--canon2", required=True); p.add_argument("--out", required=True)
     p = sp.add_parser("run-step8", help="the step-8 run tree"); p.add_argument("--canon2", required=True); p.add_argument("--plan-a", required=True)
     p.add_argument("--box", required=True); p.add_argument("--root", required=True); p.add_argument("--name", required=True)
+    p = sp.add_parser("member-warps", help="every member's step-8 warp beside the template, and their list")
+    p.add_argument("--run", required=True); p.add_argument("--iteration", required=True); p.add_argument("--plan-a-iteration", required=True)
+    p.add_argument("--canon2", required=True); p.add_argument("--arm", default="d2bs8"); p.add_argument("--out", required=True)
     p = sp.add_parser("member-entries", help="the registry entries bf-native -> bf-template of the brains without MRI")
     p.add_argument("--subjects", default=NOMRI8); p.add_argument("--registry-name", default="xfm", help="the entries go in $LINC_DATA/sub-<ID>/<this>/")
     p.add_argument("--s2lin-suffix", default="prod"); p.add_argument("--overwrite", action="store_true")
@@ -1131,7 +1162,7 @@ def main(argv=None):
     {"s8-frame": cmd_frame, "s8-inputs": cmd_inputs, "s8-box": cmd_box, "s8-boxcheck": cmd_boxcheck, "tpl-canon": cmd_tpl_canon,
      "tpl-costmask": cmd_tpl_costmask, "run-plan-a": cmd_assemble_plan_a, "copy-affine": cmd_copy_affine, "tpl-affine": cmd_tpl_affine,
      "affine-templates": cmd_affine_templates, "step8-weights": cmd_step8_weights, "run-step8": cmd_assemble_step8,
-     "tpl-standins": cmd_tpl_standins, "member-entries": cmd_member_entries, "s8-mats": cmd_mats, "s8-step7": cmd_step7, "step7-templates": cmd_step7_templates}[a.cmd](a)
+     "tpl-standins": cmd_tpl_standins, "member-entries": cmd_member_entries, "member-warps": cmd_member_warps, "s8-mats": cmd_mats, "s8-step7": cmd_step7, "step7-templates": cmd_step7_templates}[a.cmd](a)
 
 
 if __name__ == "__main__":

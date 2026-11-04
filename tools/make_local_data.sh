@@ -76,7 +76,7 @@ for S in "${IDS[@]}"; do
   # the registry: xfm/ is yours and starts empty (your runs write their entries there); xfm_record/ holds the entries of record for
   # comparison and for chains through steps you do not rerun: the plain xfm/ entries, with the blockface -> own b0 entry taken from
   # the R1 variant of record (configs/subjects/<ID>.yaml registration_to_own_mri.variant_of_record; the plain one is an older run) and,
-  # for a brain without MRI, the direct placement of record (xfm_d2s2_prod_s125/)
+  # for a brain without MRI, the direct placement of record (xfm_d2s2_prod_s125/) and its route through the blockface template (xfm_member/)
   mkdir -p "$dst/xfm"
   v=$(sed -n 's/^ *variant_of_record: *\([A-Za-z0-9_]*\).*/\1/p' "$REPO/configs/subjects/$S.yaml" 2>/dev/null | head -1)
   if [ -d "$src/xfm" ]; then
@@ -89,6 +89,9 @@ for S in "${IDS[@]}"; do
   fi
   if [ -z "$v" ] && [ -d "$src/xfm_d2s2_prod_s125" ]; then
     for e in "$src/xfm_d2s2_prod_s125"/*/; do e=${e%/}; farm "$e" "$dst/xfm_record/$(basename "$e")" xfm; done
+  fi
+  if [ -d "$src/xfm_member" ]; then       # a brain without MRI: its route through the template it helped build (construction warp, rigid placement)
+    for e in "$src/xfm_member"/*/; do e=${e%/}; farm "$e" "$dst/xfm_record/$(basename "$e")" xfm; done
   fi
   if is_rebuild "$S"; then                # the hand inputs only, as copies (linc-reconstruct writes the rest)
     mkdir -p "$dst/blockface/curated" "$dst/blockface/01_brainmask/01_final"

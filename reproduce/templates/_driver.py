@@ -28,12 +28,13 @@ sys.path.insert(0, str(REPO))
 
 
 class Step:
-    def __init__(self, name, stage, env, argv, outputs, inputs=(), est="", note="", setenv=None, gpu=False, fn=None, plan_argv=None):
+    def __init__(self, name, stage, env, argv, outputs, inputs=(), est="", note="", setenv=None, gpu=False, fn=None, plan_argv=None, driver_var="LINC_TEMPLATE_DRIVER"):
         """env: "linc" (this script's python, env/linc.yml), "mri" ($PY_MRI, env/linc.yml's python), "driver" (the patched template
         driver, env/linc.yml's python, MMORF on a GPU) or "anatomix" ($ANATOMIX_PYTHON, env/anatomix.yml: the feature-based registration engine). argv: the command after the python (a list), or a callable returning it (evaluated at run time,
-        e.g. the driver's command line, which reads the run tree). fn: a Python function run in-process instead of a command."""
+        e.g. the driver's command line, which reads the run tree). fn: a Python function run in-process instead of a command. driver_var: the variable naming the driver's folder (the blockface build has its own)."""
         self.name, self.stage, self.env, self.argv, self.outputs, self.inputs = name, stage, env, argv, list(outputs), list(inputs)
         self.est, self.note, self.setenv, self.gpu, self.fn, self.plan_argv = est, note, dict(setenv or {}), gpu, fn, plan_argv
+        self.driver_var = driver_var
 
     def command(self, plan=False):
         if self.fn is not None:
@@ -76,7 +77,7 @@ def _check_env(step):
     if step.env == "anatomix" and not os.environ.get("ANATOMIX_PYTHON"):
         need.append("ANATOMIX_PYTHON (the python of env/anatomix.yml)")
     if step.env == "driver":
-        for v, why in (("LINC_TEMPLATE_DRIVER", "the patched template_construction_v1 folder"), ("LINC_MMORF_EXE", "MMORF 1.0.1's mmorf_cuda"),
+        for v, why in ((step.driver_var, "the patched template_construction_v1 folder"), ("LINC_MMORF_EXE", "MMORF 1.0.1's mmorf_cuda"),
                        ("FSLDIR", "FSL 6.0.7.4")):
             if not os.environ.get(v):
                 need.append(f"{v} ({why})")

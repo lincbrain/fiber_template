@@ -51,6 +51,7 @@ def gate_config():
 PRESETS = {
     "bf2b0": dict(cross_modal=True, allow_180=True, cross_animal=False, aniso_report_only=False),        # blockface -> own b0 (R1)
     "direct": dict(cross_modal=True, allow_180=True, cross_animal=True, aniso_report_only=True),         # blockface -> MRI template
+    "bf2bftemplate": dict(cross_modal=False, allow_180=True, cross_animal=True, aniso_report_only=False),  # blockface -> blockface template (same contrast)
     "b02template": dict(cross_modal=False, allow_180=False, cross_animal=True, aniso_report_only=False),  # b0 -> MRI template (R5)
     "template2template": dict(cross_modal=False, allow_180=False, cross_animal=True, aniso_report_only=True),  # the link (b0 -> b0)
 }

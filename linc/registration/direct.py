@@ -268,8 +268,8 @@ def coarsen_template(grey_025, coverage_025, frame_05, out_grey, out_cov):
 def to_blockface_template(S, bf, template, template_coverage, outdir, cfg, bridge_json, device="cuda:0", xfm_root=None, overwrite=False):
     """Route A: the blockface onto a blockface template given at 0.5 mm (`template`, `template_coverage`; the route test coarsened its
     0.25 mm targets exactly 2x). bf = dict(iso_grey, final_mask, final_zarr). cfg = configs/registration.yaml `direct.to_blockface_template`.
-    Products in outdir: <S>_bf_in_template, <S>_bf_rgb_in_template, <S>_mask_in_template (0.25 mm), <S>_warp, <S>_dof7_world.txt; the
-    transform entry bf-native -> bf-template under xfm_root (default the registry, $LINC_DATA/sub-<ID>/xfm; overwrite=True replaces an
+    Products in outdir: <S>_bf_in_template, <S>_bf_rgb_in_template, <S>_mask_in_template (0.25 mm), <S>_mask_in_template_cut (with the
+    template's flat brainstem cut), <S>_warp, <S>_dof7_world.txt; the transform entry bf-native -> bf-template under xfm_root (default the registry, $LINC_DATA/sub-<ID>/xfm; overwrite=True replaces an
     existing entry, which linc/xfm.py backs up)."""
     d = str(outdir); os.makedirs(d, exist_ok=True)
     tpl = nib.load(str(template)); cov = np.asanyarray(nib.load(str(template_coverage)).dataobj) > 0.5
@@ -317,6 +317,7 @@ def to_blockface_template(S, bf, template, template_coverage, outdir, cfg, bridg
     nib.save(nib.Nifti1Image(grey, A25), f"{d}/{S}_bf_in_template.nii.gz")
     nib.save(nib.Nifti1Image(rgb, A25), f"{d}/{S}_bf_rgb_in_template.nii.gz")
     nib.save(nib.Nifti1Image(mk.astype(np.uint8), A25), f"{d}/{S}_mask_in_template.nii.gz")
+    nib.save(nib.Nifti1Image((mk & kz).astype(np.uint8), A25), f"{d}/{S}_mask_in_template_cut.nii.gz")   # at the template's flat brainstem cut: what the outline check compares
     shutil.rmtree(eng, ignore_errors=True)
     np.savetxt(f"{d}/{S}_linear_pull_ras.txt", np.linalg.inv(M))
     e = xfm.register("bf-native", "bf-template",                        # pull order: template point -> warp -> M^-1 -> blockface

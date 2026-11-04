@@ -43,6 +43,7 @@ to the template needs one b0 or T2-weighted image (`linc-mri prep`).
 | anatomix's feature network | `env/install.sh` fetches it once from Hugging Face, at a pinned revision, and checks it | `linc-register`, the registration between the two templates |
 | NMT v2 (symmetric), with its SARM and CHARM labels | your own copy, laid out as `configs/targets.yaml` says, under `configs/link.yaml` `inputs.atlas_reference` | the MRI template's frame and landmarks, the registrations to published templates, the comparison of targets, the label tables |
 | CIVM-R, INIA19 | your own copies, the same way (CIVM-R's license does not allow redistribution) | the registrations to published templates, the comparison of targets |
+| the blockface template in its own space | `$LINC_PRODUCTS/bftemplate/d2b/final_s8/` (the data release), with the frame and bridge of `$LINC_TEMPLATE` | `linc-register blockface-template` |
 | the paper's products | `$LINC_PRODUCTS` (the data release) | `make numbers`, `make figures`, the template builds |
 
 A new brain's settings go in `configs/subjects/<ID>.yaml`, copied from `configs/subjects/TEMPLATE.yaml`.

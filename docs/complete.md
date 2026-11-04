@@ -45,6 +45,7 @@ $PY_DEEP cli/linc-complete train --root <prepared folders>
 
 About 1 hour on a GPU, with about 8 GB free. It writes `last.pt`, which `linc-complete --model <folder>` reads, under
 `$LINC_WORK/completion/runs/`. `--protocol lso` trains the network of the withheld-slab evaluation. The stand-in network trains on folders made with
-`prepare --subject <ID> --out <folder> --targets-from <the prepared folders>`, from each brain's stand-in b0. A rerun follows the same recipe
-but is not bit for bit the same: on another GPU, the first epoch's losses differ in the third or fourth digit.
+`prepare --subject <ID> --out <folder> --targets-from <the prepared folders>`, from each brain's stand-in b0. A retrained network has the same recipe, not the
+same bits. Measured once, on the network for brains with MRI on the same GPU model: over the last 10 epochs, its total loss was 0.06 % from the
+paper's run while the weights differ, and on one brain (MF5) the synthesized tissue of the two networks correlated with a Pearson r of 0.95.
 

@@ -38,7 +38,7 @@ You get
     $PY cli/linc-register direct-placement --subject <ID> --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz \
         --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
     $PY cli/linc-register blockface-template --subject <ID>
-    $PY cli/linc-register qc --preset bf2b0|direct|b02template|template2template --fixed F --moved M [--warp W] [--mat A ...] [--entry DIR]
+    $PY cli/linc-register qc --preset bf2b0|direct|bf2bftemplate|b02template|template2template --fixed F --moved M [--warp W] [--mat A ...] [--entry DIR]
 
 Details. The paper's brains keep their masks and starting pose of record (configs/subjects/<ID>.yaml registration_to_own_mri); a
 new brain (no such entry, or --new-brain) gets an estimated starting pose. An existing registry entry is not replaced unless
@@ -248,8 +248,8 @@ def main():
     d.add_argument("--out", default=None); d.add_argument("--device", default="cuda:0")
     _registry_args(d)
     q = sp.add_parser("qc", help="the paper's registration QC of one registration (gate, outline, PNG; optionally into its registry entry)")
-    q.add_argument("--preset", required=True, choices=["bf2b0", "direct", "b02template", "template2template"],
-                   help="bf2b0: blockface -> own b0; direct: blockface -> MRI template; b02template: b0 -> MRI template; template2template: blockface template -> MRI template")
+    q.add_argument("--preset", required=True, choices=["bf2b0", "direct", "bf2bftemplate", "b02template", "template2template"],
+                   help="bf2b0: blockface -> own b0; direct: blockface -> MRI template; bf2bftemplate: blockface -> blockface template; b02template: b0 -> MRI template; template2template: blockface template -> MRI template")
     q.add_argument("--fixed", required=True); q.add_argument("--moved", required=True, help="the moved image on (or resampled to) the fixed grid")
     q.add_argument("--warp"); q.add_argument("--mat"); q.add_argument("--mat-kind", default="fsl", choices=["fsl", "world", "itk"])
     q.add_argument("--mat-src", help="FLIRT matrix: its moving image"); q.add_argument("--mat-ref", help="FLIRT matrix: its reference image")

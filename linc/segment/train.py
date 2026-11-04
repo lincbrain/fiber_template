@@ -25,9 +25,9 @@ You get  ($LINC_WORK/segment/runs/<task>/fold_<k>/, or --out)
     cli/linc-segment train --task configs/segment/<model>.json --plan        # the cases, folds, missing files, GPU hours; no training
 
 The runs of record made the four shipped models (fold all; $LINC_MODELS/segment/<model>) and the held-out scores of their records
-(folds 0-4; reproduce/numbers/segmodels_<model>_2026-11.py). On one GPU the recipe is deterministic: two runs gave bitwise identical
-weights (mri_brainmask, 2 epochs, RTX 4000 Ada, 3 Nov 2026). Whether another GPU model gives the same bits has not been
-measured.
+(folds 0-4; reproduce/numbers/segmodels_<model>_2026-11.py). On the GPU model of record the recipe reproduces the shipped weights: a full run of mri_brainmask, fold all, on another RTX 6000 Ada through this command
+gave a model.pt byte-identical to the shipped one (the same sha256; 4 Nov 2026). That is one of the 24 runs of record, and the other three models have not been retrained
+this way. Whether another GPU model gives the same bits has not been measured.
 """
 import argparse
 import datetime as dt

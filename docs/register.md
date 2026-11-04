@@ -4,7 +4,8 @@
 
 **What it does**
 1. with MRI: registers the blockface volume to the brain's own b0, then the b0 to the MRI template;
-2. without MRI: registers the blockface volume directly onto the MRI template's b0.
+2. without MRI: registers the blockface volume to the blockface template (the blockface-based alignment), and to the MRI template's b0
+   (the cross-modal alignment), whose stand-in b0 the synthesis reads.
 
 **You get** each registration as one entry, `$LINC_DATA/sub-<ID>/xfm/<from>__to__<to>/` (the warp, its matrices and `meta.json`),
 and its products and measures under `$LINC_WORK/`.
@@ -18,13 +19,16 @@ $PY cli/linc-register mri --subject MR252          # blockface -> the brain's ow
 $PY cli/linc-register mri-template --subject MR252 --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz \
     --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz                               # its b0 -> the MRI template (env/linc.yml)
 
-# the cross-modal alignment, for a brain without MRI: one registration onto the MRI template's b0 (env/linc.yml)
+# for a brain without MRI: the cross-modal alignment onto the MRI template's b0, for its stand-in b0 (env/linc.yml)
 $PY cli/linc-register direct-placement --subject MF191 --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz \
     --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
+# and the blockface-based alignment, through the blockface template (env/linc.yml)
+$PY cli/linc-register blockface-template --subject MF191
 ```
 
 Each runs on a GPU, and its memory grows with the brain's working grid. `mri` needs 15 to 25 GB, depending on the brain: MM2,
-MM5 and MM8 need more than a 24 GB card has free. `mri-template` needs 12 to 14 GB, and `direct-placement` 15 to 17 GB. Each prints its need and
+MM5 and MM8 need more than a 24 GB card has free. `mri-template` needs 12 to 14 GB, `direct-placement` 15 to 17 GB and `blockface-template`
+about 19 GB. Each prints its need and
 the card's free memory before its GPU stage, and stops if the card is short; then choose another card with `CUDA_VISIBLE_DEVICES`,
 or check the cards first with `nvidia-smi`. Run one registration at a time on a card.
 
@@ -52,6 +56,12 @@ $PY -m linc.xfm chain --from bf-native --to mri-template --subject MR252   # the
 The registry warns "link without passing QC" for entries written by `linc-register`, and `--strict` refuses them: the
 registrations of a new brain are unchecked until they are checked. The released entries of the paper's 21 brains hold the result
 of the paper's quality checks (all passed).
+
+`linc.xfm` chains transforms between spaces, through the entries of the brain and of `$LINC_TEMPLATE/xfm/` (the blockface template, the MRI
+template, NMT v2, INIA19 and CIVM-R, in both directions; transforms only, so give your own copy as `--ref` to resample into a published
+template). A chain uses the cross-modal alignment only when nothing else connects the two spaces, so a brain reaches the MRI template
+through its own MRI or the blockface template. An inverse link is solved by iteration at every voxel of `--ref`, so its time grows with
+that grid: use a coarse `--ref`.
 
 ## Check a registration
 

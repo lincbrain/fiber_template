@@ -119,8 +119,16 @@ laboratory's collection (MF283 for the paper's MF1, MR252 for MM2; `docs/specime
    In: the blockface volume and the prepared b0. Out: `sub-<ID>/xfm/bf-native__to__b0-native/` and
    `sub-<ID>/xfm/b0-native__to__mri-template/`.
 
-   A brain without MRI is registered once, onto the MRI template's b0, with `cli/linc-register direct-placement`. Out:
-   `sub-<ID>/xfm/bf-native__to__mri-template/`.
+   A brain without MRI is aligned through the blockface template (the blockface-based alignment), and `direct-placement` (the cross-modal
+   alignment) gives it the stand-in b0 that step 4 reads:
+
+   ```bash
+   $PY cli/linc-register direct-placement --subject <ID> --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz \
+       --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
+   $PY cli/linc-register blockface-template --subject <ID>
+   ```
+
+   Out: `sub-<ID>/mri/stand_in/` and `sub-<ID>/xfm/bf-native__to__bf-template/`.
 
 4. **Synthesize the missing caudal tissue**, so that the brain can be registered as a whole brain; the synthesized voxels are marked
    [`env/deep.yml`] (`docs/complete.md`):

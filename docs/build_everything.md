@@ -8,7 +8,8 @@ The whole method, from the raw data to the paper's numbers and figures.
 1. builds the MRI template from the scanner's files of four brains;
 2. prepares the MRI of each sectioned brain with MRI for its registration;
 3. reconstructs each brain's blockface volume from its photographs;
-4. aligns each blockface volume to the MRI template, through the brain's own MRI or, without MRI, by the cross-modal alignment;
+4. aligns each blockface volume to the MRI template, through the brain's own MRI or, without MRI, through the blockface template, once it
+   is built (the cross-modal alignment gives such a brain its stand-in b0);
 5. synthesizes each volume's missing caudal tissue;
 6. builds the blockface template from the 21 volumes with their synthesized tissue;
 7. registers the blockface template to the MRI template and registers the template to NMT v2, INIA19 and CIVM-R;
@@ -25,10 +26,11 @@ and numbers records to `$LINC_NUMBERS`.
 | a brain's blockface volume | `cli/linc-reconstruct all` | `blockface.yaml`, `subjects/<ID>.yaml` | tirl, GPU | about 10 hours per brain |
 | the blockface volume in its own b0 | `cli/linc-register mri` | `registration.yaml` | linc, GPU | 13 minutes |
 | the b0 in the MRI template | `cli/linc-register mri-template` | `registration.yaml` | linc, GPU | 4 minutes |
-| a brain without MRI in the MRI template | `cli/linc-register direct-placement` | `registration.yaml` | linc, GPU | 5 minutes |
+| a brain without MRI: its stand-in b0 | `cli/linc-register direct-placement` | `registration.yaml` | linc, GPU | 5 minutes |
 | the blockface volume with its synthesized tissue | `cli/linc-complete prepare`, then `cli/linc-complete` | `completion.yaml` | deep, GPU | 3 minutes |
 | the blockface template | `reproduce/templates/build_blockface_template.py` | `blockface_template.yaml` | linc; MMORF on a 48 GB GPU | 13 hours on the GPU, about 3 hours on a CPU |
 | the blockface template registered to the MRI template, and its registrations to published templates | `reproduce/templates/build_link.py` | `link.yaml` | linc, GPU | about 1 hour |
+| a new brain without MRI in the blockface template | `cli/linc-register blockface-template` | `registration.yaml` | linc, GPU | about 15 minutes |
 | a brain's histology, registered to its photographs | `cli/linc-histology all` | `histology.yaml` | tirl | about 2 hours |
 | a brain's labels in the template | `cli/linc-labels push`, `interpolate`, `carry` | `labels.yaml` | tirl, then linc | about 40 minutes |
 | a segmentation network, trained on the hand-drawn and hand-corrected masks | `cli/linc-segment stage` (the blockface networks' training cases), then `cli/linc-segment train --task configs/segment/<model>.json --fold all` | `segment/<model>.json` | deep, GPU with about 10 GB free | about 2 hours per network |
@@ -58,7 +60,8 @@ names under `$LINC_RAW`, or from the data release's preprocessed files (step `te
 one step, and `--from` and `--to` run a range. Each step writes a provenance JSON beside its output and is not rerun without `--force`.
 Outputs go to `--work`, by default under `$LINC_WORK`.
 
-The MMORF steps run through the template-construction driver (`LINC_TEMPLATE_DRIVER`, `linc/construction/patches/README.md`) and
+The MMORF steps run through the template-construction driver (`LINC_TEMPLATE_DRIVER` for the MRI build, `LINC_BLOCKFACE_DRIVER` for the
+blockface build; `linc/construction/patches/README.md`) and
 `LINC_MMORF_EXE`. The MRI build also needs FSL, ANTs and MRtrix3 (`FSLDIR`, `ANTSPATH`, `MRTRIX`). The registration between the two templates needs `ANATOMIX_PYTHON`.
 
 
@@ -69,12 +72,14 @@ Rerun with this code, and identical to the paper's files or differing as `docs/w
   and to NMT v2; MF2 to MF4, their microstructure session only;
 - the reconstruction of MM2, MF8 and MM14 from their photographs;
 - the registrations of MM2 and MF8, their synthesis, their histology, and MM2's labels;
+- one full training of two networks: `mri_brainmask`, whose weights came out byte-identical to the shipped ones on the same GPU model; and
+  the synthesis network, the same recipe but not the same bits (`docs/complete.md`);
 - some CPU steps of the template builds: for the MRI build, `tensor`, `landmarks`, `frames` and `prepare` on MF1, then `assemble` and
   `channels` on the paper's inputs and run; for the blockface build, `prep-frame` and `bf-view`; for the registration between the two templates, `link-prepare`. Each step was
   compared with the paper's files on its own; MF1 has not run as one chain from the scanner's files through `prepare`.
 
 Not rerun: the rest of the template builds, including their GPU stages (the MMORF runs and the registration between the two
-templates), and the full training of the networks. Their code and parameters are the paper's; only a few first epochs of training were compared with the paper's runs.
+templates), and the full training of the other networks. Their code and parameters are the paper's.
 
 ## Rebuilding a template
 

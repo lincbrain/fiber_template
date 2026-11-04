@@ -27,7 +27,7 @@ runs on one GPU (48 GB for the batch of record); everything else runs on CPU. Th
   ```
   git clone https://git.fmrib.ox.ac.uk/cart/mm-template-construction.git && cd mm-template-construction && git checkout f4907f4
   python <this repo>/linc/construction/patches/apply_edits.py <this repo>/linc/construction/patches/mm-template-construction_v1_blockface.edits.json .
-  export LINC_TEMPLATE_DRIVER=$PWD/template_construction_v1
+  export LINC_BLOCKFACE_DRIVER=$PWD/template_construction_v1    # its own variable: the MRI build's driver is another edit of the same file, and the build refuses it
   ```
   The patched file is the driver the template of record was built with (md5 `fa7771595c86ef23e797a1bb5016c07f`) up to the author tag
   of the local changes (17 lines: comments, one `--help` text, one docstring; no code change; patched md5

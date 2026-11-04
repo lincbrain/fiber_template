@@ -41,6 +41,7 @@ import sys
 import time
 from pathlib import Path
 
+import nibabel as nib
 import numpy as np
 
 from .. import paths, xfm
@@ -128,15 +129,26 @@ def nmt(b, out, device):
 
 
 def links(b, run, out):
-    R = recipe(); k = R["channels"]; run = Path(run)
+    R = recipe(); k = R["channels"]; mod = R["scalar_modalities"][0]["name"]; run = Path(run)
     grid = run / "standardspace.nii.gz"                               # the canonical grid, which is also the template's
     T = out / "T_subject_to_canonical.txt"
-    np.savetxt(T, np.asarray(json.loads((b.mri_root / "landmarks" / "canonical.json").read_text())["T_subject_to_canonical"], float))
-    xfm.register("b0-native", "mri-canonical", [("affine", "ras_push", T)], subject=b.subject, dst_grid=grid, src_grid=b("b0"),
-                 engine="the canonical frame (linc.construction.canonical)", root=b.xfm_root)
-    warp = run / "out" / f"nln_step_{k['step']:02d}" / f"iteration_{k['iteration']:02d}" / f"{b.subject}_scalar_mod_01_to_template_warp_resampled_unbiased_full.nii.gz"
-    return xfm.register("mri-canonical", "mri-template", [("warp", "fsl_rel", warp)], subject=b.subject, dst_grid=grid, src_grid=grid,
-                        engine="MMORF 1.0.1 through the patched template-construction driver", root=b.xfm_root)
+    M = np.asarray(json.loads((b.mri_root / "landmarks" / "canonical.json").read_text())["T_subject_to_canonical"], float)
+    np.savetxt(T, M)
+    e = xfm.register("b0-native", "mri-canonical", [("affine", "ras_push", T)], subject=b.subject, dst_grid=grid, src_grid=b("b0"),
+                     engine="the canonical frame (linc.construction.canonical)", root=b.xfm_root)
+    off = float(np.abs(M[:3, :3].T @ M[:3, :3] - np.eye(3)).max())    # rigid: its rotation part is orthonormal
+    xfm.set_qc(e.dir, "pass" if off < 1e-6 else "fail", check="the frame is rigid", orthonormality_error=off)
+    it = run / "out" / f"nln_step_{k['step']:02d}" / f"iteration_{k['iteration']:02d}"
+    warp = it / f"{b.subject}_scalar_mod_01_to_template_warp_resampled_unbiased_full.nii.gz"
+    e = xfm.register("mri-canonical", "mri-template", [("warp", "fsl_rel", warp)], subject=b.subject, dst_grid=grid, src_grid=grid,
+                     engine="MMORF 1.0.1 through the patched template-construction driver", root=b.xfm_root)
+    moved = out / "t2_input_in_template.nii.gz"                       # the entry against the driver's own resampling of this input
+    xfm.apply(xfm.Chain([e]), run / "data" / mod / b.subject / mod / f"{mod}_unbiased_brain.nii.gz", grid, moved)
+    x = np.asanyarray(nib.load(str(moved)).dataobj).astype(np.float64)
+    y = np.asanyarray(nib.load(str(it / f"{b.subject}_scalar_mod_01_brain_to_template.nii.gz")).dataobj).astype(np.float64)
+    r = float(np.corrcoef(x[y > 0], y[y > 0])[0, 1])
+    xfm.set_qc(e.dir, "pass" if r >= 0.95 else "fail", check="r with the driver's resampling of the brain's T2 input", r=round(r, 4))
+    return e
 
 
 def main(argv=None):

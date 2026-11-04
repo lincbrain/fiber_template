@@ -4,7 +4,7 @@
 You need
   env/linc.yml for every step ($PY_MRI names the same Python for the [mri] steps); a GPU with MMORF 1.0.1 (FSL's MultiMOdal
   Registration Framework, in env/linc.yml; 48 GB for the batch of record) for the two [driver] steps, and the edited template
-  construction driver (LINC_TEMPLATE_DRIVER, linc/construction/patches); LINC_MMORF_EXE and FSLDIR;
+  construction driver (LINC_BLOCKFACE_DRIVER, linc/construction/patches: the blockface edits, not the MRI build's); LINC_MMORF_EXE and FSLDIR;
   under $LINC_PRODUCTS (configs/products_blockface.yaml, products_completion.yaml): every member brain's volume with its missing
   sections synthesized, and the synthesis cache; the MRI template's frames, b0 and mask; the bridge (the rigid transform between
   the frame of record and the template's stereotaxic frame); the affine stage of record (bf_plan_a_affine) and the final average's
@@ -19,7 +19,7 @@ What it does (one line per stage; --plan lists every step with its command, inpu
 You get
   under --work (default $LINC_WORK/build_blockface_template): the member folders (canon*), the frames and the eighth step's box, the
   two run folders (runs/), and the template in final/ (on the eighth step's box) and final_run113/ (the published files: grayscale,
-  RGB, b0, masks, NIfTI).
+  RGB, b0, masks, NIfTI; warps/ and d2_member_warps.json, each member's warp).
 
     python reproduce/templates/build_blockface_template.py --plan                 every step, its environment, time, inputs, outputs
     python reproduce/templates/build_blockface_template.py --step prep-frame      one step (or several, in order)
@@ -67,7 +67,7 @@ def make_steps(W, paths):
         return argv
 
     def driver_plan(run, *extra):
-        return ["$LINC_TEMPLATE_DRIVER/run_template_construction.py", "--input_scalar", f"{run}/data/BF/", f"{run}/data/B0/", "--config",
+        return ["$LINC_BLOCKFACE_DRIVER/run_template_construction.py", "--input_scalar", f"{run}/data/BF/", f"{run}/data/B0/", "--config",
                 f"{run}/config/", "--tree", f"{run}/config/data_structure.tree", "--standardspace", f"{run}/standardspace.nii.gz", "--subids",
                 f"{run}/subject_ids.csv", "--dof", "6", "-o", f"{run}/out/", "...", *extra]
 
@@ -113,7 +113,7 @@ def make_steps(W, paths):
           [run_a / "data" / "BF" / tpl / "BF" / "BF_mmorf_mask.nii.gz"], [run_a, w("canon_tpl")], "1 min", "TPL's stand-in blockface image and ones mask for its MMORF call"),
         S("plan-a-mmorf", pa_lbl, "driver", driver(run_a, *mm_a),
           [it7], [run_a], "5 h", f"MMORF, {na} steps x {ni} iterations (record: one 48 GB RTX 6000 Ada, 4 Oct 18:45-23:39)", drv, gpu=True,
-          plan_argv=driver_plan(run_a, *mm_a)),
+          plan_argv=driver_plan(run_a, *mm_a), driver_var="LINC_BLOCKFACE_DRIVER"),
         # 3. step 8
         S("s8-frame", s8_lbl, "linc", [*B, "s8-frame", "--canon", w("canon"), "--out", w(f"frame_canon_{ta}.nii.gz")],
           [w(f"frame_canon_{ta}.nii.gz")], [w("canon")], "1 min"),
@@ -150,7 +150,7 @@ def make_steps(W, paths):
           f"the step-{s8 - 1} templates and standardspace (the driver's averaging)"),
         S("step8-mmorf", s8_lbl, "driver", driver(run_8, *mm_8),
           [it8], [run_8], "8 h", f"MMORF at {v8:g} mm knots, {ni8} iterations (record: 4 Oct 23:45 - 5 Oct 07:29)", drv, gpu=True,
-          plan_argv=driver_plan(run_8, *mm_8)),
+          plan_argv=driver_plan(run_8, *mm_8), driver_var="LINC_BLOCKFACE_DRIVER"),
         # 4. finish and publish
         S("bf-view", "4. finish and publish", "linc", [], [view], [run_8], "1 s",
           "the step-8 run without TPL, for the blockface finish (implicit in the recipe)", fn=bf_view),
@@ -164,6 +164,8 @@ def make_steps(W, paths):
           [w("final", f"{r8}_b0.nii.gz")], [run_8, w("canon2_tpl"), w("canon2_s8w")], "10 min", "the b0 channel, the same warps"),
         S("embed", "4. finish and publish", "linc", [*B, "embed", "--run", run_8, "--src", w("final"), "--dst", w("final_run113")],
           [w("final_run113")], [w("final")], "2 min", "the box products onto the run-113 grid's 2x refinement: the published files"),
+        S("member-warps", "4. finish and publish", "linc", [*B, "member-warps", "--run", run_8, "--iteration", it8, "--plan-a-iteration", it7, "--canon2", w("canon2_tpl"), "--arm", r8, "--out", w("final_run113")],
+          [w("final_run113", "d2_member_warps.json")], [it8, w("final_run113"), w("canon2_tpl")], "2 min", "every member's step-8 warp and their list, which the link's consistency check reads"),
     ]
 
 

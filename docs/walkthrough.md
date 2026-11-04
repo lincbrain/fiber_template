@@ -8,7 +8,7 @@ GPU, shared with other jobs.
 |---|---|---|
 | MF1 | `sub-MF283` | the preparation of a brain's MRI |
 | MM2 | `sub-MR252` | the MRI-based alignment: reconstruction, registration to its own MRI and to the MRI template, synthesis, histology, labels |
-| MF8 | `sub-MF191` | a brain without MRI: the cross-modal alignment, synthesis from a stand-in b0, histology |
+| MF8 | `sub-MF191` | a brain without MRI: the cross-modal alignment, synthesis from a stand-in b0, the blockface-based alignment, histology, labels |
 | MM14 | `sub-MR263` | the reconstruction of a brain without MRI |
 
 ## Before you start
@@ -176,6 +176,27 @@ $PY cli/linc-register qc --preset direct --fixed $P/_fixed_0.25.nii.gz --moved $
 
 It takes 19 s on a CPU and ends with `outline PASS`; the anisotropy of the scales is reported for a cross-modal alignment, not checked.
 
+### A brain without MRI, through the blockface template
+
+The paper aligns a brain without MRI to the template through the blockface template (the blockface-based alignment); the cross-modal
+alignment above serves its stand-in b0. MF8 is a member of the blockface template, so its route in the paper is its own warp from the
+template's construction (section 6). A new brain runs `blockface-template`, then its check, and the chain to the template:
+
+```bash
+$PY cli/linc-register blockface-template --subject <ID>
+P=$LINC_WORK/register_direct/<ID>
+$PY cli/linc-register qc --preset bf2bftemplate --fixed $P/_fixed_0.25.nii.gz --moved $P/<ID>_bf_in_template.nii.gz --warp $P/<ID>_warp.nii.gz \
+    --mat $P/<ID>_dof7_world.txt --mat-kind world --fixed-mask $P/_fixed_mask_0.25.nii.gz \
+    --moved-mask $P/<ID>_mask_in_template_cut.nii.gz --outline-target $P/_fixed_mask_0.25.nii.gz \
+    --entry $LINC_DATA/sub-<ID>/xfm/bf-native__to__bf-template --name <ID>
+$PY -m linc.xfm chain --from bf-native --to mri-template --subject <ID>
+```
+
+It writes `$LINC_DATA/sub-<ID>/xfm/bf-native__to__bf-template/`. On MF8, as a demonstration, it took 15 minutes with the machine and the
+card busy, with 19 GB of GPU memory and 2.4 GB of RAM, and the check passed. There is no record to compare it with, because MF8 is a
+member. The two routes are not interchangeable: for MF8, the point each gives in the blockface volume differs by a median of 0.52 mm
+(99th percentile 4.0 mm, largest 5.2 mm).
+
 ## 4. Synthesize the missing caudal tissue (MM2, MF8)
 
 Each brain in two steps: `prepare` makes its folder from its products (on a CPU), then the networks synthesize (on the GPU).
@@ -307,3 +328,20 @@ $PY tools/compare_nifti.py $D/template/tracer $P/tracer_template_v2/MR252 \
 ```
 
 All 6 labels on the sections, 7 interpolated labels and 21 template files were identical to the paper's.
+
+MF8's labels go through its warp from the construction of the blockface template, then the registration of that template to the MRI
+template. The transform is valid in photographed tissue only:
+
+```bash
+E=$LINC_DATA/sub-MF191/xfm_record/bf-native__to__bf-template
+$PY cli/linc-labels carry --subject MF191 --out $LINC_WORK/labels_mf8 \
+    --labels $LINC_PRODUCTS/labels/tracer_v2/MF191/MF191_*_bfnative_L2_demons.nii.gz \
+    --map $LINC_TEMPLATE/xfm/bf-template__to__mri-template:full \
+    --warp $E/MF191_d2bs8_warp.nii.gz:fsl_rel:$E/src_grid.nii.gz --ras-pull $E/MF191_rigid_pull_ras.txt
+P=$LINC_PRODUCTS/labels/tracer_template_v2/MF191
+$PY tools/compare_nifti.py $LINC_WORK/labels_mf8 $P \
+    $(cd $P && ls MF191_*_mri-template.nii.gz MF191_*_mri-template_density.nii.gz MF191_*_mri-template_footprint.nii.gz)
+```
+
+The first command takes about 1 minute on a CPU with 1.8 GB of RAM, and about 5 minutes on a loaded node. All 30 files were identical to
+the paper's.
