@@ -58,6 +58,9 @@ Each model applies the post-processing its `spec.json` names, as in the table. `
 `largest_component`, `largest_cc_fill` (the largest connected component, its holes filled) or `fill_holes` (enclosed holes filled
 on the output grid, so at native size for a native photograph).
 
+On a GPU, `predict` needs about 9 GB of free memory for `bf_mask3d` and `bf_holes`, 5 GB for `mri_brainmask` and 1 GB for
+`bf_mask2d`.
+
 ## Known limitations
 
 Each card lists them in full. In short:
@@ -71,7 +74,8 @@ Each card lists them in full. In short:
   fills holes, which the labels leave out (the ventricles and fissures).
 - **`bf_mask3d`:** at surfaces facing the front of the brain, where tissue below the cut surface shows through the ice, its mask
   reaches slightly beyond the masks of record, which follow the cut face.
-- **`bf_holes`:** the tubes are thin, so its Dice is low even when it detects the tubes. Its rule keeps tubes in the left hemisphere
+- **`bf_holes`:** the tubes are thin, so its Dice is low even when it detects the tubes; its median centerline Dice (clDice) over
+  the held-out brains is 0.940. Its rule keeps tubes in the left hemisphere
   only, where they were drilled; a brain with tubes on the right is outside its scope.
 
 ## In the blockface reconstruction

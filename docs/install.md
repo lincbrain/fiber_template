@@ -60,7 +60,7 @@ Two engines are not on PyPI at the paper's versions and are installed from their
 | ANTs | 2.5.4 | `ANTSPATH` |
 | MRtrix3 | 3.0.2, for the MRI from the scanner's files and the tensor step of the MRI channels' build (`docs/build_everything.md`) | `MRTRIX` |
 | TORTOISE | V4.1.0, for the second diffusion session only (`mri_raw dt2`): a free download from the NIH after registration, run as a container on an NVIDIA GPU | `TORTOISE` (the folder that holds `TORTOISEProcess`) |
-| Julia | 1.11.4, for the MRI from the scanner's files only, with the packages of `env/julia` installed in `JULIA_DEPOT_PATH` | `JULIA` |
+| Julia | 1.11.4, for the MRI from the scanner's files only: `env/install.sh --with-mri-raw` installs it with the packages of `env/julia` | `JULIA`, `JULIA_DEPOT_PATH` |
 | the anatomix environment's Python | see `env/anatomix.yml` | `ANATOMIX_PYTHON` |
 | the deep-learning environment's Python, for the segmentation models | see `env/deep.yml` | `LINC_SEGMENT_PYTHON` |
 | TIRL | 3.6.3 (`env/tirl.yml`), found beside the running Python | `TIRL_BIN` only to point at another installation |

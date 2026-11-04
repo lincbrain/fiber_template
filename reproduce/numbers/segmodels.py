@@ -77,6 +77,27 @@ def pooled(rows):
                 n_cases=len(rows), n_brains=len({r["subject"] for r in rows}))
 
 
+CLDICE_TASKS = ("bf_holes",)                # thin tubular labels: Dice falls with one wall voxel; centerline Dice follows the tube's course
+CLDICE_RULE = ("centerline Dice (clDice; Shit et al. 2021): 2 Tprec Tsens / (Tprec + Tsens), Tprec = |skel(P) & L| / |skel(P)|, "
+               "Tsens = |skel(L) & P| / |skel(L)|; skeletons by skimage's 3D skeletonize on the label grid")
+
+
+def cldice(pred, label):
+    """centerline Dice of two binary volumes on one grid (CLDICE_RULE)"""
+    from skimage.morphology import skeletonize
+    P, L = pred > 0, label > 0
+    assert P.shape == L.shape, (P.shape, L.shape)
+    sp, sl = skeletonize(P) > 0, skeletonize(L) > 0
+    tp = float((sp & L).sum() / sp.sum()) if sp.any() else 0.0
+    ts = float((sl & P).sum() / sl.sum()) if sl.any() else 0.0
+    return dict(cldice=2 * tp * ts / (tp + ts) if tp + ts else 0.0, tprec=tp, tsens=ts)
+
+
+def _cldice_job(job):
+    cid, pred, label, dim = job
+    return cid, cldice(io.read_label(str(pred), dim)[0], io.read_label(str(label), dim)[0])
+
+
 def parameters(model_pt):
     import torch
     sd = torch.load(model_pt, map_location="cpu", weights_only=True)
@@ -256,6 +277,18 @@ def main(model):
     if any("modality" in r for r in per_case):
         cv["per_modality"] = {m: pooled([r for r in counted if r.get("modality") == m]) for m in sorted({r.get("modality") for r in counted})}
     cv["per_brain_summary"] = brain_summary(cv["per_brain"])
+    if a.task in CLDICE_TASKS:                                            # the masks as shipped: val_pred, after the task's rule
+        from concurrent.futures import ProcessPoolExecutor
+        with ProcessPoolExecutor(min(16, max(1, len(counted)))) as ex:
+            cl = dict(ex.map(_cldice_job, [(r["case"], next((runs[r["fold"]] / "val_pred").glob(f"{r['case']}.*")), cases[r["case"]]["label"], dim)
+                                           for r in counted]))
+        for r in counted:
+            r.update(cl[r["case"]])
+        for b, v in cv["per_brain"].items():
+            v["cldice"] = med([r["cldice"] for r in counted if r["subject"] == b])
+        c = [v["cldice"] for v in cv["per_brain"].values()]
+        cv["per_brain_summary"].update(cldice_median=med(c), cldice_min=min(c), cldice_max=max(c))
+        cv["cldice_rule"] = CLDICE_RULE
     for blk in ("outline", "without"):                                    # per brain, each brain counting once
         if any(blk in r for r in counted):
             cv[f"per_brain_{blk}"] = {b: dict(dice_median=med([r[blk]["dice"] for r in rr]),
@@ -315,6 +348,20 @@ def main(model):
     out["incumbent"]["fair_subset"]["per_brain"] = fair_per_brain(fair, new_by, lambda x: x["dice"])
     out["incumbent"]["fair_subset"]["per_brain_summary"] = fair_summary(out["incumbent"]["fair_subset"]["per_brain"])
     fs = out["incumbent"]["fair_subset"]
+    if a.task in CLDICE_TASKS:                                            # the same measure on the brains held out by both networks
+        p_of = {j[0]: j[2] for j in jobs}
+        with ProcessPoolExecutor(min(16, max(1, len(fair)))) as ex:
+            ci = dict(ex.map(_cldice_job, [(r["case"], p_of[r["case"]], cases[r["case"]]["label"], dim) for r in fair]))
+        for r in fair:
+            r.update(ci[r["case"]])
+        pb = fs["per_brain"]
+        for b, v in pb.items():
+            rr = [r for r in fair if r["subject"] == b]
+            v["incumbent_cldice"] = med([r["cldice"] for r in rr]); v["new_cldice"] = med([new_by[r["case"]]["cldice"] for r in rr])
+        fs["per_brain_summary"].update(incumbent_cldice_median=med([v["incumbent_cldice"] for v in pb.values()]),
+                                       new_cldice_median=med([v["new_cldice"] for v in pb.values()]),
+                                       paired_cldice_diff_median=med([v["new_cldice"] - v["incumbent_cldice"] for v in pb.values()]),
+                                       new_cldice_higher_brains=sum(v["new_cldice"] > v["incumbent_cldice"] for v in pb.values()))
     if fs["paired_dice_diff_median"] is not None:
         fs["margin"] = MARGIN; fs["within_margin"] = bool(fs["paired_dice_diff_median"] >= -MARGIN)
         if a.task in COMPARISON_NOTE:

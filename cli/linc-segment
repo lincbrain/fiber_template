@@ -1,25 +1,39 @@
 #!/usr/bin/env python3
-"""Brain masks and marker tubes with the project's four segmentation models (linc/segment; models/segmentation.md). No nnU-Net.
+"""Segment brain masks and marker tubes with the project's four networks, and train those networks again (linc/segment;
+models/segmentation.md describes the networks).
 
-Quick start (weights in $LINC_MODELS/segment/<model>; environment env/deep.yml):
+You need
+  the environment env/deep.yml ($PY_DEEP) and a GPU for a whole volume; the trained weights in $LINC_MODELS/segment/<model>/, which come
+  with the data release (check them with models/verify_weights.py); and the input of the model you run:
+    mri_brainmask   one ex vivo MRI image (a b0 or a T2-weighted image), NIfTI
+    bf_mask2d       one blockface photograph (RGB PNG; --native for a photograph at its native size), or a folder of them (--in)
+    bf_mask3d       the blockface volume with its background: three NIfTI files, one per color channel
+    bf_holes        the masked color volume (three NIfTI files) and its brain mask (--mask, or --masks with --in)
+
+What it does
+  1. brings the image to the model's working resolution (mri_brainmask 0.5 mm; bf_mask3d and bf_holes the median voxel size of their
+     training brains; bf_mask2d a 4 x 4 block mean of a native photograph)
+  2. runs the network over the image in overlapping windows, averaged over mirrored copies of each window
+  3. resamples the class probabilities back to the input's grid and keeps the most probable class
+  4. applies the model's post-processing, the rule stored with its weights (spec.json): bf_mask2d fills enclosed holes; bf_mask3d keeps
+     the largest connected component and fills its holes; bf_holes keeps tubes in the left hemisphere inside the brain mask
+
+You get
+  a mask on the input's grid (uint8; NIfTI or PNG, as the input): the file --out, or <case><ext> in the folder --out with --in
+
     cli/linc-segment predict --model mri_brainmask --out b0_mask.nii.gz b0.nii.gz
-    cli/linc-segment predict --model bf_mask2d --native --in photos/ --out masks/     # a folder of <case>_0000.png photographs
+    cli/linc-segment predict --model bf_mask2d --native --in photos/ --out masks/      # a folder of <case>_0000.png photographs
     cli/linc-segment predict --model bf_mask3d --out mask.nii.gz vol_0000.nii.gz vol_0001.nii.gz vol_0002.nii.gz
+`cli/linc-segment predict -h` lists the options.
 
-The models (--model; or a model folder of your own):
-    mri_brainmask   any scalar ex vivo MRI (b0, T2) -> brain mask (resampled to 0.5 mm and back)
-    bf_mask2d       one blockface photograph (RGB) -> brain mask; native photographs with --native; enclosed holes filled
-    bf_mask3d       the background-intact RGB volume (one file per channel) -> brain mask; largest component, holes filled
-    bf_holes        the masked color volume -> marker tubes; needs the brain mask (--mask, or --masks with --in)
-A mask is written on the input's grid (uint8). `cli/linc-segment predict -h` lists the options.
-
-Training (the recipe of record; a CUDA GPU, about 2 h per run; `train -h` for what it needs, does and writes):
-    cli/linc-segment train --task configs/segment/<model>.json --fold <0-4|all>     # fold all = the shipped model
-    cli/linc-segment train --task configs/segment/<model>.json --plan               # cases, folds, missing files, GPU hours
-    cli/linc-segment score --task <task.json> --pred <folder | map.json> --out <scores.json> [--fold k]
-    cli/linc-segment folds --task <task.json>                                         # a new task's five folds, by brain
+To train the networks again (each command's -h says what it needs, does and writes):
+    $PY cli/linc-segment stage --task configs/segment/<model>.json --out DIR            # the blockface networks' training cases, from the data tree
+    cli/linc-segment train --task <task file> --fold <0-4|all> [--plan]                 # one fold; fold all gives the shipped model
+    cli/linc-segment score --task <task file> --pred <folder | map.json> --out <scores.json> [--fold k]
+    cli/linc-segment folds --task <task file>                                           # a new task's five folds, grouped by brain
 """
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -68,13 +82,41 @@ def predict(argv):
     return 0
 
 
+def stage(argv):
+    ap = argparse.ArgumentParser(prog="linc-segment stage", formatter_class=argparse.RawDescriptionHelpFormatter, description="""Build the training cases of a blockface network from the data tree, so that it can be trained again.
+
+You need
+  the environment env/linc.yml ($PY, not $PY_DEEP: the color store is an OME-Zarr store); a task file, configs/segment/<model>.json
+  (bf_mask2d, bf_mask3d or bf_holes), which names the brains; and each brain's reconstruction, $LINC_DATA/sub-<ID>/blockface
+  (linc/blockface/training.py lists the files).
+
+What it does
+  writes each case the way the network of record was trained on it, from the photographs or volumes and the hand-edited masks of record.
+
+You get
+  in --out (a new folder): imagesTr/, labelsTr/ (bf_holes also masksTr/) and <model>.json, the task file pointed at these cases, with
+  the same folds and rules. Train with `cli/linc-segment train --task <out>/<model>.json --fold <0-4|all>`.
+
+mri_brainmask needs no staging: its task file reads the images and hand-made masks where they are.""")
+    ap.add_argument("--task", required=True, type=Path, help="configs/segment/<model>.json")
+    ap.add_argument("--out", required=True, type=Path, help="a new folder for the cases")
+    a = ap.parse_args(argv)
+    if json.load(open(a.task))["task"] == "mri_brainmask":
+        print("mri_brainmask needs no staging: train with its task file as it is"); return 0
+    from linc.blockface.training import stage as run
+    print(run(str(a.task), str(a.out)))
+    return 0
+
+
 def main():
-    cmds = ("predict", "train", "score", "folds")
+    cmds = ("predict", "train", "stage", "score", "folds")
     if len(sys.argv) < 2 or sys.argv[1] not in cmds:
         print(__doc__); return 0 if len(sys.argv) > 1 and sys.argv[1] in ("-h", "--help") else 2
     cmd, rest = sys.argv[1], sys.argv[2:]
     if cmd == "predict":
         return predict(rest)
+    if cmd == "stage":
+        return stage(rest)
     import importlib
     return importlib.import_module(f"linc.segment.{cmd}").main(rest)
 

@@ -180,7 +180,7 @@ $PY_DEEP cli/linc-complete prepare --subject MR252 --out $LINC_WORK/prepared
 $PY_DEEP cli/linc-complete --brain $LINC_WORK/prepared/MR252 --out $LINC_WORK/complete
 ```
 
-About 2 minutes, then 32 s. The first prints `MR252: coarse [129, 165, 107] fine [258, 330, 214] z_f 67 d* 20 valid 4777773`, the
+About 2 minutes on a CPU, then 32 s on a GPU, with about 2 GB of its memory. The first prints `MR252: coarse [129, 165, 107] fine [258, 330, 214] z_f 67 d* 20 valid 4777773`, the
 second `MR252: predicted share 0.099, cut z_f 67`.
 
 MF8 has no MRI, so its folder is prepared from the stand-in b0, the MRI template's b0 transformed into the brain:

@@ -28,5 +28,5 @@ $PY_DEEP cli/linc-complete --brain $LINC_WORK/prepared/<ID> --out $LINC_WORK/com
 about a minute. A brain without MRI needs its stand-in b0 and registration inputs as flags (`--stand-in-b0 … --lo0`, with
 `--nonlin`, `--matrix`, `--brain-mask`); `prepare --help` and [`linc/completion/README.md`](../linc/completion/README.md) list them
 and how each is made. On MF5 (with MRI) and MM13 (without), `prepare` rebuilds the paper's folders array for array. The
-synthesis takes about 20 s per brain on a GPU. Three of the paper's prepared
+synthesis takes about 20 s per brain on a GPU, with about 2 GB of its memory. Three of the paper's prepared
 roots link into a sibling root; `python -m linc.completion.relocate <root> <new root>` makes a copy that works on another machine.

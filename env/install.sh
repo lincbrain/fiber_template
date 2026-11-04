@@ -2,7 +2,7 @@
 # Create the environments of this repository from env/*.yml, run the source installs their headers describe, install the package
 # into each, and check the result with `make test`. Needs conda (or mamba) and git on PATH; nothing else.
 #
-#   bash env/install.sh [--prefix DIR] [--tirl-src DIR] [--with-figures-3d] [--only NAME[,NAME...]] [--no-test]
+#   bash env/install.sh [--prefix DIR] [--tirl-src DIR] [--with-figures-3d] [--with-mri-raw] [--only NAME[,NAME...]]
 #
 #   --prefix DIR      where the environments go (default: envs/ in this clone): DIR/<the env file's name>, i.e. linc, linc-deep,
 #                     linc-anatomix, linc-tirl (linc-viz3d when asked); DIR/src holds the source checkouts
@@ -16,22 +16,27 @@
 #                     reset your account's TIRL script registry: install.sh points HOME into the prefix (DIR/src/tirl_home) for
 #                     that step; the pipeline needs neither file at run time
 #   --with-figures-3d also the 3D tracer figure's environment (env/viz3d.yml: pyvista on a headless VTK)
-#   --only NAMES      just these (linc, deep, anatomix, tirl, figures-3d)
+#   --with-mri-raw    also Julia 1.11.4 and its packages (env/julia), needed only to build the MRI channels from the raw Bruker sessions:
+#                     Fibers.jl (Anastasia Yendiki) converts the sessions, Microstructure.jl (Ting Gong) fits SANDI; the depot stays in DIR
+#   --only NAMES      just these (linc, deep, anatomix, tirl, figures-3d, mri-raw), without make test
 #
 # In order (expected duration on a cluster node with a fast network; most of it is downloading):
 #   linc      env/linc.yml        ~3 min   orchestration, the MRI construction (MMORF), registration's linear stages,
 #                                          the labels' interpolation, the numbers and most figures   -> PY (= PY_MRI), MMORF
 #   deep      env/deep.yml        ~6 min   segmentation models and tissue synthesis (torch 2.6 + CUDA 12.4)        -> PY_DEEP
 #   anatomix  env/anatomix.yml    ~9 min   the deformable registration engine (torch 2.13 + CUDA 12.6; anatomix and
-#                                          its FireANTs fork from their repositories at the pinned commits)    -> ANATOMIX_PYTHON
+#                                          its FireANTs fork from their repositories at the pinned commits, and the
+#                                          network's weights at the pinned revision)         -> ANATOMIX_PYTHON, HF_HOME
 #   tirl      env/tirl.yml        ~3 min   histology registration, reconstruction's Python steps (+ TIRL sources)   -> PY_TIRL
 #   figures-3d env/viz3d.yml     ~1 min   optional (--with-figures-3d): the 3D tracer scene                        -> PY_VIZ3D
+#   mri-raw   env/julia           ~5 min   optional (--with-mri-raw): Julia and its packages, 2.7 GB              -> JULIA, JULIA_DEPOT_PATH
 # then `make test` (~2 min). Every step prints what it runs.
 # In all (linc, deep, anatomix, tirl, then make test): about 20-25 min and about 22 GB in the prefix (measured from fresh clones on
 # this project's cluster, 3 Nov 2026: 18.5 and 20.3 min; linc 1.3 GB, deep 5.5 GB, anatomix 7.1 GB, tirl 2.7 GB, sources 0.3 GB; figures-3d
 # adds 1.1 GB). About 5 GB of that is downloads: conda's package cache in DIR/src/conda_pkgs (set CONDA_PKGS_DIRS to use another one) and
 # pip's in DIR/src/pip_cache; both can be removed once the build is done. A shared conda's own package folder is not written.
-# Network access is needed (conda channels, PyPI, the PyTorch and VTK wheel indexes, and GitHub for anatomix and FireANTs). Outside the
+# Network access is needed at install only (conda channels, PyPI, the PyTorch and VTK wheel indexes, GitHub for anatomix and FireANTs,
+# huggingface.co for anatomix's weights, 105 MB; julialang.org and the General registry with --with-mri-raw). Outside the
 # prefix it writes only small files: conda's list of environments and notices (~/.conda/environments.txt, ~/.cache/conda), matplotlib's
 # font list (~/.cache/matplotlib), the GPU driver's compute cache (~/.nv), and make test's logs in $TMPDIR (default /tmp).
 # `pip check` in linc-anatomix lists three requirements the FireANTs fork declares but the engine never imports (hydra-core,
@@ -43,11 +48,11 @@
 # At the end it writes DIR/linc_envs.sh: `source` it to point the pipeline at these environments.
 set -u
 REPO=$(cd "$(dirname "$0")/.." && pwd)
-PREFIX="$REPO/envs"; TIRL_SRC="${LINC_TIRL_SRC:-}"; VIZ3D=0; ONLY=""; TEST=1   # LINC_TIRL_SRC: the TIRL sources (env/lab.sh)
+PREFIX="$REPO/envs"; TIRL_SRC="${LINC_TIRL_SRC:-}"; VIZ3D=0; MRIRAW=0; ONLY=""   # LINC_TIRL_SRC: the TIRL sources (env/lab.sh)
 while [ $# -gt 0 ]; do
   case $1 in
     --prefix) PREFIX=$2; shift 2;; --tirl-src) TIRL_SRC=$2; shift 2;; --with-figures-3d) VIZ3D=1; shift;;
-    --only) ONLY=$2; shift 2;; --no-test) TEST=0; shift;;
+    --with-mri-raw) MRIRAW=1; shift;; --only) ONLY=$2; shift 2;;
     -h|--help) awk 'NR > 1 && /^#/ {print; next} NR > 1 {exit}' "$0"; exit 0;;
     *) echo "unknown argument: $1 (see --help)"; exit 2;;
   esac
@@ -95,6 +100,15 @@ if want anatomix; then
       { [ -d "$B" ] || run git clone https://github.com/neel-dey/FireANTs "$B"; } &&
       run git -C "$B" checkout 21ae072 && run "$P" -m pip install --no-deps -e "$B" || fails=$((fails + 1))
     else say "anatomix: anatomix and fireants already installed: skipped"; fi
+    # the network's weights, once, at the revision of record (env/anatomix.yml's header): linc_envs.sh then keeps runs offline, reading them here
+    H="$PREFIX/src/hf_home"; rev=$(grep -o 'revision [0-9a-f]\{40\}' "$REPO/env/anatomix.yml" | cut -d' ' -f2); sha=$(grep -o 'sha256 [0-9a-f]\{64\}' "$REPO/env/anatomix.yml" | cut -d' ' -f2)
+    if [ ! -f "$H/hub/models--neeldey--anatomix/refs/main" ]; then
+      say "anatomix: the weights anatomix-dev-vit.pth at revision $rev"
+      f=$("${CLEAN[@]}" HF_HOME="$H" "$P" -c "from huggingface_hub import hf_hub_download as d; print(d('neeldey/anatomix', 'anatomix-dev-vit.pth', revision='$rev'))" | tail -n 1)
+      if [ "$(sha256sum "$f" 2>/dev/null | cut -d' ' -f1)" = "$sha" ]; then
+        mkdir -p "$H/hub/models--neeldey--anatomix/refs" && printf "%s" "$rev" > "$H/hub/models--neeldey--anatomix/refs/main" || fails=$((fails + 1))   # no newline: the hub reads it verbatim
+      else say "  FAILED: the weights ($f) do not match the sha256 in env/anatomix.yml"; fails=$((fails + 1)); fi
+    else say "anatomix: the weights are already in $H: skipped"; fi
   else fails=$((fails + 1)); fi
 fi
 if want tirl; then
@@ -126,6 +140,18 @@ if [ $VIZ3D = 1 ] && want figures-3d; then
     else say "figures-3d: vtk and pyvista already installed: skipped"; fi
   else fails=$((fails + 1)); fi
 fi
+if [ $MRIRAW = 1 ] && want mri-raw; then                              # linc/construction/tools.py checks the version against configs/mri_construction.yaml
+  J="$PREFIX/julia-1.11.4"; T="$PREFIX/src/julia-1.11.4-linux-x86_64.tar.gz"
+  if [ ! -x "$J/bin/julia" ]; then
+    [ -f "$T" ] || run curl -fsSL -o "$T" https://julialang-s3.julialang.org/bin/linux/x64/1.11/julia-1.11.4-linux-x86_64.tar.gz
+    if echo "fb3d3c5fccef82158a70677c0044ac5ae40410eceb0604cdc8e643eeff21df8d  $T" | sha256sum -c --quiet; then run tar -xzf "$T" -C "$PREFIX" || fails=$((fails + 1))
+    else say "  FAILED: $T does not match its sha256"; fails=$((fails + 1)); fi
+  else say "mri-raw: $J exists: skipped"; fi
+  if [ -x "$J/bin/julia" ]; then                                      # precompiling prints an error from Plots' ImageInTerminalExt: harmless, the conversion never loads it
+    run JULIA_DEPOT_PATH="$PREFIX/julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 "$J/bin/julia" --startup-file=no --project="$REPO/env/julia" \
+      -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()' || fails=$((fails + 1))
+  fi
+fi
 
 # where the pipeline looks for each environment (env/README.md)
 E="$PREFIX/linc_envs.sh"
@@ -139,12 +165,14 @@ E="$PREFIX/linc_envs.sh"
   elif [ -x "$b/mmorf_cpu" ]; then echo "export MMORF=$b/mmorf_cpu LINC_MMORF_EXE=$b/mmorf_cpu"; fi   # `mmorf` wrapper needs fslpython)
   [ -x "$(py deep.yml)" ] && echo "export PY_DEEP=$(py deep.yml) LINC_SEGMENT_PYTHON=$(py deep.yml)"
   [ -x "$(py anatomix.yml)" ] && echo "export ANATOMIX_PYTHON=$(py anatomix.yml)"
+  [ -f "$PREFIX/src/hf_home/hub/models--neeldey--anatomix/refs/main" ] && echo "export HF_HOME=$PREFIX/src/hf_home HF_HUB_OFFLINE=1"   # anatomix's weights: no network at run time
   [ -x "$(py tirl.yml)" ] && echo "export PY_TIRL=$(py tirl.yml)"
   [ -x "$(py viz3d.yml)" ] && echo "export PY_VIZ3D=$(py viz3d.yml)"
+  [ -x "$PREFIX/julia-1.11.4/bin/julia" ] && echo "export JULIA=$PREFIX/julia-1.11.4/bin/julia JULIA_DEPOT_PATH=$PREFIX/julia_depot"
 } > "$E"
 say "wrote $E (source it before running the pipeline)"; sed 's/^/    /' "$E"
 
-if [ $TEST = 1 ]; then
+if [ -z "$ONLY" ]; then
   say "make test"
   ( set -a; . "$E"; set +a; cd "$REPO/reproduce" && "${CLEAN[@]}" PY="${PY:-python3}" PY_DEEP="${PY_DEEP:-${PY:-python3}}" \
       PY_TIRL="${PY_TIRL:-${PY:-python3}}" make -s test ) || fails=$((fails + 1))
