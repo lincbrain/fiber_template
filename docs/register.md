@@ -60,8 +60,8 @@ of the paper's quality checks (all passed).
 `linc.xfm` chains transforms between spaces, through the entries of the brain and of `$LINC_TEMPLATE/xfm/` (the blockface template, the MRI
 template, NMT v2, INIA19 and CIVM-R, in both directions; transforms only, so give your own copy as `--ref` to resample into a published
 template). A chain uses the cross-modal alignment only when nothing else connects the two spaces, so a brain reaches the MRI template
-through its own MRI or the blockface template. An inverse link is solved by iteration at every voxel of `--ref`, so its time grows with
-that grid: use a coarse `--ref`.
+through its own MRI or the blockface template. An inverted link is solved by iteration at every voxel of `--ref`, so its time grows with
+that grid: about 3 minutes for a 0.3 mm grid of a whole brain. Use 0.3 mm or coarser; a 0.15 mm grid takes far longer.
 
 ## Check a registration
 

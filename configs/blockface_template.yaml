@@ -18,8 +18,9 @@ grids:
 
 mmorf:
   lambda_scale: 10.0               # multiplies every bending-energy weight but the first (near-rigid) level
-  plan_a: {steps: 7, iterations: 3, batch: 24}  # 7 nonlinear steps x 3 template iterations; batch = MMORF tasks at a time
-  step8: {step: 8, iterations: 3, batch: 12}    # the eighth step alone, from the state after step 7
+  # batch = MMORF tasks at a time on one 48 GB card, scheduling only (the record ran the same tasks on three cards: 24 and 12 at a time)
+  plan_a: {steps: 7, iterations: 3, batch: 8}   # 7 nonlinear steps x 3 template iterations
+  step8: {step: 8, iterations: 3, batch: 4}     # the eighth step alone, from the state after step 7
   warp_res_init_mm: 16             # knot spacing of the coarsest level
   # per-level ladders (level count = step + 1), as strings: they are written into MMORF's .ini files verbatim
   ladders:

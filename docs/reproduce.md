@@ -87,5 +87,4 @@ Three settings decide whether a rerun matches the paper's products bit for bit:
 - **Software versions.** The versions in each environment file. With another matplotlib version, a figure's text can be laid out
   slightly differently; the data drawn are the same.
   The figures `reconstruction`, `bf_template` and `alignment_comparison` were made with matplotlib 3.10.8; under `env/linc.yml`'s
-  3.11.1, their text is laid out slightly differently, and the data drawn are the same. The other figures are byte-identical to the
-  paper's files.
+  3.11.1, their text is laid out slightly differently, and the data drawn are the same.

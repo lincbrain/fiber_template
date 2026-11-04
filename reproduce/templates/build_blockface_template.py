@@ -3,7 +3,7 @@
 
 You need
   env/linc.yml for every step ($PY_MRI names the same Python for the [mri] steps); a GPU with MMORF 1.0.1 (FSL's MultiMOdal
-  Registration Framework, in env/linc.yml; 48 GB for the batch of record) for the two [driver] steps, and the edited template
+  Registration Framework, in env/linc.yml; one 48 GB card, at the batch in configs/blockface_template.yaml) for the two [driver] steps, and the edited template
   construction driver (LINC_BLOCKFACE_DRIVER, linc/construction/patches: the blockface edits, not the MRI build's); LINC_MMORF_EXE and FSLDIR;
   under $LINC_PRODUCTS (configs/products_blockface.yaml, products_completion.yaml): every member brain's volume with its missing
   sections synthesized, and the synthesis cache; the MRI template's frames, b0 and mask; the bridge (the rigid transform between
@@ -25,7 +25,7 @@ You get
     python reproduce/templates/build_blockface_template.py --step prep-frame      one step (or several, in order)
     python reproduce/templates/build_blockface_template.py --from members --to affine-templates
 
-Times: the two MMORF stages and the final average from the record's file times (4-5 Oct 2026); the CPU steps are estimates.
+Times: the two MMORF stages are estimates for one card from the record's task times (it ran on three cards, 4-5 Oct 2026); the final average from its file times; the CPU steps are estimates.
 """
 import json
 import os
@@ -112,7 +112,7 @@ def make_steps(W, paths):
         S(f"tpl-standins-{ta}", pa_lbl, "linc", [*B, "tpl-standins", "--run", run_a, "--canon2", w("canon_tpl")],
           [run_a / "data" / "BF" / tpl / "BF" / "BF_mmorf_mask.nii.gz"], [run_a, w("canon_tpl")], "1 min", "TPL's stand-in blockface image and ones mask for its MMORF call"),
         S("plan-a-mmorf", pa_lbl, "driver", driver(run_a, *mm_a),
-          [it7], [run_a], "5 h", f"MMORF, {na} steps x {ni} iterations (record: one 48 GB RTX 6000 Ada, 4 Oct 18:45-23:39)", drv, gpu=True,
+          [it7], [run_a], "8 h", f"MMORF, {na} steps x {ni} iterations. Time: about 8 h on one 48 GB card, estimated from the record, which ran on three cards (RTX 6000 Ada, 8 tasks each): 4 h 24 min, 44.6 task-hours", drv, gpu=True,
           plan_argv=driver_plan(run_a, *mm_a), driver_var="LINC_BLOCKFACE_DRIVER"),
         # 3. step 8
         S("s8-frame", s8_lbl, "linc", [*B, "s8-frame", "--canon", w("canon"), "--out", w(f"frame_canon_{ta}.nii.gz")],
@@ -149,7 +149,7 @@ def make_steps(W, paths):
           [run_8 / "out" / f"nln_step_{s8 - 1:02d}" / f"iteration_{ni:02d}" / "s8_step7_avg.json"], [run_8], "10 min",
           f"the step-{s8 - 1} templates and standardspace (the driver's averaging)"),
         S("step8-mmorf", s8_lbl, "driver", driver(run_8, *mm_8),
-          [it8], [run_8], "8 h", f"MMORF at {v8:g} mm knots, {ni8} iterations (record: 4 Oct 23:45 - 5 Oct 07:29)", drv, gpu=True,
+          [it8], [run_8], "17 h", f"MMORF at {v8:g} mm knots, {ni8} iterations. Time: about 17 h on one 48 GB card, estimated from the record, which ran on three cards (RTX 6000 Ada, 4 tasks each): 7 h 11 min, 59.5 task-hours", drv, gpu=True,
           plan_argv=driver_plan(run_8, *mm_8), driver_var="LINC_BLOCKFACE_DRIVER"),
         # 4. finish and publish
         S("bf-view", "4. finish and publish", "linc", [], [view], [run_8], "1 s",

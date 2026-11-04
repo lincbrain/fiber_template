@@ -13,7 +13,7 @@ without `--force`. Its one step the commands below leave implicit is `bf-view` (
 average uses).
 
 The build has five stages: **members → the first stage (7 steps at 0.5 mm) → step 8 (0.25 mm) → final average → publish.** MMORF
-runs on one GPU (48 GB for the batch of record); everything else runs on CPU. The code is `linc/construction/blockface_build.py`,
+runs on a GPU, at 8 tasks at a time in the first stage and 4 in step 8 on one 48 GB card; everything else runs on CPU. The record ran the same tasks on three such cards (RTX 6000 Ada): the first stage in 4 h 24 min (44.6 task-hours), step 8 in 7 h 11 min (59.5 task-hours). On one card that is about 8 and 17 hours, estimated from those task times. The code is `linc/construction/blockface_build.py`,
 `blockface_finish.py`, `blockface_mmorf.py` and `blockface_shim/`; every step below is `python -m linc.construction.blockface_build
 <step> ...` from the repository root.
 
@@ -72,7 +72,7 @@ $B tpl-affine --run runs/d2b --ref-template <affine b0 template>     # TPL's 12-
 $PY_MRI -m linc.construction.blockface_build affine-templates --run runs/d2b   # the affine templates over all 43
 $B tpl-standins --run runs/d2b --canon2 canon_tpl                    # TPL's stand-in blockface image and ones mask for its MMORF call
 LINC_MASKWEIGHTED=1 PATH=linc/construction/blockface_shim:$PATH \
-  $PY_MRI $($B driver-command --run runs/d2b -aff False -nln True -nres 7 -nit 3 -b 24)
+  $PY_MRI $($B driver-command --run runs/d2b -aff False -nln True -nres 7 -nit 3 -b 8)
 ```
 
 The affine stage of the 42 inputs is the one of design 2's build (the same inputs; its FLIRT weight is the blockface cost, so
@@ -94,7 +94,7 @@ $B s8-mats --affine-dir runs/d2b/out/affine_step2 --canon canon_tpl --canon2 can
 $B s8-step7 --plan-a-it runs/d2b/out/nln_step_07/iteration_03 --canon canon_tpl --canon2 canon2_s8w --run runs/d2bs8 -j 6
 $PY_MRI -m linc.construction.blockface_build step7-templates --run runs/d2bs8
 LINC_MASKWEIGHTED=1 PATH=linc/construction/blockface_shim:$PATH \
-  $PY_MRI $($B driver-command --run runs/d2bs8 -aff False -nln True --resume_from 8:1 -nres 8 -nit 3 -b 12)
+  $PY_MRI $($B driver-command --run runs/d2bs8 -aff False -nln True --resume_from 8:1 -nres 8 -nit 3 -b 4)
 ```
 
 MMORF takes no warp input: step 8 registers every input again, from its first-stage affine, to the step-7 template, at 0.25 mm knots

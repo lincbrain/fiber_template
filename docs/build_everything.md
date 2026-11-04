@@ -28,7 +28,7 @@ and numbers records to `$LINC_NUMBERS`.
 | the b0 in the MRI template | `cli/linc-register mri-template` | `registration.yaml` | linc, GPU | 4 minutes |
 | a brain without MRI: its stand-in b0 | `cli/linc-register direct-placement` | `registration.yaml` | linc, GPU | 5 minutes |
 | the blockface volume with its synthesized tissue | `cli/linc-complete prepare`, then `cli/linc-complete` | `completion.yaml` | deep, GPU | 3 minutes |
-| the blockface template | `reproduce/templates/build_blockface_template.py` | `blockface_template.yaml` | linc; MMORF on a 48 GB GPU | 13 hours on the GPU, about 3 hours on a CPU |
+| the blockface template | `reproduce/templates/build_blockface_template.py` | `blockface_template.yaml` | linc; MMORF on a 48 GB GPU | about 25 hours on one card (estimated; the paper's run took 11 h 35 min on three), about 3 hours on a CPU |
 | the blockface template registered to the MRI template, and its registrations to published templates | `reproduce/templates/build_link.py` | `link.yaml` | linc, GPU | about 1 hour |
 | a new brain without MRI in the blockface template | `cli/linc-register blockface-template` | `registration.yaml` | linc, GPU | about 15 minutes |
 | a brain's histology, registered to its photographs | `cli/linc-histology all` | `histology.yaml` | tirl | about 2 hours |

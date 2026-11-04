@@ -12,17 +12,20 @@ What it does
   interpolate  fills the slices between charted sections: the bundle grades as one group and the terminal grades as one, each density
                class kept as a part of its group, sections paired within each hemisphere, demons between each pair (SimpleITK);
   carry        resamples the labels once into the MRI template (anti-aliased, linear), through the registry's transforms or given ones;
-  all          push, interpolate and carry in turn.
+  connect      joins the carried bundle label into one connected pathway, marking the joins as inferred (linc/histology/connect.py);
+  all          push, interpolate, carry and connect in turn.
 
 You get, under $LINC_DATA/sub-<ID>/labels/
   blockface/tracer/<ID>_<class>_bfnative_L2.nii.gz (+ push_tracer_<ID>.json)                              push
   blockface/tracer/<ID>_<group or class>_bfnative_L2_demons.nii.gz, <ID>_labels_demons_prov.nii.gz, interp_v2.json   interpolate
   template/tracer/<ID>_<label>_mri-template{,_density,_footprint}.nii.gz + tracer_template_<ID>.json        carry
-  (density: float 0-1; solid and footprint: uint8 {0, 1}; provenance: 1 = charted section, 2 = interpolated)
+  template/tracer/<ID>_<group>_mri-template_solid2.nii.gz, <ID>_Bundles_mri-template_{connected,solid_v2c,bridges}.nii.gz, <ID>_connect_v2c.json   connect
+  (density: float 0-1; solid and footprint: uint8 {0, 1}; provenance: 1 = charted section, 2 = interpolated; connected: 1 = charted, 2 = inferred)
 
     linc-labels push        --subject MR252 [--kind tracer|structures]
     linc-labels interpolate --subject MR252 [--method v2|v1]
     linc-labels carry       --subject MR252 [--entry DIR ...]
+    linc-labels connect     --subject MR252
     linc-labels all         --subject MR252
 Every path can be overridden. The transforms of `carry`, in PULL order (a template point goes first to last):
   --entry DIR [--entry DIR ...]     registry entries (linc.xfm), each '<dir>' or '<dir>:inv', in IMAGE order (bf-native first)
@@ -145,6 +148,16 @@ def cmd_carry(a, cfg):
     return outs
 
 
+def cmd_connect(a, cfg):
+    from linc.histology import connect as CO
+    S = a.subject
+    d = _p(a.labels_dir, LB.layout(S, "labels", cfg) / "template" / "tracer")
+    t0 = time.time()
+    CO.write_solids(S, d)
+    rec = CO.connect(S, d, paths.template_root() / "mri", _p(a.out, d))
+    print(f"{S}: {rec['final']['pieces_attached']} components joined, {100 * rec['final']['inferred_share']:.1f} % of the pathway inferred; {time.time() - t0:.0f} s")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -177,6 +190,8 @@ def main(argv=None):
             p.add_argument("--interp-dir")
             for k in ("annotations", "section_map", "piece_masks", "blockface_pieces"):
                 p.add_argument("--" + k.replace("_", "-"))
+    p = sub.add_parser("connect", parents=[common])
+    p.add_argument("--labels-dir", help="the carried labels' folder (default: labels/template/tracer of the brain)")
     a = ap.parse_args(argv)
     cfg = LB.config()
     if a.cmd == "push":
@@ -185,6 +200,8 @@ def main(argv=None):
         cmd_interpolate(a, cfg)
     elif a.cmd == "carry":
         cmd_carry(a, cfg)
+    elif a.cmd == "connect":
+        cmd_connect(a, cfg)
     else:                                                     # all: default folders between the stages
         out = a.out
         a.out, a.kind = None, "tracer"
@@ -193,6 +210,8 @@ def main(argv=None):
         cmd_interpolate(a, cfg)
         a.labels, a.out = None, out
         cmd_carry(a, cfg)
+        a.labels_dir = out
+        cmd_connect(a, cfg)
 
 
 if __name__ == "__main__":
