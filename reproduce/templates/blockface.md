@@ -1,7 +1,7 @@
 # Rebuilding the blockface channel of the template
 
-The blockface channel of the template (`$LINC_TEMPLATE/blockface/`; in the analysis project `bftemplate/d2b/final_s8`) is a
-symmetric groupwise construction of the 21 photographed brains, each used twice (as reconstructed and exactly mirrored), with two
+The blockface channel of the template (in its own space `bftemplate/d2b/final_s8` under `$LINC_PRODUCTS`; in the MRI template's frame
+`$LINC_TEMPLATE/blockface/linc_bf_*`, made by `build_link.py`) is a symmetric groupwise construction of the 21 photographed brains, each used twice (as reconstructed and exactly mirrored), with two
 channels per input, the blockface luminance and the b0, built with MMORF 1.0.1 through the patched template-construction driver
 (paper: Methods, "Blockface template"). A 43rd input, TPL, is the MRI template's b0, used once as a b0-only member; its warp is the
 registration from the MRI template to this template.
@@ -70,6 +70,7 @@ $B run-plan-a --canon canon_tpl --root runs --name d2b              # data tree,
 $B copy-affine --plan-a-affine <the affine stage> --run runs/d2b     # the 42 inputs' affine stage + TPL at the identity
 $B tpl-affine --run runs/d2b --ref-template <affine b0 template>     # TPL's 12-dof affine, symmetrized
 $PY_MRI -m linc.construction.blockface_build affine-templates --run runs/d2b   # the affine templates over all 43
+$B tpl-standins --run runs/d2b --canon2 canon_tpl                    # TPL's stand-in blockface image and ones mask for its MMORF call
 LINC_MASKWEIGHTED=1 PATH=linc/construction/blockface_shim:$PATH \
   $PY_MRI $($B driver-command --run runs/d2b -aff False -nln True -nres 7 -nit 3 -b 24)
 ```
@@ -111,7 +112,7 @@ $B finish-b0 --run runs/d2bs8 --arm d2bs8 --canon canon2_tpl --iteration runs/d2
 $B embed --run runs/d2bs8 --src final --dst final_run113
 ```
 
-The published template is not MMORF's average: every input is resampled once from its 0.25 mm volume (photographed and synthesized
+`<arm>_photo_share` is the photographed fraction (released as `linc_bf_photographed_fraction`). The published template is not MMORF's average: every input is resampled once from its 0.25 mm volume (photographed and synthesized
 tissue) through its step-8 warp and averaged with precision weights, w = 1/(tau^2 + sigma^2) per member and part (photographed,
 interpolated, synthesized; the synthesis of a brain without MRI has weight 0; tau^2 and the depth curve sigma^2_syn(d) from
 `reproduce/numbers/precision_weights_b1_d2b_s8.py`), then symmetrized exactly, 0.5 (V + M(V)). The b0 channel uses the same warps

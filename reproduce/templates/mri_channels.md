@@ -140,6 +140,7 @@ Validation of the driver (3 Nov 2026; CPU; MF283 unless said; the same products 
 
 | Step | Result |
 |---|---|
+| `tensor-MF283` (4 Nov) | from the inputs of record: voxel-identical to the tensor of record, same header, the same axis order and signs from `dwigradcheck`; 548 s under full machine load (481 s of record). From the inputs made by `raw-dwi-MF283` and `stage-MF283`: 42 of the 43 volumes used are identical (the other is the volume that differs after the eddy-current correction, `docs/mri.md`); FA r 0.9999, V1 within 0.009 deg (median) and 0.29 deg (99th percentile) where FA > 0.25 |
 | `landmarks-MF283`, `frames-MF283` | AC/PC equal to the record's `landmarks.json`; `T_subject_to_canonical` identical (max abs diff 0; the symmetry-plane fit converges to the same plane, mirror r 0.5687); 6 s + 59 s |
 | `prepare-MF283` (with the frame and the tensor of record) | all 36 construction inputs voxel-identical to the inputs of record, same headers; 507 s under full machine load (145 s of record) |
 | `assemble` (the four brains' inputs of record) | the 14 config files byte-identical to `rb_final/config`, `subject_ids.csv` identical, `standardspace.nii.gz` identical, the 64 input links in place; `run_spec.json` differs only in the label `canonical_dir` (the prep folder pattern) |

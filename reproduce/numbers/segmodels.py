@@ -1,15 +1,23 @@
 #!/usr/bin/env python
 """The record of one segmentation model (Supplementary S5; Table S8): segmodels_<model>_2026-11, from the products of its training.
 
-Reads, under configs/products_segmentation.yaml's `segmodels` folder: tasks/<model>.json (cases, folds, the earlier network's
-held-out predictions, card notes) and the six runs runs/<model>/fold_{0..4,all}/ (record.json with the trainer's held-out scores,
-spec.json, model.pt; val_pred/ and predict_separate/ of the fold of the predictor check; for bf_mask2d, every fold's validation_fill/,
-the held-out photographs re-predicted with the shipped post-processing). The cases' images and labels and the earlier network's masks
-are the paths the task JSON records, re-rooted through configs/path_placeholders*.yaml. The earlier network's predictions are scored
-here with linc.segment.metrics on the label grid (CPU, up to 16 processes; bf_mask2d's 16,078 photographs take a few minutes).
-Recomputes the pooled, per-brain, fair-subset, position and empty-label blocks; nothing is trained or predicted.
-Only counted cases are pooled (a case with "counted": false is listed, not pooled).
-    python reproduce/numbers/segmodels_<model>_2026-11.py     (one script per model; env/deep.yml: torch counts the parameters)
+You need
+  env/deep.yml (torch counts the parameters; CPU, up to 16 processes; bf_mask2d's 16,078 photographs take a few minutes). Under configs/products_segmentation.yaml's
+  `segmodels` folder: tasks/<model>.json (cases, folds, the earlier network's held-out predictions, card notes) and the six runs runs/<model>/fold_{0..4,all}/
+  (record.json with the trainer's held-out scores, spec.json, model.pt, val_pred/; predict_separate/ of the fold of the predictor check; for bf_mask2d, every fold's
+  validation_fill/, the held-out photographs predicted again with the shipped post-processing). The cases' images and labels and the earlier network's masks are the
+  paths the task JSON records, re-rooted through configs/path_placeholders*.yaml.
+
+What it does
+  1. gathers each held-out case's scores from the runs (the Dice coefficient, the surface distances); cases with "counted": false are listed, not pooled
+  2. scores the earlier network's predictions with linc.segment.metrics on the label grid, because a comparison needs the same measures on the same cases
+  3. for the marker tubes, computes the centerline Dice of both networks, because one wall voxel lowers the Dice coefficient of a thin tube
+  4. summarizes them pooled and per brain, on the brains held out by both networks, by position in the stack and for empty labels. Nothing is trained or predicted.
+
+You get
+  $LINC_NUMBERS/segmodels_<model>_2026-11.json (and its provenance); reproduce/check_numbers.py compares it with the paper's record.
+
+    python reproduce/numbers/segmodels_<model>_2026-11.py     (one script per model)
 """
 import argparse
 import hashlib

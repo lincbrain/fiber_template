@@ -1,15 +1,33 @@
 #!/usr/bin/env python3
-"""Train a completion network: the recipe of the networks of record (configs/completion.yaml, training).
+"""Train a synthesis network: the 3D U-Net (an encoder-decoder convolutional network with skip connections) that predicts blockface
+tissue from a b0 image, used where a brain has no photographs (configs/completion.yaml, training).
 
-    python -m linc.completion.train --root <prepared brains> --protocol full|lso --seed 0 --out <dir>/<name> [--device cuda]
---root holds one prepared folder per brain (layout: linc/completion/__init__.py), named by LINC ID; the brains are the config's
-members plus extra_train. Per epoch, 500 random paired patches (64^3 input at 0.5 mm -> 128^3 output at 0.25 mm, 32 mm), batch 2,
-pooled over the brains, each centered on a training-target voxel; the paired two-grid augmentation (augment.py); loss l1 + 0.2
-gradient-l1 + 0.6 (1 - multi-scale SSIM) on the output, masked to the targets (data.load_subject); Adam 2e-4 with a 5-epoch linear
-warm-up and cosine decay, gradient-norm clipping 1.0, EMA 0.999 of the weights; 80 epochs.
-The networks of record: protocol full, seed 0 (d3_full_A_s0 on the own b0; d3p_full_A_s0 on the stand-in b0 of the same 13 brains);
-protocol lso, seed 0 (d3_lso_A_s0). A retrained network matches them in recipe, not bit for bit (GPU nondeterminism, data-loader
-order). Writes <out>/{config.json, train_log.jsonl, last.pt, DONE}; resumes from <out>/ckpt.pt (saved every 5 epochs).
+You need
+  a folder of prepared brains (`linc-complete prepare`), one folder per brain named by its Specimen ID, holding the brains that
+  configs/completion.yaml lists under training (members and extra_train: the 13 brains with MRI). Own b0: `linc-complete prepare`. Stand-in
+  b0: the same with --targets-from and --stand-in-b0. The targets are the brain's own photographs; no hand labels. A CUDA GPU with about 8 GB.
+
+What it does
+  1. reads each brain's input (the b0 at 0.5 mm) and targets (the photographs' grey at 0.25 mm, normalized by their 1st / 99th percentiles,
+     on photographed tissue: fine/valid, minus voxels with a photographed fraction under 0.5; protocol lso also withholds a slab, to
+     evaluate the prediction on tissue the network never saw)
+  2. each epoch draws 500 random pairs of patches, pooled over the brains and centered on target voxels: 64^3 input voxels and the 128^3
+     output voxels they cover (32 mm); batch 2
+  3. applies one random spatial transform to both grids of a pair, so that they stay aligned, and intensity changes to the input only,
+     so that the network does not depend on one scanner's contrast
+  4. minimizes l1 + 0.2 gradient-l1 + 0.6 (1 - multi-scale SSIM, the structural similarity index), on target voxels only, with Adam
+     (learning rate 2e-4, a 5-epoch linear warm-up, cosine decay, gradient norm at most 1.0) for 80 epochs
+  5. keeps an exponential moving average of the weights (decay 0.999): these are the weights a network ships with
+
+You get  (--out, default $LINC_WORK/completion/runs/<prepared folder>_<protocol>_s<seed>)
+  last.pt (`linc-complete --model <out>` reads it), config.json, train_log.jsonl and DONE. A stopped run resumes from ckpt.pt, saved every 5 epochs.
+
+    cli/linc-complete train --root $LINC_WORK/prepared                   # protocol full, seed 0: the network that synthesizes tissue
+    cli/linc-complete train --root $LINC_WORK/prepared --plan            # the brains, missing files and expected GPU hours; no training
+
+The networks of record (models/completion.md; configs/completion.yaml runs_of_record): d3_full_A_s0 (own b0) and d3p_full_A_s0 (stand-in b0), protocol
+full; d3_lso_A_s0 and d3p_lso_A_s0, protocol lso. A retrained network has the same recipe, not the same bits: the first epoch's losses differ in the
+third or fourth digit from the record's (a different GPU; cuDNN's benchmark mode, as in the runs of record, is not deterministic).
 """
 import argparse
 import json
@@ -48,26 +66,43 @@ def recipe():
                 ema=True, ema_decay=T["ema_decay"], clip=T["clip"], in_channels=1, aug_params=dict(T["augment"]))
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--root", required=True, type=Path); ap.add_argument("--protocol", choices=["full", "lso"], required=True)
-    ap.add_argument("--seed", type=int, default=0); ap.add_argument("--out", required=True, type=Path)
-    ap.add_argument("--device", default="cuda")
-    ap.add_argument("--quick", action="store_true", help="smoke test: 2 epochs of 20 patches")
-    a = ap.parse_args()
+def plan(a, members):
+    """what a run reads, and how long the runs of record took; trains nothing"""
+    T = CFG["training"]
+    NEED = ("seam.json", "coarse/in.nii.gz", "fine/bf.nii.gz", "fine/valid.nii.gz", "fine/photo_fraction.nii.gz", "fine/brain.nii.gz")
+    missing = [f"{S}/{f}" for S in members for f in NEED if not (a.root / S / f).exists()]
+    print(f"{a.root}: {len(members)} brains ({', '.join(members)}); protocol {a.protocol}, seed {a.seed}; "
+          f"{T['epochs']} epochs x {T['patches_per_epoch']} patches, batch {T['batch']}")
+    print(f"input files: {len(members) * len(NEED) - len(missing)} of {len(members) * len(NEED)} found" + (f"; missing, e.g. {missing[:3]}" if missing else ""))
+    for n, r in T["runs_of_record"].items():
+        print(f"  {n}: {r['input']}, protocol {r['protocol']}: run of record {r['hours']} h on one {r['gpu']}")
+    return 1 if missing else 0
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(prog="linc-complete train", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--root", required=True, type=Path, help="the folder of prepared brains")
+    ap.add_argument("--plan", action="store_true", help="print the brains, missing files and expected GPU hours; train nothing")
+    ap.add_argument("--protocol", choices=["full", "lso"], default="full"); ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--out", type=Path); ap.add_argument("--device", default="cuda")
+    ap.add_argument("--quick", action="store_true", help="smoke test: one epoch of two patches, no data-loader processes")
+    a = ap.parse_args(argv)
+    T = CFG["training"]
+    members = list(T["members"]) + [S for S in T["extra_train"] if S not in T["members"]]
+    if a.plan:
+        return plan(a, members)
+    a.out = a.out or Path(os.environ.get("LINC_WORK", "work")) / "completion" / "runs" / f"{a.root.resolve().name}_{a.protocol}_s{a.seed}"
     torch.backends.cuda.matmul.allow_tf32 = True
     torch.backends.cudnn.allow_tf32 = True
     torch.backends.cudnn.benchmark = True
     DEV = a.device
     cfg = recipe()
     if a.quick:
-        cfg.update(epochs=2, length=20, num_workers=2)
+        cfg.update(epochs=1, length=2, num_workers=0)
     rd = a.out; rd.mkdir(parents=True, exist_ok=True)
     if (rd / "DONE").exists():
         print(f"[{rd.name}] already DONE"); return
     random.seed(a.seed); np.random.seed(a.seed); torch.manual_seed(a.seed)
-    T = CFG["training"]
-    members = list(T["members"]) + [S for S in T["extra_train"] if S not in T["members"]]
     subjects, info = [], {}
     for S in members:
         sd = data.load_subject(a.root / S, a.protocol, T["photographed_only"])
@@ -140,4 +175,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

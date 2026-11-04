@@ -26,14 +26,6 @@ import torch
 from . import io
 
 
-def remap(p, pairs):
-    """a case path on this host: each (src, dst) prefix pair applied (a task's images copied to the host's local disk)"""
-    for s, d in pairs or ():
-        if str(p).startswith(s):
-            return d + str(p)[len(s):]
-    return p
-
-
 def _root(p):
     """a task path: a root placeholder ($LINC_PRODUCTS/...) expanded on this machine (linc.paths); any other path as written"""
     if not str(p).startswith("$"):
@@ -42,7 +34,7 @@ def _root(p):
     return rerooted(p)
 
 
-def load_task(path, remap_pairs=None):
+def load_task(path):
     spec = json.load(open(path))
     for c in spec.get("cases", []):
         c["image"] = [_root(q) for q in c["image"]] if isinstance(c["image"], list) else _root(c["image"])
@@ -72,10 +64,6 @@ def load_task(path, remap_pairs=None):
         if "spacing" not in c and (c["subject"] in sbs or spec.get("spacing")):
             c["spacing"] = sbs.get(c["subject"], spec.get("spacing"))
     assert spec["normalization"] in io.NORMALIZATIONS, spec["normalization"]
-    if remap_pairs:
-        for c in spec["cases"]:
-            c["image"] = [remap(p, remap_pairs) for p in c["image"]] if isinstance(c["image"], list) else remap(c["image"], remap_pairs)
-            c["label"] = remap(c["label"], remap_pairs)
     return spec
 
 

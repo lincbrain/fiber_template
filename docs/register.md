@@ -1,4 +1,4 @@
-# Register a brain into the template's frame
+# Register a brain to the template
 
 **You need** the brain's blockface volume (`docs/reconstruct.md`), its prepared b0 if it has MRI (`docs/mri.md`), and the template.
 
@@ -9,7 +9,8 @@
 **You get** each registration as one entry, `$LINC_DATA/sub-<ID>/xfm/<from>__to__<to>/` (the warp, its matrices and `meta.json`),
 and its products and measures under `$LINC_WORK/`.
 
-A brain with MRI and a brain without MRI are registered differently:
+A brain with MRI and a brain without MRI are registered differently. In the commands, `mri` is the MRI-based alignment,
+`direct-placement` the cross-modal alignment and `--place-b0` aligns the b0 to the template's frame:
 
 ```bash
 # the MRI-based alignment, for a brain with MRI: two registrations
@@ -26,6 +27,9 @@ Each runs on a GPU, and its memory grows with the brain's working grid. `mri` ne
 MM5 and MM8 need more than a 24 GB card has free. `mri-template` needs 12 to 14 GB, and `direct-placement` 15 to 17 GB. Each prints its need and
 the card's free memory before its GPU stage, and stops if the card is short; then choose another card with `CUDA_VISIBLE_DEVICES`,
 or check the cards first with `nvidia-smi`. Run one registration at a time on a card.
+
+For a brain without MRI, `direct-placement` ends by writing `$LINC_DATA/sub-<ID>/mri/stand_in/`, which `linc-complete prepare` reads
+(`docs/complete.md`).
 
 The MRI template's b0 channel and brain mask come with the released template, under `$LINC_TEMPLATE/mri/`. For a brain that is not one of the
 paper's (`cli/linc-mri prep`, `docs/mri.md`, makes its b0 and brain mask):
@@ -52,7 +56,7 @@ of the paper's quality checks (all passed).
 ## Check a registration
 
 `cli/linc-register qc` runs the paper's quality checks on one registration: the scales and rotations of its linear part, the
-image correlation, the folds and the drift of its warp, the overlap of the two brain masks, and the distance between the moved
+image correlation, the voxels of its warp with a negative Jacobian determinant (folds) and its drift, the overlap of the two brain masks, and the distance between the moved
 brain's outline and its target's. It writes a three-plane PNG and a JSON row (`--out`, by default `$LINC_WORK/qc`), and with
 `--entry` it records pass or fail in the registration's registry entry, which then stops the warning. A preset sets the paper's
 settings for each kind of registration: `bf2b0` (blockface to its own b0), `direct` (blockface to the MRI template), `b02template`

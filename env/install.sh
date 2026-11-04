@@ -1,51 +1,46 @@
 #!/bin/bash
-# Create the environments of this repository from env/*.yml, run the source installs their headers describe, install the package
-# into each, and check the result with `make test`. Needs conda (or mamba) and git on PATH; nothing else.
+# Build the repository's environments, and check that they work.
 #
-#   bash env/install.sh [--prefix DIR] [--tirl-src DIR] [--with-figures-3d] [--with-mri-raw] [--only NAME[,NAME...]]
+# You need
+#   conda (or mamba) and git on PATH; about 23 GB; network access during the install only: the conda channels, PyPI, the PyTorch and VTK wheel
+#   indexes, GitHub (anatomix and FireANTs) and huggingface.co (anatomix's weights, 105 MB).
+#   TIRL's sources, for the histology registration and the reconstruction's Python steps: TIRL is not publicly distributed yet, so give a local folder
+#   with its four source trees (--tirl-src DIR, or LINC_TIRL_SRC=DIR): tirl 3.6.3, tirlscripts-oxford-scriptutils 1.1.1, tirlscripts-stanford-core 1.2.2 and
+#   tirlscripts-mgh-linc 1.0.1, each found as <package>, _src_<package> or <package>-<version> (env/tirl.yml). Without them the tirl environment is created
+#   without TIRL, those steps refuse, and make test skips them. The folder is only read: each tree is copied to DIR/src/<package> and built there.
 #
-#   --prefix DIR      where the environments go (default: envs/ in this clone): DIR/<the env file's name>, i.e. linc, linc-deep,
-#                     linc-anatomix, linc-tirl (linc-viz3d when asked); DIR/src holds the source checkouts
-#   --tirl-src DIR    (or LINC_TIRL_SRC=DIR; on the lab cluster env/lab.sh sets it) a local folder with the four TIRL source trees
-#                     (TIRL is not publicly distributed yet):
-#                     tirl 3.6.3, tirlscripts-oxford-scriptutils 1.1.1, tirlscripts-stanford-core 1.2.2, tirlscripts-mgh-linc 1.0.1
-#                     (not on PyPI, see env/tirl.yml; on this project's cluster LINC_template/env/tirl_src holds the same trees);
-#                     each found as <package>, _src_<package> or <package>-<version>. Without it the tirl environment is created
-#                     but TIRL itself is not installed (histology and reconstruction steps then refuse). Read only: each tree is
-#                     copied to DIR/src/<package> and built there. TIRL's setup.py writes $HOME/.config/tirl*.yml, which would
-#                     reset your account's TIRL script registry: install.sh points HOME into the prefix (DIR/src/tirl_home) for
-#                     that step; the pipeline needs neither file at run time
-#   --with-figures-3d also the 3D tracer figure's environment (env/viz3d.yml: pyvista on a headless VTK)
-#   --with-mri-raw    also Julia 1.11.4 and its packages (env/julia), needed only to build the MRI channels from the raw Bruker sessions:
-#                     Fibers.jl (Anastasia Yendiki) converts the sessions, Microstructure.jl (Ting Gong) fits SANDI; the depot stays in DIR
-#   --only NAMES      just these (linc, deep, anatomix, tirl, figures-3d, mri-raw), without make test
-#
-# In order (expected duration on a cluster node with a fast network; most of it is downloading):
+# What it does  (expected duration on a cluster node with a fast network; most of it is downloading)
 #   linc      env/linc.yml        ~3 min   orchestration, the MRI construction (MMORF), registration's linear stages,
 #                                          the labels' interpolation, the numbers and most figures   -> PY (= PY_MRI), MMORF
 #   deep      env/deep.yml        ~6 min   segmentation models and tissue synthesis (torch 2.6 + CUDA 12.4)        -> PY_DEEP
 #   anatomix  env/anatomix.yml    ~9 min   the deformable registration engine (torch 2.13 + CUDA 12.6; anatomix and
 #                                          its FireANTs fork from their repositories at the pinned commits, and the
-#                                          network's weights at the pinned revision)         -> ANATOMIX_PYTHON, HF_HOME
+#                                          network's weights at the pinned revision, checked)    -> ANATOMIX_PYTHON, HF_HOME
 #   tirl      env/tirl.yml        ~3 min   histology registration, reconstruction's Python steps (+ TIRL sources)   -> PY_TIRL
-#   figures-3d env/viz3d.yml     ~1 min   optional (--with-figures-3d): the 3D tracer scene                        -> PY_VIZ3D
-#   mri-raw   env/julia           ~5 min   optional (--with-mri-raw): Julia and its packages, 2.7 GB              -> JULIA, JULIA_DEPOT_PATH
-# then `make test` (~2 min). Every step prints what it runs.
-# In all (linc, deep, anatomix, tirl, then make test): about 20-25 min and about 22 GB in the prefix (measured from fresh clones on
-# this project's cluster, 3 Nov 2026: 18.5 and 20.3 min; linc 1.3 GB, deep 5.5 GB, anatomix 7.1 GB, tirl 2.7 GB, sources 0.3 GB; figures-3d
-# adds 1.1 GB). About 5 GB of that is downloads: conda's package cache in DIR/src/conda_pkgs (set CONDA_PKGS_DIRS to use another one) and
-# pip's in DIR/src/pip_cache; both can be removed once the build is done. A shared conda's own package folder is not written.
-# Network access is needed at install only (conda channels, PyPI, the PyTorch and VTK wheel indexes, GitHub for anatomix and FireANTs,
-# huggingface.co for anatomix's weights, 105 MB; julialang.org and the General registry with --with-mri-raw). Outside the
-# prefix it writes only small files: conda's list of environments and notices (~/.conda/environments.txt, ~/.cache/conda), matplotlib's
-# font list (~/.cache/matplotlib), the GPU driver's compute cache (~/.nv), and make test's logs in $TMPDIR (default /tmp).
-# `pip check` in linc-anatomix lists three requirements the FireANTs fork declares but the engine never imports (hydra-core,
-# pytest, typing), as in the environment of record: expected, not a failure.
+#   then `make test` (~2 min), which checks each environment on toy data. Every step prints what it runs, in a clean shell with PYTHONNOUSERSITE=1 and
+#   PIP_USER=0, so packages in ~/.local never enter or shadow an environment. `pip check` in linc-anatomix lists three requirements the FireANTs fork
+#   declares but the engine never imports (hydra-core, pytest, typing), as in the environment of record: expected, not a failure.
+#   Safe to rerun: what this script built from the same env file is skipped, and a rerun adds what is missing. An environment built otherwise is
+#   reported and left alone (nothing is ever deleted: remove it yourself to rebuild).
 #
-# Safe to rerun: an environment that exists and was built by this script from the same env file is skipped; one that exists but
-# was built otherwise is reported and left alone (nothing is ever deleted: remove it yourself to rebuild). Every step runs in a
-# clean shell with PYTHONNOUSERSITE=1 and PIP_USER=0, so packages in ~/.local never enter or shadow an environment.
-# At the end it writes DIR/linc_envs.sh: `source` it to point the pipeline at these environments.
+# You get  (in DIR, by default envs/ in this clone)
+#   DIR/linc, linc-deep, linc-anatomix, linc-tirl; DIR/src, the source checkouts and the downloads; DIR/linc_envs.sh: `source` it to point the pipeline at them.
+#   About 20-25 min and 23 GB in all (measured from fresh clones on this project's cluster, 3 Nov 2026: 18.5, 20.3 and 21.1 min; linc 1.3 GB, deep 5.5 GB,
+#   anatomix 7.1 GB, tirl 2.7 GB, sources 0.4 GB). About 5 GB of that is downloads: conda's package cache in DIR/src/conda_pkgs (set CONDA_PKGS_DIRS to use
+#   another one) and pip's in DIR/src/pip_cache; both can be removed once the build is done. A shared conda's own package folder is not written, and
+#   runs need no network: linc_envs.sh keeps anatomix's weights in DIR/src/hf_home (HF_HOME, HF_HUB_OFFLINE=1).
+#   Outside DIR it writes only small files: conda's list of environments and notices (~/.conda/environments.txt, ~/.cache/conda), matplotlib's font list
+#   (~/.cache/matplotlib), the GPU driver's compute cache (~/.nv), and make test's logs in $TMPDIR (default /tmp). TIRL's setup.py writes $HOME/.config/tirl*.yml,
+#   which would reset your account's TIRL script registry, so HOME points into DIR/src/tirl_home for that step; the pipeline needs neither file at run time.
+#
+#   bash env/install.sh [--prefix DIR] [--tirl-src DIR] [--with-figures-3d] [--with-mri-raw] [--only NAME[,NAME...]]
+#
+#   --prefix DIR       where the environments go (default: envs/ in this clone)
+#   --tirl-src DIR     TIRL's source trees (above); on the lab cluster env/lab.sh sets LINC_TIRL_SRC
+#   --with-figures-3d  also the 3D tracer figure's environment (env/viz3d.yml: pyvista on a headless VTK; ~1 min, 1.1 GB)      -> PY_VIZ3D
+#   --with-mri-raw     also Julia 1.11.4 and its packages (env/julia; ~6 min, 2.9 GB), needed only to build the MRI channels from the raw Bruker sessions: Fibers.jl
+#                      (Anastasia Yendiki) converts the sessions, Microstructure.jl (Ting Gong) fits SANDI; the depot stays in DIR   -> JULIA, JULIA_DEPOT_PATH
+#   --only NAMES       just these (linc, deep, anatomix, tirl, figures-3d, mri-raw), without make test
 set -u
 REPO=$(cd "$(dirname "$0")/.." && pwd)
 PREFIX="$REPO/envs"; TIRL_SRC="${LINC_TIRL_SRC:-}"; VIZ3D=0; MRIRAW=0; ONLY=""   # LINC_TIRL_SRC: the TIRL sources (env/lab.sh)

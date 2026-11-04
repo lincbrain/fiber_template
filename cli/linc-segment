@@ -29,7 +29,6 @@ You get
 To train the networks again (each command's -h says what it needs, does and writes):
     $PY cli/linc-segment stage --task configs/segment/<model>.json --out DIR            # the blockface networks' training cases, from the data tree
     cli/linc-segment train --task <task file> --fold <0-4|all> [--plan]                 # one fold; fold all gives the shipped model
-    cli/linc-segment score --task <task file> --pred <folder | map.json> --out <scores.json> [--fold k]
     cli/linc-segment folds --task <task file>                                           # a new task's five folds, grouped by brain
 """
 import argparse
@@ -109,7 +108,7 @@ mri_brainmask needs no staging: its task file reads the images and hand-made mas
 
 
 def main():
-    cmds = ("predict", "train", "stage", "score", "folds")
+    cmds = ("predict", "train", "stage", "folds")
     if len(sys.argv) < 2 or sys.argv[1] not in cmds:
         print(__doc__); return 0 if len(sys.argv) > 1 and sys.argv[1] in ("-h", "--help") else 2
     cmd, rest = sys.argv[1], sys.argv[2:]

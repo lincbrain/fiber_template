@@ -1,6 +1,6 @@
 #!/bin/bash
 # Make your own writable data tree from the project's data of record (read only), so what you run never writes into the record.
-#     tools/make_local_data.sh <dest> [ID ...] [--rebuild ID] [--raw NAME=PATH] [--link ID:PATH=TARGET]
+#     tools/make_local_data.sh <dest> [ID ...] [--rebuild ID] [--raw NAME=PATH] [--link ID:PATH=TARGET] [--copy ID:PATH=SOURCE]
 #
 # You need
 #   LINC_RECORDS: the project folder holding data/ and template/ (env/lab.sh sets it, and runs this script for you).
@@ -15,6 +15,7 @@
 #   --raw NAME=PATH       <dest>/raw/NAME links to PATH (the photographs, the MRI and histology sources)
 #   --link ID:PATH=TARGET <dest>/data/sub-ID/PATH links to TARGET (an input of record kept outside data/sub-ID, e.g. the label
 #                         steps' histology/annotations, section_map.tsv, match_table.txt)
+#   --copy ID:PATH=SOURCE <dest>/data/sub-ID/PATH is a copy of SOURCE (a hand-made input, e.g. a brain's masks for the MRI build)
 # You get
 #   <dest>/data/sub-<ID>/  (point LINC_DATA here)      blockface/, mri/, histology/, labels/ as above; xfm/ (the registry your
 #                          runs write) EMPTY; xfm_record/ the registry entries of record (the blockface-to-b0 registration; for a
@@ -26,16 +27,17 @@
 #   <dest>/raw/            (point LINC_RAW here)       the --raw links
 #   <dest>/.complete       written last, when the tree is complete (env/lab.sh builds again when it is missing)
 set -eu
-[ $# -ge 1 ] && [ "$1" != "-h" ] && [ "$1" != "--help" ] || { sed -n '2,27p' "$0" | cut -c3-; exit 0; }
+[ $# -ge 1 ] && [ "$1" != "-h" ] && [ "$1" != "--help" ] || { sed -n '2,28p' "$0" | cut -c3-; exit 0; }
 DEST=$1; shift; ARGS="$*"
 REC=${LINC_RECORDS:?set LINC_RECORDS to the project folder holding data/ and template/ (env/lab.sh sets it)}
 REPO=$(cd "$(dirname "$0")/.." && pwd)
-IDS=(); REBUILD=(); RAWS=(); LINKS=()
+IDS=(); REBUILD=(); RAWS=(); LINKS=(); COPIES=()
 while [ $# -gt 0 ]; do
   case $1 in
     --rebuild) REBUILD+=("$2"); IDS+=("$2"); shift 2;;
     --raw) RAWS+=("$2"); shift 2;;
     --link) LINKS+=("$2"); shift 2;;
+    --copy) COPIES+=("$2"); shift 2;;
     *) IDS+=("$1"); shift;;
   esac
 done
@@ -113,6 +115,12 @@ for kv in "${LINKS[@]:-}"; do                # ID:PATH=TARGET -> <dest>/data/sub
   id=${kv%%:*}; rest=${kv#*:}; rel=${rest%%=*}; tgt=${rest#*=}
   [ -e "$tgt" ] || { echo "--link $kv: no $tgt"; continue; }
   mkdir -p "$(dirname "$DEST/data/sub-$id/$rel")"; link "$tgt" "$DEST/data/sub-$id/$rel"
+done
+for kv in "${COPIES[@]:-}"; do               # ID:PATH=SOURCE -> <dest>/data/sub-ID/PATH is a copy of SOURCE
+  [ -n "$kv" ] || continue
+  id=${kv%%:*}; rest=${kv#*:}; rel=${rest%%=*}; src=${rest#*=}
+  [ -r "$src" ] || { echo "--copy $kv: cannot read $src"; exit 1; }
+  mkdir -p "$(dirname "$DEST/data/sub-$id/$rel")"; copy "$src" "$DEST/data/sub-$id/$rel"
 done
 echo "$(date '+%F %T') tools/make_local_data.sh $DEST $ARGS" > "$DEST/.complete"   # written last: env/lab.sh rebuilds a tree without it
 echo "made $DEST: $n_link links, $n_copy copies"

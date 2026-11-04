@@ -1,16 +1,24 @@
 #!/bin/bash
-# Does the installation work? Run this before downloading any data (no release data, no network weights, no GPU; a few minutes).
+# Check that the installation works, before downloading any data.
+#
+# You need
+#   the environments' interpreters (env/README.md), or linc_envs.sh sourced:
+#     PY       env/linc.yml        (default: python3 on PATH)
+#     PY_DEEP  env/deep.yml        (default: PY)
+#     PY_TIRL  env/tirl.yml        for the reconstruction and histology steps; without it or without TIRL those two steps SKIP and name the
+#                                  install command, because PY would test the wrong environment
+#   No release data, no weights, no GPU, no network. A few minutes.
+#
+# What it does
+#   1. runs the repository's tests, each in the environment its code runs in (tests/run.py, no pytest needed)
+#   2. runs each command line on toy data written on the fly, including one training epoch of each network. The toy results mean nothing:
+#      this checks the installation, not the models
+#
+# You get
+#   PASS / FAIL / SKIP per step and a summary; a step whose environment lacks a package fails with the import error, which names what to install.
+#   The exit status is the number of failed steps (skips do not count). The logs go to a folder under $TMPDIR, which it names.
 #
 #   bash reproduce/selftest.sh                       # or: cd reproduce && make test
-#
-# It runs the repository's tests, each in the environment its code runs in (plain python: tests/run.py, no pytest needed), then a
-# smoke test of each command line on toy data written on the fly. Point it at the environments' interpreters (env/README.md):
-#   PY       env/linc.yml        (default: python3 on PATH)
-#   PY_DEEP  env/deep.yml        (default: PY)
-#   PY_TIRL  env/tirl.yml        for the reconstruction and histology smokes (no fallback to PY, which would test the wrong
-#                                environment): when it is unset or has no TIRL, those two steps SKIP, naming the install command
-# A step whose environment lacks a package it needs fails with the import error, so the message names what to install.
-# Prints PASS / FAIL / SKIP per step and a summary; the exit status is the number of failed steps (skips do not count). Temporary files go to $TMPDIR.
 set -u
 cd "$(dirname "$0")/.."
 PY=${PY:-python3}; PY_DEEP=${PY_DEEP:-$PY}; PY_TIRL=${PY_TIRL:-}

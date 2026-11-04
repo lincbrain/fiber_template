@@ -17,8 +17,8 @@ What it does (--plan lists every step with its command, inputs, outputs and time
   3. the MRI template registered to each published template in configs/link.yaml atlas.atlases, and scored
 You get
   under --work (default $LINC_WORK/build_link): link/sym (the registration of step 1), link/maps (its two transforms, as pull
-  maps), the consistency check (link/s5_*), mri/tc/atlas_v2/<template>/ (the registrations to published templates); the numbers
-  records in $LINC_NUMBERS.
+  maps), link/blockface_in_mri (the template's blockface channel in the MRI template's frame: linc_bf_*), the consistency check (link/s5_*), mri/tc/atlas_v2/<template>/ (the registrations to published templates), xfm/ (the template-level
+  entries of the transform registry, both directions of each registration); the numbers records in $LINC_NUMBERS.
 
     python reproduce/templates/build_link.py --plan                    every step, its environment, time, inputs, outputs
     python reproduce/templates/build_link.py --step link-prepare       one step (or several, in order)
@@ -58,6 +58,9 @@ def make_steps(W, paths):
           "link_warp, moved b0 / mask / grey, s5_link.json"),
         S("link-export", "1. blockface template -> MRI template", "linc", [*R, "export", sym, maps], [maps / "export.json"], [sym / "s5_link.json"], "2 min",
           "the two full pull maps + round trips"),
+        S("blockface-in-mri", "1. blockface template -> MRI template", "linc", [*R, "blockface-in-mri", maps, L / "blockface_in_mri"],
+          [L / "blockface_in_mri" / "blockface_in_mri.json"], [maps / "export.json"], "3 min",
+          "the template's blockface channel in the MRI template's frame, under the released names (linc_bf_*)"),
         S("greedy-link", "2. consistency check", "linc", [], [L / "greedy"], [greedy], "1 s",
           "links the one-way link of record (compare's second direct estimate; not rebuilt here)", fn=greedy_link),
         S("compose", "2. consistency check", "linc", [*E, "compose", "--out", comp, "-j", "8"],
@@ -77,6 +80,9 @@ def make_steps(W, paths):
             S(f"atlas-score-{a}", "3. mappings to published templates", "linc", [*A, "score", a, "--out", AT], [AT / a / "score.json"],
               [AT / a / "run" / "metrics.json"], "2 min", "score.json + $LINC_NUMBERS/atlas_final_v2_<atlas>.json"),
         ]
+    steps.append(S("registry", "3. mappings to published templates", "linc", [*R, "registry", maps, sym, AT, W / "xfm"],
+                   [W / "xfm" / "bf-template__to__mri-template" / "meta.json"], [maps / "export.json", sym / "s5_link.json"] + [AT / a / "score.json" for a in ATLASES], "1 min",
+                   "the template-level entries of the transform registry (linc/xfm.py), both directions of each registration: $LINC_TEMPLATE/xfm/ in the released template"))
     steps.append(S("atlas-summary", "3. mappings to published templates", "linc", ["reproduce/numbers/atlas_final_v2_summary.py"],
                    [Path(os.environ.get("LINC_NUMBERS", "numbers")) / "atlas_final_v2_summary.json"],
                    [AT / a / "score.json" for a in ATLASES], "1 s", "reads each mapping's score record under <work>/mri/tc/atlas_v2",

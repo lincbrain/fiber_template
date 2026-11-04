@@ -33,6 +33,5 @@ Two per-brain inputs are prepared before this step:
 Write the output to `$LINC_DATA/sub-<ID>/histology/registration`, as above: the label steps (`docs/labels.md`) read it from there.
 
 A regions volume made at another spacing than the brain's current one is given with that spacing, `--regions-spacing-um VX VZ`
-(in-plane and between sections, in µm). For MF8 (`sub-MF191`), the paper's registration used an earlier regions volume, made before
-its section step was corrected; it ships as the product `hidden_arm_regions` (`configs/products_blockface.yaml`), and
+(in-plane and between sections, in µm). For MF8 (`sub-MF191`), the paper's registration used its own regions volume, made at a section step of 600 µm, and
 `--regions <that file> --regions-spacing-um 23.75 600` reproduces all 58 of its components byte for byte.

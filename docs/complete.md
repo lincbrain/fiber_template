@@ -15,7 +15,8 @@ NIfTI on the brain's 0.25 mm grid, with a provenance JSON.
 
 Environment: `env/deep.yml`.
 
-No brain was photographed to its caudal end. `cli/linc-complete` synthesizes the missing tissue from the brain's b0, or from a
+No brain was photographed to its caudal end. `cli/linc-complete` (the name stands for this synthesis, as do `_bf_completed` and
+`completion/`) synthesizes the missing tissue from the brain's b0, or from a
 stand-in b0 for a brain without MRI (`--stand-in`). It runs in two steps: `prepare` makes the brain's folder from its own
 products, then the networks synthesize:
 
@@ -24,9 +25,26 @@ $PY_DEEP cli/linc-complete prepare --subject <ID> --out $LINC_WORK/prepared
 $PY_DEEP cli/linc-complete --brain $LINC_WORK/prepared/<ID> --out $LINC_WORK/complete [--stand-in]
 ```
 
-`prepare` writes `<ID>/` (`seam.json`, `coarse/`, `fine/`) from the brain's products under `$LINC_DATA/sub-<ID>/`, on a CPU, in
-about a minute. A brain without MRI needs its stand-in b0 and registration inputs as flags (`--stand-in-b0 … --lo0`, with
-`--nonlin`, `--matrix`, `--brain-mask`); `prepare --help` and [`linc/completion/README.md`](../linc/completion/README.md) list them
-and how each is made. On MF5 (with MRI) and MM13 (without), `prepare` rebuilds the paper's folders array for array. The
+`prepare` writes `<ID>/` (`seam.json`, `coarse/`, `fine/`) on a CPU, in about a minute, and needs no paths. For the paper's 21 brains,
+its inputs are listed in `configs/completion.yaml` (`prepare.inputs`). A new brain's come from its own registration
+(`$LINC_WORK/register/<ID>`, from `linc-register mri`) or, without MRI, from `$LINC_DATA/sub-<ID>/mri/stand_in/` (from
+`linc-register direct-placement`). For a new brain with MRI, it also detects the tissue only the MRI shows, and writes it as
+`<ID>_mri_only_tissue.nii.gz` beside the folder. On MM2 (with MRI) and MF8 (without), it rebuilds the paper's folders array for array. The
 synthesis takes about 20 s per brain on a GPU, with about 2 GB of its memory. Three of the paper's prepared
-roots link into a sibling root; `python -m linc.completion.relocate <root> <new root>` makes a copy that works on another machine.
+roots link into a sibling root; `$PY_DEEP -m linc.completion.relocate <root> <new root>` makes a copy that works on another machine.
+
+## Train the network
+
+The weights come with the data release. To train the network again, on the 13 brains with MRI that `configs/completion.yaml` lists
+(`training`), from their prepared folders; the targets are each brain's own photographs, so there are no hand labels:
+
+```bash
+$PY_DEEP cli/linc-complete train --root <prepared folders> --plan     # the brains and any missing files, without running
+$PY_DEEP cli/linc-complete train --root <prepared folders>
+```
+
+About 1 hour on a GPU, with about 8 GB free. It writes `last.pt`, which `linc-complete --model <folder>` reads, under
+`$LINC_WORK/completion/runs/`. `--protocol lso` trains the network of the withheld-slab evaluation. The stand-in network trains on folders made with
+`prepare --subject <ID> --out <folder> --targets-from <the prepared folders>`, from each brain's stand-in b0. A rerun follows the same recipe
+but is not bit for bit the same: on another GPU, the first epoch's losses differ in the third or fourth digit.
+

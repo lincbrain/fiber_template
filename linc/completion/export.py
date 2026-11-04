@@ -51,16 +51,13 @@ def nearest_valid_fill(real_bf, real_mask):
     return real_bf[tuple(idx)]
 
 
-def export_brain(net, D, S, out, device="cuda", save_raw=None, cache_out=None):
+def export_brain(net, D, S, out, device="cuda", cache_out=None):
     """write the product set of prepared brain D (LINC ID S) to out/S/; returns (summary row, section-normal record or None)"""
     t0 = time.time()
     rg = deploy.regions(D, "full")
     brain, zf, Aff = rg["brain"], rg["z_f"], rg["affine"]
     x = np.asanyarray(nib.load(f"{D}/coarse/in.nii.gz").dataobj).astype(np.float32)[None]
     raw = deploy.predict(net, x, device) * brain
-    if save_raw:
-        os.makedirs(save_raw, exist_ok=True)
-        nib.save(nib.Nifti1Image(raw.astype(np.float32), Aff), f"{save_raw}/{S}_raw.nii.gz")
     grey = np.asanyarray(nib.load(f"{D}/fine/bf.nii.gz").dataobj).astype(np.float32)
     synth, w, completed = deploy.join(raw, grey, rg)
     bf_real = (grey * (w > 0) * brain).astype(np.float32)

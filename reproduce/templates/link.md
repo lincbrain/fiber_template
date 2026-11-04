@@ -31,6 +31,7 @@ python -m linc.link.register prepare --out work/link/sym                 # CPU, 
 python -m linc.link.register solve   --out work/link/sym --device cuda:0 # GPU, ~2 min: the symmetric registration -> work/link/sym/sym/
 python -m linc.link.register finish  --out work/link/sym                 # CPU: link_warp, moved b0 / mask / grey, s5_link.json
 python -m linc.link.register export  work/link/sym work/link/maps        # CPU: the two pull maps + inverse-consistency errors
+python -m linc.link.register blockface-in-mri work/link/maps work/link/blockface_in_mri   # CPU, 2 min: the released linc_bf_* files
 ```
 
 `run` does the first three in one call. Products of record: `bftemplate/cv/s5_direct_d2bs8/sym/` (the registration) and
@@ -63,6 +64,17 @@ python reproduce/numbers/atlas_final_v2_summary.py                  # with LINC_
 
 The CIVM-R and ONPRC18 images are read from your own copies (configs/link.yaml `inputs.atlas_reference`); only transforms and numbers
 are written. Products of record: `mri/tc/atlas_v2/<atlas>/`.
+
+## 4. The template-level entries of the transform registry
+
+```bash
+python -m linc.link.register registry work/link/maps work/link/sym work/atlas_v2 work/xfm   # CPU, 1 min
+```
+
+One entry per direction, from the stored maps: `bf-template__to__mri-template`, `mri-template__to__bf-template`, and for each published
+template `atlas-<name>__to__mri-template`, `mri-template__to__atlas-<name>`. In the released template they are `$LINC_TEMPLATE/xfm/`, where
+`python -m linc.xfm chain|apply` finds them, with a brain's own entries, from any space to any other. They hold transforms only, not the
+published templates' images; to resample into a published template, give your own copy as `--ref`.
 
 ## Validation against the records (21 Oct 2026, CPU, 8 threads)
 

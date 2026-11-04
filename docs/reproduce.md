@@ -16,8 +16,12 @@ you need the paper's intermediate products (`$LINC_PRODUCTS`), which come with t
 make numbers        # every numbers record the paper reads (CPU), into $LINC_NUMBERS (default outputs/numbers)
 make numbers-gpu    # the one record that needs a GPU (env/deep.yml)
 make figures        # the paper's figures, into outputs/figures (two of them also write a numbers record)
-make check          # compare the rewritten records with the paper's (reference/), counts exact, floats to 1e-9
+make check          # compare the recomputed records with the paper's (reference/), counts exact, floats to 1e-9
 ```
+
+`make check` passes only when every record is there: run `make numbers-gpu` as well, because `make numbers` leaves out the one GPU
+record, and a record skipped for lack of its inputs (for example NMT v2 and CIVM-R) shows as `MISSING`. To check a subset, name its
+records: `$PY reproduce/check_numbers.py --ref reproduce/reference <record> ...`.
 
 - **The Python each target uses:** each record and figure runs in the environment it ran in for the paper: `PY` (env/linc.yml),
   `PY_DEEP` (env/deep.yml) and `PY_TIRL` (env/tirl.yml). `source envs/linc_envs.sh` sets them; or give them on the command line,

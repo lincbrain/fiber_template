@@ -6,7 +6,7 @@ template.
 **What it does**
 1. `push`: transforms the annotations through each section's registration onto the blockface;
 2. `interpolate`: fills the labels between sections;
-3. `carry`: transforms them into the template, in one resampling.
+3. `carry`: transforms them into the template, in one resampling. In its files, `solid` is the label where the density exceeds 0.5.
 
 **You get** the labels on the blockface, `$LINC_DATA/sub-<ID>/labels/blockface/`, and in the template, `labels/template/`.
 

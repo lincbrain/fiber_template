@@ -12,7 +12,7 @@ source envs/linc_envs.sh          # in every new shell: points the pipeline at t
 
 `env/install.sh` creates each environment from its file in `env/` into `envs/` in your clone (`--prefix` gives another folder),
 runs the source installs the files' headers describe, installs this package into each, and ends with the installation check
-(`docs/reproduce.md`). It takes about 20–25 minutes, most of it downloading, and about 22 GB of disk. It is safe to run again: an environment it already built
+(`docs/reproduce.md`). It takes about 20–25 minutes, most of it downloading, and about 23 GB of disk. It is safe to run again: an environment it already built
 is skipped, and nothing is deleted. After `git pull` changes an `env/*.yml` file, remove that environment's folder under
 `envs/` and run `env/install.sh` again: it rebuilds only what is missing. `--only linc,deep` builds some of them.
 
@@ -60,7 +60,7 @@ Two engines are not on PyPI at the paper's versions and are installed from their
 | ANTs | 2.5.4 | `ANTSPATH` |
 | MRtrix3 | 3.0.2, for the MRI from the scanner's files and the tensor step of the MRI channels' build (`docs/build_everything.md`) | `MRTRIX` |
 | TORTOISE | V4.1.0, for the second diffusion session only (`mri_raw dt2`): a free download from the NIH after registration, run as a container on an NVIDIA GPU | `TORTOISE` (the folder that holds `TORTOISEProcess`) |
-| Julia | 1.11.4, for the MRI from the scanner's files only: `env/install.sh --with-mri-raw` installs it with the packages of `env/julia` | `JULIA`, `JULIA_DEPOT_PATH` |
+| Julia | 1.11.4, for the MRI from the scanner's files only: `env/install.sh --with-mri-raw` installs it with the packages of `env/julia` (about 6 minutes and 2.9 GB; a long `ImageInTerminalExt` error during precompilation is harmless) | `JULIA`, `JULIA_DEPOT_PATH` |
 | the anatomix environment's Python | see `env/anatomix.yml` | `ANATOMIX_PYTHON` |
 | the deep-learning environment's Python, for the segmentation models | see `env/deep.yml` | `LINC_SEGMENT_PYTHON` |
 | TIRL | 3.6.3 (`env/tirl.yml`), found beside the running Python | `TIRL_BIN` only to point at another installation |

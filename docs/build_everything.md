@@ -32,12 +32,13 @@ and numbers records to `$LINC_NUMBERS`.
 | a brain's histology, registered to its photographs | `cli/linc-histology all` | `histology.yaml` | tirl | about 2 hours |
 | a brain's labels in the template | `cli/linc-labels push`, `interpolate`, `carry` | `labels.yaml` | tirl, then linc | about 40 minutes |
 | a segmentation network, trained on the hand-drawn and hand-corrected masks | `cli/linc-segment stage` (the blockface networks' training cases), then `cli/linc-segment train --task configs/segment/<model>.json --fold all` | `segment/<model>.json` | deep, GPU with about 10 GB free | about 2 hours per network |
+| the synthesis network, trained on each brain's b0 and photographs | `cli/linc-complete train --root <prepared folders>` | `completion.yaml` | deep, GPU with about 8 GB free | about 1 hour per network |
 | the numbers records | `make numbers` | `reproduce/numbers/` | each record's own | `docs/reproduce.md` |
 | the figures | `make figures` | `figures.yaml` | linc; viz3d for Fig. 10 | `docs/reproduce.md` |
 
 From the scanner's files, the MRI build reproduces the paper's files, with the small differences `docs/mri.md` gives.
-The weights of the segmentation networks come with the data release; training them again is optional, and `--plan` lists a task's
-cases and brains first. Configs are in `configs/`. The times are from one node with an NVIDIA RTX 6000 Ada (48 GB). The per-brain commands are explained one
+The networks' weights come with the data release; training them again is optional, and `--plan` lists the brains and any missing
+files first. Configs are in `configs/`. The times are from one node with an NVIDIA RTX 6000 Ada (48 GB). The per-brain commands are explained one
 by one in `docs/walkthrough.md`.
 
 ## The three template builds
@@ -60,7 +61,20 @@ Outputs go to `--work`, by default under `$LINC_WORK`.
 The MMORF steps run through the template-construction driver (`LINC_TEMPLATE_DRIVER`, `linc/construction/patches/README.md`) and
 `LINC_MMORF_EXE`. The MRI build also needs FSL, ANTs and MRtrix3 (`FSLDIR`, `ANTSPATH`, `MRTRIX`). The registration between the two templates needs `ANATOMIX_PYTHON`.
 
-The CPU steps of each build were rerun for this release, and they reproduce the paper's files. The GPU steps were not rerun.
+
+## What was rerun for this release
+
+Rerun with this code, and identical to the paper's files or differing as `docs/walkthrough.md` and `docs/mri.md` state:
+- the MRI from the scanner's files: MF1 from its sessions to the build's staged inputs, including its registrations within the brain
+  and to NMT v2; MF2 to MF4, their microstructure session only;
+- the reconstruction of MM2, MF8 and MM14 from their photographs;
+- the registrations of MM2 and MF8, their synthesis, their histology, and MM2's labels;
+- some CPU steps of the template builds: for the MRI build, `tensor`, `landmarks`, `frames` and `prepare` on MF1, then `assemble` and
+  `channels` on the paper's inputs and run; for the blockface build, `prep-frame` and `bf-view`; for the registration between the two templates, `link-prepare`. Each step was
+  compared with the paper's files on its own; MF1 has not run as one chain from the scanner's files through `prepare`.
+
+Not rerun: the rest of the template builds, including their GPU stages (the MMORF runs and the registration between the two
+templates), and the full training of the networks. Their code and parameters are the paper's; only a few first epochs of training were compared with the paper's runs.
 
 ## Rebuilding a template
 

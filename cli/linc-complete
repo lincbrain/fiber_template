@@ -1,23 +1,29 @@
 #!/usr/bin/env python3
-"""Complete one blockface volume caudally: the tissue the photographs lack, predicted from the brain's b0 and joined to them
-(paper: Methods, "Registration to the brain's own MRI and caudal completion"; environment env/deep.yml; a GPU for a full brain).
+"""Synthesize the blockface tissue a brain's photographs lack, from its b0 image, and join it to the photographs (paper: Methods, "Blockface to
+MRI registration and synthesis of missing sections"; the network: Supplementary S1).
 
-Quick start (the networks in $LINC_MODELS/completion; a prepared folder per brain, named by its LINC ID):
-    cli/linc-complete --brain $LINC_COMPLETION_PREPARED/MF278 --out $LINC_WORK/complete              # a brain with its own b0
-    cli/linc-complete --brain $LINC_COMPLETION_PREPARED_STANDIN/MR248 --stand-in --out $LINC_WORK/complete   # no MRI: stand-in b0
+You need
+  the environment env/deep.yml and a GPU with about 2 GB for a whole brain; the brain's prepared folder, named by its Specimen ID (`linc-complete
+  prepare`, below, or the paper's folders, $LINC_COMPLETION_PREPARED and $LINC_COMPLETION_PREPARED_STANDIN); and the network, $LINC_MODELS/completion/
+  <name>/, which comes with the data release (d3_full_A_s0 for a brain with its own b0, d3p_full_A_s0 with --stand-in for a brain without MRI).
 
-A prepared folder (layout: linc/completion/__init__.py) holds the b0 on its 0.5 mm box, the photographs on the 0.25 mm box, the
-masks and the join plane (seam.json). The network predicts blockface grey over the whole brain from the b0; one isotonic map matches
-the prediction to the photographs over the first 8 mm rostral of the clean cut face, and a 2 mm cosine cross-fade joins the two
-(configs/completion.yaml). Writes <out>/<ID>/<ID>_{bf_completed, bf_completed_rgb, bf_synth, bf_real, seam_ramp, seam_ramp_real,
-seam_depth, photo_fraction, provenance, synth_mask, b0_input_0p5}.nii.gz, <ID>_chroma.json and provenance.json, and the brain's row
-in <out>/summary_<network>.json. A brain's existing products are never overwritten: give a new --out to run it again.
+What it does
+  1. predicts blockface grey over the whole brain from the b0, in overlapping windows (0.5 mm in, 0.25 mm out)
+  2. fits one monotonic intensity map from the prediction to the photographs, over the first 8 mm rostral of the junction plane, because the
+     network's output and the photographs' grey differ by a brain-specific scale
+  3. cross-fades from the photographs into the mapped prediction over 2 mm at the junction plane, so that no seam shows
+  4. adds color: the photographs' mean chroma, constant over the synthesized tissue
 
-The prepared folder of a brain, from its products (linc/completion/prepare.py; CPU, numpy / scipy / nibabel; --help after prepare):
-    cli/linc-complete prepare --subject MF278 --out $LINC_WORK/prepared                               # defaults: MF278's inputs of record
-    cli/linc-complete prepare --subject MR248 --out $LINC_WORK/prepared_stand_in --lo0 --nonlin '{mri}/nonlinear_s2lin_prod' \
-        --matrix '{mri}/s2lin_prod/{ID}_bf2mri_dof9.mat' --brain-mask '{mri}/{ID}_pseudo_brain_n1_0p5_prod.nii.gz' \
-        --stand-in-b0 '{nonlin}/{ID}_mri_full.nii.gz'                                                  # no MRI: the stand-in b0
+You get  (in <out>/<ID>/, NIfTI on the brain's 0.25 mm grid; a brain's existing products are never written over)
+  <ID>_bf_completed (the whole brain, in the photographs' grey) and <ID>_bf_completed_rgb (in color), <ID>_bf_synth (the mapped prediction),
+  <ID>_bf_real (the photographs used), <ID>_seam_ramp and <ID>_seam_ramp_real (the cross-fade weight), <ID>_seam_depth (mm from the junction
+  plane), <ID>_photo_fraction (the photographed fraction of each voxel), <ID>_provenance (the weight x that fraction), <ID>_synth_mask (the
+  synthesized voxels), <ID>_b0_input_0p5 (the network's input); <ID>_chroma.json and provenance.json; and the brain's row in <out>/summary_<network>.json.
+
+    cli/linc-complete prepare --subject <ID> --out $LINC_WORK/prepared                  # the prepared folder, from the brain's products (CPU; prepare -h)
+    cli/linc-complete --brain $LINC_WORK/prepared/<ID> --out $LINC_WORK/complete        # a brain with its own b0
+    cli/linc-complete --brain $LINC_WORK/prepared/<ID> --stand-in --out $LINC_WORK/complete   # a brain without MRI: its stand-in b0
+    cli/linc-complete train --root $LINC_WORK/prepared [--plan]                         # train the network again (train -h)
 """
 import argparse
 import hashlib
@@ -35,6 +41,9 @@ def main():
     if len(sys.argv) > 1 and sys.argv[1] == "prepare":                 # the prepared folder of a brain (no torch, no MONAI)
         from linc.completion import prepare
         return prepare.main(sys.argv[2:])
+    if len(sys.argv) > 1 and sys.argv[1] == "train":                   # the training recipe of the networks of record (torch, MONAI)
+        from linc.completion import train
+        return train.main(sys.argv[2:])
     ap = argparse.ArgumentParser(prog="linc-complete", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     g = ap.add_argument_group("what to complete")
     g.add_argument("--brain", required=True, type=Path, help="the brain's prepared folder (named by its LINC ID)")
@@ -44,8 +53,7 @@ def main():
     x.add_argument("--model", type=Path, default=None, help="a network folder with last.pt (default: $LINC_MODELS/completion/"
                    "d3_full_A_s0, or d3p_full_A_s0 with --stand-in; models/completion.md)")
     x.add_argument("--device", default="cuda", help="cuda (default), cuda:N or cpu (slow for a full brain)")
-    x.add_argument("--cache-out", type=Path, default=None, help="also write <DIR>/<ID>/deploy/{brain, real_mask} and <DIR>/seam.json")
-    x.add_argument("--save-raw", type=Path, default=None, help="also write the unmapped prediction <DIR>/<ID>_raw.nii.gz")
+    x.add_argument("--cache-out", type=Path, default=None, help="also write <DIR>/<ID>/deploy/{brain, real_mask} and <DIR>/seam.json, which the blockface template's construction reads")
     a = ap.parse_args()
     if a.model is None:
         if not os.environ.get("LINC_MODELS"):
@@ -58,7 +66,7 @@ def main():
     from linc.completion import export, network                       # torch, MONAI, nibabel: env/deep.yml
     t0 = time.time()
     net, cfg = network.load(ckp, a.device)
-    row, normal = export.export_brain(net, str(D), S, str(a.out), device=a.device, save_raw=a.save_raw and str(a.save_raw),
+    row, normal = export.export_brain(net, str(D), S, str(a.out), device=a.device,
                                       cache_out=a.cache_out and str(a.cache_out))
     ck_md5 = hashlib.md5(open(ckp, "rb").read()).hexdigest()
     name = ckp.parent.name if ckp.name == "last.pt" else ckp.stem
@@ -77,8 +85,8 @@ def main():
            D / "fine/photo_fraction.nii.gz", D / "fine/brain.nii.gz"] + ([D / "fine/bf_rgb.nii.gz"] if (D / "fine/bf_rgb.nii.gz").exists() else [])
     provenance.write_provenance(a.out / S, inputs=[str(p) for p in ins], wall_s=round(time.time() - t0, 1),
                                 extra=dict(network=name, device=a.device), md5=True)
-    print(f"{S}: predicted share {row['synth_frac']:.3f}, cut z_f {row['z_f']} -> {a.out / S} ({row['wall_s']} s)")
+    print(f"{S}: synthesized fraction {row['synth_frac']:.3f}, junction plane z_f {row['z_f']} -> {a.out / S} ({row['wall_s']} s)")
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

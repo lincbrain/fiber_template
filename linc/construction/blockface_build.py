@@ -101,6 +101,8 @@ def _driver_dir():
     d = os.environ.get("LINC_TEMPLATE_DRIVER")
     if not d or not os.path.exists(os.path.join(d, "run_template_construction.py")):
         raise RuntimeError("set LINC_TEMPLATE_DRIVER to the patched template_construction_v1 folder (" + DRIVER_PATCHED + ")")
+    if "MASKW" not in open(os.path.join(d, "run_template_construction.py")).read():   # the MRI build's driver would run, and average without the weights
+        raise RuntimeError(f"{d} is not the blockface template's driver: it has no mask-weighted construction (" + DRIVER_PATCHED + ")")
     return d
 
 
@@ -1013,8 +1015,31 @@ def driver_command(run, extra=()):
              "-aff", "True", "-nln", "True", *extra])
 
 
+def cmd_member_entries(a):
+    """The registry entries bf-native -> bf-template of the template's brains without MRI, the route the paper's labels of MF8 took: the
+    template point through the member's step-8 warp to its canon point, then the inverse of its rigid placement to the blockface. The warp
+    is valid in photographed tissue only (recorded in the entry). Its source grid, needed to read an FSL warp, goes with the entry."""
+    from .. import xfm
+    P = paths.products("products_blockface"); F = P["bftemplate_step8"]
+    rows = {r["member"]: r for r in json.load(open(F / "d2_member_warps.json"))["data"]}
+    gate = json.load(open(P["bftemplate_step8_state"] / "gate_jac_it03.json"))["members"]
+    for S in a.subjects.split(","):
+        r = rows[S]; root = paths.subject_dir(S) / a.registry_name
+        T = np.array(json.load(open(f"{paths.subject_dir(S)}/mri/s2lin_{a.s2lin_suffix}/{S}_s2lin.json"))["T_world_bf_to_run113"], float)
+        sg = paths.rerooted(r["src_grid"])
+        with tempfile.TemporaryDirectory() as t:
+            np.savetxt(f"{t}/{S}_rigid_pull_ras.txt", np.linalg.inv(T))
+            e = xfm.register("bf-native", "bf-template", [("warp", "fsl_rel", paths.rerooted(r["file"])), ("affine", "ras_pull", f"{t}/{S}_rigid_pull_ras.txt")], subject=S,
+                             dst_grid=str(F / "d2bs8_grey.nii.gz"), src_grid=sg, engine="the template's construction (MMORF, step 8) and the brain's rigid placement", root=str(root),
+                             overwrite=a.overwrite, extra=dict(valid_in=r["warp_validity"]["valid_in"]))
+        shutil.copy2(sg, e.dir / "src_grid.nii.gz")
+        m = json.loads((e.dir / "meta.json").read_text()); m["src_grid"] = "src_grid.nii.gz"; (e.dir / "meta.json").write_text(json.dumps(m, indent=1))
+        xfm.set_qc(e.dir, "pass" if gate[S]["pass_"] else "fail", source="gate_jac_it03.json", folds_pct=gate[S]["folds_pct"], valid_in=r["warp_validity"]["valid_in"])
+        print(xfm.Entry(e.dir), flush=True)
+
+
 def cmd_tpl_standins(a):
-    """TPL's stand-ins for its MMORF call (the step-8 chain): its blockface moving image = its own b0, its blockface mask = ones."""
+    """TPL's stand-ins for its MMORF call (both stages; --canon2 = that stage's canon): its blockface moving image = its own b0, its blockface mask = ones."""
     run = ab(a.run); canon2 = ab(a.canon2)
     d = f"{run}/data/BF/TPL/BF"
     shutil.copy(f"{canon2}/TPL/d2_b0.nii.gz", f"{d}/BF_mmorf_image.nii.gz")
@@ -1066,6 +1091,9 @@ def main(argv=None):
     p.add_argument("--canon2", required=True); p.add_argument("--out", required=True)
     p = sp.add_parser("run-step8", help="the step-8 run tree"); p.add_argument("--canon2", required=True); p.add_argument("--plan-a", required=True)
     p.add_argument("--box", required=True); p.add_argument("--root", required=True); p.add_argument("--name", required=True)
+    p = sp.add_parser("member-entries", help="the registry entries bf-native -> bf-template of the brains without MRI")
+    p.add_argument("--subjects", default=NOMRI8); p.add_argument("--registry-name", default="xfm", help="the entries go in $LINC_DATA/sub-<ID>/<this>/")
+    p.add_argument("--s2lin-suffix", default="prod"); p.add_argument("--overwrite", action="store_true")
     p = sp.add_parser("tpl-standins", help="TPL's stand-in blockface image and mask for its MMORF call"); p.add_argument("--run", required=True)
     p.add_argument("--canon2", required=True)
     p = sp.add_parser("s8-mats", help="plan A's affines for canon2 -> box"); p.add_argument("--affine-dir", required=True); p.add_argument("--canon", required=True)
@@ -1074,8 +1102,7 @@ def main(argv=None):
     p.add_argument("--canon", required=True); p.add_argument("--canon2", required=True); p.add_argument("--run", required=True); p.add_argument("-j", type=int, default=8)
     p = sp.add_parser("step7-templates", help="the step-7 templates of the step-8 run (the patched driver's averaging; MMORF env)")
     p.add_argument("--run", required=True)
-    p = sp.add_parser("driver-command", help="print the patched driver's command line for a run"); p.add_argument("--run", required=True)
-    p.add_argument("extra", nargs=argparse.REMAINDER)
+    p = sp.add_parser("driver-command", help="print the patched driver's command line for a run; arguments after --run go to the driver"); p.add_argument("--run", required=True)
     p = sp.add_parser("finish", help="the template's blockface channel from the step-8 warps"); p.add_argument("--run", required=True)
     p.add_argument("--arm", required=True); p.add_argument("--canon", required=True); p.add_argument("--iteration", required=True)
     p.add_argument("--out", required=True); p.add_argument("--precision-json", required=True); p.add_argument("-j", type=int, default=6)
@@ -1084,7 +1111,9 @@ def main(argv=None):
     p.add_argument("--out", required=True); p.add_argument("--weights-canon", default=""); p.add_argument("-j", type=int, default=6)
     p = sp.add_parser("embed", help="the box products onto the run-113 grid's 2x refinement"); p.add_argument("--run", required=True)
     p.add_argument("--src", required=True); p.add_argument("--dst", required=True)
-    a = ap.parse_args(argv)
+    a, extra = ap.parse_known_args(argv)
+    if extra and a.cmd != "driver-command":
+        ap.error("unrecognized arguments: " + " ".join(extra))
     if a.cmd == "prep-frame":
         return make_prep_frame(ab(a.out), a.grow_mm)
     if a.cmd == "members":
@@ -1092,7 +1121,7 @@ def main(argv=None):
     if a.cmd == "crop":
         return cmd_crop(a)
     if a.cmd == "driver-command":
-        print(" ".join(driver_command(ab(a.run), a.extra))); return
+        print(" ".join(driver_command(ab(a.run), extra))); return
     if a.cmd == "finish":
         return F.finish_blockface(ab(a.run), a.arm, ab(a.canon), ab(a.iteration), ab(a.out), ab(a.precision_json), j=a.j)
     if a.cmd == "finish-b0":
@@ -1102,7 +1131,7 @@ def main(argv=None):
     {"s8-frame": cmd_frame, "s8-inputs": cmd_inputs, "s8-box": cmd_box, "s8-boxcheck": cmd_boxcheck, "tpl-canon": cmd_tpl_canon,
      "tpl-costmask": cmd_tpl_costmask, "run-plan-a": cmd_assemble_plan_a, "copy-affine": cmd_copy_affine, "tpl-affine": cmd_tpl_affine,
      "affine-templates": cmd_affine_templates, "step8-weights": cmd_step8_weights, "run-step8": cmd_assemble_step8,
-     "tpl-standins": cmd_tpl_standins, "s8-mats": cmd_mats, "s8-step7": cmd_step7, "step7-templates": cmd_step7_templates}[a.cmd](a)
+     "tpl-standins": cmd_tpl_standins, "member-entries": cmd_member_entries, "s8-mats": cmd_mats, "s8-step7": cmd_step7, "step7-templates": cmd_step7_templates}[a.cmd](a)
 
 
 if __name__ == "__main__":

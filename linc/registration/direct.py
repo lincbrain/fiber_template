@@ -4,7 +4,8 @@ brains without MRI were registered; Methods, "Blockface to MRI registration and 
 
 You need
   the brain's reconstruction and mask (<ID>_blockface.ome.zarr, <ID>_mask), the template image and its mask, FSL and the anatomix
-  environment (featurereg.py); parameters: configs/registration.yaml `direct`.
+  environment (featurereg.py); parameters: configs/registration.yaml `direct`. For the stand-in stage: the MRI template's 0.5 mm
+  frame and the bridge from it to the template's stereotaxic frame; for a brain with its own b0, also its registration to that b0.
 What it does
   1. a rigid registration (6 degrees of freedom) of the binary masks at 0.5 mm, searching all rotations (+-180 deg): masks have no
      contrast to mislead it, and a rigid transform cannot stretch a brain whose caudal part is missing;
@@ -16,9 +17,12 @@ What it does
   4. the template cut to the part the brain covers (1 mm inside both A-P faces), and the brainstem cut flat on both inputs; the
      feature-based deformable registration (featurereg.py) on the template's 0.25 mm grid, padded with zeros;
   5. the products by one resample from the native pyramid through the linear transform and the warp (resample.py).
+  6. cross-modal alignment only, the stand-in stage (CPU, no registration; it runs only after a finished alignment), what
+     `linc-complete prepare` reads: `stand_in` for a brain without MRI, `stand_in_own_b0` for a brain with its own b0.
 You get
   the grayscale, RGB and mask on the template grid; for the cross-modal alignment, also its registry entry bf-native -> <template
-  space> (linc/xfm.py).
+  space> (linc/xfm.py) and, in the stand-in folder, <ID>_mri_full (the stand-in b0) and <ID>_pseudo_tplmask_0p5 and, for a brain
+  without MRI, <ID>_mri, <ID>_bf_nonlin, <ID>_bf_nonlin_rgb, <ID>_bfmask, <ID>_bf2mri_dof9.mat, <ID>_pseudo_brain_n1_0p5.
 
 Ported from the analysis project: bftemplate/direct/register_direct.py (the blockface-based alignment) and
 featurereg/d2_s2_register.py (the cross-modal alignment), the final settings only, unchanged numerically.
@@ -34,8 +38,9 @@ import nibabel as nib
 import nibabel.processing as nip
 
 from linc import xfm
+from linc.blockface import zarrio
 from linc.registration import featurereg, fsl, xfmtools as X
-from linc.registration.resample import antialias, bf_products
+from linc.registration.resample import W_LUM, antialias, bf_products
 
 FLAT_CUT_MAX_PCT = 25.0                    # fail closed: a flat cut that removes more of either input is a frame error
 
@@ -260,10 +265,12 @@ def coarsen_template(grey_025, coverage_025, frame_05, out_grey, out_cov):
 
 
 # ------------------------------------------------------------------------------------------------ route A: onto a blockface template
-def to_blockface_template(S, bf, template, template_coverage, outdir, cfg, bridge_json, device="cuda:0"):
+def to_blockface_template(S, bf, template, template_coverage, outdir, cfg, bridge_json, device="cuda:0", xfm_root=None, overwrite=False):
     """Route A: the blockface onto a blockface template given at 0.5 mm (`template`, `template_coverage`; the route test coarsened its
     0.25 mm targets exactly 2x). bf = dict(iso_grey, final_mask, final_zarr). cfg = configs/registration.yaml `direct.to_blockface_template`.
-    Products in outdir: <S>_bf_in_template, <S>_bf_rgb_in_template, <S>_mask_in_template (0.25 mm), <S>_warp, <S>_dof7_world.txt."""
+    Products in outdir: <S>_bf_in_template, <S>_bf_rgb_in_template, <S>_mask_in_template (0.25 mm), <S>_warp, <S>_dof7_world.txt; the
+    transform entry bf-native -> bf-template under xfm_root (default the registry, $LINC_DATA/sub-<ID>/xfm; overwrite=True replaces an
+    existing entry, which linc/xfm.py backs up)."""
     d = str(outdir); os.makedirs(d, exist_ok=True)
     tpl = nib.load(str(template)); cov = np.asanyarray(nib.load(str(template_coverage)).dataobj) > 0.5
     tmask = f"{d}/_template_mask.nii.gz"; nib.save(nib.Nifti1Image(cov.astype(np.uint8), tpl.affine), tmask)
@@ -311,17 +318,26 @@ def to_blockface_template(S, bf, template, template_coverage, outdir, cfg, bridg
     nib.save(nib.Nifti1Image(rgb, A25), f"{d}/{S}_bf_rgb_in_template.nii.gz")
     nib.save(nib.Nifti1Image(mk.astype(np.uint8), A25), f"{d}/{S}_mask_in_template.nii.gz")
     shutil.rmtree(eng, ignore_errors=True)
+    np.savetxt(f"{d}/{S}_linear_pull_ras.txt", np.linalg.inv(M))
+    e = xfm.register("bf-native", "bf-template",                        # pull order: template point -> warp -> M^-1 -> blockface
+                     [("warp", "itk_lps_disp", f"{d}/{S}_warp.nii.gz"), ("affine", "ras_pull", f"{d}/{S}_linear_pull_ras.txt")],
+                     subject=S, dst_grid=str(template), src_grid=src,
+                     engine="blockface-based alignment: rigid (masks) + anchored dof-7 (correlation ratio) + linc/registration/featurereg.py",
+                     config=dict(cfg, linear_used=info.get("linear_used")), root=str(xfm_root) if xfm_root else None, overwrite=overwrite)
+    info["entry"] = str(getattr(e, "dir", e))
     json.dump(info, open(f"{d}/{S}_direct.json", "w"), indent=1, default=float)
     return info
 
 
 # ------------------------------------------------------------------------------------------------ direct placement: onto the MRI template's b0
 def direct_placement(S, bf, template_b0, template_mask, outdir, cfg, device="cuda:0", template_space="mri-template", xfm_root=None,
-                     overwrite=False):
+                     overwrite=False, stand_in_dir=None, frame=None, bridge_json=None, own_entry=None, own_b0=None):
     """Direct placement: the blockface onto the MRI template's b0 (0.25 mm; masked by its brain mask). cfg = configs/registration.yaml
     `direct.direct_placement`. Products in outdir on the template's grid: <S>_bf_in_template, <S>_bf_rgb_in_template,
     <S>_mask_in_template, <S>_warp, <S>_linear_world.txt; the transform entry bf-native -> template_space under xfm_root (default the
-    registry, $LINC_DATA/sub-<ID>/xfm; overwrite=True replaces an existing entry, which linc/xfm.py backs up)."""
+    registry, $LINC_DATA/sub-<ID>/xfm; overwrite=True replaces an existing entry, which linc/xfm.py backs up). stand_in_dir: then
+    `stand_in` into that folder, from this alignment (frame, bridge_json: its two more inputs), or `stand_in_own_b0` for a brain with
+    its own b0 (own_entry: its bf-native -> b0-native entry; own_b0: that b0, on the template's frame)."""
     d = str(outdir); os.makedirs(d, exist_ok=True)
     t05, c05 = coarsen_2x(template_b0, template_mask, f"{d}/_template_b0_0.5.nii.gz", f"{d}/_template_cov_0.5.nii.gz")
     tpl = nib.load(t05); cov = np.asanyarray(nib.load(c05).dataobj) > 0.5
@@ -384,4 +400,137 @@ def direct_placement(S, bf, template_b0, template_mask, outdir, cfg, device="cud
                      config=dict(cfg, linear_used=info["linear_used"]), root=str(xfm_root) if xfm_root else None, overwrite=overwrite)
     info["entry"] = str(getattr(e, "dir", e))
     json.dump(info, open(f"{d}/{S}_direct_placement.json", "w"), indent=1, default=float)
+    if stand_in_dir is not None:                                         # only after a finished alignment: any failure above raises
+        info["stand_in"] = (stand_in_own_b0(S, own_entry, own_b0, info["entry"], template_b0, template_mask, stand_in_dir) if own_entry else
+                            stand_in(S, bf, M, info["entry"], template_b0, template_mask, frame, bridge_json, stand_in_dir, float(cfg["flat_cut_mm"])))
     return info
+
+
+# ------------------------------------------------------------------------------------------------ the stand-in frame
+def _rigid_of(M, c):
+    """The rotation of the 9-dof linear (polar decomposition) and the translation that keeps the world point c where M puts it."""
+    U, sv, Vt = np.linalg.svd(M[:3, :3]); R = U @ Vt
+    if np.linalg.det(R) < 0:
+        raise RuntimeError("the 9-dof linear has a reflection: refused")
+    Rr = np.eye(4); Rr[:3, :3] = R; Rr[:3, 3] = (M[:3, :3] @ c + M[:3, 3]) - R @ c
+    return Rr, np.round(sv, 4).tolist()
+
+
+def _box_025(A05, masks05, pad=4.5, mult=8):
+    """The padded 0.25 mm box around the union of the 0.5 mm masks, on the frame's centre-aligned 2x lattice (fine voxel 2k on frame
+    voxel k), dimensions a multiple of `mult`."""
+    assert np.allclose(A05[:3, :3], np.diag(np.diag(A05)[:3])) and (np.diag(A05)[:3] > 0).all(), "the frame is not axis-aligned / positive"
+    u = np.zeros(masks05[0].shape, bool)
+    for m in masks05:
+        u |= m
+    idx = np.argwhere(u); lo, hi = idx.min(0), idx.max(0)
+    p = int(np.ceil(pad / 0.25))
+    a0, a1 = 2 * lo - 1 - p, 2 * hi + 1 + p + 1
+    L = (np.ceil((a1 - a0) / mult) * mult).astype(int); a0 = a0 - (L - (a1 - a0)) // 2
+    A = A05.copy(); A[:3, :3] = A05[:3, :3] / 2; A[:3, 3] = A05[:3, 3] + a0 * np.diag(A05)[:3] / 2
+    return tuple(int(x) for x in L), A
+
+
+def stand_in(S, bf, M, entry, template_b0, template_mask, frame, bridge_json, out, flat_cut_mm):
+    """What `linc-complete prepare` reads for a brain without MRI, in `out`, from the finished alignment. CPU, no registration.
+    The blockface goes into the MRI template's 0.5 mm frame rigidly: the rotation of the 9-dof linear M (its scales are not applied, so
+    the brain keeps its own size), the translation that keeps the brain's centroid where M puts it, then the bridge. The template's b0
+    and brain mask come into the brain through the alignment's full map, inverted: the stand-in b0 has the brain's shape where it
+    was photographed and the template's anatomy, at the brain's scale, beyond. The brain mask (rule N1) = the brain's own mask where it
+    was photographed, plus the template mask, cut flat at flat_cut_mm, caudal of the photographed end."""
+    d = str(out); os.makedirs(d, exist_ok=True)
+    Rb = np.array(json.load(open(bridge_json))["rigid_world_run113_to_canonical"])
+    mimg = nib.load(str(bf["final_mask"])); mvol = np.asanyarray(mimg.dataobj) > 0
+    c = np.argwhere(mvol).mean(0) @ mimg.affine[:3, :3].T + mimg.affine[:3, 3]
+    Rr, sv = _rigid_of(M, c)
+    T = np.linalg.inv(Rb) @ Rr                                           # blockface native world -> frame world
+    Ti, Rri = np.linalg.inv(T), np.linalg.inv(Rr)
+    inv = xfm.InverseEntry(xfm.Entry(entry))
+
+    def q_to_template(Q):                                                # frame world -> template world (pull)
+        q = Q @ Rb[:3, :3].T + Rb[:3, 3]
+        return inv.pull(q @ Rri[:3, :3].T + Rri[:3, 3])
+    to_native = lambda Q: Q @ Ti[:3, :3].T + Ti[:3, 3]                   # noqa: E731  frame world -> blockface native world
+    b0i, tmi = nib.load(str(template_b0)), nib.load(str(template_mask))
+    b0v = np.asanyarray(b0i.dataobj).astype(np.float32); tmv = (np.asanyarray(tmi.dataobj) > 0).astype(np.float32)
+    r = nib.load(str(frame)); A05, shp05 = r.affine, r.shape[:3]
+    pb05 = X.apply_once(b0v, b0i.affine, shp05, A05, q_to_template, order=1)
+    pt05 = X.apply_once(tmv, tmi.affine, shp05, A05, q_to_template, order=1) > 0.5
+    kz = (np.arange(tmv.shape[2]) * tmi.affine[2, 2] + tmi.affine[2, 3]) >= flat_cut_mm      # the mask cut flat in template space
+    assert abs(tmi.affine[2, 0]) + abs(tmi.affine[2, 1]) < 1e-9, "the template grid is not axis-aligned in z"
+    pd05 = X.apply_once(tmv * kz[None, None, :], tmi.affine, shp05, A05, q_to_template, order=1) > 0.5
+    bm05 = X.apply_once(mvol.astype(np.float32), mimg.affine, shp05, A05, to_native, order=1) > 0.5
+    for v, nm in ((pt05, "template mask"), (bm05, "blockface mask")):
+        if not v.any():
+            raise RuntimeError(f"{S}: the {nm} is empty on the frame")
+    shp25, A25 = _box_025(A05, [pt05, bm05])
+    pb25 = X.apply_once(b0v, b0i.affine, shp25, A25, q_to_template, order=1)
+    rgb, Az = zarrio.read_level(str(bf["final_zarr"]), 1)
+    rgb25 = np.zeros(tuple(shp25) + (3,), np.float32)
+    for k in range(3):
+        rgb25[..., k] = X.apply_once(antialias(rgb[..., k].astype(np.float32), np.abs(np.diag(Az)[:3]), [0.25] * 3), Az, shp25, A25, to_native, order=1)
+    del rgb
+    bm25 = X.apply_once(mvol.astype(np.float32), mimg.affine, shp25, A25, to_native, order=1) > 0.5
+    grey = (rgb25 @ W_LUM) * bm25
+    save = lambda v, A, name, dt_=np.float32: nib.save(nib.Nifti1Image(np.ascontiguousarray(v.astype(dt_)), A), f"{d}/{S}_{name}.nii.gz")  # noqa: E731
+    save(pb05, A05, "mri_full"); save(pb25, A25, "mri")
+    save(grey, A25, "bf_nonlin"); save(np.clip(rgb25 * bm25[..., None], 0, 255), A25, "bf_nonlin_rgb", np.uint8)
+    save(bm25, A25, "bfmask", np.uint8); save(pt05, A05, "pseudo_tplmask_0p5", np.uint8); save(pd05, A05, "pseudo_tplmask_d11_0p5", np.uint8)
+    # the rigid T as a FLIRT matrix: moving = the masked isotropic grey, reference = the masked 0.5 mm stand-in b0
+    gi = nib.load(str(bf["iso_grey"]))
+    mg = np.asanyarray(nip.resample_from_to(nib.Nifti1Image(mvol.astype(np.uint8), mimg.affine), gi, order=0).dataobj) > 0
+    mov, ref = f"{d}/{S}_iso_grey_masked.nii.gz", f"{d}/{S}_pseudo_b0_masked_0p5.nii.gz"
+    nib.save(nib.Nifti1Image(np.asanyarray(gi.dataobj) * mg, gi.affine, gi.header), mov); save(pb05 * pt05, A05, "pseudo_b0_masked_0p5")
+    np.savetxt(f"{d}/{S}_bf2mri_dof9.mat", fsl.world_to_fsl(T, nib.load(mov), nib.load(ref)))
+    # the brain mask, rule N1. The photographed end: the plane normal to the blockface's section axis through the caudal-most 0.1 % of
+    # the photographed voxels; caudal = the side where the template-only tissue lies
+    fimg = nib.load(f"{d}/{S}_mri_full.nii.gz"); tim = nib.load(f"{d}/{S}_pseudo_tplmask_d11_0p5.nii.gz")
+    tpl = np.asanyarray(tim.dataobj) > 0
+    bim = nib.load(f"{d}/{S}_bfmask.nii.gz")
+    bfi = nib.Nifti1Image((np.asanyarray(bim.dataobj) > 0).astype(np.float32), bim.affine)
+    bfm = np.asanyarray(nip.resample_from_to(bfi, (fimg.shape, fimg.affine), order=1).dataobj) >= 0.5
+    n = T[:3, :3] @ (gi.affine[:3, 1] / np.linalg.norm(gi.affine[:3, 1])); n = n / np.linalg.norm(n)
+    world = lambda m: (fimg.affine @ np.c_[np.argwhere(m), np.ones(int(m.sum()))].T)[:3].T  # noqa: E731
+    pb = world(bfm) @ n
+    only = tpl & ~bfm
+    po = world(only) @ n if only.any() else np.array([0.0])
+    caudal_sign = -1.0 if po.mean() < pb.mean() else 1.0
+    end = np.percentile(pb, 0.1) if caudal_sign < 0 else np.percentile(pb, 99.9)
+    allv = np.indices(fimg.shape).reshape(3, -1).T
+    pw = (fimg.affine @ np.c_[allv, np.ones(len(allv))].T)[:3].T @ n
+    caudal = ((pw - end) * caudal_sign > 0).reshape(fimg.shape)
+    brain = bfm | (tpl & caudal)
+    hdr = tim.header.copy(); hdr.set_data_dtype(np.uint8)
+    nib.save(nib.Nifti1Image(brain.astype(np.uint8), fimg.affine, hdr), f"{d}/{S}_pseudo_brain_n1_0p5.nii.gz")
+    vx = float(np.prod(np.abs(np.diag(fimg.affine)[:3])))
+    rec = dict(subject=S, what="the stand-in b0 of a brain without MRI (the MRI template's b0 aligned to the brain; not an MRI)",
+               T_world_bf_to_frame=T.tolist(), linear_singular_values=sv, entry=str(entry), box_025=dict(shape=list(shp25), affine=A25.tolist()),
+               photographed_end=dict(normal_world=[round(float(v), 6) for v in n], offset_mm=round(float(end), 4), caudal_sign=caudal_sign),
+               ml=dict(blockface=round(bfm.sum() * vx / 1000, 3), template_caudal_added=round((tpl & caudal & ~bfm).sum() * vx / 1000, 3),
+                       brain=round(brain.sum() * vx / 1000, 3)),
+               inputs={str(p): _md5(p) for p in (template_b0, template_mask, frame, bridge_json, bf["final_mask"], bf["iso_grey"])})
+    json.dump(rec, open(f"{d}/{S}_stand_in.json", "w"), indent=1)
+    return rec
+
+
+def stand_in_own_b0(S, own_entry, own_b0, entry, template_b0, template_mask, out):
+    """A brain with its own b0: the stand-in b0 on that b0's grid, so the two differ only in content (a network trained on the stand-in
+    b0 of the brains with MRI sees what a brain without MRI gets). A point q of the grid -> b0-native -> blockface native (the brain's
+    registration to its b0) -> template (this alignment, inverted) -> the template's b0 and brain mask. CPU, no registration."""
+    d = str(out); os.makedirs(d, exist_ok=True)
+    r1 = xfm.Entry(own_entry)
+    c0 = r1.meta["components"][0]
+    assert c0["kind"] == "affine" and c0["convention"] == "ras_pull" and "placed" in c0["file"], f"{S}: unexpected first component {c0}"
+    Mbi = np.linalg.inv(np.loadtxt(f"{r1.dir}/{c0['file']}"))
+    inv = xfm.InverseEntry(xfm.Entry(entry))
+    real = nib.load(str(own_b0)); A, shp = real.affine, real.shape[:3]
+    to_tpl = lambda Q: inv.pull(r1.pull(Q @ Mbi[:3, :3].T + Mbi[:3, 3]))  # noqa: E731
+    b0i, tmi = nib.load(str(template_b0)), nib.load(str(template_mask))
+    pb = X.apply_once(np.asanyarray(b0i.dataobj).astype(np.float32), b0i.affine, shp, A, to_tpl, order=1)
+    pt = X.apply_once((np.asanyarray(tmi.dataobj) > 0).astype(np.float32), tmi.affine, shp, A, to_tpl, order=1) > 0.5
+    nib.save(nib.Nifti1Image(pb.astype(np.float32), A), f"{d}/{S}_mri_full.nii.gz")
+    nib.save(nib.Nifti1Image(pt.astype(np.uint8), A), f"{d}/{S}_pseudo_tplmask_0p5.nii.gz")
+    rec = dict(subject=S, what="the stand-in b0 of a brain with MRI, on its own b0's grid (the MRI template's b0 aligned to the brain; not its MRI)",
+               own_entry=str(own_entry), entry=str(entry), inputs={str(p): _md5(p) for p in (template_b0, template_mask, own_b0)})
+    json.dump(rec, open(f"{d}/{S}_stand_in.json", "w"), indent=1)
+    return rec

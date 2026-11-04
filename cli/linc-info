@@ -1,21 +1,24 @@
 #!/usr/bin/env python3
-"""Print what this installation runs with: for a bug report, and to compare with the walkthrough's expected output.
+"""Report what this installation runs with, for a bug report and to compare with the walkthrough's expected output.
 
-    linc-info [--json]
+You need
+  any Python 3 from the release's environments (standard library only). A missing tool is reported as "not found", never as a failure.
 
-Runs in any of the release's environments (standard library only) and never fails on a missing tool: it says "not found".
-- the repository: path, git commit, uncommitted files
-- this python: version, executable, and torch (CUDA, cuDNN, the GPUs it sees) and numpy when importable
-- the GPUs and driver (nvidia-smi)
-- the external programs, found as the pipeline finds them (linc/construction/tools.py), beside the versions the paper used
-  (configs/mri_construction.yaml `tools`): FSL ($FSLDIR/etc/fslversion), MMORF ($MMORF or `mmorf` on PATH), ANTs ($ANTSPATH or
-  PATH), MRtrix3 ($MRTRIX or PATH)
-- the interpreters the pipeline is pointed at, each asked for its own versions (python, torch, CUDA, MONAI, TIRL, anatomix, nnU-Net):
-  LINC_SEGMENT_PYTHON, ANATOMIX_PYTHON, PY_TIRL, PY_MRI, PY_DEEP (env/README.md says which environment each one is)
-- the program zarr2nii (on PATH in env/tirl.yml; ZARR2NII_BIN when set)
-- the roots (CONVENTIONS.md: LINC_RAW, LINC_DATA, LINC_TEMPLATE, LINC_MODELS, LINC_PRODUCTS, LINC_NUMBERS, LINC_WORK), set or not,
-  and every other $LINC_* setting that is set
-A few seconds, up to about a minute when an interpreter imports torch for the first time from a network disk.
+What it does
+  1. reads the repository's path, git commit and uncommitted files
+  2. reads this Python's version, and torch (CUDA, cuDNN, the GPUs it sees) and numpy when they can be imported; the GPUs and the driver (nvidia-smi)
+  3. finds the external programs as the pipeline finds them (linc/construction/tools.py), beside the versions the paper used (configs/mri_construction.yaml
+     `tools`): FSL ($FSLDIR/etc/fslversion), MMORF ($MMORF or `mmorf` on PATH), ANTs ($ANTSPATH or PATH), MRtrix3 ($MRTRIX or PATH), and zarr2nii (on PATH in
+     env/tirl.yml; ZARR2NII_BIN when set)
+  4. asks each interpreter the pipeline is pointed at for its own versions (Python, torch, CUDA, MONAI, TIRL, anatomix): LINC_SEGMENT_PYTHON, ANATOMIX_PYTHON,
+     PY_TIRL, PY_MRI, PY_DEEP (env/README.md says which environment each one is)
+  5. lists the roots (CONVENTIONS.md: LINC_RAW, LINC_DATA, LINC_TEMPLATE, LINC_MODELS, LINC_PRODUCTS, LINC_NUMBERS, LINC_WORK), set or not, and every other $LINC_* setting
+
+You get
+  a report on the terminal, or JSON with --json; nothing is written. A few seconds, up to about a minute when an interpreter imports torch for the first time from a
+  network disk.
+
+    cli/linc-info [--json]
 """
 import argparse
 import json

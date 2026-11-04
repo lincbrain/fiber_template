@@ -79,3 +79,13 @@ def test_join_and_export(tmp_path):
         assert (tmp_path / "out" / "TOY1" / f"TOY1_{nm}.nii.gz").exists(), nm
     assert row["z_f"] == 12 and row["provenance_le_photo_fraction"] and row["seam_depth_nonneg_exactly_rostral"]
     assert (tmp_path / "cache" / "TOY1" / "deploy" / "real_mask.nii.gz").exists() and normal["seam_normal_world"] == [0.0, 1.0, 0.0]
+
+
+def test_detect_mri_only():
+    """tissue only the MRI shows: a low unphotographed lump is detected, an equal high one (cortex at the cut) is left, photographed tissue never removed"""
+    from linc.completion import prepare as P
+    n = 120; k = np.indices((n, n, n)); brain = ((k - 59.5) ** 2).sum(0) < 40 ** 2
+    low, high = brain & (k[2] < 35) & (k[1] >= 30) & (k[1] < 70), brain & (k[2] > 84) & (k[1] >= 30) & (k[1] < 70)
+    real = brain & (k[1] >= 30) & ~low & ~high
+    found = P.detect_mri_only(dict(affine=np.diag([0.25, 0.25, 0.25, 1.0]), brain=brain, real_mask=real))
+    assert (found & low).sum() > 0.8 * low.sum() and not (found & high).any() and not (found & real).any()

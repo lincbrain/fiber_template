@@ -35,8 +35,8 @@ checks them.
 **How do I report a bug?** Attach the output of `python3 cli/linc-info`, run from the environment that failed (`docs/install.md`,
 step 6).
 
-**Why are ONPRC18 and CIVM-R images missing?** Their licenses do not allow redistribution. Only our transforms to them are
-released; download the templates from their authors.
+**Why are CIVM-R's images missing?** Its license does not allow redistribution. Only our transforms to it are released;
+download the template from its authors.
 
 **Where are the network weights?** Not in git: they come with the data release. `models/` holds the model cards, the checksum
 lists and a script that checks a downloaded copy against them (`docs/install.md`).

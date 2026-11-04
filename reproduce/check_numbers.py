@@ -7,7 +7,8 @@ absolute tolerance of 1e-9. Provenance blocks are ignored.
 
     python reproduce/check_numbers.py --ref <dir with reference records> [--new $LINC_NUMBERS] [name ...]
 
-Exit code 0 when every compared record matches; the first differences of each mismatching record are printed.
+Exit code 0 when every compared record matches; the first differences of each mismatching record are printed. A record with no
+reference fails and, when no names are given, so does a reference with no regenerated record, unless the exceptions file declares it.
 
 Documented exceptions (configs/numbers_exceptions.yaml): a record that cannot regenerate identically because its inputs changed
 after it was written, for reasons the paper reports elsewhere, is compared only on the fields the paper reads:
@@ -17,6 +18,8 @@ after it was written, for reasons the paper reports elsewhere, is compared only 
                                  # a trailing "|len" compares the length of what the path selects
       tol: <float>               # optional: absolute and relative tolerance for these fields (default 1e-9), for values that are
                                  # not bitwise reproducible (GPU nondeterminism); the reason must say how the paper prints them
+      no_reference: true         # a by-product with no reference record: listed, not compared
+      not_regenerated: true      # a reference this release does not regenerate: listed, not required
 """
 import argparse
 import json
@@ -134,17 +137,19 @@ def main():
         print(f"NOTE     no configs/{paths.PLACEHOLDERS_LOCAL.name}: paths recorded on the machine that made the products are not "
               "mapped to placeholders, so records that hold them differ (copy configs/path_placeholders.yaml to that name and fill "
               "in the prefixes)")
-    bad = 0
+    bad = byproducts = 0
     exc = _exceptions()
     for n in names:
         r, w = a.ref / f"{n}.json", a.new / f"{n}.json"
         if not w.exists():
             print(f"MISSING  {n} (no new record)"); bad += 1; continue
         if not r.exists():
+            if exc.get(n, {}).get("no_reference"):
+                print(f"BYPROD   {n}  (no reference, as declared: {exc[n]['reason']})"); byproducts += 1; continue
             print(f"NOREF    {n} (no reference record)"); bad += 1; continue
         ph = _placeholders()
         ref_d, new_d = (_scrub(_data(json.loads(x.read_text())), ph) for x in (r, w))
-        if n in exc:
+        if "compare" in exc.get(n, {}):
             d = []
             tol = float(exc[n].get("tol", 1e-9))
             for pth in exc[n]["compare"]:
@@ -157,7 +162,15 @@ def main():
         for line in d[:10]:
             print("    " + line)
         bad += bool(d)
-    print(f"{len(names) - bad} of {len(names)} records match")
+    unregenerated = 0
+    if not a.names:
+        for n in sorted(p.stem for p in a.ref.glob("*.json") if not (a.new / p.name).exists()):
+            if exc.get(n, {}).get("not_regenerated"):
+                print(f"REF ONLY {n}  ({exc[n]['reason']})")
+            else:
+                print(f"MISSING  {n} (a reference with no regenerated record)"); unregenerated += 1
+    total, bad = len(names) - byproducts + unregenerated, bad + unregenerated
+    print(f"{total - bad} of {total} records match")
     return 1 if bad else 0
 
 

@@ -9,7 +9,6 @@ The trainer's held-out validation calls predict_case() itself, so a separate run
     python -m linc.segment.predict --model <run folder> --out <mask> IMAGE [IMAGE ...]           # one case (one file per channel)
     python -m linc.segment.predict --model <run folder> --task <spec.json> --fold <k> --out-dir <dir> [--score]   # a fold's held-out cases
 """
-import argparse
 import itertools
 import json
 import math
@@ -153,46 +152,3 @@ def predict_case(net, spec, image, device="cuda", mirror=None, postprocess=None,
     if raw:
         return out, meta, time.time() - t0, mask
     return out, meta, time.time() - t0
-
-
-def main(argv=None):
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--model", required=True, type=Path); ap.add_argument("--device", default="cuda")
-    ap.add_argument("--out", type=Path); ap.add_argument("images", nargs="*")
-    ap.add_argument("--task", type=Path); ap.add_argument("--fold"); ap.add_argument("--out-dir", type=Path)
-    ap.add_argument("--score", action="store_true", help="with --task: score against the references (Dice, surface distances)")
-    ap.add_argument("--mirror", choices=("spec", "on", "off"), default="spec")
-    ap.add_argument("--postprocess", choices=("spec", "none", "largest_component", "largest_cc_fill", "fill_holes"), default="spec")
-    ap.add_argument("--remap", nargs="*", default=[], help="SRC=DST for the task's files (with --task)")
-    ap.add_argument("--native", action="store_true", help="native-resolution input: downsample by the spec's native_downsample first")
-    ap.add_argument("--mask", help="the brain mask on the image's grid (postprocess tubes_left_hemisphere)")
-    a = ap.parse_args(argv)
-    net, spec = load(a.model, a.device)
-    mirror = None if a.mirror == "spec" else a.mirror == "on"
-    pp = None if a.postprocess == "spec" else a.postprocess
-    if a.images:
-        mask, meta, s = predict_case(net, spec, a.images, a.device, mirror, pp, a.native, a.mask)
-        io.write_mask(mask, meta, a.out); print(f"{a.out} ({s:.1f} s)")
-        return 0
-    from . import data, metrics
-    task = data.load_task(a.task, [tuple(r.split("=", 1)) for r in a.remap]); _, va = data.split(task, a.fold)
-    rows = {}
-    for c in va:
-        mk = spec["inference"].get("postprocess")
-        mk = c.get(mk.get("mask_key", "mask")) if isinstance(mk, dict) and mk.get("kind") == "tubes_left_hemisphere" else None
-        mask, meta, s = predict_case(net, spec, c["image"], a.device, mirror, pp, case_mask=mk)
-        ext = ".nii.gz" if meta["kind"] == "nifti" else ".png"
-        io.write_mask(mask, meta, a.out_dir / f"{c['id']}{ext}")
-        if a.score:
-            ref, _ = io.read_label(c["label"], spec["net"]["dim"])
-            sp = meta["spacing"] if meta["kind"] == "nifti" else (c.get("spacing") or meta["spacing"])
-            rows[c["id"]] = dict(subject=c["subject"], counted=c.get("counted", True),
-                                 **metrics.score(mask, ref, sp, range(1, spec["net"]["n_classes"])))
-        print(c["id"], f"{s:.1f} s", json.dumps(rows.get(c["id"], {})), flush=True)
-    if a.score:
-        json.dump(rows, open(a.out_dir / "scores.json", "w"), indent=1)
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())

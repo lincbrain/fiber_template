@@ -10,6 +10,10 @@ inputs:
   bf_b0: bftemplate/d2b/final_s8/d2bs8_b0.nii.gz                 # moving: the dual-channel (blockface) template's b0 channel
   bf_mask: bftemplate/d2b/final_s8/d2bs8_brainmask.nii.gz
   bf_carry: {grey: bftemplate/d2b/final_s8/d2bs8_grey.nii.gz}     # extra channels pulled with the same map (carried_<name>_on_fixed)
+  bf_channels:                                                    # the blockface channel released in the MRI template's frame
+    rgb: bftemplate/d2b/final_s8/d2bs8_rgb.nii.gz
+    photographed_fraction: bftemplate/d2b/final_s8/d2bs8_photo_share.nii.gz   # <arm>_photo_share: the photographed fraction
+    synthesized_mask: bftemplate/d2b/final_s8/d2bs8_synth_mask.nii.gz         # compared only: the released mask is the paper's rule
   mri_b0: template/mri/linc_mri_b0.nii.gz                         # fixed: the MRI template's b0 channel
   mri_mask: template/mri/linc_mri_brainmask.nii.gz
   mri_t2: template/mri/linc_mri_T2.nii.gz

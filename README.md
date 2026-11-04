@@ -1,14 +1,15 @@
 # fiber_template: code for a multimodal macaque template
 
-Code for *A multimodal macaque template for aligning ex vivo MRI and microscopy* (Gonzales et al.). It runs the method from the
-blockface photographs and the preprocessed MRI (`docs/inputs.md`):
+Code for *A multimodal macaque template for aligning ex vivo MRI and microscopy* (Gonzales et al.). It runs the whole method from
+the raw data:
 - builds the MRI template from four brains and the blockface template from 21;
 - registers the blockface template into the MRI template;
 - aligns each brain's histology and its labels to the template;
 - evaluates every registration step and writes the paper's numbers and figures;
 - brings new brains into the template.
 
-`docs/build_everything.md` runs it from start to end, and `docs/inputs.md` lists every input it assumes.
+`docs/build_everything.md` runs it from start to end, and says which steps were rerun for this release and which were not (not all
+were: the GPU stages of the template builds were not). `docs/inputs.md` lists every input it assumes.
 
 > **Status: release in preparation.** This repository holds the analysis code of the paper, ported and checked against the
 > paper's products; it will be public on GitHub. The template, the paper's products and the network weights are a separate data
@@ -17,13 +18,16 @@ blockface photographs and the preprocessed MRI (`docs/inputs.md`):
 
 ## What the template is
 
-The template is a symmetric population template of the macaque brain. It lives in the NMT v2 symmetric frame on a 0.25 mm grid and
+The template is a symmetric population template of the macaque brain. It lies in the symmetric stereotaxic frame of NMT v2, on a 0.25 mm grid, and
 has two kinds of channels.
 
-- **MRI channels.** T2-weighted, diffusion tensor, and the SANDI soma and neurite fractions. They were built from the ex vivo MRI of
-  four *Macaca fascicularis* brains and their mirror images; all four contrasts drove one alignment.
-- **Blockface channel.** A population average of the photographs taken while 21 *M. mulatta* and *M. fascicularis* brains were
-  sectioned for histology (8 of them never scanned). It was built as the blockface template in its own space, then registered to the
+- **MRI channels.** T2-weighted; FA, MD and the principal diffusion direction of the diffusion tensor; and the soma and neurite
+  fractions of SANDI (Soma And Neurite Density Imaging), with a b0 image, the target of the MRI-based alignment, and the brain mask.
+  They were built from the ex vivo MRI of four *Macaca fascicularis* brains and their mirror images by one registration driven by
+  T2, the tensor and the two fractions together.
+- **Blockface channel.** A population average of the blockface photographs of 21 brains (15 *M. mulatta*, 6 *M. fascicularis*) from the
+  collection of tracer-injected macaque brains of the Haber laboratory, photographed while they were sectioned for histology; 8 of
+  them were never scanned. It was built as the blockface template in its own space, then registered to the
   MRI template.
 
 Histology is aligned to the template through the blockface photograph of its own section, with or without MRI of its brain: by the
@@ -31,6 +35,9 @@ MRI-based alignment (through the brain's own MRI) or the blockface-based alignme
 measures the accuracy of each registration step against references that the registration had not used.
 
 ## What is in this repository
+
+The package, the commands and the variables are named `linc` after the Center for Large-scale Imaging of Neural Circuits (LINC), which
+funded this work; the template itself has no proper name.
 
 ```
 linc/          the pipeline, as a Python package: blockface reconstruction, segmentation networks, synthesis of missing tissue,
@@ -63,9 +70,9 @@ Start with `docs/paper_to_code.md` to find where a part of the paper lives in th
    source envs/linc_envs.sh      # in every new shell
    ```
 
-   TIRL and its script packages are installed from a local copy of their sources, which their authors provide (`docs/install.md`);
+   TIRL (Tensor Image Registration Library) and its script packages are installed from a local copy of their sources, which their authors provide (`docs/install.md`);
    `docs/install.md` also says how to build one environment by hand.
-2. **External programs.** FSL 6.0.7.4 and ANTs 2.5.4, found through `FSLDIR` and `ANTSPATH` or on `PATH`; MMORF 1.0.1 comes with
+2. **External programs.** FSL 6.0.7.4 and ANTs 2.5.4, found through `FSLDIR` and `ANTSPATH` or on `PATH`; MMORF 1.0.1, FSL's multimodal registration tool, comes with
    the environments. The wrappers check each version before running.
 3. **Weights and data.** Download the network weights with the data release, check them with `models/verify_weights.py`, and set the
    data roots (`LINC_DATA`, `LINC_TEMPLATE`, `LINC_MODELS` and the others in `docs/install.md`).
@@ -78,7 +85,8 @@ and the fonts of the figures, is in `docs/install.md`.
 The commands below run in the order a new brain needs them, from the repository root. Each starts with the Python of its
 environment, in brackets (`$PY` for `env/linc.yml`, `$PY_DEEP`, `$PY_TIRL`), which `source envs/linc_envs.sh` sets. Each
 command's page in `docs/` gives its inputs and options, and `--help` lists every option. A brain's own settings live in
-`configs/subjects/<ID>.yaml`; start from the commented `configs/subjects/TEMPLATE.yaml`.
+`configs/subjects/<ID>.yaml`; start from the commented `configs/subjects/TEMPLATE.yaml`. `<ID>` is the brain's Specimen ID in the Haber
+laboratory's collection (MF283 for the paper's MF1, MR252 for MM2; `docs/specimen_labels.json` lists them).
 
 1. **Prepare the MRI**, for a brain with MRI: a b0 or T2-weighted image, its brain mask by the MRI brain-mask network, and the
    bias-corrected brain [`env/linc.yml`] (`docs/mri.md`):
@@ -98,7 +106,7 @@ command's page in `docs/` gives its inputs and options, and `--help` lists every
    In: the photographs and `configs/subjects/<ID>.yaml`. Out: `sub-<ID>/blockface/<ID>_blockface.ome.zarr`, with its brain mask and
    marker tubes.
 
-3. **Register the brain into the template's frame** (`docs/register.md`). For a brain with MRI, first to its own b0 [`env/linc.yml`],
+3. **Register the brain to the template** (`docs/register.md`). For a brain with MRI, first to its own b0 [`env/linc.yml`],
    with the files of step 1, then its b0 to the MRI template [`env/linc.yml`]:
 
    ```bash
@@ -114,7 +122,8 @@ command's page in `docs/` gives its inputs and options, and `--help` lists every
    A brain without MRI is registered once, onto the MRI template's b0, with `cli/linc-register direct-placement`. Out:
    `sub-<ID>/xfm/bf-native__to__mri-template/`.
 
-4. **Synthesize the missing caudal tissue** [`env/deep.yml`] (`docs/complete.md`):
+4. **Synthesize the missing caudal tissue**, so that the brain can be registered as a whole brain; the synthesized voxels are marked
+   [`env/deep.yml`] (`docs/complete.md`):
 
    ```bash
    $PY_DEEP cli/linc-complete prepare --subject <ID> --out $LINC_WORK/prepared
@@ -131,7 +140,8 @@ command's page in `docs/` gives its inputs and options, and `--help` lists every
        --out $LINC_DATA/sub-<ID>/histology/registration --threads 12
    ```
 
-   In: the section images, the match table and the regions volume (`docs/inputs.md`). Out: each section's registration, under
+   In: the section images; the match table, which pairs each section with its photograph; and the regions volume, a label image on the
+   blockface grid that marks the hemispheres and the cerebellum, used to divide a section into components (`docs/inputs.md`). Out: each section's registration, under
    `sub-<ID>/histology/registration/`.
 
 6. **Transform the labels into the template** (`docs/labels.md`):
@@ -142,7 +152,7 @@ command's page in `docs/` gives its inputs and options, and `--help` lists every
    $PY      cli/linc-labels carry       --subject <ID>   # [env/linc.yml] transformed into the template
    ```
 
-   In: the annotations and the section map, with the histology registration. Out: `sub-<ID>/labels/blockface/` and
+   In: the annotations; the section map, which lists the sections each label was drawn on; and the histology registration. Out: `sub-<ID>/labels/blockface/` and
    `sub-<ID>/labels/template/`.
 
 The segmentation networks can also be run on their own (`cli/linc-segment`, [`env/deep.yml`]).
@@ -156,7 +166,7 @@ The segmentation networks can also be run on their own (`cli/linc-segment`, [`en
 make test           # the tests and toy runs of the command lines; a few minutes, no data, no GPU
 make numbers        # every numbers record the paper reads, into $LINC_NUMBERS
 make figures        # every figure, into outputs/figures
-make check          # compare the rewritten records with the paper's
+make check          # compare the recomputed records with the paper's
 ```
 
 `docs/reproduce.md` gives the Python of each target, the records that need a GPU or raw data, and what decides whether a rerun
@@ -168,10 +178,10 @@ lists which records and scripts belong to each part of the paper.
 The template, its transforms, the per-brain products and the network weights will be released on DANDI, in the LINC archive,
 under the Creative Commons Attribution 4.0 license (CC BY 4.0) *(link to follow)*.
 
-ONPRC18 and CIVM-R image intensities are not redistributed, because their licenses do not allow it. Only our transforms to them
-are released. NMT v2 and CIVM-R are also inputs that you download yourself, for the comparison of registration targets and the tracer
-topography (which reads the CHARM key from your NMT v2 copy): `configs/targets.yaml` gives both sources and the folder layout
-(`configs/link.yaml` `inputs.atlas_reference`).
+The template is released with its registrations to NMT v2, INIA19 and CIVM-R. CIVM-R's images are not redistributed, because its license
+does not allow it. Download NMT v2 (with the CHARM atlas, which names the injection sites) and CIVM-R yourself for the comparison of
+registration targets and the tracer topography: `configs/targets.yaml` gives both sources and the folder layout (`configs/link.yaml`
+`inputs.atlas_reference`).
 
 ## Citation
 

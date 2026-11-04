@@ -1,6 +1,6 @@
 # Walkthrough: four brains of the paper
 
-This page runs the pipeline on brains of the paper, one for each way through the pipeline, with the commands exactly as they ran from a fresh
+This page runs the pipeline on brains of the paper, from the Haber laboratory's collection, one for each way through the pipeline, with the commands exactly as they ran from a fresh
 clone. Each step's results can be compared with the paper's own. The times are from one cluster node with an NVIDIA RTX 6000 Ada
 GPU, shared with other jobs.
 
@@ -26,7 +26,7 @@ that holds only the brains' hand-made inputs, so that it starts from the photogr
 $PY cli/linc-mri prep --subject MF283 --image $LINC_PRODUCTS/mri/data/sub-MF283/dwi/b0.nii.gz
 ```
 
-23 s: the network's brain mask in 2 s on the GPU, then the bias-field correction (N4, about 4 CPU-minutes). It writes, under
+The command takes 23 s: 2 s for the network's brain mask on the GPU and about 4 CPU-minutes for the N4 bias-field correction. It writes, under
 `$LINC_DATA/sub-MF283/mri/`:
 - `dwi/b0.nii.gz`, the b0 as given;
 - `masks/dwi_brain_mask.nii.gz`, the network's brain mask, with a `.json` that names the model and its checksums;
@@ -45,11 +45,13 @@ $PY tools/compare_nifti.py $LINC_WORK/MF283_hand_mask/dwi $LINC_PRODUCTS/mri/dat
     b0_brain.nii.gz b0_brain_n4.nii.gz b0_brain_n4_bias.nii.gz
 ```
 
-All three were identical.
+The three files were identical to the paper's.
 
 ## 2. Reconstruct the blockface volumes (MM2, MM14)
 
-Each volume is rebuilt from the brain's photographs and its hand-made inputs, in the data folder `$LINC_REBUILD_DATA` (Before you
+To obtain the 3D volume that every later registration uses, each brain's photographs are reconstructed with its hand-made inputs
+(its camera jumps, discontinuities in the stack caused by movement of the camera or specimen holder; the sections to skip; and the
+masks corrected by hand), in the data folder `$LINC_REBUILD_DATA` (Before you
 start):
 
 ```bash
@@ -78,7 +80,7 @@ MM2. MM2's volume, rebuilt from its photographs in 9 hours 10 minutes on a share
 node, was identical to the paper's in every item. So was MM14's, whose configuration asks for one extra illumination
 correction (`shading: poly2+zref` in `configs/subjects/MR263.yaml`), as the paper's reconstruction of that brain had.
 
-## 3. Register the brains into the template's frame
+## 3. Register the brains to the template
 
 ### MM2, through its own MRI
 
@@ -88,9 +90,9 @@ First the blockface volume to its own b0 (on the GPU, through `ANATOMIX_PYTHON`)
 $PY cli/linc-register mri --subject MR252
 ```
 
-About 13 minutes on a shared GPU, with 23 GB of GPU memory (15 to 25 GB, depending on the brain). It ends with
-`done: $LINC_WORK/register/MR252 | entry $LINC_DATA/sub-MR252/xfm/bf-native__to__b0-native`. It writes the registration's entry,
-`$LINC_DATA/sub-MR252/xfm/bf-native__to__b0-native/` (the warp `MR252_warp.nii.gz`, its two pull matrices and `meta.json`), and the
+It takes about 13 minutes on a shared GPU, with 23 GB of GPU memory (15 to 25 GB, depending on the brain). It ends with
+`done: $LINC_WORK/register/MR252 | entry $LINC_DATA/sub-MR252/xfm/bf-native__to__b0-native`. It writes the registration's entry, the folder that holds its transform and metadata:
+`$LINC_DATA/sub-MR252/xfm/bf-native__to__b0-native/` (the warp `MR252_warp.nii.gz`, its two matrices and `meta.json`), and the
 products in `$LINC_WORK/register/MR252/`, among them the blockface volume in the b0 (`MR252_bf_nonlin.nii.gz`) and the
 registration's measures (`MR252_metrics.json`). Compare the entry with the paper's:
 
@@ -103,9 +105,10 @@ done
 On the GPU model of the paper's runs, all three were identical; in another GPU session or on another model, the warp can differ by
 floating point (`docs/reproduce.md`, Exact reproduction).
 
-Then check the registration. `qc` checks its linear part (scales and rotations), the normalized cross-correlation of the two
-images, the folds and the displacement of its warp, and the outline of the moved brain against the target's, and records PASS or
-FAIL in the registration's entry, which clears the warning "link without passing QC". For one of the paper's brains, the outline
+To catch a failed registration before later steps use it, check it. `qc` checks its linear part (scales and rotations), the
+normalized cross-correlation of the two images, the voxels of its warp with a negative Jacobian determinant and its displacement, and the outline of the moved brain against the target's, and records PASS or
+FAIL in the registration's entry, which clears the warning "link without passing QC". This check is a safeguard of the software for new brains; the paper
+measures accuracy against references the registration had not used, and does not report it. For one of the paper's brains, the outline
 target is the b0 mask the registration used (`registration_to_own_mri` in `configs/subjects/<ID>.yaml`); for a new brain, the mask
 `--place-b0` wrote (`<ID>_mri_mask.nii.gz`):
 
@@ -117,7 +120,7 @@ $PY cli/linc-register qc --preset bf2b0 --fixed $R/MR252_mri.nii.gz --moved $R/M
     --slab-iso-mask $D/blockface/MR252_mask_iso.nii.gz --entry $D/xfm/bf-native__to__b0-native --name MR252
 ```
 
-30 s, on a CPU. It ends with `outline PASS`.
+It takes 30 s on a CPU and ends with `outline PASS`.
 
 
 Then its b0 to the MRI template (on the GPU, through `ANATOMIX_PYTHON`):
@@ -127,7 +130,7 @@ $PY cli/linc-register mri-template --subject MR252 \
     --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
 ```
 
-About 4 minutes (4 min 16 s), with 13 GB of GPU memory (12 to 14 GB, depending on the brain). It writes the registration's entry, `$LINC_DATA/sub-MR252/xfm/b0-native__to__mri-template/`, with its own outline check, so
+It takes about 4 minutes (4 min 16 s), with 13 GB of GPU memory (12 to 14 GB, depending on the brain). It writes the registration's entry, `$LINC_DATA/sub-MR252/xfm/b0-native__to__mri-template/`, with its own outline check, so
 no `qc` step follows it. The
 paper's entry sits beside it, in `xfm_record/`; the two differ by floating point only (`docs/reproduce.md`, Exact reproduction).
 The chain from the blockface volume to the template then reads:
@@ -145,7 +148,7 @@ $PY cli/linc-register direct-placement --subject MF191 \
     --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
 ```
 
-About 5 minutes, with 16 GB of GPU memory. It ends with
+It takes about 5 minutes, with 16 GB of GPU memory. It ends with
 `done: $LINC_WORK/direct_placement/MF191 | linear dof9 | entry $LINC_DATA/sub-MF191/xfm/bf-native__to__mri-template`. Compare with
 the paper's entry:
 
@@ -155,7 +158,9 @@ for f in MF191_warp.nii.gz MF191_linear_pull_ras.txt; do
 done
 ```
 
-Both were identical. Run the registrations one at a time on one GPU: two at once need about 40 GB.
+Both were identical. Run the registrations one at a time on one GPU: two at once need about 40 GB. The command's last stage, on a
+CPU, writes `$LINC_DATA/sub-MF191/mri/stand_in/`: the brain aligned to the MRI template's frame and its stand-in b0, which `prepare`
+reads in section 4.
 
 Check it the same way. For the cross-modal alignment, the check runs on the part of the template the brain covers, with the
 brainstem cut flat, which `direct-placement` writes into its output folder (`_fixed_0.25.nii.gz` and its mask); against the whole
@@ -169,7 +174,7 @@ $PY cli/linc-register qc --preset direct --fixed $P/_fixed_0.25.nii.gz --moved $
     --entry $LINC_DATA/sub-MF191/xfm/bf-native__to__mri-template --name MF191
 ```
 
-19 s, on a CPU. It ends with `outline PASS`; the anisotropy of the scales is reported for a cross-modal alignment, not checked.
+It takes 19 s on a CPU and ends with `outline PASS`; the anisotropy of the scales is reported for a cross-modal alignment, not checked.
 
 ## 4. Synthesize the missing caudal tissue (MM2, MF8)
 
@@ -180,20 +185,17 @@ $PY_DEEP cli/linc-complete prepare --subject MR252 --out $LINC_WORK/prepared
 $PY_DEEP cli/linc-complete --brain $LINC_WORK/prepared/MR252 --out $LINC_WORK/complete
 ```
 
-About 2 minutes on a CPU, then 32 s on a GPU, with about 2 GB of its memory. The first prints `MR252: coarse [129, 165, 107] fine [258, 330, 214] z_f 67 d* 20 valid 4777773`, the
-second `MR252: predicted share 0.099, cut z_f 67`.
+The two commands take about 2 minutes on a CPU and 32 s on a GPU, with about 2 GB of its memory. The first prints `MR252: coarse [129, 165, 107] fine [258, 330, 214] z_f 67 d* 20 valid 4777773`, the
+second `MR252: synthesized fraction 0.099, junction plane z_f 67`.
 
 MF8 has no MRI, so its folder is prepared from the stand-in b0, the MRI template's b0 transformed into the brain:
 
 ```bash
-$PY_DEEP cli/linc-complete prepare --subject MF191 --out $LINC_WORK/prepared --nonlin '{mri}/nonlinear_s2lin_prod' \
-    --matrix '{mri}/s2lin_prod/{ID}_bf2mri_dof9.mat' --brain-mask '{mri}/{ID}_pseudo_brain_n1_0p5_prod.nii.gz' \
-    --stand-in-b0 '{nonlin}/{ID}_mri_full.nii.gz' --lo0
+$PY_DEEP cli/linc-complete prepare --subject MF191 --out $LINC_WORK/prepared
 $PY_DEEP cli/linc-complete --brain $LINC_WORK/prepared/MF191 --stand-in --out $LINC_WORK/complete
 ```
 
-About 40 s, then 27 s. Keep the single quotes: `{mri}` stands for `$LINC_DATA/sub-<ID>/mri`, `{nonlin}` for the `--nonlin` folder and
-`{ID}` for the brain, and the command fills them in.
+They take about 40 s and 27 s.
 
 Each brain's results are in `$LINC_WORK/complete/<ID>/`: the volume with its synthesized tissue (`<ID>_bf_completed.nii.gz`, and `_rgb` in color), the
 synthesized and the photographed parts (`_bf_synth`, `_bf_real`), the junction (`_seam_ramp`, `_seam_depth`), the photographed
@@ -221,7 +223,7 @@ $PY_TIRL cli/linc-histology all --subject MR252 --store $LINC_DATA/sub-MR252/blo
 
 For MF8, the same command with `MF191` in place of `MR252` and the match table `num_MF191.txt`.
 
-It prints each step as it starts and ends (`match`, `pieces`, `masks`, `prepare`, `register`, `rgb`), one line per component while it
+It prints each step as it starts and ends (`match`; `pieces`, which divides each section into components; `masks`, `prepare`, `register`, `rgb`), one line per component while it
 registers, and at the end, for MM2, `TIRL histology -> blockface: 47 ok, 0 failed`. On a shared 48-core node, MM2's 47 components took
 about 40 minutes for the masks, 6 minutes to prepare, 80 minutes to register two at a time and 5 minutes for the color images:
 about 2 hours 10 minutes in all. MF8's 58 components took about 45, 5, 75 and 7 minutes. Each component uses 12 threads, so `--jobs 2` needs 24 cores, and the masks about 12 GB of memory per job. The
@@ -246,8 +248,8 @@ done
 
 All 47 of MM2's components were identical, byte for byte, at every stage.
 
-For MF8, the paper's registration divided its sections with an earlier regions volume, made before MF8's section step was corrected.
-That volume ships as the product `hidden_arm_regions` (`configs/products_blockface.yaml`). Run with it, at the spacing it was made at,
+For MF8, the paper's registration divided its sections with its own regions volume, made at a section step of 600 µm. Run with it, at
+that spacing,
 and into a folder of its own:
 
 ```bash
@@ -285,9 +287,9 @@ $PY      cli/linc-labels carry       --subject MR252 \
     --entry $LINC_DATA/sub-MR252/xfm_record/bf-native__to__b0-native --entry $LINC_DATA/sub-MR252/xfm_record/b0-native__to__mri-template
 ```
 
-The paper's labels went through the histology registration made on the photographs before the marker tubes' holes were filled
-(`labels_histology_arm` in `configs/products_blockface.yaml`), so `push` and `interpolate` are given that registration
-(`--registrations`); without it, they use your own from section 5. About 3 minutes, half an hour and 3 minutes. `carry`, as written, goes through the paper's registrations of MM2 (`xfm_record/`);
+The paper's labels went through the histology registration made on the photographs before the marker tubes' holes were filled,
+so `push` and `interpolate` are given that registration
+(`--registrations`); without it, they use your own from section 5. The three steps take about 3 minutes, 30 minutes and 3 minutes. `carry`, as written, goes through the paper's registrations of MM2 (`xfm_record/`);
 without `--entry` it goes through your own, from section 3 (`xfm/`). The interpolation writes the interpolated labels under
 `$LINC_DATA/sub-MR252/labels/blockface/tracer/`. Compare each step's labels with the paper's (the gzip bytes differ, so the arrays
 are compared):
@@ -295,13 +297,13 @@ are compared):
 ```bash
 D=$LINC_DATA/sub-MR252/labels
 P=$LINC_PRODUCTS/labels
-# push: the 6 sheets on the blockface grid
+# push: the 6 labels drawn on the sections (the bundle classes, Fibers, the injection site), on the blockface grid
 $PY tools/compare_nifti.py $D/blockface/tracer $P/push_tracer_r058d/MR252 $(cd $P/push_tracer_r058d/MR252 && ls MR252_*_bfnative_L2.nii.gz)
-# interpolate: the 7 interpolated volumes
+# interpolate: the 7 interpolated labels (those 6 and the bundle group)
 $PY tools/compare_nifti.py $D/blockface/tracer $P/tracer_v2/MR252 $(cd $P/tracer_v2/MR252 && ls MR252_*_bfnative_L2_demons.nii.gz)
-# carry: the 21 files in the template (7 labels: solid, density, footprint)
+# carry: the 21 files in the template (7 labels, each as a mask, a density and a footprint)
 $PY tools/compare_nifti.py $D/template/tracer $P/tracer_template_v2/MR252 \
     $(cd $P/tracer_template_v2/MR252 && ls MR252_*_mri-template.nii.gz MR252_*_mri-template_density.nii.gz MR252_*_mri-template_footprint.nii.gz)
 ```
 
-All 6, 7 and 21 were identical.
+All 6 labels on the sections, 7 interpolated labels and 21 template files were identical to the paper's.

@@ -52,6 +52,7 @@ ROOT = Path(__file__).resolve().parents[2]                            # the repo
 FEATURES = {2: (32, 64, 128, 256, 512, 512, 512), 3: (32, 64, 128, 256, 320, 320)}
 PATCH = {2: (512, 512), 3: (128, 128, 128)}
 CTX = {2: 1.4, 3: 1.3}
+LR, WEIGHT_DECAY, SEED = 1e-2, 3e-5, 0                               # the recipe of record
 
 
 def now():
@@ -121,42 +122,26 @@ def main(argv=None):
     ap = argparse.ArgumentParser(prog="linc-segment train", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--task", required=True, type=Path); ap.add_argument("--fold")
     ap.add_argument("--plan", action="store_true", help="print the cases, folds, missing files and expected GPU hours; train nothing")
-    ap.add_argument("--out", type=Path); ap.add_argument("--cache", type=Path)
-    ap.add_argument("--epochs", type=int, default=200); ap.add_argument("--iters", type=int, default=250)
-    ap.add_argument("--batch", type=int); ap.add_argument("--patch", type=int, nargs="+")
-    ap.add_argument("--features", type=int, nargs="+"); ap.add_argument("--no-deep-supervision", action="store_true")
-    ap.add_argument("--lr", type=float, default=1e-2); ap.add_argument("--weight-decay", type=float, default=3e-5)
-    ap.add_argument("--seed", type=int, default=0); ap.add_argument("--workers", type=int)
-    ap.add_argument("--val-patches", type=int, default=64); ap.add_argument("--device", default="cuda")
-    ap.add_argument("--mirror", choices=("on", "off"), default="on", help="mirroring at inference (the model's spec default)")
-    ap.add_argument("--mem-fraction", type=float, default=None, help="cap this process's share of the GPU memory (two jobs per card)")
-    ap.add_argument("--postprocess", choices=("task", "none", "largest_component", "largest_cc_fill"), default="task",
-                    help="task = the task's own postprocess block (none if it has none)")
-    ap.add_argument("--max-hours", type=float, default=None, help="stop (resumable) after this wall time")
-    ap.add_argument("--ckpt-every", type=int, default=5, help="write last.pt every this many epochs (and at the end)")
-    ap.add_argument("--remap", nargs="*", default=[], help="SRC=DST: read the task's files from DST instead (a local copy)")
-    ap.add_argument("--normalization", choices=("zscore", "zscore_nonzero"), help="overrides the task's normalization")
-    ap.add_argument("--target-spacing", nargs="+", help="resample to this voxel size (mm) for training and prediction, or 'median' "
-                    "(the per-axis median over the task's cases, nnU-Net's rule); overrides the task's target_spacing")
+    ap.add_argument("--out", type=Path, help="the run folder (default $LINC_WORK/segment/runs/<task>/fold_<k>)")
+    ap.add_argument("--cache", type=Path, help="the folder of preprocessed cases (default under $LINC_WORK/segment/cache)")
+    ap.add_argument("--device", default="cuda")
+    t = ap.add_argument_group("shorter runs (the defaults are the paper's values; the task file holds the rest of the recipe)")
+    t.add_argument("--epochs", type=int, default=200); t.add_argument("--iters", type=int, default=250)
+    t.add_argument("--batch", type=int); t.add_argument("--workers", type=int); t.add_argument("--val-patches", type=int, default=64)
     a = ap.parse_args(argv)
     if a.fold is None and not a.plan:
         ap.error("give --fold <0-4|all> (or --plan)")
-    pairs = [tuple(r.split("=", 1)) for r in a.remap]
     try:
-        task = data.load_task(a.task, pairs)
+        task = data.load_task(a.task)
     except (OSError, RuntimeError) as ex:
         sys.exit(f"{a.task}: {ex}")
     own = task.get("train", {})                                       # the task's own arguments where they differ from the defaults
     a.batch = a.batch or own.get("batch", 2); a.workers = own.get("workers", 6) if a.workers is None else a.workers
     if a.plan:
         return plan(task, a, own)
-    if a.target_spacing:
-        task["target_spacing"] = "median" if a.target_spacing == ["median"] else [float(v) for v in a.target_spacing]
     if task.get("target_spacing") == "median":
         task["target_spacing_rule"] = "median per axis over the task's cases (nnU-Net)"
         task["target_spacing"] = data.median_spacing(task)
-    if a.normalization:
-        task["normalization"] = a.normalization
     name, dim, K = task["task"], int(task["dim"]), len(task["classes"])
     out = a.out or work_root() / "segment" / "runs" / name / f"fold_{a.fold}"; out.mkdir(parents=True, exist_ok=True)
     if (out / "DONE").exists():
@@ -166,8 +151,8 @@ def main(argv=None):
     # _lab2: io.resample_label's rule (nearest-exact; block mean >= 0.5 at even integer reductions); the hash of the case files makes
     # a task repointed to restaged data build its own cache (cache_case keeps any case whose meta.json exists)
     cache = a.cache or work_root() / "segment" / "cache" / name / ts_tag
-    patch = list(a.patch or task.get("patch") or PATCH[dim])
-    feats = tuple(a.features or task.get("features") or FEATURES[dim])
+    patch = list(task.get("patch") or PATCH[dim])
+    feats = tuple(task.get("features") or FEATURES[dim])
     aug = dict(augment.DEFAULTS, **task.get("augment", {}))
     tr, va = data.split(task, a.fold)
     t0 = time.time()
@@ -183,22 +168,19 @@ def main(argv=None):
         C = nch.pop()
     print(f"{name} fold {a.fold}: {len(tr)} training / {len(va)} validation cases; cache {time.time() - t0:.0f} s", flush=True)
 
-    torch.manual_seed(a.seed); np.random.seed(a.seed)
+    torch.manual_seed(SEED); np.random.seed(SEED)
     dev = torch.device(a.device)
-    if a.mem_fraction and dev.type == "cuda":
-        torch.cuda.set_per_process_memory_fraction(a.mem_fraction, dev.index if dev.index is not None else torch.cuda.current_device())
-    net = UNet(dim, C, K, feats, deep_supervision=not a.no_deep_supervision).to(dev)
+    net = UNet(dim, C, K, feats, deep_supervision=True).to(dev)
     div = net.divisor(); assert all(p % d == 0 for p, d in zip(patch, div)), f"patch {patch} not divisible by {div}"
-    opt = torch.optim.SGD(net.parameters(), lr=a.lr, momentum=0.99, nesterov=True, weight_decay=a.weight_decay)
+    opt = torch.optim.SGD(net.parameters(), lr=LR, momentum=0.99, nesterov=True, weight_decay=WEIGHT_DECAY)
     ctx = [p + 2 * int(round((CTX[dim] - 1) * p / 2)) for p in patch]
     recipe = dict(network=net.to_spec(), patch=patch, context=ctx, batch=a.batch, epochs=a.epochs, iterations_per_epoch=a.iters,
-                  optimizer=dict(name="SGD", nesterov=True, momentum=0.99, lr=a.lr, weight_decay=a.weight_decay,
+                  optimizer=dict(name="SGD", nesterov=True, momentum=0.99, lr=LR, weight_decay=WEIGHT_DECAY,
                                  schedule="poly (1 - epoch/epochs)^0.9", grad_norm_clip=12.0, autocast="bfloat16"),
                   loss="Dice (foreground classes, batch) + cross-entropy; deep supervision weights 1, 1/2, 1/4, ... (lowest 0)",
                   normalization=task["normalization"], foreground_oversampling="1/3 of the patches centered on a foreground voxel",
-                  augmentation=aug, seed=a.seed,
-                  inference=dict(step=0.5, mirror=a.mirror == "on",
-                                 postprocess=task.get("postprocess") if a.postprocess == "task" else a.postprocess))
+                  augmentation=aug, seed=SEED,
+                  inference=dict(step=0.5, mirror=True, postprocess=task.get("postprocess")))
     rec = dict(task=name, fold=str(a.fold), task_spec=str(a.task), started=now(), folds=task.get("folds"), fold_rule=task.get("fold_rule"),
                target_spacing=task.get("target_spacing"), target_spacing_rule=task.get("target_spacing_rule"),
                data=dict(train_cases=len(tr), train_subjects=sorted({c["subject"] for c in tr}),
@@ -214,8 +196,8 @@ def main(argv=None):
         rec["epochs"] = ck["record"]["epochs"]; rec["started"] = ck["record"]["started"]
         rec.setdefault("resumed", []).extend(ck["record"].get("resumed", []) + [dict(epoch=start, at=now(), host=rec["hardware"]["host"])])
         print(f"resumed at epoch {start}", flush=True)
-    ds = (data.WholeImages(tr, dim, ctx, task["normalization"], task.get("spacing"), seed=a.seed * 10007 + start) if whole
-          else data.Patches(tr, cache, ctx, seed=a.seed * 10007 + start))
+    ds = (data.WholeImages(tr, dim, ctx, task["normalization"], task.get("spacing"), seed=SEED * 10007 + start) if whole
+          else data.Patches(tr, cache, ctx, seed=SEED * 10007 + start))
     dl = iter(torch.utils.data.DataLoader(ds, batch_size=a.batch, num_workers=a.workers, pin_memory=True, persistent_workers=a.workers > 0,
                                           prefetch_factor=4 if a.workers else None))
     vpatch = []
@@ -223,12 +205,11 @@ def main(argv=None):
         vds = iter(data.WholeImages(va, dim, ctx, task["normalization"], task.get("spacing"), seed=12345) if whole
                    else data.Patches(va, cache, ctx, seed=12345))
         vpatch = [next(vds) for _ in range(a.val_patches)]
-    g = torch.Generator(device=dev); g.manual_seed(a.seed * 7919 + start)
-    t_run = time.time()
+    g = torch.Generator(device=dev); g.manual_seed(SEED * 7919 + start)
     for ep in range(start, a.epochs):
         te = time.time()
         for pg in opt.param_groups:
-            pg["lr"] = a.lr * (1 - ep / a.epochs) ** 0.9
+            pg["lr"] = LR * (1 - ep / a.epochs) ** 0.9
         net.train(); tot = 0.0
         for it in range(a.iters):
             x, y = next(dl)
@@ -249,14 +230,11 @@ def main(argv=None):
                     cnt = cnt + dice_counts(net(xb).float(), yb, K)
             row["val_pseudo_dice"] = [float(2 * t / max(p + r, 1)) for t, p, r in cnt]
         rec["epochs"].append(row)
-        stop = a.max_hours and (time.time() - t_run) / 3600 > a.max_hours and ep + 1 < a.epochs
-        if (ep + 1) % a.ckpt_every == 0 or ep + 1 == a.epochs or stop:
+        if (ep + 1) % 5 == 0 or ep + 1 == a.epochs:
             save_atomic(dict(net=net.state_dict(), opt=opt.state_dict(), epoch=ep, record=rec), out / "last.pt")
         save_atomic(rec, out / "record.json", as_json=True)
         print(f"ep {ep + 1}/{a.epochs} loss {row['loss']:.4f} " + (f"val {row.get('val_pseudo_dice')} " if vpatch else "") +
               f"lr {row['lr']:.2e} {row['s']} s", flush=True)
-        if stop:
-            print("max-hours reached: stopping (resumable)", flush=True); return 3
     # the model as shipped: state_dict + spec
     spec = dict(task=name, fold=str(a.fold), net=net.to_spec(), patch=patch, classes=task["classes"], channels=C,
                 normalization=task["normalization"], spacing=task.get("spacing"), target_spacing=task.get("target_spacing"),

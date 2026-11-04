@@ -31,7 +31,7 @@ Parts marked *(not in this snapshot)* are still being ported.
 | Blockface template: registration of the blockface template to the MRI template; aligning a new photographed brain | `linc/link/` (`register.py`, `symreg.py`, `estimate.py` for the composed registrations, `qc.py`); `linc/link/b0_to_template.py` (a brain's b0 → the MRI template, the second registration of the MRI-based alignment) | `configs/link.yaml` | `cli/linc-register mri-template`; `reproduce/templates/build_link.py` (recipe: `reproduce/templates/link.md`) | ANTs |
 | Histology alignment: histology registration and label propagation | `linc/histology/` (`match.py`, `pieces.py`, `register.py`, `labels.py`, `interpolate.py`, `carry.py`) | `configs/histology.yaml`, `configs/labels.yaml` | `cli/linc-histology`, `cli/linc-labels` | TIRL 3.6.2, SimpleITK |
 | Histology alignment: evaluation of the registration pipeline | `linc/evaluation/tubes.py`, `labels_agreement.py`, `direct_placement.py` (the cross-modal alignment), `route_test.py` (the alignment comparison), `regeval.py` | — | — | — |
-| Supplementary S5: segmentation models | `linc/segment/` (`train.py`, `predict.py`, `score.py`, `folds.py`; `docs/models.md`) | each model's `spec.json` (`$LINC_MODELS/segment/<task>/`) | `cli/linc-segment` | PyTorch (`env/deep.yml`) |
+| Supplementary S5: segmentation models | `linc/segment/` (`train.py`, `predict.py`, `folds.py`; `docs/models.md`) | each model's `spec.json` (`$LINC_MODELS/segment/<task>/`) | `cli/linc-segment` | PyTorch (`env/deep.yml`) |
 
 ## Results: numbers, tables and figures
 

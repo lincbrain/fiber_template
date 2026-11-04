@@ -71,5 +71,7 @@ correlation of 0.965 to 0.992 for every brain and fraction (median difference 0.
 the paper's microstructure processing of the four MRI brains (MF1–MF4), the mask of the motion- and eddy-corrected series
 combined that run's `dwi2mask` with a `bet2` mask left over from an earlier run, as `bet2` stopped on a stale file in each brain's
 final run. The release makes the mask as intended; given the paper's own inputs, its SANDI step reproduces the paper's fractions exactly. Given the paper's preprocessed files, the
-staged inputs of the build are voxel-identical to the paper's, and the registrations agree to the precision of the GPU (the
-canonical frame within 0.1° and 0.05 mm).
+staged inputs of the build are voxel-identical to the paper's. The registrations of the T2-weighted and microstructure sessions differ
+from the paper's by a median of 0.02 and 0.03 mm (at most 1.0 and 2.2 mm). The paper registered NMT v2 with an earlier version of the
+anatomix engine; with this release's, the canonical frame differs by 0.08° and 0.05 mm. From the inputs staged from the scanner's
+files, MF1's tensor differs from the paper's only through the one eddy-corrected volume above (Pearson correlation of the FA 0.9999).

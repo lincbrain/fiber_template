@@ -7,7 +7,7 @@ by an environment variable. `linc/paths.py` resolves them; `CONVENTIONS.md` give
 |---|---|---|
 | `LINC_RAW` | the blockface photographs as taken, one folder per brain (`configs/subjects/<ID>.yaml` names it); for a few records, the raw MRI (`macaque_mri`, `mri_mm`), the microstructure fits' source series (`microstructure`, read by `r057_mri_facts_b` only) and the LINC dataset (`linc_000003`: histology, participants) | reconstruction; those records |
 | `LINC_DATA` | per-brain data: `$LINC_DATA/sub-<ID>/{blockface,mri,histology,labels,xfm}/` | using the template on your own brains |
-| `LINC_TEMPLATE` | the released template: `mri/` (MRI channels), `blockface/` (blockface channel and template), `xfm/`, `frames/` | registering into the template |
+| `LINC_TEMPLATE` | the released template: `mri/` (MRI channels: `linc_mri_*`), `blockface/` (the blockface channel in the MRI template's frame: `linc_bf_grey`, `linc_bf_rgb`, `linc_bf_brainmask`, `linc_bf_photographed_fraction`, `linc_bf_synthesized_mask`), `xfm/`, `frames/`, `bridge_run113_to_canonical/` (read by `linc-register direct-placement`) | registering into the template |
 | `LINC_MODELS` | the trained networks: `segment/<model>/` (the segmentation networks) and `completion/<name>/` (`docs/models.md`) | reconstruction, synthesis of missing tissue |
 | `LINC_PRODUCTS` | intermediate products of the paper (reconstructions, registrations, template builds) | reproducing figures and numbers |
 | `LINC_NUMBERS` | the numbers records (`<record>.json`); default `./numbers` | reproducing the paper |
@@ -37,7 +37,8 @@ Scripts that read the paper's intermediate products never name a path themselves
 `configs/products_<owner>.yaml`, which gives each product a short name and a path relative to `$LINC_PRODUCTS`. For example,
 `configs/products_figures.yaml` lists the inputs of the pipeline and tracer figures (`reproduce/figures/pipeline.py`, `tracer.py`).
 
-The data release fixes `LINC_PRODUCTS` and, where its folder names differ from ours, edits only these YAML files.
+The data release fixes `LINC_PRODUCTS` and, where its folder names differ from ours, edits only these YAML files. The blockface template
+in its own space is under `$LINC_PRODUCTS/bftemplate/d2b/final_s8/`.
 
 ## Numbers records (`LINC_NUMBERS`)
 
@@ -73,7 +74,7 @@ in `<figure>.provenance.json`.
 - The released template.
 - The network weights: they come with the data release; `models/` has the model cards, the checksum lists and a script that
   checks a downloaded copy against them.
-- ONPRC18 and CIVM-R image intensities: their licenses do not allow redistribution. Only our transforms to them are released.
+- CIVM-R image intensities: its license does not allow redistribution. Only our transforms to it are released.
   NMT v2 and CIVM-R are also inputs that you download yourself, for the comparison of registration targets and the tracer
   topography (which reads the CHARM key from your NMT v2 copy): `configs/targets.yaml` gives both sources and the folder layout
   (`configs/link.yaml` `inputs.atlas_reference`).

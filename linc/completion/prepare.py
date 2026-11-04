@@ -67,6 +67,31 @@ import numpy as np
 from scipy import ndimage as ndi
 
 from . import CFG
+
+HELP = """Build a brain's prepared folder, the input of `linc-complete`.
+
+You need
+  the environment env/deep.yml, on the CPU (about a minute and 2.3 GB per brain). The brain's products, at the paths configs/completion.yaml
+  lists under prepare.inputs. The paper's 21 brains each have their row. Another brain needs no paths: it uses what `linc-register mri` wrote when that
+  exists, else what `linc-register direct-placement` wrote in mri/stand_in/ (a brain without MRI):
+    from the registration to the brain's own b0: the b0 on its frame, the registered photographs (grey and color), the deformation, and the
+    linear start; a brain without MRI: the stand-in b0, the MRI template's b0 transformed into the brain, in place of its own and no deformation
+    the brain mask on the frame. Tissue the MRI shows and the photographs lack, such as a longer brainstem: a label volume (label 1) for the paper's
+    brains, which holds a detector's result and hand trims; a new brain with MRI gets the detector's alone, written beside its folder as <ID>_mri_only_tissue
+    from the reconstruction: $LINC_DATA/sub-<ID>/blockface/<ID>_blockface.ome.zarr, <ID>.info, <ID>_holes, <ID>_blockface_iso_grey, <ID>_mask_iso
+
+What it does
+  1. crops the b0 frame to the brain and refines it to 0.25 mm, the network's output grid
+  2. transforms the photographs, their color and each voxel's photographed fraction onto that grid
+  3. rotates the grid so that the sections lie flat, because the junction plane is one plane of a section
+  4. removes the tissue only the MRI shows, and finds the junction plane: the caudal end of the sections the photographs fully cover
+     (configs/completion.yaml clean_face holds its parameters)
+  5. normalizes the b0 to [0, 1] inside the brain and writes the network's input
+
+You get
+  <out>/<ID>/seam.json (the junction plane and the normalization), coarse/{in, brain}.nii.gz at 0.5 mm, and fine/{bf, bf_rgb, real_mask,
+  photo_fraction, brain, valid}.nii.gz at 0.25 mm. An existing folder is never written over.
+"""
 from ..registration.fsl import fsl_to_world
 
 # --- parameters of record ---
@@ -74,25 +99,21 @@ ISO = CFG["output_mm"]                        # 0.25 mm: the deploy grid and the
 FRAME_MM = CFG["input_mm"]                    # 0.5 mm: the b0 frame and the input box C
 B0_PCT = tuple(CFG["input_percentiles"])      # (0.5, 99.5): the b0 over the completion brain (preprocess.py robust_lohi)
 STAND_IN_LO = CFG["stand_in_lo"]              # 0.0: the stand-in network's input lower limit (canon_relo.py --lo 0)
-BF_PCT = (1.0, 99.0)                          # preprocess.py: the photographs' grey over the photographed tissue
-RGB_PCT = 99.0                                # build_rgb.py --rule max: one scale, the 99th percentile of the brightest channel
-CROP_MM = 3.0                                 # preprocess.py crop_bbox: margin around the completion brain, round(3 / 0.5) frame voxels
-PAD_MM = 4.0                                  # reblend_1c.sh (go): PAD_MM = 4 -> preprocess SYN_PAD_MM
-FLAT_PAD_MM, FLAT_MULT = 4.0, 16              # reblend_1c.sh (go): flatten_seam SYN_FLAT_PAD_MM = 4, SYN_FLAT_MULT = 16
-SUPPORT_THR = 0.5                             # code/masknorm.py THR (synthesis/v2/v2b_env.sh: LT_MASKNORM = 1)
-BF_LEVEL = 1                                  # provenance.py bf_space_labels: store level 2 - RECON_LEVEL (code/config.py, 1)
+P = CFG["prepare"]
+BF_PCT = tuple(P["bf_percentiles"])           # preprocess.py: the photographs' grey over the photographed tissue
+RGB_PCT = P["rgb_percentile"]                 # build_rgb.py --rule max: one scale, the 99th percentile of the brightest channel
+CROP_MM = P["crop_mm"]                        # preprocess.py crop_bbox: margin around the completion brain, round(3 / 0.5) frame voxels
+PAD_MM = P["pad_mm"]                          # reblend_1c.sh (go): PAD_MM = 4 -> preprocess SYN_PAD_MM
+FLAT_PAD_MM, FLAT_MULT = P["flat_pad_mm"], P["flat_multiple"]   # reblend_1c.sh (go): flatten_seam SYN_FLAT_PAD_MM = 4, SYN_FLAT_MULT = 16
+SUPPORT_THR = P["support_threshold"]          # code/masknorm.py THR (synthesis/v2/v2b_env.sh: LT_MASKNORM = 1)
+BF_LEVEL = P["bf_level"]                      # provenance.py bf_space_labels: store level 2 - RECON_LEVEL (code/config.py, 1)
 INTERP, INPAINT = 2, 3                        # provenance.py tiers: interpolated section, filled marker tube
 LPS_SIGN = np.array([-1.0, -1.0, 1.0], np.float32)   # provenance.py apply_warp: the saved field's x/y are LPS-signed (a pull, mm)
-NORMAL_DECIMALS = 4                           # flatten_seam.py: the section normal as its seam.json records it
+NORMAL_DECIMALS = P["normal_decimals"]        # flatten_seam.py: the section normal as its seam.json records it
 VALID_TRIM_MM = CFG["training"]["valid_trim_mm"]     # 0.25: canon_cache.py K_MM (the frozen trim_valid, as every batch)
 CLEAN = CFG["clean_face"]                     # tau 0.95, erode 1 mm, window 40 mm, margin 1.5 mm (clean_face.py)
 FRAME_NAME = "run113"                         # the name the folders of record give the b0 frame (every {ID}_mri lives on it)
 
-# --- default inputs: the products MF278's folder of record was made from (isbi2027/_reblend_dry/run_d3_mf278.sh) ---
-NONLIN = "{mri}/nonlinear_r1v3mr"
-MATRIX = "{mri}/r1v3mr/{ID}_bf2mri_dof9.mat"
-BRAIN_MASK = "{mri}/{ID}_mri_mask_completion_reg_2026-10-03.nii.gz"
-REGISTER = "{mri}/{ID}_register_2026-10-03.nii.gz"
 FRAME = "{mri}/{ID}_mri.nii.gz"
 B0 = "{nonlin}/{ID}_mri_full.nii.gz"         # the b0 when present, else the frame (preprocess.py, canon_cache.py)
 
@@ -407,6 +428,59 @@ def register_trim(Fl, register):
     return tv.reshape(b.shape)
 
 
+def detect_mri_only(Fl):
+    """tissue the MRI shows and the photographs lack, on the flat grid (axis 1 caudal -> rostral; mri_trim.py with its height rule):
+    `stump` = unphotographed brain voxels within the photographed extent, opened by a ball, the components at least min_ml large that
+    begin within touch_mm of the photographed end and lie in the lower part of the brain, grown back by 2 voxels; `tail` = the unphotographed
+    brain caudal of the stump, under its caudal-most foot_mm (dilated 1 mm in-plane). Photographed tissue is never removed."""
+    T = P["trim"]
+    A, b = Fl["affine"], Fl["brain"]; rm = Fl["real_mask"] & b
+    ph = int(np.flatnonzero(rm.any(axis=(0, 2))).min())                   # the photographed (caudal) end plane
+    Mx = b & ~rm; Mx[:, :ph, :] = False
+    r = int(round(T["open_mm"] / ISO)); g = np.arange(-r, r + 1); X, Y, Z = np.meshgrid(g, g, g, indexing="ij")
+    lab, n = ndi.label(ndi.binary_opening(Mx, structure=(X ** 2 + Y ** 2 + Z ** 2) <= r * r))
+    zax = int(np.argmax(np.abs(A[2, :3]))); bz = np.flatnonzero(b.any(axis=tuple(x for x in range(3) if x != zax)))
+    zlo, zhi = (bz.min(), bz.max()) if A[2, zax] > 0 else (bz.max(), bz.min())
+    keep = np.zeros_like(Mx)
+    for k, sz in enumerate(ndi.sum(np.ones_like(lab), lab, range(1, n + 1)) if n else [], 1):
+        if sz * ISO ** 3 / 1000 < T["min_ml"]:
+            continue
+        c = lab == k
+        if np.flatnonzero(c.any(axis=(0, 2))).min() <= ph + int(round(T["touch_mm"] / ISO)) \
+                and (ndi.center_of_mass(c)[zax] - zlo) / (zhi - zlo) <= T["max_height"]:
+            keep |= c
+    stump = ndi.binary_dilation(keep, iterations=2) & Mx
+    tail = np.zeros_like(b)
+    if stump.any():
+        y0 = int(np.flatnonzero(stump.any(axis=(0, 2))).min())
+        foot = ndi.binary_dilation(stump[:, y0:y0 + int(round(T["foot_mm"] / ISO)), :].any(axis=1), iterations=int(round(1.0 / ISO)))
+        tail[:, :y0, :] = (b & ~rm)[:, :y0, :] & foot[:, None, :]
+    return stump | tail
+
+
+def trim_on_frame(trim, Fl, mask_img):
+    """the flat grid's trim as labels on the b0 frame, inside the brain mask (export_cutoff_L4.py): a frame voxel is 1 when at least 4 of its 8
+    sub-points fall in the trim; detached fragments under frame_min_vox voxels are dropped"""
+    A, sh, R = Fl["affine"], trim.shape, Fl["R_rec"]
+    f = _world_vox(_to_unrot(_vox_world(np.argwhere(trim).astype(np.float64), A), A, sh, R), mask_img.affine)
+    lo = np.maximum(np.floor(f.min(0)).astype(int) - 2, 0); hi = np.minimum(np.ceil(f.max(0)).astype(int) + 3, mask_img.shape[:3])
+    box = np.indices(tuple(hi - lo)).reshape(3, -1).T + lo
+    hit = np.zeros(len(box), np.float32)
+    offs = [(i, j, k) for i in (-0.25, 0.25) for j in (-0.25, 0.25) for k in (-0.25, 0.25)]
+    for o in offs:
+        v = np.rint(_world_vox(_from_unrot(_vox_world(box + np.array(o), mask_img.affine), A, sh, R), A)).astype(int)
+        ok = np.all((v >= 0) & (v < np.array(sh)), axis=1)
+        t = np.zeros(len(v), bool); t[ok] = trim[tuple(v[ok].T)]; hit += t
+    frac = np.zeros(mask_img.shape[:3], np.float32); frac[tuple(box.T)] = hit / len(offs)
+    lab = (frac >= 0.5) & (np.asanyarray(mask_img.dataobj) > 0)
+    pl, pn = ndi.label(lab, structure=np.ones((3, 3, 3)))
+    if pn > 1:
+        for k, sz in enumerate(ndi.sum(lab, pl, range(1, pn + 1)).astype(int), 1):
+            if sz < P["trim"]["frame_min_vox"]:
+                lab[pl == k] = False
+    return lab
+
+
 def clean_face(Fl, trim, tau=CLEAN["tau"], erode_mm=CLEAN["erode_mm"], window_mm=CLEAN["window_mm"], margin_mm=CLEAN["margin_mm"]):
     """z_f and d* on the flat planes (clean_face.py)"""
     ax, ant_hi = ap_axis(Fl["affine"])
@@ -440,7 +514,21 @@ def _placeholder(p, root):
         return str(p)
 
 
-def prepare(subject, out_dir, *, data_root=None, nonlin=NONLIN, matrix=MATRIX, brain_mask=BRAIN_MASK, register=None, frame=FRAME,
+def inputs_of(subject):
+    """the brain's input templates: its row of configs/completion.yaml prepare.inputs.of_record; a new brain's own registration
+    (`linc-register mri`, new_brain) when it exists, else what `linc-register direct-placement` wrote (new_brain_stand_in)"""
+    from .. import paths
+    for row in P["inputs"]["of_record"]:
+        if subject in row["brains"]:
+            return {k: v for k, v in row.items() if k != "brains"}
+    new, stand_in = P["inputs"]["new_brain"], P["inputs"]["new_brain_stand_in"]
+    at = lambda t: Path(t.format(ID=subject, work=paths.work_root(), mri=paths.data_root() / f"sub-{subject}" / "mri"))  # noqa: E731
+    if not (at(new["nonlin"]) / f"{subject}_bf_nonlin.nii.gz").exists() and (at(stand_in["nonlin"]) / f"{subject}_bf_nonlin.nii.gz").exists():
+        return dict(stand_in)
+    return dict(new)
+
+
+def prepare(subject, out_dir, *, data_root=None, nonlin, matrix, brain_mask, register=None, frame=FRAME, detect_trim=False,
             b0=B0, stand_in_b0=None, lo0=False, pad_mm=PAD_MM, flat_pad_mm=FLAT_PAD_MM, flat_mult=FLAT_MULT, keep=None, log=print):
     """write the prepared folder <out_dir>/<subject>/ (seam.json, coarse/, fine/) from the brain's products; returns seam.json's record.
     Path arguments are templates ({ID}, {mri}, {bf}, {nonlin}; module docstring). register: None = no trim. stand_in_b0: a brain
@@ -457,7 +545,7 @@ def prepare(subject, out_dir, *, data_root=None, nonlin=NONLIN, matrix=MATRIX, b
     if dst.exists():
         raise FileExistsError(f"{dst} exists: a prepared folder is never written over")
     mri, bfd = root / f"sub-{S}" / "mri", root / f"sub-{S}" / "blockface"
-    fmt = lambda t, **k: Path(str(t).format(ID=S, mri=mri, bf=bfd, **k))  # noqa: E731
+    fmt = lambda t, **k: Path(str(t).format(ID=S, mri=mri, bf=bfd, work=paths.work_root(), **k))  # noqa: E731
     nl = fmt(nonlin)
     if stand_in_b0 is not None:
         b0_p = frame_p = fmt(stand_in_b0, nonlin=nl); warp = None
@@ -479,14 +567,26 @@ def prepare(subject, out_dir, *, data_root=None, nonlin=NONLIN, matrix=MATRIX, b
     if bi.shape != fi.shape or not np.allclose(bi.affine, fi.affine):                # preprocess.py: <ID>_mri_full on the frame
         raise ValueError(f"{b0_p} is not on the frame {frame_p}")
 
-    log(f"{S}: 1/6 the deploy grid"); U = unrotated(ins["fine_grid"], ins["bf"], b0_p, ins["brain_mask"], pad_mm)
-    log(f"{S}: 2/6 photographed fraction"); pf = photo_fraction(
+    log(f"{S}: 1/6 the working grid"); U = unrotated(ins["fine_grid"], ins["bf"], b0_p, ins["brain_mask"], pad_mm)
+    log(f"{S}: 2/6 section normal and flat grid")
+    normal = section_normal(ins["iso_grey"], ins["mask_iso"], frame_p, ins["matrix"])
+    Fl = flat(U, normal, flat_pad_mm, flat_mult)
+    if detect_trim:                                                       # a new brain: as a register would give it, label 1 and the brain without it
+        found = detect_mri_only(Fl)
+        if found.any():
+            mimg = nib.load(ins["brain_mask"]); lab = trim_on_frame(found, Fl, mimg)
+            Path(out_dir).mkdir(parents=True, exist_ok=True)
+            hdr = mimg.header.copy(); hdr.set_data_dtype(np.uint8)
+            ins["register"] = Path(out_dir) / f"{S}_mri_only_tissue.nii.gz"; ins["brain_mask"] = Path(out_dir) / f"{S}_brain_without_mri_only_tissue.nii.gz"
+            nib.save(nib.Nifti1Image(lab.astype(np.uint8), mimg.affine, hdr), ins["register"])
+            nib.save(nib.Nifti1Image(((np.asanyarray(mimg.dataobj) > 0) & ~lab).astype(np.uint8), mimg.affine, hdr), ins["brain_mask"])
+            log(f"{S}: tissue only the MRI shows: {int(lab.sum())} voxels on the b0 frame -> {ins['register']}")
+            U = unrotated(ins["fine_grid"], ins["bf"], b0_p, ins["brain_mask"], pad_mm); Fl = flat(U, normal, flat_pad_mm, flat_mult)
+    log(f"{S}: 3/6 photographed fraction"); pf = photo_fraction(
         U, store=ins["blockface_store"], info=ins["blockface_info"], holes=ins["holes"], iso_grey=ins["iso_grey"], frame=frame_p,
         matrix=ins["matrix"], warp=warp)
-    log(f"{S}: 3/6 color"); rgb = color(U, ins["bf_rgb"])
-    log(f"{S}: 4/6 section normal and flat grid")
-    Fl = flat(U, section_normal(ins["iso_grey"], ins["mask_iso"], frame_p, ins["matrix"]), flat_pad_mm, flat_mult)
-    log(f"{S}: 5/6 MRI-side trim and clean cut face"); trim = register_trim(Fl, ins["register"]); cf = clean_face(Fl, trim)
+    log(f"{S}: 4/6 color"); rgb = color(U, ins["bf_rgb"])
+    log(f"{S}: 5/6 MRI-side trim and junction plane"); trim = register_trim(Fl, ins["register"]); cf = clean_face(Fl, trim)
     if keep:
         kd = Path(keep) / S
         for sub, arrs, A in (("deploy", dict(brain=U["brain"], real_bf=U["real_bf"], real_mask=U["real_mask"], synth=U["synth"],
@@ -595,39 +695,60 @@ def prepare(subject, out_dir, *, data_root=None, nonlin=NONLIN, matrix=MATRIX, b
     return rec
 
 
+def stand_in_training_folder(subject, out_dir, targets_from, stand_in_b0, data_root=None):
+    """the stand-in network's training folder of a brain with MRI (build_canon_pseudo.py): its own prepared folder with only the network's
+    input replaced by the stand-in b0, normalized by that image's own percentiles over the brain, so that training sees what a brain
+    without MRI gets; coarse/brain and fine/ are links to the own folder (the targets do not change)"""
+    from .. import paths
+    S = subject
+    src, dst = (Path(targets_from) / S).resolve(), Path(out_dir) / S
+    if dst.exists():
+        raise FileExistsError(f"{dst} exists: a prepared folder is never written over")
+    root = Path(data_root) if data_root else paths.data_root()
+    mri = root / f"sub-{S}" / "mri"
+    rec = json.loads((src / "seam.json").read_text())
+    p = Path(str(stand_in_b0).format(ID=S, mri=mri, bf=root / f"sub-{S}" / "blockface", work=paths.work_root()))
+    if not p.exists():
+        raise FileNotFoundError(f"missing stand-in b0: {p}")
+    im = nib.load(p); own = nib.load(paths.rerooted(rec["sources"]["b0"]))
+    if im.shape != own.shape or not np.allclose(im.affine, own.affine, atol=1e-5):
+        raise ValueError(f"{p} is not on the brain's b0 frame")
+    bm = _data(paths.rerooted(rec["sources"]["brain"])) > 0
+    x = np.asanyarray(im.dataobj).astype(np.float32)
+    lo, hi = (float(np.percentile(x[bm], q)) for q in B0_PCT)
+    cin = (np.clip((x - lo) / max(1e-6, hi - lo), 0, 1) * bm).astype(np.float32)
+    cin = box_copy(cin, np.array(rec["coarse_box"]["lo"]), np.array(rec["coarse_box"]["shape"]))
+    (dst / "coarse").mkdir(parents=True)
+    nib.save(nib.Nifti1Image(cin, nib.load(src / "coarse" / "in.nii.gz").affine), dst / "coarse" / "in.nii.gz")
+    os.symlink(src / "coarse" / "brain.nii.gz", dst / "coarse" / "brain.nii.gz"); os.symlink(src / "fine", dst / "fine")
+    rec["input"] = dict(kind="the stand-in b0", path=str(p), md5=_md5(p), norm=[lo, hi], replaces=str(src / "coarse" / "in.nii.gz"),
+                        rule="own 0.5/99.5 percentiles over the brain; masked by it")
+    (dst / "seam.json").write_text(json.dumps(rec, indent=1))
+    print(f"{S}: stand-in input written (norm {lo:.4g}/{hi:.4g}) -> {dst}")
+
+
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="linc-complete prepare", formatter_class=argparse.RawDescriptionHelpFormatter,
-                                 description="Build a brain's prepared folder for cli/linc-complete from its products "
-                                             "(linc/completion/prepare.py). Path templates: {ID}, {mri} = $LINC_DATA/sub-<ID>/mri, "
-                                             "{bf} = $LINC_DATA/sub-<ID>/blockface, {nonlin} = the --nonlin folder. The defaults "
-                                             "are the inputs of MF278's folder of record.")
-    ap.add_argument("--subject", required=True, help="the LINC ID (e.g. MF278)")
+    ap = argparse.ArgumentParser(prog="linc-complete prepare", formatter_class=argparse.RawDescriptionHelpFormatter, description=HELP)
+    ap.add_argument("--subject", required=True, help="the Specimen ID (e.g. MF278)")
     ap.add_argument("--out", required=True, type=Path, help="the folder of prepared folders: writes <out>/<ID>/")
-    ap.add_argument("--data-root", type=Path, default=None, help="the per-brain data root (default $LINC_DATA)")
-    ap.add_argument("--nonlin", default=NONLIN, help=f"the registration's products folder (default {NONLIN})")
-    ap.add_argument("--matrix", default=MATRIX, help=f"the registration's linear start (default {MATRIX})")
-    ap.add_argument("--brain-mask", default=BRAIN_MASK, help=f"the completion brain on the frame (default {BRAIN_MASK})")
-    ap.add_argument("--register", default=None, help=f"the MRI-side register; label 1 is trimmed before the cut face (default "
-                    f"{REGISTER} when that file exists; 'none': no trim)")
-    ap.add_argument("--stand-in-b0", default=None, help="a brain without MRI: the stand-in b0 (its b0 and its frame; no warp), e.g. "
-                    "{nonlin}/{ID}_mri_full.nii.gz")
-    ap.add_argument("--lo0", action="store_true", help="with --stand-in-b0: the deployed input, x = clip(b0 / p99.5, 0, 1) "
-                    "(configs/completion.yaml stand_in_lo)")
-    ap.add_argument("--keep", type=Path, default=None, help="also write the intermediate grids to <KEEP>/<ID>/{deploy,flat}/")
+    ap.add_argument("--targets-from", type=Path, help="to train the stand-in network: a folder of own-b0 prepared folders, whose targets this "
+                    "brain's folder links to; only the network's input changes, to --stand-in-b0")
+    ap.add_argument("--stand-in-b0", help="with --targets-from: the path template of the brain's stand-in b0 (default: what `linc-register direct-placement` wrote, {mri}/stand_in/{ID}_mri_full.nii.gz)")
+    # one path, overriding the brain's row of configs/completion.yaml (path templates as there)
+    ap.add_argument("--nonlin"); ap.add_argument("--matrix"); ap.add_argument("--brain-mask"); ap.add_argument("--register", help="'none': no trim")
+    ap.add_argument("--lo0", action="store_true", help="with --stand-in-b0: the deployed input, x = clip(b0 / p99.5, 0, 1); a brain's row implies it")
     a = ap.parse_args(argv)
-    reg = a.register
-    if reg is None:
-        from .. import paths
-        root = a.data_root or paths.data_root()
-        p = Path(REGISTER.format(ID=a.subject, mri=root / f"sub-{a.subject}" / "mri"))
-        reg = REGISTER if p.exists() else None
-        if reg is None:
-            print(f"{a.subject}: no register ({p}): no MRI-side trim")
-    elif reg.lower() == "none":
-        reg = None
+    ins = inputs_of(a.subject)
+    for k in ("nonlin", "matrix", "brain_mask", "register", "stand_in_b0"):
+        if getattr(a, k):
+            ins[k] = None if getattr(a, k) == "none" else getattr(a, k)
+    if a.register:                                                       # a register given (or "none"): no detection
+        ins.pop("detect_trim", None)
     try:
-        prepare(a.subject, a.out, data_root=a.data_root, nonlin=a.nonlin, matrix=a.matrix, brain_mask=a.brain_mask, register=reg,
-                stand_in_b0=a.stand_in_b0, lo0=a.lo0, keep=a.keep)
+        if a.targets_from:
+            stand_in_training_folder(a.subject, a.out, a.targets_from, a.stand_in_b0 or P["inputs"]["new_brain_stand_in"]["stand_in_b0"])
+            return 0
+        prepare(a.subject, a.out, lo0=a.lo0 or (bool(ins.get("stand_in_b0")) and not a.stand_in_b0), **ins)
     except (FileExistsError, FileNotFoundError, ValueError) as e:
         sys.exit(f"linc-complete prepare: {e}")
     return 0

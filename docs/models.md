@@ -2,7 +2,7 @@
 
 Four networks segment new data: the brain in an ex vivo MRI image, the brain in a blockface photograph, the brain in a blockface
 volume, and the marker tubes in a blockface volume. They share one recipe and one code path, `linc/segment`, run by
-`cli/linc-segment`. Each was trained once, on every mask of the project that was drawn or corrected by hand,
+`cli/linc-segment`. Each was trained once, on the masks of the project that were drawn or corrected by hand,
 and evaluated by a five-fold cross-validation grouped by brain. The paper's Supplementary Section S5 and Table S8 give the held-out
 results; each model's card gives them per brain, with the model's known limitations.
 

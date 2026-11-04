@@ -16,3 +16,4 @@ configs/*.local.yaml
 /envs/
 /local_data/
 /local_rebuild/
+/local_mri/

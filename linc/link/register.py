@@ -21,6 +21,8 @@ Recipe (configs/link.yaml `register`):
     python -m linc.link.register solve   --out DIR [--device cuda:0]    (GPU: step 4, DIR/sym/)
     python -m linc.link.register finish  --out DIR                      (CPU: step 5, DIR/s5_link.json)
     python -m linc.link.register export  LINK_DIR OUT_DIR               (CPU: the two full pull maps + round trips)
+    python -m linc.link.register blockface-in-mri MAPS_DIR OUT_DIR      (CPU: the blockface channel in the MRI template's frame, linc_bf_*)
+    python -m linc.link.register registry MAPS_DIR LINK_DIR ATLAS_ROOT OUT_DIR   (CPU: the template-level entries of the transform registry)
 Inputs default to configs/link.yaml `inputs` (relative to $LINC_PRODUCTS); --moving/--fixed/... override them.
 
 Products (as the run of record): link_linear_world.txt (Pst), link_linear_vs_bridge.txt (Pst P0^-1), link_warp.nii.gz (the pull
@@ -194,6 +196,63 @@ def export(link, bf_grid, bf_mask, out, mri_grid, mri_mask, every=None):
     return rt
 
 
+def blockface_in_mri(maps, out):
+    """The template's blockface channel in the MRI template's frame, under the released names, through the exported pull map
+    <maps>/bftemplate__to__mri-template, one resample each. grey, rgb: cubic, clipped to [0, 1] (cubic rings past both at the edges);
+    brainmask: linear > 0.5; photographed fraction: linear; synthesized mask, the paper's rule on the released files: brainmask &
+    fraction < 0.5. Writes <out>/linc_bf_*.nii.gz and blockface_in_mri.json."""
+    I = inputs(); os.makedirs(out, exist_ok=True)
+    m = X.load_map(f"{maps}/bftemplate__to__mri-template", "full")
+    g = nib.load(product(I["mri_b0"])); shp, A = g.shape[:3], g.affine
+
+    def pull(path, order):
+        i = nib.load(path)
+        return X.apply_once(np.asanyarray(i.dataobj).astype(np.float32), i.affine, shp, A, m, order=order)
+    C = I["bf_channels"]
+    mask = pull(product(I["bf_mask"]), 1) > 0.5
+    frac = pull(product(C["photographed_fraction"]), 1)
+    synth = mask & (frac < 0.5)
+    pulled = pull(product(C["synthesized_mask"]), 1) > 0.5                # for the record only: the own-space mask, transformed
+    for name, v, dt in (("grey", np.clip(pull(product(I["bf_carry"]["grey"]), 3), 0, 1), np.float32),
+                        ("rgb", np.clip(pull(product(C["rgb"]), 3), 0, 1), np.float32),
+                        ("brainmask", mask, np.uint8), ("photographed_fraction", frac, np.float32), ("synthesized_mask", synth, np.uint8)):
+        nib.save(nib.Nifti1Image(np.ascontiguousarray(v.astype(dt)), A), f"{out}/linc_bf_{name}.nii.gz")
+    rec = dict(maps=str(maps), grid=str(product(I["mri_b0"])), brainmask_voxels=int(mask.sum()), synthesized_voxels=int(synth.sum()),
+               synthesized_vs_transformed_mask=dict(transformed_voxels=int(pulled.sum()), voxels_differ=int((synth != pulled).sum()),
+                                                    only_in_rule=int((synth & ~pulled).sum()), only_in_transformed=int((pulled & ~synth).sum())))
+    json.dump(rec, open(f"{out}/blockface_in_mri.json", "w"), indent=1)
+    print(rec, flush=True)
+
+
+def template_entries(maps, link, atlas_root, root, overwrite=False):
+    """The template-level entries of the transform registry (linc/xfm.py) under `root` ($LINC_TEMPLATE/xfm in the released template): the
+    two templates' registration and the MRI template's registration to each published template, one entry per direction, from the stored
+    pull maps, so that neither direction is solved by iteration. maps: export's folder; link: the registration's (s5_link.json);
+    atlas_root: <atlas>/run/ and <atlas>/score.json. Each entry's QC is its run's outline check: "fail" if it failed, else "pass", with
+    the check's result kept in the entry (WARN lines included). The published templates themselves are never copied."""
+    from .. import xfm
+    from . import atlas as AT
+    I = inputs(); mri, bf = product(I["mri_b0"]), product(I["bf_b0"]); made = []
+    rec = json.load(open(f"{link}/s5_link.json"))
+    for src, dst, d, sg, dg in (("bf-template", "mri-template", "bftemplate__to__mri-template", bf, mri), ("mri-template", "bf-template", "mri-template__to__bftemplate", mri, bf)):
+        e = xfm.register(src, dst, [("warp", "ras_disp", f"{maps}/{d}/full_d.nii.gz"), ("affine", "ras_pull", f"{maps}/{d}/full_L.txt")], dst_grid=dg, src_grid=sg,
+                         engine="symmetric feature-based registration of the two templates' b0 (linc/link/symreg.py)", root=root, overwrite=overwrite)
+        xfm.set_qc(e.dir, "fail" if rec["outline_status"] == "FAIL" else "pass", outline=rec["outline_status"], outline_reasons=rec["outline_reasons"],
+                   ncc=rec["ncc"], envelope_dice=rec["envelope_dice"], source="s5_link.json")
+        made.append(e)
+    for name in config()["atlas"]["atlases"]:
+        r = Path(atlas_root) / name; sc = json.load(open(r / "score.json")); ol = sc["outline"]; a = AT.spec(name); t = AT.template_channel(name)
+        for src, dst, h, w, sg, dg in ((f"atlas:{name}", "mri-template", "Hinv.txt", "F_ras_disp.nii.gz", a["img"], t), ("mri-template", f"atlas:{name}", "H.txt", "G_ras_disp.nii.gz", t, a["img"])):
+            e = xfm.register(src, dst, [("affine", "ras_pull", r / "run" / h), ("warp", "ras_disp", r / "run" / w), ("affine", "ras_pull", r / "run" / h)], dst_grid=dg, src_grid=sg,
+                             engine="symmetric feature-based registration, halfway space (linc/link/symreg.py)", root=root, overwrite=overwrite)
+            bad = any(v["status"] == "FAIL" for v in ol.values())
+            xfm.set_qc(e.dir, "fail" if bad else "pass", outline=ol, mask_dice=sc["mask_dice"], folds_fraction=sc["folds_fraction"], source="score.json")
+            made.append(e)
+    for e in made:
+        print(repr(e), e.qc_status(), flush=True)
+    return made
+
+
 def main(argv=None):
     I = inputs()
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -213,7 +272,15 @@ def main(argv=None):
     p.add_argument("link"); p.add_argument("out")
     p.add_argument("--bf-grid", default=None); p.add_argument("--bf-mask", default=None)
     p.add_argument("--mri-grid", default=None); p.add_argument("--mri-mask", default=None)
+    p = sub.add_parser("blockface-in-mri")
+    p.add_argument("maps"); p.add_argument("out")
+    p = sub.add_parser("registry")
+    p.add_argument("maps"); p.add_argument("link"); p.add_argument("atlas_root"); p.add_argument("out"); p.add_argument("--overwrite", action="store_true")
     a = ap.parse_args(argv)
+    if a.cmd == "blockface-in-mri":
+        return blockface_in_mri(a.maps, a.out)
+    if a.cmd == "registry":
+        return template_entries(a.maps, a.link, a.atlas_root, a.out, overwrite=a.overwrite)
     if a.cmd == "export":
         return export(a.link, a.bf_grid or product(I["bf_b0"]), a.bf_mask or product(I["bf_mask"]), a.out,
                       a.mri_grid or product(I["mri_b0"]), a.mri_mask or product(I["mri_mask"]))

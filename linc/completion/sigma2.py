@@ -20,10 +20,11 @@ import numpy as np
 from . import CFG, deploy
 
 ISO = CFG["output_mm"]
-MIN_SUBJ = 3                    # depths reached by fewer brains end the measured curve
-EDGE_MM = 3.0                   # edge3: voxels at least this far inside their column's photographed tissue
-MIN_VOX = 50                    # depth bins with fewer voxels per brain are dropped
-AT_MM = (0.5, 1.0, 2.0, 4.0, 8.0)
+E = CFG["evaluation"]
+MIN_SUBJ = E["extrapolation_min_brains"]     # depths reached by fewer brains end the measured curve
+EDGE_MM = E["extrapolation_edge_mm"]         # edge3: voxels at least this far inside their column's photographed tissue
+MIN_VOX = E["extrapolation_min_vox"]         # depth bins with fewer voxels per brain are dropped
+AT_MM = tuple(E["extrapolation_at_mm"])
 
 
 def ap_axis(affine):
@@ -140,7 +141,7 @@ def fit(pool):
         extrapolated_beyond_mm=float(d[-1]), anchor=float(iso[-1]), slope_per_mm=b,
         slope_wls_full_range=slope, slope_wls_last_2mm=slope_tail,
         at_mm={f"{x:g}": float(f(x)) for x in AT_MM},
-        table=[[float(x), float(f(x)), bool(x > d[-1])] for x in np.arange(0.125, 16.0, 0.25)])
+        table=[[float(x), float(f(x)), bool(x > d[-1])] for x in np.arange(ISO / 2, E["extrapolation_table_max_mm"], ISO)])
 
 
 def pooled_from(tab):

@@ -403,8 +403,19 @@ def entries(subject=None):
 
 
 def find_chain(src, dst, subject=None, allow_inverse=True):
-    """Shortest list of entries taking images from `src` to `dst` (BFS; forward links preferred)."""
+    """Shortest list of entries taking images from `src` to `dst` (BFS; forward links preferred). The cross-modal alignment
+    (bf-native <-> mri-template) made the stand-in b0: a chain uses it only when nothing else connects the two spaces, so a brain
+    reaches the MRI template through its own MRI or through the blockface template, the paper's two routes."""
     es = entries(subject)
+    for use in ([e for e in es if {e.src, e.dst} != {"bf-native", "mri-template"}], es):
+        chain = _shortest(src, dst, use, allow_inverse)
+        if chain is not None:
+            return chain
+    raise LookupError(f"no chain {src} -> {dst}" + (f" for {subject}" if subject else "") +
+                      f"; registered: {[repr(e) for e in es]}")
+
+
+def _shortest(src, dst, es, allow_inverse):
     edges = {}
     for e in es:
         edges.setdefault(e.src, []).append(e)
@@ -424,8 +435,7 @@ def find_chain(src, dst, subject=None, allow_inverse=True):
                 prev[e.dst] = e
                 q.append(e.dst)
     if dst not in prev:
-        raise LookupError(f"no chain {src} -> {dst}" + (f" for {subject}" if subject else "") +
-                          f"; registered: {[repr(e) for e in es]}")
+        return None
     chain, s = [], dst
     while prev[s] is not None:
         chain.append(prev[s]); s = prev[s].src
