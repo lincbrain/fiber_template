@@ -86,7 +86,7 @@ def main():
     cx_rec = {a: runs / f"crossmodal_{a}_rebuild_vr_wmfa040_deliverable.json" for a, _ in ARMS}   # in-sample pairwise values
     if "--plan" in sys.argv[1:]:                                             # print what this script reads and writes; run nothing
         from linc.evaluation import plan
-        return plan.show("variants_leave_self_out_rebuild_fa025", env="env/mri.yml (PY_MRI); OMP_NUM_THREADS=4", est="about 30 min on 4 threads (CPU)",
+        return plan.show("variants_leave_self_out_rebuild_fa025", env="env/linc.yml (PY_MRI); OMP_NUM_THREADS=4", est="about 30 min on 4 threads (CPU)",
                          inputs={"crossmodal_cache": cache, "template_mri": tpl, "mri_runs": runs, "numbers_of_record": num,
                                  "support run": runs / SUPPORT_RUN, "in-sample records": list(om_rec.values()) + list(cx_rec.values())},
                          outputs=[paths.numbers_root() / "variants_leave_self_out_rebuild_fa025.json"],

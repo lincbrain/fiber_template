@@ -34,7 +34,8 @@ records: `$PY reproduce/check_numbers.py --ref reproduce/reference <record> ...`
   - `LINC_MODELS`, the network weights: `s1_segmentation_r057`;
   - your copies of NMT v2 and CIVM-R (`configs/targets.yaml`): `r060_target_comparison` and `lgnstn_targets_r060c`;
   - raw data outside the release: `r057_mri_facts_b` and `histo_pixel_sizes_r057` (`LINC_RAW`), `mm_mri_check_r054`
-    (`MM_MRI_ARGS`) and the `histology` figure (`HISTOLOGY_ARGS = --jp2-root <source data>/sourcedata`).
+    (`MM_MRI_ARGS`, the ParaVision files, which are not in the data release) and the `histology` figure
+    (`HISTOLOGY_ARGS = --jp2-root <source data>/sourcedata`).
 - **One record or figure at a time.** Some records read others (for example, `bf_species` reads `bf_cohort`); the Makefile runs
   them in order, so run a record alone only after the records it reads are in `$LINC_NUMBERS`:
 

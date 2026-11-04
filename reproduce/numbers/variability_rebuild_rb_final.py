@@ -34,7 +34,7 @@ def main():
     out_dir = paths.work_root() / "variability"
     if "--plan" in sys.argv[1:]:                                             # print what this script reads and writes; run nothing
         from linc.evaluation import plan
-        return plan.show(NAME, env="env/mri.yml (PY_MRI)", est="a few minutes (CPU)",
+        return plan.show(NAME, env="env/linc.yml (PY_MRI)", est="a few minutes (CPU)",
                          inputs={"crossmodal_cache": cache, "template_mri": [tpl / "linc_mri_T2.nii.gz", tpl / "linc_mri_core_t2.nii.gz", tpl / "linc_mri_wm_fa025.nii.gz"],
                                  "warped inputs": [cached(cache, arm, m, s) for arm in ARMS for m, _ in VB.METRICS for s in IDS]},
                          outputs=[paths.numbers_root() / f"{NAME}.json"] + [out_dir / f"{arm}__{m}.nii.gz" for arm in ARMS for m, _ in VB.METRICS],

@@ -71,7 +71,7 @@ $B copy-affine --plan-a-affine <the affine stage> --run runs/d2b     # the 42 in
 $B tpl-affine --run runs/d2b --ref-template <affine b0 template>     # TPL's 12-dof affine, symmetrized
 $PY_MRI -m linc.construction.blockface_build affine-templates --run runs/d2b   # the affine templates over all 43
 $B tpl-standins --run runs/d2b --canon2 canon_tpl                    # TPL's stand-in blockface image and ones mask for its MMORF call
-LINC_MASKWEIGHTED=1 PATH=linc/construction/blockface_shim:$PATH \
+LINC_MASKWEIGHTED=1 FSLOUTPUTTYPE=NIFTI_GZ PATH=linc/construction/blockface_shim:$FSLDIR/share/fsl/bin:$PATH \
   $PY_MRI $($B driver-command --run runs/d2b -aff False -nln True -nres 7 -nit 3 -b 8)
 ```
 
@@ -93,7 +93,7 @@ $B s8-mats --affine-dir runs/d2b/out/affine_step2 --canon canon_tpl --canon2 can
     --standard05 runs/d2b/standardspace.nii.gz
 $B s8-step7 --plan-a-it runs/d2b/out/nln_step_07/iteration_03 --canon canon_tpl --canon2 canon2_s8w --run runs/d2bs8 -j 6
 $PY_MRI -m linc.construction.blockface_build step7-templates --run runs/d2bs8
-LINC_MASKWEIGHTED=1 PATH=linc/construction/blockface_shim:$PATH \
+LINC_MASKWEIGHTED=1 FSLOUTPUTTYPE=NIFTI_GZ PATH=linc/construction/blockface_shim:$FSLDIR/share/fsl/bin:$PATH \
   $PY_MRI $($B driver-command --run runs/d2bs8 -aff False -nln True --resume_from 8:1 -nres 8 -nit 3 -b 4)
 ```
 
@@ -117,6 +117,21 @@ tissue) through its step-8 warp and averaged with precision weights, w = 1/(tau^
 interpolated, synthesized; the synthesis of a brain without MRI has weight 0; tau^2 and the depth curve sigma^2_syn(d) from
 `reproduce/numbers/precision_weights_b1_d2b_s8.py`), then symmetrized exactly, 0.5 (V + M(V)). The b0 channel uses the same warps
 (TPL through the bridge). `-j 6` reproduces the products of record bit for bit (the partial sums are chunked by input).
+
+## Rerun on one card (4 Nov 2026)
+
+The commands above, in a new folder, from `members` for all 21 brains through the first of the seven steps (`-nres 1 -nit 3 -b 8`), on one RTX 6000 Ada,
+compared with the record file by file:
+
+| Stage | Result |
+|---|---|
+| members, build frame, TPL | all 596 volumes identical |
+| run folder | every MMORF .ini and .tree, the standard space and the subject list identical; `run_spec.json` differs in six text fields (paths and the wording of decisions), no parameter |
+| the affine part | 181 of 182 volumes identical; the other is a backup of TPL's b0 cost mask from before the affine step, which nothing reads |
+| the first nonlinear step, 3 iterations, 43 inputs | all 1,315 files identical: warps, Jacobians, bias fields, templates |
+
+The record ran the same tasks on three such cards, 24 at a time, so neither the schedule nor the host changed the result. This run was also stopped in its third iteration and
+resumed with `--resume_from 1:3`, `LINC_SKIP_DONE_MMORF=1` and `FSLSUB_PARALLEL=8`. Steps 2 to 7 and step 8 were not rerun; the machine was busy, so the run gives no time to quote.
 
 ## Validation (22 Oct 2026; piecewise, MMORF not rerun)
 

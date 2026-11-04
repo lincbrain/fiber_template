@@ -15,7 +15,7 @@ Ported from the analysis project's paper/scripts/r057_mri_facts_b.py (r057_mri_f
 source paper, Gong et al. 2026, instead of by a folder name; same values); its description is kept verbatim as METHOD (part of the
 record), with the raw-data prefix written as its placeholder ($LINC_RAW/macaque_mri; configs/path_placeholders.yaml).
 -> $LINC_NUMBERS/r057_mri_facts_b.json
-    python reproduce/numbers/r057_mri_facts_b.py          (env/mri.yml, PY_MRI)"""
+    python reproduce/numbers/r057_mri_facts_b.py          (env/linc.yml, PY_MRI)"""
 import json
 import re
 import sys

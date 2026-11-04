@@ -33,21 +33,19 @@
 #   (~/.cache/matplotlib), the GPU driver's compute cache (~/.nv), and make test's logs in $TMPDIR (default /tmp). TIRL's setup.py writes $HOME/.config/tirl*.yml,
 #   which would reset your account's TIRL script registry, so HOME points into DIR/src/tirl_home for that step; the pipeline needs neither file at run time.
 #
-#   bash env/install.sh [--prefix DIR] [--tirl-src DIR] [--with-figures-3d] [--with-mri-raw] [--only NAME[,NAME...]]
+#   bash env/install.sh [--prefix DIR] [--tirl-src DIR] [--with-figures-3d] [--only NAME[,NAME...]]
 #
 #   --prefix DIR       where the environments go (default: envs/ in this clone)
 #   --tirl-src DIR     TIRL's source trees (above); on the lab cluster env/lab.sh sets LINC_TIRL_SRC
 #   --with-figures-3d  also the 3D tracer figure's environment (env/viz3d.yml: pyvista on a headless VTK; ~1 min, 1.1 GB)      -> PY_VIZ3D
-#   --with-mri-raw     also Julia 1.11.4 and its packages (env/julia; ~6 min, 2.9 GB), needed only to build the MRI channels from the raw Bruker sessions: Fibers.jl
-#                      (Anastasia Yendiki) converts the sessions, Microstructure.jl (Ting Gong) fits SANDI; the depot stays in DIR   -> JULIA, JULIA_DEPOT_PATH
-#   --only NAMES       just these (linc, deep, anatomix, tirl, figures-3d, mri-raw), without make test
+#   --only NAMES       just these (linc, deep, anatomix, tirl, figures-3d), without make test
 set -u
 REPO=$(cd "$(dirname "$0")/.." && pwd)
-PREFIX="$REPO/envs"; TIRL_SRC="${LINC_TIRL_SRC:-}"; VIZ3D=0; MRIRAW=0; ONLY=""   # LINC_TIRL_SRC: the TIRL sources (env/lab.sh)
+PREFIX="$REPO/envs"; TIRL_SRC="${LINC_TIRL_SRC:-}"; VIZ3D=0; ONLY=""   # LINC_TIRL_SRC: the TIRL sources (env/lab.sh)
 while [ $# -gt 0 ]; do
   case $1 in
     --prefix) PREFIX=$2; shift 2;; --tirl-src) TIRL_SRC=$2; shift 2;; --with-figures-3d) VIZ3D=1; shift;;
-    --with-mri-raw) MRIRAW=1; shift;; --only) ONLY=$2; shift 2;;
+    --only) ONLY=$2; shift 2;;
     -h|--help) awk 'NR > 1 && /^#/ {print; next} NR > 1 {exit}' "$0"; exit 0;;
     *) echo "unknown argument: $1 (see --help)"; exit 2;;
   esac
@@ -135,19 +133,6 @@ if [ $VIZ3D = 1 ] && want figures-3d; then
     else say "figures-3d: vtk and pyvista already installed: skipped"; fi
   else fails=$((fails + 1)); fi
 fi
-if [ $MRIRAW = 1 ] && want mri-raw; then                              # linc/construction/tools.py checks the version against configs/mri_construction.yaml
-  J="$PREFIX/julia-1.11.4"; T="$PREFIX/src/julia-1.11.4-linux-x86_64.tar.gz"
-  if [ ! -x "$J/bin/julia" ]; then
-    [ -f "$T" ] || run curl -fsSL -o "$T" https://julialang-s3.julialang.org/bin/linux/x64/1.11/julia-1.11.4-linux-x86_64.tar.gz
-    if echo "fb3d3c5fccef82158a70677c0044ac5ae40410eceb0604cdc8e643eeff21df8d  $T" | sha256sum -c --quiet; then run tar -xzf "$T" -C "$PREFIX" || fails=$((fails + 1))
-    else say "  FAILED: $T does not match its sha256"; fails=$((fails + 1)); fi
-  else say "mri-raw: $J exists: skipped"; fi
-  if [ -x "$J/bin/julia" ]; then                                      # precompiling prints an error from Plots' ImageInTerminalExt: harmless, the conversion never loads it
-    run JULIA_DEPOT_PATH="$PREFIX/julia_depot" JULIA_PKG_PRECOMPILE_AUTO=0 "$J/bin/julia" --startup-file=no --project="$REPO/env/julia" \
-      -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()' || fails=$((fails + 1))
-  fi
-fi
-
 # where the pipeline looks for each environment (env/README.md)
 E="$PREFIX/linc_envs.sh"
 {
@@ -163,7 +148,6 @@ E="$PREFIX/linc_envs.sh"
   [ -f "$PREFIX/src/hf_home/hub/models--neeldey--anatomix/refs/main" ] && echo "export HF_HOME=$PREFIX/src/hf_home HF_HUB_OFFLINE=1"   # anatomix's weights: no network at run time
   [ -x "$(py tirl.yml)" ] && echo "export PY_TIRL=$(py tirl.yml)"
   [ -x "$(py viz3d.yml)" ] && echo "export PY_VIZ3D=$(py viz3d.yml)"
-  [ -x "$PREFIX/julia-1.11.4/bin/julia" ] && echo "export JULIA=$PREFIX/julia-1.11.4/bin/julia JULIA_DEPOT_PATH=$PREFIX/julia_depot"
 } > "$E"
 say "wrote $E (source it before running the pipeline)"; sed 's/^/    /' "$E"
 

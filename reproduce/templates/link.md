@@ -92,5 +92,17 @@ Python stack (numpy 2.4.6, scipy 1.17.1, nibabel 5.4.2):
 | `atlas`: S from the record's ANTs affines, `score INIA19` on the record's GPU run, the numbers record | identical |
 | `atlas affine INIA19` (ANTs rerun) | not reproducible: ANTs gives a different affine on every run (no random seed in the recipe); S moves template-brain points by 0.08 mm (median), 0.26 mm (max) |
 
-Not rerun: the GPU step (`solve`) of the registration and of the registrations to published templates. The S of the
+The GPU step (`solve`) was rerun on an RTX 6000 Ada on 4 Nov 2026. Its inputs, start matrices and halfway images are identical to the record's; the transforms are not bit-identical.
+Distances between the rerun's and the record's corresponding points, in mm, at every voxel of the brain mask of the image they start from:
+
+| Rerun | Median | 99th percentile | Largest | Note |
+|---|---|---|---|---|
+| the registration between the two templates, MRI template to blockface template | 0.005 | 0.12 | 0.80 | the record ran on an RTX 3090 |
+| the same, blockface template to MRI template | 0.005 | 0.11 | 0.63 | |
+| NMT v2 from the record's affine, MRI template to NMT v2 | 0.0009 | 0.018 | 0.45 | the record ran on the same card model, on another host |
+| NMT v2 from the record's affine, NMT v2 to MRI template | 0.0008 | 0.016 | 0.33 | |
+| NMT v2 with a rerun ANTs affine, MRI template to NMT v2 | 0.073 | 0.43 | 0.97 | the affine alone moves points by 0.053 mm (median), 0.13 mm (largest) |
+| the same, NMT v2 to MRI template | 0.064 | 0.37 | 0.89 | |
+
+Through the rerun registration, the released `linc_bf_brainmask` differs from the paper's in 4,555 of its 3.34 million voxels. INIA19 and CIVM-R were not rerun on the GPU. The S of the
 registrations to published templates needs the pip `scipy-openblas` build to be bit-exact (a conda LAPACK changes it by 1e-14).

@@ -60,7 +60,7 @@ def main():
     work = paths.work_root() / "lobo_t2"
     if a.plan:
         from linc.evaluation import plan
-        return plan.show(NAME, env="env/mri.yml (PY_MRI)", est="about 1 h with 4 workers (CPU; 32 compositions + warps, about 6 GB under $LINC_WORK)",
+        return plan.show(NAME, env="env/linc.yml (PY_MRI)", est="about 1 h with 4 workers (CPU; 32 compositions + warps, about 6 GB under $LINC_WORK)",
                          inputs={"fold runs": [runs / f for f in FOLDS], "held-out inputs": runs / "rb_final" / "data"},
                          outputs=[paths.numbers_root() / f"{NAME}.json"] + [work / f for f in FOLDS], needs=["FSLDIR (FSL 6.0.7.4: convertwarp, applywarp)"],
                          cmd="python reproduce/numbers/lobo_t2_rebuild.py [--workers 4]")

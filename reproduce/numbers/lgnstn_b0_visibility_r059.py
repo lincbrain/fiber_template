@@ -11,7 +11,7 @@ the R1 target grid):
 The random positions come from one generator seeded 0, drawn in the record's order (sets, brains, structures).
 Ported from the analysis project's labels/r059/visibility_r059.py; its description is kept verbatim as METHOD (part of the record).
 -> $LINC_NUMBERS/lgnstn_b0_visibility_r059.json
-    python reproduce/numbers/lgnstn_b0_visibility_r059.py          (env/mri.yml, PY_MRI)"""
+    python reproduce/numbers/lgnstn_b0_visibility_r059.py          (env/linc.yml, PY_MRI)"""
 import os
 
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):

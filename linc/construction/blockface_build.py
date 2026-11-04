@@ -109,6 +109,8 @@ def _driver_dir():
 def _driver():
     """The patched driver module, with the mask-weighted averages switched on (LINC_MASKWEIGHTED=1)."""
     os.environ["LINC_MASKWEIGHTED"] = "1"
+    os.environ["PATH"] = f"{fsl.fsldir()}/share/fsl/bin:" + os.environ.get("PATH", "")   # the driver and the averages call FSL's tools by name
+    os.environ["FSLOUTPUTTYPE"] = "NIFTI_GZ"
     sys.path.insert(0, _driver_dir())
     RT = importlib.import_module("run_template_construction")
     assert RT.MASKW, "LINC_MASKWEIGHTED must be on"

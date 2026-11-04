@@ -58,7 +58,7 @@ def make_steps(W, paths):
     it7, it8 = run_a / "out" / f"nln_step_{na:02d}" / f"iteration_{ni:02d}", run_8 / "out" / f"nln_step_{s8:02d}" / f"iteration_{ni8:02d}"
     s6 = run_a / "out" / f"nln_step_{na - 1:02d}" / f"iteration_{ni:02d}"
     pa_lbl, s8_lbl = f"2. the first stage ({va:g} mm)", f"3. step {s8} ({v8:g} mm)"
-    drv = {"LINC_MASKWEIGHTED": "1", "PATH": f"{SHIM}:$PATH"}
+    drv = {"LINC_MASKWEIGHTED": "1", "FSLOUTPUTTYPE": "NIFTI_GZ", "PATH": f"{SHIM}:{os.environ.get('FSLDIR', '$FSLDIR')}/share/fsl/bin:$PATH"}   # the driver calls FSL's tools by name
 
     def driver(run, *extra):
         def argv():

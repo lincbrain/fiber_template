@@ -58,9 +58,7 @@ Two engines are not on PyPI at the paper's versions and are installed from their
 | FSL | 6.0.7.4 | `FSLDIR` |
 | MMORF | 1.0.1, installed with the environments (`fsl-mmorf`, from the FSL conda channel); `envs/linc_envs.sh` sets its path | `MMORF` (the `mmorf` executable) |
 | ANTs | 2.5.4 | `ANTSPATH` |
-| MRtrix3 | 3.0.2, for the MRI from the scanner's files and the tensor step of the MRI channels' build (`docs/build_everything.md`) | `MRTRIX` |
-| TORTOISE | V4.1.0, for the second diffusion session only (`mri_raw dt2`): a free download from the NIH after registration, run as a container on an NVIDIA GPU | `TORTOISE` (the folder that holds `TORTOISEProcess`) |
-| Julia | 1.11.4, for the MRI from the scanner's files only: `env/install.sh --with-mri-raw` installs it with the packages of `env/julia` (about 6 minutes and 2.9 GB; a long `ImageInTerminalExt` error during precompilation is harmless) | `JULIA`, `JULIA_DEPOT_PATH` |
+| MRtrix3 | 3.0.2, for the tensor step of the MRI channels' build (`docs/build_everything.md`) | `MRTRIX` |
 | the anatomix environment's Python | see `env/anatomix.yml` | `ANATOMIX_PYTHON` |
 | the deep-learning environment's Python, for the segmentation models | see `env/deep.yml` | `LINC_SEGMENT_PYTHON` |
 | TIRL | 3.6.3 (`env/tirl.yml`), found beside the running Python | `TIRL_BIN` only to point at another installation |
@@ -84,6 +82,7 @@ $PY models/verify_weights.py models/completion_public.sha256 --root $LINC_MODELS
 ```bash
 export LINC_RAW=/data/linc/photographs     # blockface photographs as taken
 export LINC_DATA=/data/linc/brains         # per-brain data: $LINC_DATA/sub-<ID>/...
+export LINC_MRI_PREPROCESSED=/data/linc/mri_preprocessed   # the MRI template's inputs, to rebuild it (docs/mri.md)
 export LINC_TEMPLATE=/data/linc/template   # the released template
 export LINC_MODELS=/data/linc/models       # the trained networks
 export LINC_PRODUCTS=/data/linc/products   # the paper's intermediate products (to reproduce the paper)

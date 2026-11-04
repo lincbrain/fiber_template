@@ -18,7 +18,7 @@ Parts marked *(not in this snapshot)* are still being ported.
 | Paper (Methods) | Code | Parameters | Entry point | External tools |
 |---|---|---|---|---|
 | Brains | `docs/specimen_labels.json` (paper names ↔ Specimen IDs) | `configs/subjects/<ID>.yaml` | — | — |
-| MRI template: preprocessing | `linc/construction/mri_prep.py`, `linc/construction/canonical.py` | `configs/mri_construction.yaml` | — | MP-PCA denoising, N4, FSL `dtifit`, Microstructure.jl (SANDIdot), TORTOISE |
+| MRI template: preprocessing | `linc/construction/mri_prep.py`, `linc/construction/canonical.py` | `configs/mri_construction.yaml` | — | N4, FSL `dtifit`, MRtrix3 `dwigradcheck` |
 | MRI template: image registration | `linc/registration/featurereg.py` (anatomix features + FireANTs, run in `env/anatomix.yml` through `anatomix_runner.py`); pull maps in `xfmtools.py` | `configs/registration.yaml` | `cli/linc-register` | FireANTs 1.5.1, anatomix |
 | MRI template: symmetric groupwise construction | `linc/construction/mmorf_run.py`, `tools.py`; our change to the FSL template driver as a patch (`linc/construction/patches/`) | `configs/mri_construction.yaml` | `reproduce/templates/build_mri_channels.py` (recipe: `reproduce/templates/mri_channels.md`) | MMORF 1.0.1, FSL 6.0.7.4, ANTs 2.5.4 |
 | MRI template: template channels | `linc/construction/channels.py` | `configs/mri_construction.yaml` | — | FSL |
@@ -41,7 +41,7 @@ the paper reports.
 
 | Paper (Results) | Numbers records | Tables |
 |---|---|---|
-| Brains (Methods) | `bf_cohort`, `bf_species`, `bf_camera_exif`, `bf_spacing_used`, `mm_mri_check_r054`, `table_specimens_check_r054` | Table 1 |
+| Brains (Methods) | `bf_cohort`, `bf_species`, `bf_camera_exif`, `bf_spacing_used`, `mm_mri_check_r054` (reference only without the ParaVision files, which are not in the data release), `table_specimens_check_r054` | Table 1 |
 | The template | `bf_cohort` | — |
 | Contribution of each MRI contrast | `table1_rebuild`, `variants_leave_self_out_rebuild_fa025` | Table 2 |
 | Between-brain variability | `variability_four_brains_r061` (Fig. 4 and its text), `variability_rebuild_rb_final` (the eight inputs) | — |

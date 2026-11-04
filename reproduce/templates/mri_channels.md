@@ -11,8 +11,8 @@ build_mri_channels.py` (`--plan` to list every step, `--step` / `--from --to` to
 
 ## Environment
 
-- Python environment `env/mri.yml` (`PY_MRI` in `reproduce/Makefile`): the environment the MRI channels, their numbers and figures were
-  made in (MMORF 1.0.1 from the FSL conda channel), with this repository installed (`pip install -e .`).
+- Python environment `env/linc.yml` (`PY_MRI` in `reproduce/Makefile` names its Python): the environment the MRI channels, their numbers
+  and figures were made in (MMORF 1.0.1 from the FSL conda channel), with this repository installed (`pip install -e .`).
 - External programs, found from the environment and version-checked by `linc/construction/tools.py`
   (`tools:` in the config): `FSLDIR` = FSL 6.0.7.4; `ANTSPATH` = ANTs 2.5.4; `MRTRIX` = MRtrix3 3.0.2 (the tensor only);
   MMORF 1.0.1 for step 4.
@@ -24,9 +24,9 @@ Per brain, under `$LINC_DATA/sub-<ID>/` (file names: `prep.layout` in the config
 
 | Input | Where it comes from |
 |---|---|
-| diffusion series (bias-corrected; volume 0 = b0), the eddy-corrected series + `.ecclog`, b-table, fit mask | `linc.construction.mri_raw dwi` (the diffusion scans) |
-| 32-echo MSME (denoised) | `linc.construction.mri_raw msme` |
-| SANDI fit `est.fracs.mean` / `est.fracs.std` + the micro session's diffusion series | `linc.construction.mri_raw dt2` (the microstructure session) |
+| diffusion series (bias-corrected; volume 0 = b0), the eddy-corrected series + `.ecclog`, b-table, fit mask | the preprocessed files, `$LINC_MRI_PREPROCESSED/<ID>/dwi/` (`docs/mri.md`) |
+| 32-echo MSME (denoised) | the preprocessed files, `msme/` |
+| SANDI fit `est.fracs.mean` / `est.fracs.std` + the micro session's diffusion series | the preprocessed files, `dt2/tortoise/` |
 | brain masks: dwi, T2, micro (one per session; from the masks' network loop, edited by hand at the end) | released with the data |
 | the **final** hand-edited brain mask on the b0 grid (values exactly {0, 1}) | released with the data (`<ID>_mask_EDIT`) |
 | `xfm/t2-native__to__b0-native/`, `xfm/micro-native__to__b0-native/` (one ITK displacement field each; the initial affine is inside it) | `linc.construction.mri_register t2` / `micro` (ANTs affine, then anatomix + FireANTs) |
@@ -37,9 +37,9 @@ Per brain, under `$LINC_DATA/sub-<ID>/` (file names: `prep.layout` in the config
 For each of MF283, MF284, MF285, MF286 (`$ID`):
 
 ```bash
-# staging, from mri_raw's folders <raw>/dwi, msme, dt2 (the brain masks in place under masks/): raw images under their hand
-# mask's header; N4 b0 and T2; echo 5 of the MSME; SANDI fractions renormalized; the tensor's files under dwi/raw/
-python -m linc.construction.mri_prep stage --subject $ID --raw <raw>
+# staging, from the preprocessed files (the brain masks in place under masks/): images under their brain mask's header; N4 b0
+# and T2; echo 5 of the MSME; SANDI fractions renormalized; the tensor's files under dwi/raw/
+python -m linc.construction.mri_prep stage --subject $ID --preprocessed $LINC_MRI_PREPROCESSED/$ID
 # the tensor (config prep.tensor_bmax): dtifit on the eddy-corrected b <= 4800 volumes, rotated + gradient-checked b-vectors
 python -m linc.construction.mri_prep tensor --eddy-series <dwi_eddycorrect.nii.gz> --ecclog <dwi_eddycorrect.ecclog> \
     --bvecs <dwi_orig.bvecs> --bvals <dwi_orig.bvals> --fit-mask <fit brain_mask> \
@@ -130,21 +130,24 @@ MMORF time per stage: affine 7 min; nonlinear steps 1–5 1.2, 1.5, 1.7, 1.8, 2.
 
 `reproduce/templates/build_mri_channels.py` runs the recipe above as one step per command (`--plan` lists every step with its
 environment, inputs, outputs and estimated time; `--step NAME ...` or `--from A --to B` run steps; a step whose outputs exist is not
-rerun without `--force`; each step that ran leaves `<work>/provenance/<NN>_<step>.json`). Steps: `tensor-<ID>`, `landmarks-<ID>`,
-`frames-<ID>`, `prepare-<ID>` for each of the four brains, then `assemble`, `mmorf` (the patched driver on a GPU), `channels` and
+rerun without `--force`; each step that ran leaves `<work>/provenance/<NN>_<step>.json`). Steps: `stage-<ID>`, `nmt-<ID>`, `t2reg-<ID>`,
+`microreg-<ID>`, `tensor-<ID>`, `landmarks-<ID>`, `frames-<ID>`, `prepare-<ID>` for each of the four brains, then `assemble`, `mmorf` (the patched driver on a GPU), `channels` and
 `links-<ID>`, which registers the brain's links up to the template (`b0-native` -> `mri-canonical`, `mri-canonical` -> `mri-template`). The
 per-brain inputs are the `prep.layout` names of `configs/mri_construction.yaml` under `$LINC_DATA/sub-<ID>/mri/` (the final mask
 `masks/final_brain_mask.nii.gz`, the tensor's raw diffusion files under `dwi/raw/`, the SARM labels and NMT affine under `landmarks/`)
 and the within-MRI registrations under `xfm/`; everything the driver makes goes under `--work` (default `$LINC_WORK/build_mri_channels`).
 
-Validation of the driver (3 Nov 2026; CPU; MF283 unless said; the same products of record as the table above):
+Validation of the driver (3 and 4 Nov 2026; MF283 unless said; the same products of record as the table above; "clean clone" = a fresh clone and install, an empty HOME, the preprocessed files as its only MRI inputs besides the brain masks):
 
 | Step | Result |
 |---|---|
-| `tensor-MF283` (4 Nov) | from the inputs of record: voxel-identical to the tensor of record, same header, the same axis order and signs from `dwigradcheck`; 548 s under full machine load (481 s of record). From the inputs made by `raw-dwi-MF283` and `stage-MF283`: 42 of the 43 volumes used are identical (the other is the volume that differs after the eddy-current correction, `docs/mri.md`); FA r 0.9999, V1 within 0.009 deg (median) and 0.29 deg (99th percentile) where FA > 0.25 |
-| `landmarks-MF283`, `frames-MF283` | AC/PC equal to the record's `landmarks.json`; `T_subject_to_canonical` identical (max abs diff 0; the symmetry-plane fit converges to the same plane, mirror r 0.5687); 6 s + 59 s |
-| `prepare-MF283` (with the frame and the tensor of record) | all 36 construction inputs voxel-identical to the inputs of record, same headers; 507 s under full machine load (145 s of record) |
+| `stage-MF283` (4 Nov, clean clone) | from the preprocessed files: all 17 staged images (diffusion b0, T2, microstructure b0, fractions and their SDs) voxel-identical to the paper's, N4 included; 200 s, 7.2 GB of RAM, 6 GB of disk |
+| `nmt-MF283`, `t2reg-MF283` (4 Nov, clean clone) | on a GPU, so no identical result to expect, and the paper's NMT registration ran on an earlier version of the engine. SARM labels agree on 93.3 % of the brain's voxels; the T2 field differs from the paper's by 0.019 mm (median), 0.19 mm (99th percentile), 0.52 mm (largest); 460 s + 352 s; 15.3 and 15.6 GB of GPU memory |
+| `microreg-MF283` | the module (3 Nov), not this step: the field differs from the paper's by 0.033 mm (median), 2.2 mm (largest); 20.1 GiB of GPU memory |
+| `tensor-MF283` (4 Nov, clean clone) | from `stage-MF283`'s files: voxel-identical to the tensor of record, same header, the same axis order and signs from `dwigradcheck`; 286 s (481 s of record) |
+| `landmarks-MF283`, `frames-MF283` | AC/PC equal to the record's `landmarks.json`; `T_subject_to_canonical` identical (max abs diff 0; the symmetry-plane fit converges to the same plane, mirror r 0.5687); 6 s + 59 s. On the clean clone's `nmt-MF283`: the frame differs from the paper's by 0.04 deg and 0.16 mm; 6 s + 37 s |
+| `prepare-MF283` (with the frame and the tensor of record) | all 36 construction inputs voxel-identical to the inputs of record, same headers; 507 s under full machine load (145 s of record). On the clean clone's frame, tensor and `t2reg-MF283`, with the paper's microstructure registration: every image is resampled through that slightly different frame, so all differ; inside both masks T2 r 0.968, b0 r 0.957, fractions r 0.938 and 0.923, tensor r 0.995, mask Dice 0.989; 79 s |
 | `assemble` (the four brains' inputs of record) | the 14 config files byte-identical to `rb_final/config`, `subject_ids.csv` identical, `standardspace.nii.gz` identical, the 64 input links in place; `run_spec.json` differs only in the label `canonical_dir` (the prep folder pattern) |
 | `channels` (on the run of record `rb_final`, the four brains' inputs of record) | all 20 channel files voxel-identical to `$LINC_TEMPLATE/mri` (same headers and dtypes); acceptance T2 r 0.9946, V1 median 0.46 deg, exact symmetry; 840 s under full machine load (10.5 min of record) |
-| `mmorf` | `--plan` only (3 d 12 h of GPU; not rerun) |
+| `mmorf` (4 Nov) | the affine stage and step 1, on the paper's four brains' inputs: byte-identical to the run of record (202 of 202 files that can be compared); steps 2 to 8 not rerun (3 d 12 h of GPU) |
 | `links` (4 Nov; the paper's run; `mri/xfm_rb_final/` of the records) | `t2-native` -> `mri-template` on MF283's `echo_n4`: r 0.987 with the driver's resampling of its T2 input, r 0.945 with the T2 channel, inside the brain; 129 s under load. The inverse, `mri-template` -> `t2-native`: r 0.927 with its T2 brain; 81 s |

@@ -1,11 +1,11 @@
 # Build everything
 
-The whole method, from the raw data to the paper's numbers and figures.
+The whole method, from the blockface photographs and the preprocessed MRI to the paper's numbers and figures.
 
-**You need** each brain's raw data and hand-made inputs (`docs/inputs.md`), the environments (`docs/install.md`) and a GPU.
+**You need** each brain's data and hand-made inputs (`docs/inputs.md`), the environments (`docs/install.md`) and a GPU.
 
 **What it does**, in this order:
-1. builds the MRI template from the scanner's files of four brains;
+1. builds the MRI template from the preprocessed MRI of four brains;
 2. prepares the MRI of each sectioned brain with MRI for its registration;
 3. reconstructs each brain's blockface volume from its photographs;
 4. aligns each blockface volume to the MRI template, through the brain's own MRI or, without MRI, through the blockface template, once it
@@ -21,7 +21,7 @@ and numbers records to `$LINC_NUMBERS`.
 
 | Product | Command | Config | Environment | Time |
 |---|---|---|---|---|
-| the MRI template, from the four brains' Bruker sessions | `reproduce/templates/build_mri_channels.py` | `mri_construction.yaml` | linc; Julia, MRtrix3, FSL, ANTs, TORTOISE; MMORF on a 48 GB GPU | about 5 hours per brain, then 3.5 days on the GPU |
+| the MRI template, from the four brains' preprocessed files | `reproduce/templates/build_mri_channels.py` | `mri_construction.yaml` | linc; MRtrix3, FSL, ANTs; a GPU; MMORF on a 48 GB GPU | about 40 minutes per brain, then 3.5 days on the GPU |
 | a brain's prepared MRI (brain mask, bias-corrected b0) | `cli/linc-mri prep` | `mri_construction.yaml` | linc, GPU | under a minute |
 | a brain's blockface volume | `cli/linc-reconstruct all` | `blockface.yaml`, `subjects/<ID>.yaml` | tirl, GPU | about 10 hours per brain |
 | the blockface volume in its own b0 | `cli/linc-register mri` | `registration.yaml` | linc, GPU | 13 minutes |
@@ -38,7 +38,7 @@ and numbers records to `$LINC_NUMBERS`.
 | the numbers records | `make numbers`, `make numbers-gpu`, `make numbers-figures` | `reproduce/numbers/` | each record's own | `docs/reproduce.md` |
 | the figures | `make figures` | `figures.yaml` | linc; viz3d for Fig. 10 | `docs/reproduce.md` |
 
-From the scanner's files, the MRI build reproduces the paper's files, with the small differences `docs/mri.md` gives.
+From the preprocessed files, the MRI build reproduces the paper's files, with the small differences `docs/mri.md` gives.
 The networks' weights come with the data release; training them again is optional, and `--plan` lists the brains and any missing
 files first. Configs are in `configs/`. The times are from one node with an NVIDIA RTX 6000 Ada (48 GB). The per-brain commands are explained one
 by one in `docs/walkthrough.md`.
@@ -53,8 +53,7 @@ $PY reproduce/templates/build_mri_channels.py --step prepare-MF283
 $PY reproduce/templates/build_mri_channels.py --from assemble --to channels
 ```
 
-The MRI build starts each brain from its Bruker sessions (step `raw-dwi-<ID>`), which `configs/mri_construction.yaml` `raw`
-names under `$LINC_RAW`, or from the data release's preprocessed files (step `tensor-<ID>`).
+The MRI build starts each brain from its preprocessed files under `$LINC_MRI_PREPROCESSED/<ID>/` (step `stage-<ID>`; `docs/mri.md` lists them).
 
 `--plan` runs nothing. It prints every step with its environment, its time, its command, its inputs and its outputs. `--step` runs
 one step, and `--from` and `--to` run a range. Each step writes a provenance JSON beside its output and is not rerun without `--force`.
@@ -67,19 +66,23 @@ blockface build; `linc/construction/patches/README.md`) and
 
 ## What was rerun for this release
 
-Rerun with this code, and identical to the paper's files or differing as `docs/walkthrough.md` and `docs/mri.md` state:
-- the MRI from the scanner's files: MF1 from its sessions to the build's staged inputs, including its registrations within the brain
-  and to NMT v2; MF2 to MF4, their microstructure session only;
-- the reconstruction of MM2, MF8 and MM14 from their photographs;
-- the registrations of MM2 and MF8, their synthesis, their histology, and MM2's labels;
+Rerun with this code, and identical to the paper's files or differing as the pages named here state:
+- the reconstruction of MM2, MF8 and MM14 from their photographs (`docs/walkthrough.md`);
+- the registrations of MM2 and MF8, including MF8 through the blockface template, their synthesis, their histology, and MM2's labels
+  (`docs/walkthrough.md`);
 - one full training of two networks: `mri_brainmask`, whose weights came out byte-identical to the shipped ones on the same GPU model; and
   the synthesis network, the same recipe but not the same bits (`docs/complete.md`);
-- some CPU steps of the template builds: for the MRI build, `tensor`, `landmarks`, `frames` and `prepare` on MF1, then `assemble` and
-  `channels` on the paper's inputs and run; for the blockface build, `prep-frame` and `bf-view`; for the registration between the two templates, `link-prepare`. Each step was
-  compared with the paper's files on its own; MF1 has not run as one chain from the scanner's files through `prepare`.
+- the MRI template's build from the preprocessed files, step by step: `stage` and `tensor` on all four brains, voxel-identical to the
+  paper's; `nmt`, `t2reg`, `landmarks`, `frames` and `prepare` on MF1, which differ as `docs/mri.md` states;
+- the construction of the MRI template on the paper's four inputs: `assemble`; the `mmorf` step's affine stage and step 1, through the
+  release's driver, byte-identical to the paper's run (202 of 202 comparable files); and `channels` on the paper's run (20 of 20 files identical);
+- the blockface template's build from its 21 brains through the first of seven nonlinear steps on one card, identical to the paper's files
+  (`reproduce/templates/blockface.md`);
+- the registration between the two templates and to NMT v2, whose GPU step gives transforms within 1 mm of the paper's, with medians under
+  0.1 mm (`reproduce/templates/link.md`).
 
-Not rerun: the rest of the template builds, including their GPU stages (the MMORF runs and the registration between the two
-templates), and the full training of the other networks. Their code and parameters are the paper's.
+Not rerun: `nmt`, `t2reg`, `landmarks`, `frames` and `prepare` on MF2 to MF4, and `microreg` as a step of the build; steps 2 to 8 of the MRI template's construction; steps 2 to 7 and step 8 of the blockface template; the registrations to INIA19
+and CIVM-R; and the full training of the other networks. Their code and parameters are the paper's.
 
 ## Rebuilding a template
 

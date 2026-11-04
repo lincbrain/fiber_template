@@ -12,7 +12,7 @@ MF5, MF6: 10 pairs), model_MF8 (MF8 against each of the five), model_vs_observer
 (hemispheres pooled): median and IQR of centroid distance, Dice and ASSD; a row needs both labels non-empty (else counted missing).
 Ported from the analysis project's labels/r059/model_agreement_r059.py; its description is kept verbatim as METHOD (part of the record).
 -> $LINC_NUMBERS/lgnstn_model_agreement_r059.json
-    python reproduce/numbers/lgnstn_model_agreement_r059.py          (env/mri.yml, PY_MRI)"""
+    python reproduce/numbers/lgnstn_model_agreement_r059.py          (env/linc.yml, PY_MRI)"""
 import os
 
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):

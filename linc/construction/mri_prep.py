@@ -3,8 +3,8 @@
 Each of the four MRI brains (MF1-MF4 = LINC MF283-MF286) has three sessions on three grids: diffusion (b0 and tensor, 0.25 mm: the
 reference grid), T2 (multi-echo MSME, 0.5 mm) and SANDI microstructure (0.5 mm). The steps, in order:
 
-  1. staging (`stage`, from linc.construction.mri_raw's outputs): each raw image under its brain mask's header (the masks were drawn
-     after re-origining, so the mask affine is the authority; same array, no resampling); b0 and T2 N4-corrected; echo 5 of the MSME
+  1. staging (`stage`, from the preprocessed files): each image under its brain mask's header (the masks were made after
+     re-origining, so the mask affine is the authority; same array, no resampling); b0 and T2 N4-corrected; echo 5 of the MSME
      is the T2 image; SANDI fractions renormalized to sum 1 inside the micro brain mask; the tensor's diffusion files under dwi/raw/.
   2. the D9 tensor (`tensor_d9`): dtifit on the eddy-corrected b <= 4800 volumes (1 b0 + 42 DWIs), b-vectors rotated by each
      volume's eddy_correct matrix (polar part), axis convention from MRtrix dwigradcheck; staged on the dwi grid.
@@ -21,7 +21,7 @@ reference grid), T2 (multi-echo MSME, 0.5 mm) and SANDI microstructure (0.5 mm).
        model_mask    the final mask (lossless uint8 copy; the mask file itself is never modified)
      plus every output's exact mirror (<name>_flip; tensors with xy, xz negated).
 
-    python -m linc.construction.mri_prep stage --subject MF283 --raw <mri_raw folder: dwi/, msme/, dt2/> [--mri-root ...]
+    python -m linc.construction.mri_prep stage --subject MF283 --preprocessed <folder: dwi/, msme/, dt2/> [--mri-root ...]
     python -m linc.construction.mri_prep prepare --subject MF283 --final-mask <MF283_mask_EDIT.nii.gz> --tensor <tensor_d9_dwigrid>
         [--mri-root $LINC_DATA/sub-MF283/mri] [--xfm-root $LINC_DATA/sub-MF283/xfm] [--canonical <canonical.json>] [--out <dir>]
 
@@ -219,12 +219,12 @@ def stage_micro(b, sandi_fracs_mean, sandi_fracs_std):
     normalize_fracs_and_weights(b)
 
 
-def stage(b, raw):
-    """One brain's staged inputs from linc.construction.mri_raw's three folders (<raw>/dwi, <raw>/msme, <raw>/dt2): stage_raw,
+def stage(b, preprocessed):
+    """One brain's staged inputs from its three folders of preprocessed files (<preprocessed>/dwi, msme, dt2): stage_raw,
     stage_dwi, stage_t2, stage_micro (SANDIdot's fractions), and the tensor's diffusion files copied under dwi/raw/.
     Refuses when the brain's staged b0 exists (released data are never overwritten)."""
     import shutil
-    raw = Path(raw); d, t, m = raw / "dwi", raw / "msme", raw / "dt2" / "tortoise"
+    pre = Path(preprocessed); d, t, m = pre / "dwi", pre / "msme", pre / "dt2" / "tortoise"
     if b("b0").exists():
         raise SystemExit(f"{b('b0')} exists: this brain is staged already")
     missing = [str(b(k)) for k in ("dwi_mask", "t2_mask", "micro_mask") if not b(k).exists()]
@@ -446,8 +446,8 @@ def main(argv=None):
     p.add_argument("--tensor", required=True, help="the D9 tensor on the dwi grid (tensor_d9)")
     p.add_argument("--mri-root"); p.add_argument("--xfm-root"); p.add_argument("--canonical")
     p.add_argument("--out", help="default <mri-root>/construction_inputs")
-    g = sub.add_parser("stage", help="one brain's staged inputs from linc.construction.mri_raw's outputs")
-    g.add_argument("--subject", required=True); g.add_argument("--raw", required=True, help="mri_raw's folder: <raw>/dwi, msme, dt2")
+    g = sub.add_parser("stage", help="one brain's staged inputs from its preprocessed files")
+    g.add_argument("--subject", required=True); g.add_argument("--preprocessed", required=True, help="the brain's folder: dwi/, msme/, dt2/")
     g.add_argument("--mri-root")
     t = sub.add_parser("tensor", help="the D9 tensor of one brain")
     for k in ("eddy-series", "ecclog", "bvecs", "bvals", "fit-mask", "dwi-mask", "out"):
@@ -455,7 +455,7 @@ def main(argv=None):
     t.add_argument("--current-tensor"); t.add_argument("--threads", type=int, default=8)
     a = ap.parse_args(argv)
     if a.cmd == "stage":
-        stage(Brain(a.subject, a.mri_root), a.raw)
+        stage(Brain(a.subject, a.mri_root), a.preprocessed)
     elif a.cmd == "prepare":
         b = Brain(a.subject, a.mri_root, a.xfm_root)
         rec = prepare(b, a.final_mask, a.tensor, a.out or b.mri_root / "construction_inputs", a.canonical)

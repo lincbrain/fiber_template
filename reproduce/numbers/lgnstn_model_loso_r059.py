@@ -11,7 +11,7 @@ Per held-out case (a whole-section piece on the blockface piece grid, halved as 
 (sum of overlaps), median ASSD and centroid distance, missed and false-positive components.
 Ported from the analysis project's labels/r059/loso_metrics_r059.py; its description is kept verbatim as METHOD (part of the record).
 -> $LINC_NUMBERS/lgnstn_model_loso_r059.json
-    python reproduce/numbers/lgnstn_model_loso_r059.py          (env/mri.yml, PY_MRI)"""
+    python reproduce/numbers/lgnstn_model_loso_r059.py          (env/linc.yml, PY_MRI)"""
 import json
 import sys
 from pathlib import Path

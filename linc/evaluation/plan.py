@@ -3,7 +3,7 @@ lobo_t2_rebuild, r060_target_comparison}.py): print what the script would read, 
 build drivers' --plan (reproduce/templates/_driver.py), for scripts that are one command each.
 
     if plan.wanted():
-        return plan.show("lobo_t2_rebuild", env="env/mri.yml (PY_MRI)", est="...", inputs={...}, outputs=[...], needs=[...], notes=[...])
+        return plan.show("lobo_t2_rebuild", env="env/linc.yml (PY_MRI)", est="...", inputs={...}, outputs=[...], needs=[...], notes=[...])
 """
 import os
 import sys

@@ -9,14 +9,14 @@ they start with another root (`docs/data_layout.md`).
 | Input | Format and location | Read by |
 |---|---|---|
 | blockface photographs | JPEG, one per section, RGB, numbered in cutting order; one folder per brain under `$LINC_RAW`, named by `raw` in `configs/subjects/<ID>.yaml`, the numbers read by its `raw_regex` | `linc-reconstruct` |
-| MRI sessions | Bruker ParaVision session folders (numbered scans, each with its `method`, `acqp` and `pdata/<n>/2dseq`): the diffusion scans, the 32-echo multi-echo scan and a second diffusion session for SANDI, under `$LINC_RAW`, as `configs/mri_construction.yaml` `raw` names them | the MRI template build |
+| preprocessed MRI of the MRI template's brains | NIfTI, under `$LINC_MRI_PREPROCESSED/<ID>/` (the data release's `mri_preprocessed/`): `dwi/`, `msme/` and `dt2/tortoise/` (`docs/mri.md` lists the files) | the MRI template build |
 | a b0 or T2-weighted image | NIfTI, for a brain that is only registered to the template | `linc-mri prep` |
 | histology sections | JPEG 2000, one per section (`sourcedata/sub-<ID>/micr/<section>.jp2`), and their OME-Zarr stacks (`rawdata/sub-<ID>/micr/`), from LINC dataset 000003 | `linc-histology`, `linc-labels` |
 
-The MRI was acquired ex vivo on a 4.7 T Bruker scanner. The MRI template build makes everything else from the sessions: the
-preprocessed diffusion, T2-weighted and SANDI images, the registration of NMT v2 to each brain, and the registrations between each
-brain's sessions. A new brain that is only registered
-to the template needs one b0 or T2-weighted image (`linc-mri prep`).
+We assume the MRI inputs are preprocessed: for each brain of the MRI template, the 0.25 mm diffusion series, the multi-echo series and
+the 0.5 mm multi-shell series made for Gong et al. 2026, with the SANDIdot fit. This repository adds the N4 correction, the diffusion
+tensor, the registrations within each brain and to NMT v2, the canonical frame and the template (`docs/mri.md`). A new brain that is only
+registered to the template needs one b0 or T2-weighted image (`linc-mri prep`).
 
 ## Hand-made inputs
 

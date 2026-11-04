@@ -1,7 +1,7 @@
 # fiber_template: code for a multimodal macaque template
 
 Code for *A multimodal macaque template for aligning ex vivo MRI and microscopy* (Gonzales et al.). It runs the whole method from
-the raw data:
+the blockface photographs and the preprocessed MRI:
 - builds the MRI template from four brains and the blockface template from 21;
 - registers the blockface template into the MRI template;
 - aligns each brain's histology and its labels to the template;
@@ -9,7 +9,7 @@ the raw data:
 - brings new brains into the template.
 
 `docs/build_everything.md` runs it from start to end, and says which steps were rerun for this release and which were not (not all
-were: the GPU stages of the template builds were not). `docs/inputs.md` lists every input it assumes.
+were: most nonlinear steps of the template builds were not). `docs/inputs.md` lists every input it assumes.
 
 > **Status: release in preparation.** This repository holds the analysis code of the paper, ported and checked against the
 > paper's products; it will be public on GitHub. The template, the paper's products and the network weights are a separate data
