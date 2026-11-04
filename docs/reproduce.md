@@ -95,11 +95,9 @@ Four settings decide whether a rerun matches the paper's products bit for bit:
 
 From a clean clone and an empty numbers folder, with `HISTOLOGY_ARGS` set, `make figures` took about 10 minutes with `-j 2`, on a CPU.
 Compared with the paper's files:
-- **Byte-identical:** `template`, `pipeline`, `variability`, `link`, `tracer_pathways`, `s_tracer_fidelity`, `s_tracer_rules`.
+- **Byte-identical:** `template`, `pipeline`, `variability`, `link`, `histology`, `tracer_pathways`, `s_tracer_fidelity`, `s_tracer_rules`.
 - **Byte-identical under matplotlib 3.10.8, the version they were made with:** `reconstruction`, `bf_template`, `alignment_comparison`.
   Under `env/linc.yml`'s 3.11.1, their text is laid out slightly differently.
 - **Identical except for the PDF's creation date, with identical pixels at 200 dpi:** `lgnstn`, `s_synthesis_depth`, `s_synthesis_gallery`.
-- **Not identical:** `histology`. Panels b and d and the data of panel c are pixel-identical; the layout of panel a and the axis label of
-  panel c differ.
 
 `tracer_3d`, the 3D panels of Fig. 10, is not part of `make figures` or of this comparison.

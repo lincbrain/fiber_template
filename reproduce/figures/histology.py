@@ -5,8 +5,8 @@
 
 Needs glymur (the raw histology is JPEG 2000). --jp2-root is the LINC source-data tree that holds sub-<ID>/micr/<section>.jp2.
   a  one section registered to its blockface slice: the MM3 piece (with a detected tube hole) whose nonlinear tissue Dice is closest
-     to that brain's median (numbers_of_record/registration_qc.json, family histo2bf): blockface slice, registered darkfield histology
-     (contrast-stretched), blockface with the histology's tissue outline (white). Flipped left-right into the neurological convention
+     to that brain's median (numbers_of_record/registration_qc.json, family histo2bf): the blockface slice with the histology's tissue
+     outline (white), and the registered darkfield histology (contrast-stretched). Flipped left-right into the neurological convention
      (the photographs show the subject's left on the image right); dorsal up; loose blockface fragments without histology removed.
   b  marker tubes at near-native resolution (JP2 level 2, ~1.8 um/px, 3 mm windows), three fixed quantiles (25th, 50th, 90th) of the
      pooled offsets: for each, the found piece whose offset is closest to that quantile; + = the hole-only blockface tube center carried
@@ -90,7 +90,7 @@ def main():
     flip = lambda a_: a_[:, ::-1]                                       # noqa: E731
     soft = lambda m: np.clip(ndi.gaussian_filter(m.astype(np.float32), 1.0), 0, 1)   # noqa: E731  antialiased tissue edge (~1 px)
     fxd = fx * soft(fxd > 0); hs = hs * soft(tis)[..., None]
-    pa = [flip(fxd[cr]), flip(hs[cr]), flip(fxd[cr])]; outl = flip(tis[cr])
+    pa = [flip(fxd[cr]), flip(hs[cr])]; outl = flip(tis[cr])
     ins += [P / "fixed.png", P / "moving4_nonlinear_rgb.png", NUM / "registration_qc.json"]
     # ---- c: the six-brain distribution, tubes hidden, hole-only centers ----
     TJ = json.loads(TJP.read_text())["data"]
@@ -117,12 +117,13 @@ def main():
     H = TOP + ph + 16.0 + bh + 12.0 + CH + 12.0
     fig = plt.figure(figsize=(S.FULL_W_IN, H / 25.4))
     x0 = (W - (3 * pw + 2 * GAP)) / 2
-    heads = ["blockface", "registered histology", "histology outline on the blockface"]
+    xa = (W - (2 * pw + GAP)) / 2                                 # (a): two panels, centered
+    heads = ["blockface photograph, registered section outlined", "registered histology"]
     halo = [pe.withStroke(linewidth=2.2, foreground="black")]
     for k, img in enumerate(pa):
-        ax = S.axes_mm(fig, x0 + k * (pw + GAP), TOP, pw, ph)
+        ax = S.axes_mm(fig, xa + k * (pw + GAP), TOP, pw, ph)
         ax.imshow(img, cmap="gray", vmin=0, vmax=1)
-        if k == 2:
+        if k == 0:
             S.outline(ax, outl, lw=0.6)
         ax.set_xticks([]); ax.set_yticks([]); [s_.set_visible(False) for s_ in ax.spines.values()]
         S.header(ax, heads[k], dx=0, dy=2)
@@ -130,7 +131,7 @@ def main():
             S.letter(ax, "a", dx=-16, dy=2); S.scalebar(ax, 1 / FIX_MM, SCALEBARS_MM[0], y_frac=0.05)
             ax.annotate("L", xy=(0, 0.5), xycoords="axes fraction", xytext=(-2, 0), textcoords="offset points", ha="right",
                         va="center", color=S.GRAY, annotation_clip=False)
-        if k == 2:
+        if k == len(pa) - 1:
             ax.annotate("R", xy=(1, 0.5), xycoords="axes fraction", xytext=(2, 0), textcoords="offset points", ha="left",
                         va="center", color=S.GRAY, annotation_clip=False)
     half = int(WIN_MM / 2 / PX_MM); yb = TOP + ph + 16.0; f = JP2_LEVEL
@@ -158,7 +159,7 @@ def main():
     ax.axvline(np.median(e_inp), color=S.FG, lw=0.6, ls=":")
     ax.annotate(f"{np.median(e_inp):.2f}", xy=(np.median(e_inp), 1), xycoords=("data", "axes fraction"), xytext=(0, 2),
                 textcoords="offset points", ha="center", va="bottom", color=S.FG, annotation_clip=False)
-    ax.set_xlabel("tube offset (mm)"); ax.set_ylabel("fraction of pieces")
+    ax.set_xlabel("tube offset (mm)"); ax.set_ylabel("fraction of components")
     ax.set_xlim(0, ECDF_XMAX); ax.set_ylim(0, 1.02); ax.spines[["top", "right"]].set_visible(False)
     S.letter(ax, "c", dx=-16 - 12.0 / 25.4 * 72, dy=2)                 # aligned with a / b
     # (d) per-brain medians
