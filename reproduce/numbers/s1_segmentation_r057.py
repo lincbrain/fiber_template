@@ -77,7 +77,7 @@ def main():
     out = dict(
         mask2d=dict(dataset="Dataset500_SLICE", task="brain vs background in each blockface photograph", input="RGB photograph",
                     training_photographs=d2["numTraining"], trained="2024-12-26 (before this project; source brains not recorded)",
-                    deployed="fold 0 alone, unchanged (models/blockface_segmentation.md)",
+                    deployed="fold 0 alone, unchanged",
                     dice_vs_curated=card["mask2d"]["summary"]["incumbent"], n_brains_scored=card["mask2d"]["n_subjects"],
                     cross_validated=False, note=card["caveats"][0]),
         mask3d=dict(task="brain vs background in the aligned color stack", input="RGB stack, 0.32 mm in-plane, 0.40 mm between sections",

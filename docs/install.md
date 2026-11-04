@@ -12,7 +12,7 @@ source envs/linc_envs.sh          # in every new shell: points the pipeline at t
 
 `env/install.sh` creates each environment from its file in `env/` into `envs/` in your clone (`--prefix` gives another folder),
 runs the source installs the files' headers describe, installs this package into each, and ends with the installation check
-(`docs/reproduce.md`). It takes about 20–25 minutes, most of it downloading. It is safe to run again: an environment it already built
+(`docs/reproduce.md`). It takes about 20–25 minutes, most of it downloading, and about 22 GB of disk. It is safe to run again: an environment it already built
 is skipped, and nothing is deleted. After `git pull` changes an `env/*.yml` file, remove that environment's folder under
 `envs/` and run `env/install.sh` again: it rebuilds only what is missing. `--only linc,deep` builds some of them.
 

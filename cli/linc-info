@@ -12,7 +12,7 @@ Runs in any of the release's environments (standard library only) and never fail
   PATH), MRtrix3 ($MRTRIX or PATH)
 - the interpreters the pipeline is pointed at, each asked for its own versions (python, torch, CUDA, MONAI, TIRL, anatomix, nnU-Net):
   LINC_SEGMENT_PYTHON, ANATOMIX_PYTHON, PY_TIRL, PY_MRI, PY_DEEP (env/README.md says which environment each one is)
-- the programs NNUNET_BIN (the earlier networks, optional) and zarr2nii (on PATH in env/tirl.yml; ZARR2NII_BIN when set)
+- the program zarr2nii (on PATH in env/tirl.yml; ZARR2NII_BIN when set)
 - the roots (CONVENTIONS.md: LINC_RAW, LINC_DATA, LINC_TEMPLATE, LINC_MODELS, LINC_PRODUCTS, LINC_NUMBERS, LINC_WORK), set or not,
   and every other $LINC_* setting that is set
 A few seconds, up to about a minute when an interpreter imports torch for the first time from a network disk.
@@ -35,7 +35,7 @@ PROBE = r"""
 import json, sys
 out = {"python": sys.version.split()[0]}
 for name, mod in (("torch", "torch"), ("monai", "monai"), ("numpy", "numpy"), ("tirl", "tirl"), ("anatomix", "anatomix"),
-                  ("fireants", "fireants"), ("nnunetv2", "nnunetv2"), ("SimpleITK", "SimpleITK")):
+                  ("fireants", "fireants"), ("SimpleITK", "SimpleITK")):
     try:
         m = __import__(mod)
         out[name] = getattr(m, "__version__", "installed")
@@ -131,8 +131,6 @@ def interpreters():
             out[var] = dict(path=p, **json.loads(txt.strip().splitlines()[-1]))
         except (AttributeError, ValueError, IndexError):
             out[var] = dict(path=p, error=NOT_FOUND if txt is None else "did not run: " + (txt or "").strip()[-200:])
-    p = os.environ.get("NNUNET_BIN")
-    out["NNUNET_BIN"] = "(not set)" if not p else dict(path=p, exists=Path(p).exists())
     p = os.environ.get("ZARR2NII_BIN") or shutil.which("zarr2nii")          # env/tirl.yml puts it on PATH; ZARR2NII_BIN still honored
     out["zarr2nii"] = dict(path=p, via="ZARR2NII_BIN" if os.environ.get("ZARR2NII_BIN") else "PATH") if p else NOT_FOUND
     return out

@@ -33,7 +33,7 @@ $PY cli/linc-mri prep --subject MF283 --image $LINC_PRODUCTS/mri/data/sub-MF283/
 - `dwi/b0_brain.nii.gz` and `dwi/b0_brain_n4.nii.gz` (with its `_bias`), the masked and the bias-corrected brain;
 - `dwi/b0_brain_n4.provenance.json`, every step with its tool and version.
 
-It ends by printing the next command, the first registration (section 3). `docs/mri.md` gives the options.
+It ends by printing the next command for the brain it prepared, its first registration; section 3 shows it for MM2. `docs/mri.md` gives the options.
 
 With the brain's hand-made mask, `masks/dwi_brain_mask.nii.gz`, it reproduces the paper's preprocessed files of MF1 voxel for voxel
 (32 s, on a CPU):
@@ -63,7 +63,8 @@ It runs its steps in order and prints each as it starts: `=== <ID>: photos`, the
 (`MR252_timing.tsv` in its blockface folder) took 1.6 hours for `photos`, 1.4 hours for `stack`, 4.9 hours for `prepare` and 2.7
 hours for `mask`, `volume` and `tubes`; MM14's (1,401 photographs) took 2.2, 0.8, 4.6 and 0.8 hours. The longest step is
 `prepare`, whose camera-jump registrations run one after another. Only the segmentation steps use the GPU: about 10 GB of free memory for `mask` and `tubes`, 1.5 GB for
-`photos`.
+`photos`. A reconstruction also needs memory (RAM) in proportion to its stack: 88 GB
+for MM2 and 85 GB for MM14, 9 GB for MF8's 77 photographs.
 
 Compare a volume with the paper's (here MM2's):
 
@@ -72,9 +73,10 @@ $PY tools/compare_reconstruction.py MR252 $LINC_REBUILD_DATA/sub-MR252/blockface
 ```
 
 It compares every level of the OME-Zarr stores (arrays, scale and translation), the NIfTI products (arrays and affines) and
-`MR252.info`, one line each, and exits with status 0 when all are identical. MM2's volume, rebuilt from its photographs in 9 hours 10 minutes on a shared
-node, was identical to the paper's in every item. MM14's (9 hours 52 minutes) matched the paper's up to the final volume, which
-was 0.4 % brighter overall.
+`MR252.info`, one line each, and exits with status 0 when all are identical. It needs about 7 GB of memory and 12 minutes for
+MM2. MM2's volume, rebuilt from its photographs in 9 hours 10 minutes on a shared
+node, was identical to the paper's in every item. So was MM14's, whose configuration asks for one extra illumination
+correction (`shading: poly2+zref` in `configs/subjects/MR263.yaml`), as the paper's reconstruction of that brain had.
 
 ## 3. Register the brains into the template's frame
 

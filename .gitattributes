@@ -3,5 +3,3 @@
 env/lab.sh export-ignore
 docs/lab.md export-ignore
 models/scrub_completion_weights.py export-ignore
-env/nnunet.yml export-ignore
-env/nnunetv2-2.5.1_record.patch export-ignore

@@ -1,5 +1,4 @@
-"""Prediction over a folder with nnU-Net's file naming, so a step that ran `nnUNetv2_predict -i IN -o OUT` can call
-predict_folder(model, IN, OUT) instead. A case in IN is <case>_<cccc><ext>: one file per channel, cccc = 0000, 0001, ...,
+"""Prediction over a folder: predict_folder(model, IN, OUT). A case in IN is <case>_<cccc><ext>: one file per channel, cccc = 0000, 0001, ...,
 ext = .nii.gz / .nii / .png / .tif. Its mask is written as OUT/<case><ext> (uint8: 0 background, 1.. the classes) in the
 input's grid.
 

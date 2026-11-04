@@ -28,7 +28,8 @@ $PY_TIRL cli/linc-reconstruct all --subject MR252
 
 A reconstruction takes about 10 hours per brain; the longest step is `prepare`, whose camera-jump registrations run one after
 another. The GPU is used only by the segmentation steps: `mask` and `tubes` need about 10 GB of its free memory, `photos` about 1.5 GB;
-the other steps run on a CPU.
+the other steps run on a CPU. It needs memory (RAM) in proportion to
+its stack: about 90 GB for a brain of some 1,400 photographs, 9 GB for one of 77.
 
 This writes `$LINC_DATA/sub-<ID>/blockface/<ID>_blockface.ome.zarr`. The steps can also run one at a time: `photos`, `stack`,
 `prepare`, `mask`, `volume`, `tubes`, `spacing`, each with `--subject <ID>`. To hand-correct the 2D brain masks before `prepare`,

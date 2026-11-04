@@ -2,9 +2,9 @@
 # cli/linc-reconstruct. Per-brain inputs (spacing, camera jumps, missing sections, caudal cutoff, masks of record) are in
 # configs/subjects/<ID>.yaml. Values as used for the paper (the analysis project's code/config.py).
 
-# Steps 1, 4 and 6: the networks that segment the photographs, the brain and the marker tubes (models/segmentation.md; cli/linc-segment,
-# weights in $LINC_MODELS/segment/<model>/). linc-reconstruct runs them with --postprocess none and applies each task's post-processing
-# once (linc/blockface/mask_rules.py: photos fill_photo_mask, mask largest_cc_fill, tubes tube_rule).
+# Steps 1, 4 and 6: the networks that segment the photographs, the brain and the marker tubes (models/segmentation.md;
+# cli/linc-segment, weights in $LINC_MODELS/segment/<model>/). linc-reconstruct runs them with --postprocess none and applies each
+# task's post-processing once (linc/blockface/mask_rules.py: photos fill_photo_mask, mask largest_cc_fill, tubes tube_rule).
 segmentation:
   models: {photos: bf_mask2d, mask: bf_mask3d, tubes: bf_holes}
 
@@ -29,6 +29,9 @@ reconstruction:
   gain_clip: [0.4, 2.5]              # per-section, per-channel gain clamp
   w_lum: [0.299, 0.587, 0.114]       # RGB -> luminance (Rec. 601)
   orient_corr_min: 0.90              # minimum correlation accepted when matching the rebuilt background to its reference
+  zref: {coarse_mm: 0.64, sigma_mm: 3.84, window_mm: 0.40}   # the z-referenced illumination field of a brain with shading:
+                                     # poly2+zref (MR263): estimated on ~coarse_mm blocks, smoothed to sigma_mm, referenced to the
+                                     # sections within +/- window_mm (only its departure from them is divided out)
   demons:                            # registration-based interpolation of missing sections (multi-resolution demons)
     shrink: [4, 2, 1]
     sigma: [2, 1, 0]

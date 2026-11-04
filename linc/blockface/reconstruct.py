@@ -9,7 +9,8 @@ What it does (L1 .. L4: the photographs reduced 2, 4, 8 and 16 times in-plane)
            (label 2 marks interpolated sections).
   Then     the L1 pixels: the stack with its background rebuilt at L1 and matched to that grid; the missing sections
            interpolated again by multi-resolution demons; the brain masked; a per-section degree-2 illumination field divided
-           out; the brightness steps between sessions removed (destep.py) and each section's color matched to one reference
+           out (MR263, as its record: then a z-referenced field, configs/subjects/MR263.yaml shading); the brightness steps between
+           sessions removed (destep.py) and each section's color matched to one reference
            (a gain per channel); the marker tubes filled (their dark halo grown at L1, a biharmonic fill at L4, feathered in).
 You get
   <S>_blockface.ome.zarr (L1 .. L4), <S>_mask and <S>_holes (L4 NIfTI), <S>.info, steps/<S>_03_color.ome.zarr (before the tubes
@@ -29,6 +30,7 @@ from linc.blockface.prepare import _poly_terms, blockface_bg
 from linc.blockface.subject import params
 
 R = params()["reconstruction"]
+ZREF = R["zref"]                    # the z-referenced illumination field (configs/blockface.yaml reconstruction.zref)
 
 
 # =====================================================================================================
@@ -327,6 +329,75 @@ def _correct_shading_np(bg, masked, mask, deg=2):
             arr[:, i, :, :] = np.clip(np.where(img > 0, img / fld[..., None], 0), 0, 255).astype(np.uint8)
 
 
+def _zref_lowpass(A, sig):
+    """Gaussian smooth of a field with holes: NaN means 'not measured here' and must not be smoothed in
+    as zero, so normalise by the smoothed validity mask (normalised convolution)."""
+    from scipy.ndimage import gaussian_filter
+    m = np.isfinite(A).astype(np.float32)
+    num = gaussian_filter(np.where(m > 0, A, 0).astype(np.float32), sig, mode="nearest")
+    den = gaussian_filter(m, sig, mode="nearest")
+    return np.where(den > 0.15, num / np.maximum(den, 1e-6), np.nan)
+
+
+def _zref_shading_np(masked, mask, mm_inplane, mm_z, per_channel=True):
+    """Z-REFERENCED illumination correction, after _correct_shading_np (configs/subjects/<ID>.yaml shading: poly2+zref; MR263).
+    Slice axis=1, in place.
+
+    `_correct_shading_np` fits each slice on its own, so whatever it removes it removes from anatomy too,
+    and it cannot see a lighting change as anything other than tissue. This instead asks what is DIFFERENT
+    about this slice's illumination: estimate the smooth log field per slice, take the median of that field
+    over the slices within +/- window_mm, and divide out only the difference. Anatomy is shared with the
+    neighbours, so it cancels and survives; a lighting wobble is not shared, so it goes. Per channel (the
+    wobble carries a colour cast a single gain cannot reach) and exactly level-preserving per slice, leaving
+    the cross-slice gain to harmonize/destep as before."""
+    D0, nz, D1, C = masked.shape
+    P = ZREF
+    F = max(1, int(round(P["coarse_mm"] / max(mm_inplane, 1e-6))))              # coarse block, ~0.64 mm
+    W = max(1, int(round(P["window_mm"] / max(mm_z, 1e-6))))                    # z half-window in slices
+    sig = P["sigma_mm"] / (F * mm_inplane)                                      # smoothing, in coarse px
+    h, w = D0 // F, D1 // F
+    if h < 4 or w < 4 or nz < 3:
+        print(f"zref shading: grid too small ({h}x{w}, {nz} slices) - falling back to poly2")
+        return _correct_shading_np(None, masked, mask)
+    S = np.zeros((nz, h, w, C), np.float32); N = np.zeros((nz, h, w), np.float32)
+    for i in range(nz):
+        mk = mask[:h * F, i, :w * F].astype(np.float32)
+        S[i] = (masked[:h * F, i, :w * F, :].astype(np.float32) * mk[..., None]).reshape(h, F, w, F, C).sum((1, 3))
+        N[i] = mk.reshape(h, F, w, F).sum((1, 3))
+    valid = N >= 0.85 * F * F                                                   # interior blocks only
+    chans = range(C) if per_channel else [None]
+    fields = {}
+    for c in chans:
+        v = (S[..., c] if c is not None else S.mean(-1)) / np.maximum(N, 1)
+        L = np.where(valid & (v > 5), np.log(np.maximum(v, 1)), np.nan)
+        with np.errstate(invalid="ignore"):
+            L -= np.nan_to_num(np.nanmean(L.reshape(nz, -1), 1), nan=0.0)[:, None, None]
+        Fl = np.stack([_zref_lowpass(L[i], sig) for i in range(nz)])
+        R = np.empty_like(Fl)
+        for i in range(nz):
+            with np.errstate(invalid="ignore"):
+                R[i] = np.nanmedian(Fl[max(0, i - W):min(nz, i + W + 1)], 0)    # the local z-trend
+        Dv = np.where(np.isfinite(Fl - R), Fl - R, 0.0)
+        with np.errstate(invalid="ignore"):
+            mu = np.nanmean(np.where(np.isfinite(Fl), Dv, np.nan).reshape(nz, -1), 1)
+        fields[c] = np.nan_to_num(Dv - np.nan_to_num(mu, nan=0.0)[:, None, None], nan=0.0)
+    for i in range(nz):
+        mk = mask[:, i, :]
+        if mk.sum() < 200:
+            continue
+        src = masked[:, i, :, :].astype(np.float32)
+        out = np.empty_like(src)
+        for c in range(C):
+            f = fields[c if per_channel else None][i]
+            g = cv2.resize(f.astype(np.float32), (D1, D0), interpolation=cv2.INTER_LINEAR)
+            out[..., c] = src[..., c] / np.exp(g)
+            a, b = src[..., c][mk].mean(), out[..., c][mk].mean()               # the field is mean-zero over
+            if b > 1:                                                           # INTERIOR blocks, so renormalise
+                out[..., c] *= a / b                                            # on the mask levels are read on
+        masked[:, i, :, :] = np.clip(np.where(src > 0, out, 0), 0, 255).astype(np.uint8)
+    print(f"zref shading: {nz} slices, {h}x{w} field (F={F}, sigma={sig:.1f} px), z-window +/-{W}")
+
+
 def _channel_levels(masked, mask, trim=5):
     """Per-slice per-channel robust (trimmed-mean) brain level; tiny/empty slices interpolated. (nz,C)."""
     D0, nz, D1, C = masked.shape
@@ -617,7 +688,11 @@ def reconstruct(cfg, do_holes=True):
     interp_native = _demons_fill(bg1, mask_L1, [z for z in interp_native if mbinL1[:, z, :].any()])
     _lap("demons"); print(f"  [demons {len(interp_native)} L1 slices {time.time() - t0:.0f}s]", flush=True)
     masked = (bg1 * mbinL1[..., None]).astype(np.uint8); del bg1
+    shading = cfg.yaml.get("shading", "poly2")                              # per brain (configs/subjects/<ID>.yaml)
+    assert shading in ("poly2", "poly2+zref"), shading
     _correct_shading_np(None, masked, mbinL1)
+    if shading == "poly2+zref":                         # MR263's record (the author's request, 25 Sep 2026): deg-2 THEN zref
+        _zref_shading_np(masked, mbinL1, float(np.linalg.norm(A1[:3, 0])), cfg.vz / 1000.0)
     _lap("shading")
     print(f"  [shading {time.time() - t0:.0f}s]", flush=True)
     lev = _channel_levels(masked, mbinL1)                                   # (nz,C) on the de-shadowed brain

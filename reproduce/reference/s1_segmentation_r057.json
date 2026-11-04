@@ -6,7 +6,7 @@
    "input": "RGB photograph",
    "training_photographs": 149,
    "trained": "2024-12-26 (before this project; source brains not recorded)",
-   "deployed": "fold 0 alone, unchanged (models/blockface_segmentation.md)",
+   "deployed": "fold 0 alone, unchanged",
    "dice_vs_curated": {
     "mean": 0.9741,
     "sd": 0.015,

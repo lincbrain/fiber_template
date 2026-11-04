@@ -114,6 +114,10 @@ jump_mode: affine
 # header-only rescaling about the world origin (linc/blockface/spacing.py; pixels unchanged). Equal for a new brain.
 # curation_f: native sections per curated (0.40 mm) slice of the hand-edit grid, pinned at the reconstruction spacing.
 reconstruction_spacing_um: {vx: 20, vz: 50}
+# shading: the illumination correction of the reconstruction: poly2 (the default, every other brain) or poly2+zref (the
+# per-section degree-2 field, then the z-referenced field of configs/blockface.yaml reconstruction.zref): MR263's record was
+# made with poly2+zref (the author's request, 25 Sep 2026; the analysis project's _nightlogs/L1_MR263_zref7d.log).
+shading: poly2+zref
 curation_f: 8
 # native_end_crop_mm: this brain's own last photographed sections are darker, so the product steps drop the last
 # round(mm / vz) of them before resampling (the analysis project's synthesis/v2/native_crop*.json). Read by the registration
