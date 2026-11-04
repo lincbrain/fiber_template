@@ -1,4 +1,5 @@
-"""The registrations a brain's MRI build needs: its T2 and microstructure sessions onto its b0, and NMT v2 onto its b0.
+"""The registrations a brain's MRI build needs: its T2 and microstructure sessions onto its b0, and NMT v2 onto its b0; and, after the
+build, the brain's links up to the template.
 
 You need
   the brain's staged MRI folder (linc.construction.mri_prep stage, or the data release): dwi/b0_brain_n4, t2/echo_n4_brain,
@@ -14,20 +15,26 @@ What it does
          0.75 voxels); its two halves and the affine are composed into one field on the b0 grid;
   nmt    NMT v2 onto the b0 (fixed = the brain; linc.registration.featurereg, 0.25 mm, second stage at scales 2 and 1); the SARM
          level-6 labels are pulled onto the b0 grid. The canonical frame takes the AC and PC from them and the pitch from the
-         affine.
+         affine;
+  links  registers what the build already made (no registration): the frame (landmarks/canonical.json) and the final warp of the
+         finished run (--run; the warp the template channels use).
 
 You get
   t2, micro  the registry entries $LINC_DATA/sub-<ID>/xfm/t2-native__to__b0-native/ and micro-native__to__b0-native/ (one ITK
              displacement field on the b0 grid each) and the run files in --out
   nmt        <MRI folder>/landmarks/nmt_affine_0GenericAffine.mat and SARM6_in_subject.nii.gz
+  links      the registry entries b0-native__to__mri-canonical/ and mri-canonical__to__mri-template/, so that python -m linc.xfm moves
+             images between the brain's spaces and the template
 
     python -m linc.construction.mri_register t2 --subject MF283 [--out <dir>] [--device cuda:0]
     python -m linc.construction.mri_register micro --subject MF283
     python -m linc.construction.mri_register nmt --subject MF283
+    python -m linc.construction.mri_register links --subject MF283 --run $LINC_WORK/build_mri_channels/runs/rb_final
 
 Paper: Methods, "Image registration" and "MRI preprocessing".
 """
 import argparse
+import json
 import os
 import subprocess
 import sys
@@ -120,19 +127,33 @@ def nmt(b, out, device):
     return b("sarm_in_subject")
 
 
+def links(b, run, out):
+    R = recipe(); k = R["channels"]; run = Path(run)
+    grid = run / "standardspace.nii.gz"                               # the canonical grid, which is also the template's
+    T = out / "T_subject_to_canonical.txt"
+    np.savetxt(T, np.asarray(json.loads((b.mri_root / "landmarks" / "canonical.json").read_text())["T_subject_to_canonical"], float))
+    xfm.register("b0-native", "mri-canonical", [("affine", "ras_push", T)], subject=b.subject, dst_grid=grid, src_grid=b("b0"),
+                 engine="the canonical frame (linc.construction.canonical)", root=b.xfm_root)
+    warp = run / "out" / f"nln_step_{k['step']:02d}" / f"iteration_{k['iteration']:02d}" / f"{b.subject}_scalar_mod_01_to_template_warp_resampled_unbiased_full.nii.gz"
+    return xfm.register("mri-canonical", "mri-template", [("warp", "fsl_rel", warp)], subject=b.subject, dst_grid=grid, src_grid=grid,
+                        engine="MMORF 1.0.1 through the patched template-construction driver", root=b.xfm_root)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("what", choices=["t2", "micro", "nmt"])
+    ap.add_argument("what", choices=["t2", "micro", "nmt", "links"])
     ap.add_argument("--subject", required=True); ap.add_argument("--mri-root"); ap.add_argument("--xfm-root")
     ap.add_argument("--out", help="the run files (default $LINC_WORK/mri_register/<ID>/<what>)")
     ap.add_argument("--device", default="cuda:0")
+    ap.add_argument("--run", help="links: the finished MMORF run's folder")
     a = ap.parse_args(argv)
     os.umask(0o002)
     b = Brain(a.subject, a.mri_root, a.xfm_root)
     out = Path(a.out) if a.out else paths.work_root() / "mri_register" / a.subject / a.what
     out.mkdir(parents=True, exist_ok=True)
     t0 = time.time()
-    print({"t2": t2, "micro": micro, "nmt": nmt}[a.what](b, out, a.device), f"({time.time() - t0:.0f} s)")
+    made = links(b, a.run, out) if a.what == "links" else {"t2": t2, "micro": micro, "nmt": nmt}[a.what](b, out, a.device)
+    print(made, f"({time.time() - t0:.0f} s)")
 
 
 if __name__ == "__main__":

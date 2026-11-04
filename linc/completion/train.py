@@ -26,8 +26,9 @@ You get  (--out, default $LINC_WORK/completion/runs/<prepared folder>_<protocol>
     cli/linc-complete train --root $LINC_WORK/prepared --plan            # the brains, missing files and expected GPU hours; no training
 
 The networks of record (models/completion.md; configs/completion.yaml runs_of_record): d3_full_A_s0 (own b0) and d3p_full_A_s0 (stand-in b0), protocol
-full; d3_lso_A_s0 and d3p_lso_A_s0, protocol lso. A retrained network has the same recipe, not the same bits: the first epoch's losses differ in the
-third or fourth digit from the record's (a different GPU; cuDNN's benchmark mode, as in the runs of record, is not deterministic).
+full; d3_lso_A_s0 and d3p_lso_A_s0, protocol lso. A retrained network has the same recipe, not the same bits, because cuDNN's benchmark mode, on as in the runs of record, is not
+deterministic. Measured on d3_full_A_s0, once, on the same GPU model (RTX 6000 Ada), 4 Nov 2026: over the last 10 epochs the total loss was 0.06 % from the
+record's (0.10700 and 0.10706), while the weights differ. On one brain (MF5), the synthesized tissue of the two networks correlated with a Pearson r of 0.95.
 """
 import argparse
 import json

@@ -131,7 +131,8 @@ MMORF time per stage: affine 7 min; nonlinear steps 1–5 1.2, 1.5, 1.7, 1.8, 2.
 `reproduce/templates/build_mri_channels.py` runs the recipe above as one step per command (`--plan` lists every step with its
 environment, inputs, outputs and estimated time; `--step NAME ...` or `--from A --to B` run steps; a step whose outputs exist is not
 rerun without `--force`; each step that ran leaves `<work>/provenance/<NN>_<step>.json`). Steps: `tensor-<ID>`, `landmarks-<ID>`,
-`frames-<ID>`, `prepare-<ID>` for each of the four brains, then `assemble`, `mmorf` (the patched driver on a GPU) and `channels`. The
+`frames-<ID>`, `prepare-<ID>` for each of the four brains, then `assemble`, `mmorf` (the patched driver on a GPU), `channels` and
+`links-<ID>`, which registers the brain's links up to the template (`b0-native` -> `mri-canonical`, `mri-canonical` -> `mri-template`). The
 per-brain inputs are the `prep.layout` names of `configs/mri_construction.yaml` under `$LINC_DATA/sub-<ID>/mri/` (the final mask
 `masks/final_brain_mask.nii.gz`, the tensor's raw diffusion files under `dwi/raw/`, the SARM labels and NMT affine under `landmarks/`)
 and the within-MRI registrations under `xfm/`; everything the driver makes goes under `--work` (default `$LINC_WORK/build_mri_channels`).
@@ -146,3 +147,4 @@ Validation of the driver (3 Nov 2026; CPU; MF283 unless said; the same products 
 | `assemble` (the four brains' inputs of record) | the 14 config files byte-identical to `rb_final/config`, `subject_ids.csv` identical, `standardspace.nii.gz` identical, the 64 input links in place; `run_spec.json` differs only in the label `canonical_dir` (the prep folder pattern) |
 | `channels` (on the run of record `rb_final`, the four brains' inputs of record) | all 20 channel files voxel-identical to `$LINC_TEMPLATE/mri` (same headers and dtypes); acceptance T2 r 0.9946, V1 median 0.46 deg, exact symmetry; 840 s under full machine load (10.5 min of record) |
 | `mmorf` | `--plan` only (3 d 12 h of GPU; not rerun) |
+| `links` (4 Nov; the paper's run; `mri/xfm_rb_final/` of the records) | `t2-native` -> `mri-template` on MF283's `echo_n4`: r 0.987 with the driver's resampling of its T2 input, r 0.945 with the T2 channel, inside the brain; 129 s under load. The inverse, `mri-template` -> `t2-native`: r 0.927 with its T2 brain; 81 s |

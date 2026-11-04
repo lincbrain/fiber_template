@@ -1,6 +1,7 @@
 # Reproduce the paper
 
-**You need** the paper's products (`$LINC_PRODUCTS`, with the data release) and the environments.
+**You need** the paper's products (`$LINC_PRODUCTS`, with the data release), with `LINC_DATA` holding all the brains, and the
+environments.
 
 **What it does**
 1. rewrites every numbers record the paper reads;

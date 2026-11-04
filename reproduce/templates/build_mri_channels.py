@@ -26,9 +26,11 @@ What it does, one step per brain, then together (each step one command; --plan p
   assemble        writes the MMORF run folder: the inputs, the standard space and one parameter file per step
   mmorf           runs the groupwise construction (the config's schedule; the record: 8 steps x 3 iterations, 3 d 12 h on one GPU)
   channels        makes the template channels from the final step's warps
+  links-<ID>      registers the brain's links up to the template: b0-native -> mri-canonical (the frame), mri-canonical -> mri-template (the warp)
 
-You get, under --work (default $LINC_WORK/build_mri_channels); only stage-<ID> writes into $LINC_DATA, and never over existing files
-  raw/<ID>/{dwi,msme,dt2}/ (linc.construction.mri_raw), tensor_d9/<ID>/tensor_d9_dwigrid.nii.gz, frames/<ID>/{landmarks,canonical}.json, prep/<ID>/ (the construction inputs and their
+You get, in the brain's $LINC_DATA/sub-<ID>/, never over existing files: mri/ (the staged inputs; landmarks/ with the frame canonical.json) and
+xfm/ (the transforms). Under --work (default $LINC_WORK/build_mri_channels):
+  raw/<ID>/{dwi,msme,dt2}/ (linc.construction.mri_raw), tensor_d9/<ID>/tensor_d9_dwigrid.nii.gz, prep/<ID>/ (the construction inputs and their
   _flip mirrors, NIfTI on the 0.25 mm canonical grid), runs/<run>/ (the MMORF run), channels/linc_mri_*.nii.gz + provenance.json
   (T2, b0, fractions, tensor and its scalars, masks: the template's mri folder)
 
@@ -69,7 +71,7 @@ def make_steps(W, paths):
     steps = []
     for S in ids:
         tensor = w("tensor_d9", S, "tensor_d9_dwigrid.nii.gz")
-        lm, cj = w("frames", S, "landmarks.json"), w("frames", S, "canonical.json")
+        lm, cj = sub(S) / "mri" / "landmarks" / "landmarks.json", sub(S) / "mri" / "landmarks" / "canonical.json"
         ses, raw = R["raw"]["sessions"][S], lambda *q: w("raw", S, *q)               # noqa: E731
         sandi = raw("dt2", "tortoise", "microstructure", "SANDIdot")
         steps += [
@@ -155,6 +157,11 @@ def make_steps(W, paths):
                inputs=[run / read] + [w("prep", S) for S in ids],
                est="10.5 min (CPU, 8 threads)", note="acceptance (T2 r, V1 angle, FA range, symmetry) is written to channels/provenance.json"),
     ]
+    for S in ids:
+        steps.append(D.Step(f"links-{S}", "template links", "mri", ["-m", "linc.construction.mri_register", "links", "--subject", S, "--run", run],
+                            outputs=[sub(S) / "xfm" / "b0-native__to__mri-canonical", sub(S) / "xfm" / "mri-canonical__to__mri-template"],
+                            inputs=[run / read, sub(S) / "mri" / "landmarks" / "canonical.json"], est="seconds (CPU)",
+                            note="with t2reg and microreg, moves images between the brain's spaces and the template (python -m linc.xfm)"))
     return steps
 
 
