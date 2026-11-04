@@ -174,7 +174,7 @@ $(filter-out pipeline tracer_pathways,$(FIGURES_MRI)):
 	$(PY_MRI) figures/$@.py --out $(OUT)/figures/$@.png
 
 # the pipeline figure prints the cohort's size from the regenerated bf_cohort: skipped with it when LINC_PARTICIPANTS is unset
-pipeline: bf_cohort
+pipeline: bf_cohort histo_tube_landmarks
 	@if [ -z "$(LINC_PARTICIPANTS)" ]; then echo "SKIPPED pipeline: set LINC_PARTICIPANTS (it reads bf_cohort)"; \
 	else $(PY_MRI) figures/$@.py --out $(OUT)/figures/$@.png; fi
 

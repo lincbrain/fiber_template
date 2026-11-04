@@ -34,7 +34,7 @@ records: `$PY reproduce/check_numbers.py --ref reproduce/reference <record> ...`
   - `LINC_MODELS`, the network weights: `s1_segmentation_r057`;
   - your copies of NMT v2 and CIVM-R (`configs/targets.yaml`): `r060_target_comparison` and `lgnstn_targets_r060c`;
   - raw data outside the release: `r057_mri_facts_b` and `histo_pixel_sizes_r057` (`LINC_RAW`), `mm_mri_check_r054`
-    (`MM_MRI_ARGS`) and the `histology` figure (`HISTOLOGY_ARGS`).
+    (`MM_MRI_ARGS`) and the `histology` figure (`HISTOLOGY_ARGS = --jp2-root <source data>/sourcedata`).
 - **One record or figure at a time.** Some records read others (for example, `bf_species` reads `bf_cohort`); the Makefile runs
   them in order, so run a record alone only after the records it reads are in `$LINC_NUMBERS`:
 
@@ -90,5 +90,16 @@ Four settings decide whether a rerun matches the paper's products bit for bit:
   byte-identical to the paper's files only at the same thread count.
 - **Software versions.** The versions in each environment file. With another matplotlib version, a figure's text can be laid out
   slightly differently; the data drawn are the same.
-  The figures `reconstruction`, `bf_template` and `alignment_comparison` were made with matplotlib 3.10.8; under `env/linc.yml`'s
-  3.11.1, their text is laid out slightly differently, and the data drawn are the same.
+
+## The figures, compared with the paper's files
+
+From a clean clone and an empty numbers folder, with `HISTOLOGY_ARGS` set, `make figures` took about 10 minutes with `-j 2`, on a CPU.
+Compared with the paper's files:
+- **Byte-identical:** `template`, `pipeline`, `variability`, `link`, `tracer_pathways`, `s_tracer_fidelity`, `s_tracer_rules`.
+- **Byte-identical under matplotlib 3.10.8, the version they were made with:** `reconstruction`, `bf_template`, `alignment_comparison`.
+  Under `env/linc.yml`'s 3.11.1, their text is laid out slightly differently.
+- **Identical except for the PDF's creation date, with identical pixels at 200 dpi:** `lgnstn`, `s_synthesis_depth`, `s_synthesis_gallery`.
+- **Not identical:** `histology`. Panels b and d and the data of panel c are pixel-identical; the layout of panel a and the axis label of
+  panel c differ.
+
+`tracer_3d`, the 3D panels of Fig. 10, is not part of `make figures` or of this comparison.
