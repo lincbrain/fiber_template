@@ -14,14 +14,15 @@ The paper's text and tables read numbers records, each rewritten by one script, 
 you need the paper's intermediate products (`$LINC_PRODUCTS`), which come with the data release. `reproduce/Makefile` runs them all:
 
 ```bash
-make numbers        # every numbers record the paper reads (CPU), into $LINC_NUMBERS (default outputs/numbers)
-make numbers-gpu    # the one record that needs a GPU (env/deep.yml)
-make figures        # the paper's figures, into outputs/figures (two of them also write a numbers record)
-make check          # compare the recomputed records with the paper's (reference/), counts exact, floats to 1e-9
+make numbers          # the numbers records that run on a CPU, into $LINC_NUMBERS (default outputs/numbers)
+make numbers-gpu      # the one record that needs a GPU (env/deep.yml)
+make numbers-figures  # the figures that also write a record; tracer_3d needs env/install.sh --with-figures-3d
+make figures          # the paper's figures, into outputs/figures
+make check            # compare the recomputed records with the paper's (reference/), counts exact, floats to 1e-9
 ```
 
-`make check` passes only when every record is there: run `make numbers-gpu` as well, because `make numbers` leaves out the one GPU
-record, and a record skipped for lack of its inputs (for example NMT v2 and CIVM-R) shows as `MISSING`. To check a subset, name its
+`make check` passes only when every record is there: run all three `numbers` targets, because `make numbers` leaves out the GPU
+record and the records that figures write, and a record skipped for lack of its inputs (for example NMT v2 and CIVM-R) shows as `MISSING`. To check a subset, name its
 records: `$PY reproduce/check_numbers.py --ref reproduce/reference <record> ...`.
 
 - **The Python each target uses:** each record and figure runs in the environment it ran in for the paper: `PY` (env/linc.yml),
@@ -66,7 +67,7 @@ machine it took about 3 minutes.
 
 ## Exact reproduction
 
-Three settings decide whether a rerun matches the paper's products bit for bit:
+Four settings decide whether a rerun matches the paper's products bit for bit:
 - **GPU model and session.** The deformable registration (anatomix features + FireANTs) is deterministic within a session on one
   GPU: two runs on the same card give the same bytes, from the release's command or from the scripts the products were made with,
   and from a freshly built environment or the one of record. Across sessions, the GPU's convolution kernels can be chosen
@@ -84,6 +85,9 @@ Three settings decide whether a rerun matches the paper's products bit for bit:
   Whether two models agree depends on the registration: MF6's registration to its own MRI, made on an RTX 4000 Ada, reproduced bit
   for bit on an RTX 6000 Ada.
 - **TIRL threads.** Histology registration depends on the thread count; use 12 threads per component (the default).
+- **N4 threads.** N4 bias correction depends on the number of threads. With ITK at 8 threads rather than the default on a 48-core
+  machine, `b0_brain_n4` differs by up to 0.004 on its 0 to 4095 scale and `echo_n4` by up to 0.02, so the MRI build's `stage` step is
+  byte-identical to the paper's files only at the same thread count.
 - **Software versions.** The versions in each environment file. With another matplotlib version, a figure's text can be laid out
   slightly differently; the data drawn are the same.
   The figures `reconstruction`, `bf_template` and `alignment_comparison` were made with matplotlib 3.10.8; under `env/linc.yml`'s

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """The paper's figure "Between-brain deviation after construction" (Results "Between-brain variability").
 
-(a) The mean absolute deviation of the eight warped inputs from their own template, for three variants (T2 only, SANDI only, the
-    four-channel template), in T2 (z-units), the soma fraction (percentage points; the neurite fraction gives the same value) and the
+(a) The mean absolute deviation of the four brains from their mean, for three variants (T2 only, SANDI only, T2 + SANDI + tensor), in
+    T2 (z-units), the soma fraction (percentage points; the neurite fraction gives the same value) and the
     principal direction (degrees), on the coronal section through the anterior commissure, in the voxels covered by all inputs (the
     template's T2 core); brain voxels outside the core dark gray; one color scale per measure; white outline = the template brain.
 (b) The core mean of every one of the seven variants; open = in sample (the variant was built with that channel), filled = out of
     sample; rings = the three variants shown in (a).
-Reads (configs/products_mri.yaml): the deviation maps mri_runs/_variability_rebuild_all/<arm>__<T2|FRAC1|DTI>.nii.gz (written by
-linc/evaluation/variability.py), the seven-variant summary numbers_of_record/variability_rebuild.json, the anterior commissure of
+Reads (configs/products_mri.yaml): the deviation maps mri_runs/_variability/<arm>_four__<T2|FRAC1|DTI>.nii.gz (written by
+reproduce/numbers/variability_four_brains_r061.py), its summary numbers_of_record/variability_four_brains_r061.json, the anterior commissure of
 numbers_of_record/acpc.json, and template_mri/linc_mri_{T2,core_t2,brainmask}.nii.gz.
     python reproduce/figures/variability.py [--out figures/variability.png]"""
 import argparse
@@ -24,16 +24,16 @@ sys.path.insert(0, str(HERE)); sys.path.insert(0, str(HERE.parents[1]))
 import figstyle as S                                           # noqa: E402
 from linc import paths                                         # noqa: E402
 
-ARMS = ["rb_t2", "rb_micro", "rb_dti", "rb_t2micro", "rb_t2dti", "rb_dtimicro", "rb_final"]     # the seven variants (Table 2 order)
-LABEL = {"rb_t2": "T2", "rb_micro": "SANDI", "rb_dti": "tensor", "rb_t2micro": "T2 + SANDI", "rb_t2dti": "T2 + tensor",
-         "rb_dtimicro": "tensor + SANDI", "rb_final": "four-channel template"}
-SHOW = ("rb_t2", "rb_micro", "rb_final")                        # the three variants in (a)
+ARMS = ["rb_t2_four", "rb_micro_four", "rb_dti_four", "rb_t2micro_four", "rb_t2dti_four", "rb_dtimicro_four", "rb_final_four"]     # the seven variants (Table 2 order)
+LABEL = {"rb_t2_four": "T2", "rb_micro_four": "SANDI", "rb_dti_four": "tensor", "rb_t2micro_four": "T2 + SANDI", "rb_t2dti_four": "T2 + tensor",
+         "rb_dtimicro_four": "tensor + SANDI", "rb_final_four": "T2 + SANDI + tensor"}
+SHOW = ("rb_t2_four", "rb_micro_four", "rb_final_four")         # the three variants in (a)
 FIG_METRICS = [("T2", "T2 |Δz|"), ("FRAC1", "soma = neurite |Δ| (pp)"), ("DTI", "V1 angle (°)")]
 XUNIT = {"T2": "z-units", "FRAC1": "percentage points", "DTI": "degrees"}
 CHAN = {"T2": "T2", "FRAC1": "SANDI", "DTI": "tensor"}         # a measure is in sample for variants built with that channel
 HEADS = {"T2": "T2 (z-units)", "FRAC1": "soma fraction (percentage points)", "DTI": "angular deviation (°)"}
-SUMMARY = "variability_rebuild"                                 # the seven-variant summary record
-MAPS = "_variability_rebuild_all"                               # folder of the deviation maps under mri_runs
+SUMMARY = "variability_four_brains_r061"                        # the seven-variant summary record
+MAPS = "_variability"                                           # folder of the deviation maps under mri_runs
 SCALEBAR_MM, PAD_PX = 5, 3
 
 
@@ -43,7 +43,7 @@ def load(p):
 
 def in_sample(arm, k):
     lab = LABEL[arm]
-    return lab == "four-channel template" or CHAN[k] in lab
+    return lab == "T2 + SANDI + tensor" or CHAN[k] in lab
 
 
 def main():
@@ -61,7 +61,6 @@ def main():
 
     S.setup()
     import matplotlib.pyplot as plt
-    import matplotlib.ticker as tk
     from matplotlib.colors import ListedColormap
     show, arms = list(SHOW), ARMS
     brain = load(TPL / "linc_mri_brainmask.nii.gz") > 0.5
@@ -97,7 +96,7 @@ def main():
                 ax.annotate("L", xy=(0, 0.5), xycoords="axes fraction", xytext=(-2, 0), textcoords="offset points", ha="right",
                             va="center", color=S.GRAY, annotation_clip=False)
             if j == 0:
-                ax.annotate(LABEL[arm].replace("four-channel template", "four-channel\ntemplate"), xy=(0, 0.5), xycoords="axes fraction",
+                ax.annotate(LABEL[arm].replace("T2 + SANDI + tensor", "T2 + SANDI\n+ tensor"), xy=(0, 0.5), xycoords="axes fraction",
                             xytext=(-16, 0), textcoords="offset points", ha="right", va="center", color=S.FG, annotation_clip=False)
                 if i == len(show) - 1:
                     S.scalebar(ax, 1 / vx, SCALEBAR_MM, y_frac=0.05)
@@ -107,7 +106,6 @@ def main():
         ycb = TOP + len(show) * ph + (len(show) - 1) * GAPR + CBG
         cax = S.axes_mm(fig, x + 0.1 * pw, ycb, 0.8 * pw, CBH)
         cb = fig.colorbar(im, cax=cax, orientation="horizontal"); cb.outline.set_edgecolor(S.GRAY); cb.ax.tick_params(length=2, pad=1)
-        cb.ax.xaxis.set_major_locator(tk.MaxNLocator(5, integer=(k != "T2")))          # integer ticks where labels are integers
         cb.ax.xaxis.set_major_formatter("{x:.1f}" if k == "T2" else "{x:.0f}")
         ax = S.axes_mm(fig, x + 2.0, ycb + CBH + 6.0 + BG_, pw - 4.0, BH)            # (b): core mean of every variant
         ys = np.arange(len(arms))[::-1]

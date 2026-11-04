@@ -41,13 +41,13 @@ NUMBERS_LINC := \
   bf_camera_exif bf_cohort bf_sanity bf_spacing_used bf_species bf_template_metrics_d2b \
   d2_s2_validation_prod_s125 precision_weights_b1_d2b_s8 r1_edge_summary route_test_1c \
   atlas_final_v2_summary fig_histology_simple histo_tube_landmarks \
-  mm_mri_check_r054 mri_recipe registration_qc_histo2bf_20261001 s5_link_d2bs8 table1_rebuild \
-  table_specimens_check_r054 tracer_sections_r054 tracer_template_current_all tube_mf8_check_r054 tube_offsets_r054 \
+  mm_mri_check_r054 mri_recipe registration_qc_histo2bf_20261001 s5_link_d2bs8 s5_link_regions_d2bs8 table1_rebuild \
+  table_specimens_check_r054 tracer_sections_r054 tracer_sections_r058d tracer_template_current_all tube_mf8_check_r054 tube_offsets_r054 \
   s1_segmentation_r057 s1_perbrain_r057 tracer_label_volumes_r058d tracer_alic_topography_r058d r060_target_comparison \
   lgnstn_targets_r060c \
   tracer_sections_v2 tracer_connected_v2c tracer_label_volumes_v2c tracer_alic_topography_v2c tracer_interp_accounting_v2 \
   tracer_placement_v2c tracer_template_v2_all
-NUMBERS_MRI := variants_leave_self_out_rebuild_fa025 variability_rebuild_rb_final lobo_t2_rebuild \
+NUMBERS_MRI := variants_leave_self_out_rebuild_fa025 variability_rebuild_rb_final variability_four_brains_r061 lobo_t2_rebuild lobo_multichannel_cost_r061 \
   labels_overlap_current lgnstn_geometry_current \
   lgnstn_model_agreement_r059 lgnstn_model_loso_r059 lgnstn_b0_visibility_r059 lgnstn_midplane_planes_r059 r057_mri_facts_b
 NUMBERS_TIRL := histo_pixel_sizes_r057
@@ -63,13 +63,16 @@ FIGURES_COMPLETION := s_synthesis_depth s_synthesis_gallery lgnstn
 FIGURES := $(FIGURES_MRI) $(FIGURES_LINC) $(FIGURES_COMPLETION) histology s_tracer_fidelity
 FIGURES_3D := tracer_3d                                  # optional (PY_VIZ3D): not in `make figures`; `make tracer_3d`
 
-.PHONY: all numbers numbers-gpu check test figures $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_GPU) $(FIGURES) $(FIGURES_3D)
+.PHONY: all numbers numbers-gpu numbers-figures check test figures $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_GPU) $(FIGURES) $(FIGURES_3D)
 
 all: numbers figures check
 
 numbers: $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT)
 
 numbers-gpu: $(NUMBERS_GPU)
+
+# the figures that also write a numbers record: `make check` needs them (tracer_3d: env/install.sh --with-figures-3d)
+numbers-figures: tracer tracer_pathways alignment_comparison tracer_3d
 
 $(filter-out mm_mri_check_r054 bf_cohort bf_species s1_perbrain_r057 s1_segmentation_r057 r060_target_comparison lgnstn_targets_r060c,$(NUMBERS_LINC)):
 	$(PY) numbers/$@.py
@@ -115,6 +118,7 @@ tube_mf8_check_r054: tube_offsets_r054
 lgnstn_geometry_current: labels_overlap_current
 fig_histology_simple: registration_qc_histo2bf_20261001
 r057_missing_extent: d3_methods d3_predicted_share
+alignment_comparison: route_test_1c
 s_synthesis_depth: r057_s1_synthesis
 s_synthesis_gallery: d3_predicted_share
 

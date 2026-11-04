@@ -1,0 +1,47 @@
+{
+ "data": {
+  "link": "direct symmetric link of record (bftemplate/cv/s5_direct_d2bs8/sym) vs the composition of the members' warps (bftemplate/cv/s5_compose_d2bs8_r05_guard)",
+  "points": "every 8th brain voxel of template/mri/linc_mri_brainmask, as mri/code/s5_compare.py",
+  "whole_brain": {
+   "n_points": 413223,
+   "median_mm": 0.312,
+   "p95_mm": 1.005
+  },
+  "rule": {
+   "occipital_pole_mm": 10.0,
+   "surface_shell_mm": 2.0,
+   "dorsal": "z >= median z of the brain voxels",
+   "frame": "MRI template RAS mm (y anterior, z dorsal)"
+  },
+  "regions": {
+   "occipital_pole": {
+    "n_points": 32758,
+    "share_of_points": 0.0793,
+    "median_mm": 1.015,
+    "p95_mm": 1.839,
+    "share_above_brain_p95": 0.5082
+   },
+   "dorsal_surface": {
+    "n_points": 92476,
+    "share_of_points": 0.2238,
+    "median_mm": 0.351,
+    "p95_mm": 0.841,
+    "share_above_brain_p95": 0.0183
+   },
+   "other_surface": {
+    "n_points": 95659,
+    "share_of_points": 0.2315,
+    "median_mm": 0.305,
+    "p95_mm": 0.761,
+    "share_above_brain_p95": 0.0166
+   },
+   "interior": {
+    "n_points": 192330,
+    "share_of_points": 0.4654,
+    "median_mm": 0.262,
+    "p95_mm": 0.68,
+    "share_above_brain_p95": 0.0038
+   }
+  }
+ }
+}

@@ -158,6 +158,7 @@ laboratory's collection (MF283 for the paper's MF1, MR252 for MM2; `docs/specime
    $PY_TIRL cli/linc-labels push        --subject <ID>   # [env/tirl.yml] the annotations onto the blockface
    $PY      cli/linc-labels interpolate --subject <ID>   # [env/linc.yml] between the sections
    $PY      cli/linc-labels carry       --subject <ID>   # [env/linc.yml] transformed into the template
+   $PY      cli/linc-labels connect     --subject <ID>   # [env/linc.yml] the bundles joined into one connected pathway
    ```
 
    In: the annotations; the section map, which lists the sections each label was drawn on; and the histology registration. Out: `sub-<ID>/labels/blockface/` and
@@ -167,12 +168,14 @@ The segmentation networks can also be run on their own (`cli/linc-segment`, [`en
 
 ## Reproduce the paper
 
-`make test` checks the installation without any data. The other three commands need the paper's intermediate products
+`make test` checks the installation without any data. The other commands need the paper's intermediate products
 (`$LINC_PRODUCTS`, from the data release):
 
 ```bash
 make test           # the tests and toy runs of the command lines; a few minutes, no data, no GPU
-make numbers        # every numbers record the paper reads, into $LINC_NUMBERS
+make numbers        # the numbers records that run on a CPU, into $LINC_NUMBERS
+make numbers-gpu    # the one record that needs a GPU
+make numbers-figures  # the figures that also write a record
 make figures        # every figure, into outputs/figures
 make check          # compare the recomputed records with the paper's
 ```

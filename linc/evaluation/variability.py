@@ -21,20 +21,20 @@ def principal(M):
     return np.linalg.eigh(M)[1][..., :, -1]
 
 
-def arm_maps(cache, arm, core, ref, out_dir=None):
+def arm_maps(cache, arm, core, ref, out_dir=None, ids=IDS):
     """{metric: deviation map} for one variant inside `core` (boolean volume). `ref` is the template image whose affine the maps take;
-    with `out_dir`, each map is also written as <out_dir>/<arm>__<metric>.nii.gz (float32)."""
+    with `out_dir`, each map is also written as <out_dir>/<arm>__<metric>.nii.gz (float32). `ids`: the inputs compared (default all eight)."""
     f = lambda m, s: cached(cache, arm, m, s)                                    # noqa: E731
     out = {}
     z = lambda v: (v - v[core].mean()) / v[core].std()                          # noqa: E731
-    t2 = [z(load(f("T2", s))) for s in IDS]
-    tz = z(np.mean([load(f("T2", s)) for s in IDS], 0))
+    t2 = [z(load(f("T2", s))) for s in ids]
+    tz = z(np.mean([load(f("T2", s)) for s in ids], 0))
     out["T2"] = np.mean([np.abs(v - tz) for v in t2], 0)
     for m in ("FRAC1", "FRAC2"):
-        vs = [load(f(m, s)) for s in IDS]
+        vs = [load(f(m, s)) for s in ids]
         t = np.mean(vs, 0)
         out[m] = 100 * np.mean([np.abs(v - t) for v in vs], 0)
-    Ts = [mats(load(f("DTI", s))[core]) for s in IDS]
+    Ts = [mats(load(f("DTI", s))[core]) for s in ids]
     md = np.median([np.trace(M, axis1=1, axis2=2).mean() / 3 for M in Ts[:2]])
     vt = principal(expm(np.mean([logm(M, EIG_FLOOR_REL * md) for M in Ts], 0)))
     ang = np.mean([np.degrees(np.arccos(np.clip(np.abs(np.einsum("ni,ni->n", principal(M), vt)), 0, 1))) for M in Ts], 0)

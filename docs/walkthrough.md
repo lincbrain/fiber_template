@@ -297,8 +297,8 @@ All 58 of MF8's components, with their masks, were identical to the paper's, byt
 
 ## 6. Transform the labels into the template (MM2)
 
-Three steps, each with the Python of its environment: the labels go through each section's registration onto the blockface, are
-interpolated between the sections, and are transformed into the template.
+Four steps, each with the Python of its environment: the labels go through each section's registration onto the blockface, are
+interpolated between the sections and are transformed into the template, and the bundles are joined into one connected pathway.
 
 ```bash
 R=$LINC_PRODUCTS/data_arm_preinp/sub-MR252/blockface/06_histo2bf/tirl
@@ -306,11 +306,12 @@ $PY_TIRL cli/linc-labels push        --subject MR252 --registrations $R
 $PY      cli/linc-labels interpolate --subject MR252 --registrations $R
 $PY      cli/linc-labels carry       --subject MR252 \
     --entry $LINC_DATA/sub-MR252/xfm_record/bf-native__to__b0-native --entry $LINC_DATA/sub-MR252/xfm_record/b0-native__to__mri-template
+$PY      cli/linc-labels connect     --subject MR252
 ```
 
 The paper's labels went through the histology registration made on the photographs before the marker tubes' holes were filled,
 so `push` and `interpolate` are given that registration
-(`--registrations`); without it, they use your own from section 5. The three steps take about 3 minutes, 30 minutes and 3 minutes. `carry`, as written, goes through the paper's registrations of MM2 (`xfm_record/`);
+(`--registrations`); without it, they use your own from section 5. The four steps take about 3 minutes, 30 minutes, 3 minutes and 15 seconds. `carry`, as written, goes through the paper's registrations of MM2 (`xfm_record/`);
 without `--entry` it goes through your own, from section 3 (`xfm/`). The interpolation writes the interpolated labels under
 `$LINC_DATA/sub-MR252/labels/blockface/tracer/`. Compare each step's labels with the paper's (the gzip bytes differ, so the arrays
 are compared):
@@ -325,9 +326,13 @@ $PY tools/compare_nifti.py $D/blockface/tracer $P/tracer_v2/MR252 $(cd $P/tracer
 # carry: the 21 files in the template (7 labels, each as a mask, a density and a footprint)
 $PY tools/compare_nifti.py $D/template/tracer $P/tracer_template_v2/MR252 \
     $(cd $P/tracer_template_v2/MR252 && ls MR252_*_mri-template.nii.gz MR252_*_mri-template_density.nii.gz MR252_*_mri-template_footprint.nii.gz)
+# connect: the connected pathway, its solid label and its joins
+$PY tools/compare_nifti.py $D/template/tracer $P/tracer_template_v2c/MR252 \
+    MR252_Bundles_mri-template_connected.nii.gz MR252_Bundles_mri-template_solid_v2c.nii.gz MR252_Bundles_mri-template_bridges.nii.gz
 ```
 
-All 6 labels on the sections, 7 interpolated labels and 21 template files were identical to the paper's.
+All 6 labels on the sections, 7 interpolated labels and 21 template files were identical to the paper's. `connect` was run from the
+paper's carried densities, and its 3 files were identical.
 
 MF8's labels go through its warp from the construction of the blockface template, then the registration of that template to the MRI
 template. The transform is valid in photographed tissue only:

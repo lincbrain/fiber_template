@@ -105,6 +105,10 @@
    "md5_of_record": "5c0823c1b5e5acaf3da0f8fbc42f50cf",
    "created": "2026-11-01T10:36:22-05:00"
   },
+  "lobo_multichannel_cost_r061": {
+   "md5_of_record": "2a65b2cb078cea53b053fe9d064736e8",
+   "created": "2026-11-02T23:10:45-05:00"
+  },
   "lobo_t2_rebuild": {
    "md5_of_record": "1704de29dc8d54911e91452186986f7a",
    "created": "2026-10-04T21:36:44-04:00"
@@ -161,6 +165,10 @@
    "md5_of_record": "90635da1f2a31b679a66051b736144ef",
    "created": "2026-10-05T23:35:19-04:00"
   },
+  "s5_link_regions_d2bs8": {
+   "md5_of_record": "e69ed5a5d6752bba1fa877b773380a5f",
+   "created": "2026-11-02T22:41:29-05:00"
+  },
   "table1_rebuild": {
    "md5_of_record": "3da68fd6155ece50aaa1e5e8c229d9b7",
    "created": "2026-10-04T11:55:47-04:00"
@@ -189,6 +197,10 @@
    "md5_of_record": "e87cd1ad5c5659309bb4adc62a1d08ca",
    "created": "2026-10-14T21:14:33-04:00"
   },
+  "tracer_sections_r058d": {
+   "md5_of_record": "f39df0e323673a33c76b68d165614bd2",
+   "created": "2026-10-30T18:09:18-04:00"
+  },
   "tracer_template_current_all": {
    "md5_of_record": "da046aa0876653fcf8387a101e93d256",
    "created": "2026-10-07T09:00:10-04:00"
@@ -200,6 +212,10 @@
   "tube_offsets_r054": {
    "md5_of_record": "b2afaf2bca6f62adc5908e1f68d3805f",
    "created": "2026-10-14T21:58:40-04:00"
+  },
+  "variability_four_brains_r061": {
+   "md5_of_record": "5b86acbb6f04394ec2b4651bbc93836a",
+   "created": "2026-11-02T23:13:53-05:00"
   },
   "variability_rebuild_rb_final": {
    "md5_of_record": "a0710338b30fbeb772ef095b36ecbe40",

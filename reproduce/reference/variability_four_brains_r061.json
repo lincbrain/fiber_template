@@ -1,0 +1,136 @@
+{
+ "data": {
+  "support_core_voxels": 1932252,
+  "wm_voxels": 1296376,
+  "arms": {
+   "rb_t2_four": {
+    "T2": {
+     "core_mean": 0.13547496873163137,
+     "wm_mean": 0.09799199247746715
+    },
+    "FRAC1": {
+     "core_mean": 3.4883013322252086,
+     "wm_mean": 2.83472808722793
+    },
+    "FRAC2": {
+     "core_mean": 3.4891844152270153,
+     "wm_mean": 2.8352096790685244
+    },
+    "DTI": {
+     "core_mean": 15.183849795164939,
+     "wm_mean": 8.504570126145973
+    }
+   },
+   "rb_micro_four": {
+    "T2": {
+     "core_mean": 0.29152751836416474,
+     "wm_mean": 0.22184934095345826
+    },
+    "FRAC1": {
+     "core_mean": 3.4497904141529725,
+     "wm_mean": 2.7106123573246874
+    },
+    "FRAC2": {
+     "core_mean": 3.4520815849078565,
+     "wm_mean": 2.7111082925795906
+    },
+    "DTI": {
+     "core_mean": 17.799616200226605,
+     "wm_mean": 10.808562009599274
+    }
+   },
+   "rb_dti_four": {
+    "T2": {
+     "core_mean": 0.22637396808561647,
+     "wm_mean": 0.16487097521431038
+    },
+    "FRAC1": {
+     "core_mean": 3.637663485902579,
+     "wm_mean": 2.915961306143323
+    },
+    "FRAC2": {
+     "core_mean": 3.641921674109878,
+     "wm_mean": 2.9175032847028533
+    },
+    "DTI": {
+     "core_mean": 13.997905327713996,
+     "wm_mean": 7.458126111086768
+    }
+   },
+   "rb_t2micro_four": {
+    "T2": {
+     "core_mean": 0.13920576835159887,
+     "wm_mean": 0.10085502428948022
+    },
+    "FRAC1": {
+     "core_mean": 3.2683722719529515,
+     "wm_mean": 2.63578544244115
+    },
+    "FRAC2": {
+     "core_mean": 3.269174066665903,
+     "wm_mean": 2.63604599437158
+    },
+    "DTI": {
+     "core_mean": 15.10511263986988,
+     "wm_mean": 8.462476435516532
+    }
+   },
+   "rb_t2dti_four": {
+    "T2": {
+     "core_mean": 0.1411839162544327,
+     "wm_mean": 0.10316417406008453
+    },
+    "FRAC1": {
+     "core_mean": 3.4339641210811136,
+     "wm_mean": 2.7897145654122757
+    },
+    "FRAC2": {
+     "core_mean": 3.434931571753966,
+     "wm_mean": 2.79013320973689
+    },
+    "DTI": {
+     "core_mean": 13.596903390719602,
+     "wm_mean": 7.1284037633873485
+    }
+   },
+   "rb_dtimicro_four": {
+    "T2": {
+     "core_mean": 0.21207145284298898,
+     "wm_mean": 0.1550500167512063
+    },
+    "FRAC1": {
+     "core_mean": 3.2857874485041045,
+     "wm_mean": 2.6261849041605125
+    },
+    "FRAC2": {
+     "core_mean": 3.286939103721027,
+     "wm_mean": 2.6264569964892908
+    },
+    "DTI": {
+     "core_mean": 13.757075282429884,
+     "wm_mean": 7.310129403376359
+    }
+   },
+   "rb_final_four": {
+    "T2": {
+     "core_mean": 0.1436338921789201,
+     "wm_mean": 0.10495261330730213
+    },
+    "FRAC1": {
+     "core_mean": 3.2553851851068556,
+     "wm_mean": 2.632817702865877
+    },
+    "FRAC2": {
+     "core_mean": 3.256153318344799,
+     "wm_mean": 2.6330642615816657
+    },
+    "DTI": {
+     "core_mean": 13.622371150855797,
+     "wm_mean": 7.153610194293612
+    }
+   }
+  },
+  "inputs": "the four brains MF283-MF286 only (no mirrors), per template from its own transformed inputs; reference = their mean; definitions of paper/fig_variability.py; WM = today's linc_mri_wm_fa025",
+  "maps": "mri/tc/_variability/<arm>_four__<metric>.nii.gz"
+ }
+}
