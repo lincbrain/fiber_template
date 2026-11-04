@@ -22,6 +22,11 @@ $PY cli/linc-register direct-placement --subject MF191 --template-b0 $LINC_TEMPL
     --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
 ```
 
+Each runs on a GPU, and its memory grows with the brain's working grid. `mri` needs 15 to 25 GB, depending on the brain: MM2,
+MM5 and MM8 need more than a 24 GB card has free. `mri-template` needs 12 to 14 GB, and `direct-placement` 15 to 17 GB. Each prints its need and
+the card's free memory before its GPU stage, and stops if the card is short; then choose another card with `CUDA_VISIBLE_DEVICES`,
+or check the cards first with `nvidia-smi`. Run one registration at a time on a card.
+
 The MRI template's b0 channel and brain mask come with the released template, under `$LINC_TEMPLATE/mri/`. For a brain that is not one of the
 paper's (`cli/linc-mri prep`, `docs/mri.md`, makes its b0 and brain mask):
 - align its b0 to the template's frame first, with `--place-b0 <b0>` on the first `linc-register mri` run. No hand mask is needed:

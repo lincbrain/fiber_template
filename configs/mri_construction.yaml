@@ -46,7 +46,7 @@ fwhm_floor_f_eff_cyc_per_mm: {0.25: 1.485, 0.5: 0.785, 0.7: 0.575}
 # analysis project's constants of record for the released MRI channels.
 rebuild_run: rb_final                      # the construction run of the released channels: the recipe above (its configs are byte-identical
                                            # to `run`'s), rebuilt from the inputs prepared with the author's final brain masks (mri_prep.py)
-tools: {fsl: "6.0.7.4", mmorf: "1.0.1", ants: "2.5.4", mrtrix: "3.0.2"}   # checked by linc/construction/tools.py
+tools: {fsl: "6.0.7.4", mmorf: "1.0.1", ants: "2.5.4", mrtrix: "3.0.2", julia: "1.11.4", tortoise: "V4.1.0"}   # checked by linc/construction/tools.py
 
 # --- canonical frame: rigid placement in the NMT v2 stereotaxic frame (Methods, "Symmetric groupwise construction") ---
 canonical:
@@ -64,6 +64,19 @@ canonical:
   norm_max: 4095.0                         # anatomical channels: 1-99 percentile inside the mask rescaled to (norm_eps, norm_max], 0 outside
   norm_eps: 1.0e-3
   compositional_floor: 1.0e-3              # frac1 + frac2 renormalized to 1 where their sum exceeds this, 0 elsewhere
+
+# --- the MRI from the scanner's files (linc/construction/mri_raw.py): each brain's Bruker sessions and scans ---
+raw:
+  root: mri_bruker                         # the sessions' folder, relative to $LINC_RAW
+  sessions:                                # per brain: [session folder, scans] for the diffusion, MSME and microstructure (dt2) scans
+    MF283: {dwi: [20240906_092923_MF283_2024_09_06_1_1, 15-36], msme: [20240906_092923_MF283_2024_09_06_1_1, "39"],
+            dt2: [20240912_140511_MF283_2024_09_12_2_1_4, 14-21]}
+    MF284: {dwi: [20240919_102701_MF284_2024_09_19_1_2, 31-52], msme: [20241011_104726_MF284_2024_10_11_1_4, "55"],
+            dt2: [20241011_104726_MF284_2024_10_11_1_4, 13-20]}
+    MF285: {dwi: [20241123_112540_MF285_2024_11_23_1_2, 11-32], msme: [20241127_155127_MF285_2024_11_27_1_4, "57"],
+            dt2: [20241127_155127_MF285_2024_11_27_1_4, 15-22]}
+    MF286: {dwi: [20250117_164316_MF286_2025_01_17_1_6, 37-58], msme: [20250110_120329_MF286_2025_01_10_1_5, "56"],
+            dt2: [20250110_120329_MF286_2025_01_10_1_5, 14-21]}
 
 # --- per-brain input preparation (Methods, "MRI preprocessing") ---
 prep:

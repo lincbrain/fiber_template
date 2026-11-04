@@ -41,7 +41,7 @@ def _last_slice(cfg, nz):
 
 def remove_background(cfg):
     """Finalise the brain MASK (does NOT touch the raw): hole-fill the brain mask on every real slice and
-    force it EMPTY on every black/missing slice (nnUNet predicts a spurious ~full mask on pure black). The
+    force it EMPTY on every black/missing slice (a network can predict a spurious ~full mask on pure black). The
     raw stack is deliberately LEFT UNMASKED - crop_and_mask masks the final blockface itself (bf * m), and
     the unmasked jump-corrected raw is what `blockface_bg` crops for the background-intact editing view.
     Runs after jump correction (masking commutes with the rigid warp)."""
@@ -231,7 +231,7 @@ def interpolate_missing(cfg):
     black scan cross-checks and only WARNS about any interior all-black run cfg.missing didn't cover (so
     a data/annotation issue surfaces rather than being silently guessed). No-op when cfg.missing is empty
     (e.g. MR243). 'present' = has a brain mask: remove_background just ran, so it force-zeroed the mask on
-    every black/missing slice (removing nnUNet's spurious full mask on black), leaving the mask L2 the
+    every black/missing slice (removing a network's spurious full mask on black), leaving the mask L2 the
     reliable present-signal - and the one working pyramid still rebuilt (raw L2 is left stale, unread)."""
     rg = zarr.open_group(cfg.raw_stack, mode="r+"); rz = rg["0"]
     mg = zarr.open_group(cfg.mask_stack, mode="r+"); mz = mg["0"]

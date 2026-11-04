@@ -29,7 +29,7 @@ from linc.blockface import zarrio
 
 
 def ingest(cfg):
-    """Rename raw photos to nnUNet's SLICE_%04d_0000.png, inserting a black frame
+    """Rename raw photos to SLICE_%04d_0000.png (the networks' case names), inserting a black frame
     for any missing index so physical slice order is preserved."""
     os.makedirs(cfg.slices, exist_ok=True)
 
@@ -90,7 +90,7 @@ def ingest(cfg):
 
 
 def normalize_masks(cfg):
-    """Re-save the photo masks (01_brainmask/00_predict, from either engine) as *50-scaled PNGs (project-wide
+    """Re-save the photo masks (01_brainmask/00_predict) as *50-scaled PNGs (project-wide
     standard) and fill any interior holes (the rule of step 1: linc/blockface/mask_rules.fill_photo_mask)."""
     from linc.blockface.mask_rules import fill_photo_mask
     n = zarrio.normalize_mask_dir(cfg.brainmask("00_predict"))
@@ -143,7 +143,7 @@ def masks_to_png(cfg):
     """Convert the fsleyes-edited brain-mask zarr (_work/brainmask_edit) back to per-slice *50
     PNGs in slices orientation -> 01_brainmask/01_final."""
     vol = np.asarray(zarrio.read_group(cfg.mask_edit_zarr)["0"])
-    # Name the outputs the way 01_final is ALREADY named (nnUNet drops the _0000 channel suffix, and
+    # Name the outputs the way 01_final is ALREADY named (the network drops the _0000 channel suffix, and
     # finalize_brainmask copies 00_predict verbatim). Naming them from 00_slices instead wrote a second,
     # differently-named copy of every mask beside the first, and stack_masks globs *.png - which silently
     # doubled the mask stack's z axis against the raw stack.

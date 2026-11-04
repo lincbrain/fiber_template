@@ -1,11 +1,11 @@
-"""The blockface masks' post-processing is one rule per task, whichever engine segments (CPU, no data, seconds).
+"""The blockface masks' post-processing is one rule per task (CPU, no data, seconds).
 
     python -m pytest tests/test_blockface_rules.py      or      python tests/test_blockface_rules.py
 
 You need
   env/deep.yml (torch; linc/blockface/mask_rules.py needs only numpy and scipy); $LINC_MODELS for the last check.
 What it does
-  linc-reconstruct applies the pipeline's rules (linc/blockface/mask_rules.py) once, for both engines, and runs linc-segment with
+  linc-reconstruct applies the pipeline's rules (linc/blockface/mask_rules.py) once and runs linc-segment with
   --postprocess none; each linc-segment model's spec.json holds the same rule for use outside the pipeline. The tests check that the
   two copies agree, that the tube rule's parameters in configs/blockface.yaml are the shipped spec's, and (with $LINC_MODELS set)
   that the shipped specs name those rules.

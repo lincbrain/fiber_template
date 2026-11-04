@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
 """The blockface segmentation networks (Supplementary S1.1): their training data, the human-in-the-loop rounds of the two 3D
-networks, and their performance. Cards: models/blockface_segmentation.md.
+networks, and their performance. The paper describes these networks in Supplementary S1.1; the masks of record they made are
+data (configs/subjects/<ID>.yaml masks_of_record), and the release segments with the final models (models/segmentation.md).
 
     python reproduce/numbers/s1_segmentation_r057.py
 
 You need
-  the networks' files of record ($LINC_MODELS/nnUNet_results; products: nnunet_raw) and the model-card record bf_models_card.json
+  the networks' training-set records (configs/products_blockface.yaml nnunet_training_sets: each training set's dataset.json and,
+  for the 3D networks, imagesTr.txt, its training images' names; no weights) and the model-card record bf_models_card.json
   (products: numbers_of_record).
 What it does
   It recomputes:
-  2D brain mask (Dataset500_SLICE, used for every photograph): numTraining from its dataset.json (the released weights' copy;
-     trained 26 Dec 2024, before this project, on 149 photographs whose source brains are not recorded); performance from
+  2D brain mask (Dataset500_SLICE, used for every photograph): numTraining from its dataset.json (trained 26 Dec 2024, before this project, on 149 photographs whose source brains are not recorded); performance from
      bf_models_card `mask2d` (the Dice coefficient between the network's photograph masks and the hand-corrected masks of 14
      brains; not cross-validated).
-  3D brain mask, round 5 (Dataset506_BFmask5, the network of record): its training cases (the training set's imagesTr: one case per
+  3D brain mask, round 5 (Dataset506_BFmask5, the network of record): its training cases (the training set's imagesTr.txt: one case per
      brain + one validation slab), its validation Dice (bf_models_card `dataset506_bfmask3d`).
   3D marker tubes, rounds 2 and 3 (Dataset507_holes2, Dataset508_holes3 = the network of record): training cases, validation Dice
      (bf_models_card `dataset508_holes`).
@@ -34,7 +35,6 @@ from linc import paths, provenance  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 LABELS = REPO / "docs" / "specimen_labels.json"
-D2 = Path("nnUNet_results") / "Dataset500_SLICE" / "nnUNetTrainer__nnUNetPlans__2d" / "dataset.json"   # under $LINC_MODELS
 # the record's documented rounds, verbatim
 DOCUMENTED = {
     "brain_mask": [
@@ -57,7 +57,7 @@ LOOP = ("each round's network segmented every brain; the predictions of the brai
 
 def cases(raw, ds):
     """brains in a training set: imagesTr case ids (channel suffix stripped); 'val'/'v' cases = validation slabs of a brain."""
-    ids = sorted({re.sub(r"_\d{4}\.nii\.gz$", "", f.name) for f in (raw / ds / "imagesTr").glob("*.nii.gz")})
+    ids = sorted({re.sub(r"_\d{4}\.nii\.gz$", "", n) for n in (raw / ds / "imagesTr.txt").read_text().split()})
     brains = sorted({re.sub(r"^(BFF?|H)", "", i).rstrip("v") for i in ids if i not in ("BFval",)})
     return ids, brains
 
@@ -69,8 +69,8 @@ def mapname(n, labels):
 
 def main():
     prod = paths.products("products_blockface")
-    raw, card_p = prod["nnunet_raw"], prod["numbers_of_record"] / "bf_models_card.json"
-    d2_p = paths.models_root() / D2
+    raw, card_p = prod["nnunet_training_sets"], prod["numbers_of_record"] / "bf_models_card.json"
+    d2_p = raw / "Dataset500_SLICE" / "dataset.json"
     card = json.loads(card_p.read_text())["data"]; labels = json.loads(LABELS.read_text())["labels"]
     d2 = json.loads(d2_p.read_text())
     r5_ids, r5 = cases(raw, "Dataset506_BFmask5"); h2_ids, h2 = cases(raw, "Dataset507_holes2"); h3_ids, h3 = cases(raw, "Dataset508_holes3")
@@ -97,7 +97,7 @@ def main():
     print("2D", out["mask2d"]["training_photographs"], out["mask2d"]["dice_vs_curated"])
     print("3D mask rounds", [r["brains"] for r in out["mask3d"]["rounds"]], r5_ids)
     print("tubes rounds", [r["brains"] for r in out["tubes3d"]["rounds"]], h2_ids, len(h3))
-    provenance.write_numbers("s1_segmentation_r057", out, inputs=[card_p, LABELS, d2_p] + [raw / ds / "dataset.json" for ds in
+    provenance.write_numbers("s1_segmentation_r057", out, inputs=[card_p, LABELS, d2_p] + [raw / ds / f for f in ("dataset.json", "imagesTr.txt") for ds in
                              ("Dataset506_BFmask5", "Dataset507_holes2", "Dataset508_holes3")],
                              md5=False, cmd="python reproduce/numbers/s1_segmentation_r057.py")
 

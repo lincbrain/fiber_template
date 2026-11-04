@@ -43,12 +43,9 @@ resampling, in one line (the registry finds the chain, mri-template -> bf-native
 
 (`python -m linc.xfm chain --from mri-template --to bf-native --subject <ID>` prints the links it will use.)
 
-> **Status (22 Oct 2026).** This works today for a brain placed by the **direct route** (its bf-native -> mri-template entry), provided
-> `linc-register` wrote that entry into `$LINC_DATA/sub-<ID>/xfm/` (its output folder defaults to `$LINC_WORK`: pass the registry
-> folder, or move the entry there). For the **MRI route**, the chain also needs the brain's b0-native -> mri-template registration,
-> which no release entry point makes yet; until it does, use the direct route for the regions volume. Then write the brain's
-tube mask as label 4 where it falls in the left hemisphere, and pass the result to `linc-histology pieces --regions ...
---regions-frame current` (the volume is already in the brain's current frame). This carries the regions through the brain's
+Then write the brain's tube mask as label 4 where it falls in the left hemisphere, and pass the result to `linc-histology pieces
+--regions ...`. A new brain needs no flag: its volume is made on its current frame. A volume made now for one of the paper's
+brains passes that frame's spacing with `--regions-spacing-um VX VZ` (the brain's vx and vz). This carries the regions through the brain's
 registration to the template, whereas the paper registered the T2 template to each blockface directly (step 3): check the pieces on a
 few photographs before registering.
 

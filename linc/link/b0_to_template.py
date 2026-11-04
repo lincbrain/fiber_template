@@ -178,19 +178,10 @@ def run(subject, b0_path, mask_path, template_b0, template_mask, placement_mat, 
         b0, n4info = n4_b0(S, b0_path, mask_path, mk, d, c)
         n4info.update(applied=True, threshold=float(c["n4_field_max"]), used_for="deformable (the linear fits use the native b0)")
     Pst, Sm, lin = linear_start(b0_native, b0n.affine, mk, T, tpl.affine, Tm, P0, c)
-    margins = [float(c["grid_margin_mm"]), float(c["grid_margin_fallback_mm"])]
-    for i, margin in enumerate(margins):
-        P, ginfo = engine_inputs(b0, b0n.affine, mk, T, tpl.affine, Tm, P0, Sm, Pst, margin, c, d)
-        eng = f"{d}/_engine"; shutil.rmtree(eng, ignore_errors=True); t0 = time.time()
-        try:
-            m = featurereg.register(P["fixed"], P["moving_rig"], P["fixed_mask"], P["moving_rig_mask"], eng, affine=None, device=device,
-                                    **c["engine"])
-            break
-        except Exception as e:                                                # GPU memory -> one retry with the smaller margin
-            if i + 1 < len(margins) and ("out of memory" in str(e).lower() or "CalledProcessError" in type(e).__name__):
-                print(f"{S}: margin {margin} failed ({type(e).__name__}); retrying with {margins[i + 1]} mm", flush=True)
-                continue
-            raise
+    P, ginfo = engine_inputs(b0, b0n.affine, mk, T, tpl.affine, Tm, P0, Sm, Pst, float(c["grid_margin_mm"]), c, d)
+    eng = f"{d}/_engine"; shutil.rmtree(eng, ignore_errors=True); t0 = time.time()
+    m = featurereg.register(P["fixed"], P["moving_rig"], P["fixed_mask"], P["moving_rig_mask"], eng, affine=None, device=device,
+                            **c["engine"])                              # stops first, with one line, if the GPU is short of memory
     wall = time.time() - t0
     warp, start = f"{d}/{S}_warp.nii.gz", f"{d}/{S}_start_pull.txt"
     shutil.copyfile(m["warp"], warp); np.savetxt(start, np.linalg.inv(Pst))

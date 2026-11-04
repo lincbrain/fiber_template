@@ -49,7 +49,7 @@ histo_arm_final: data_arm_final                       # the histology -> blockfa
 # at the section step of the time (0.6 mm) before MF8's spacing was corrected; with it (and linc-histology --regions-spacing-um
 # 23.75 600) the release reproduces that registration's blockface components (58 of 58 byte-identical, 3 Nov 2026)
 hidden_arm_regions:
-  MF191: {file: _sessionbak/2026-09-26/regions_MF191_vz060/MF191_regions_t2.nii.gz, made_at_spacing_um: {vx: 23.75, vz: 600.0}}
+  MF191: {file: labels/regions_t2_mf191_made_at_vz600/MF191_regions_t2.nii.gz, made_at_spacing_um: {vx: 23.75, vz: 600.0}}
 labels_histology_arm:
   MR252: data_arm_preinp
   MR243: data_arm_preinp_r058c    # MM1: s03, s05 _0001 re-masked (the mask's brightness clipped, not wrapped); s03 _0001 re-matched
@@ -80,7 +80,7 @@ bf_canon2_s8w: bftemplate/d2b/canon2_s8w              # the step-8 weights (the 
 bf_precision_rule: bftemplate/d2b/s8/precision_d2bs8/precision_rule_b1.json   # tau2, s2_interp, s2_syn(d) of the finish
 
 # --- added 1 Nov 2026 (the records the paper reads since 22 Oct) ---
-nnunet_raw: models/nnUNet_raw                         # the 3D networks' training sets (imagesTr case names; s1_segmentation_r057)
+nnunet_training_sets: models/nnunet_training_sets     # the earlier networks' training-set records: <Dataset>/dataset.json, imagesTr.txt (s1_segmentation_r057)
 template_mri: template/mri                            # the MRI template's channels and masks (linc_mri_*.nii.gz)
 atlas_nmt: mri/tc/atlas_v2/NMT_v2.0_sym               # the template <-> NMT v2 mapping of record: run/ (H, Hinv, F, G), SARM_level6_in_template
 nmt_label_keys: labels/r058_nmt_tables                # CHARM_key_all.txt: the tables_CHARM/ folder of the public NMT v2.0 sym archive

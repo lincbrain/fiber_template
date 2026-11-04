@@ -20,8 +20,9 @@ runs on one GPU (48 GB for the batch of record); everything else runs on CPU. Th
 ## Environment
 
 - `env/linc.yml` for the members, the run trees and the finish. The patched driver, and the two steps that import it for its own
-  averaging functions (marked `$PY_MRI` below), run in `env/mri.yml` (`PY_MRI`, as in `reproduce/Makefile`), the MMORF environment
-  of record: fsl-mmorf 1.0.1, fslpy, file-tree, fsl-sub.
+  averaging functions (marked `$PY_MRI` below), run in the same `env/linc.yml` (`PY_MRI` names its Python, as in
+  `reproduce/Makefile`), which holds fsl-mmorf 1.0.1, fslpy, file-tree and fsl-sub (until 3 Nov 2026 they had their own
+  `env/mri.yml`).
 - The driver, edited (our change ships only as our own lines: `linc/construction/patches/README.md`):
   ```
   git clone https://git.fmrib.ox.ac.uk/cart/mm-template-construction.git && cd mm-template-construction && git checkout f4907f4
@@ -38,7 +39,7 @@ runs on one GPU (48 GB for the batch of record); everything else runs on CPU. Th
     every average (affine templates, average warps, nonlinear templates): sum_i (w_i + 1e-3) I_i / sum_i (w_i + 1e-3);
   - **zero-weight inputs:** an input whose weight is zero everywhere (TPL's blockface) is left out of the intensity normalization
     region.
-- FSL 6.0.7.4 (`FSLDIR`); MMORF 1.0.1 (`LINC_MMORF_EXE` = the `mmorf_cuda` of env/mri.yml), and `linc/construction/blockface_shim` first on
+- FSL 6.0.7.4 (`FSLDIR`); MMORF 1.0.1 (`LINC_MMORF_EXE` = the `mmorf_cuda` of env/linc.yml), and `linc/construction/blockface_shim` first on
   `PATH` when the driver runs: the shim rewrites TPL's MMORF call only (blockface weight 0, a stand-in image and a ones mask, and a
   ones blockface bias field afterwards), because MMORF's cost is undefined for an all-zero moving image or mask.
 - Inputs: each brain's volume with its missing sections synthesized and its synthesis records (`linc/completion`,

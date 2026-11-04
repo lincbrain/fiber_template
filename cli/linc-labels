@@ -87,10 +87,10 @@ def cmd_interpolate(a, cfg):
         import yaml
         from linc.histology import pieces
         regions = _p(getattr(a, "regions", None), L("regions"))
-        scale = None
-        if getattr(a, "regions_frame", "reconstruction") == "reconstruction":
-            hcfg = yaml.safe_load((Path(LB.CONFIG).parent / "histology.yaml").read_text())
-            scale = pieces.regions_scale(LB.subject_config(S), (hcfg["regions"].get("made_at_spacing_um") or {}).get(S))
+        hcfg = yaml.safe_load((Path(LB.CONFIG).parent / "histology.yaml").read_text())
+        made = ({"vx": a.regions_spacing_um[0], "vz": a.regions_spacing_um[1]} if getattr(a, "regions_spacing_um", None)
+                else (hcfg["regions"].get("made_at_spacing_um") or {}).get(S))          # as linc-histology: no entry -> factor 1
+        scale = pieces.regions_scale(LB.subject_config(S), made)
         out = _p(a.out, L("labels") / "blockface" / "tracer")
         rec, outs = IP.interpolate_v2(S, registrations=_p(a.registrations, L("registrations")), match_table_path=_p(a.match_table, L("match_table")),
                                       first_photo_number=a.first_photo if a.first_photo is not None else LB.first_photo(S),
@@ -164,8 +164,9 @@ def main(argv=None):
     p.add_argument("--interp-dir")
     p.add_argument("--method", choices=["v2", "v1"], help="v2 = the interpolation of record since 3 Nov 2026 (groups, per-hemisphere pairing); v1 = per class, with the RGB volume (default: configs/labels.yaml interpolate.method)")
     p.add_argument("--regions", help="v2: the atlas regions volume (default: layout regions)")
-    p.add_argument("--regions-frame", choices=["reconstruction", "current"], default="reconstruction",
-                   help="v2: the regions' frame: the spacing they were made at (configs/histology.yaml regions.made_at_spacing_um, scaled to the brain's calibrated frame) or the grid's own")
+    p.add_argument("--regions-spacing-um", nargs=2, type=float, metavar=("VX", "VZ"),
+                   help="v2: the spacing (um) the regions were made at, in place of configs/histology.yaml's entry for the brain (a brain "
+                        "not listed: factor 1), as in linc-histology")
     for name in ("carry", "all"):
         p = sub.add_parser(name, parents=[common])
         p.add_argument("--labels", nargs="*", help="dense labels (default: labels/blockface/tracer/*_bfnative_L2_demons.nii.gz)")

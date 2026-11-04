@@ -14,12 +14,12 @@ or step by step:
 
 | Step | Command | What it does (paper step) |
 |---|---|---|
-| photos | `linc-reconstruct photos --subject <ID>` | renames the photographs into a section series and segments the brain in each with the 2D nnU-Net (1) |
+| photos | `linc-reconstruct photos --subject <ID>` | renames the photographs into a section series and segments the brain in each with the photograph network (1) |
 | stack | `linc-reconstruct stack --subject <ID>` | stacks the photographs and their masks |
 | prepare | `linc-reconstruct prepare --subject <ID>` | corrects the camera jumps with TIRL (2), marks and pre-fills missing sections, drops small 3D components, crops, corrects illumination and brightness, exports the background-intact volume |
-| mask | `linc-reconstruct mask --subject <ID>` | segments the brain in 3D with an nnU-Net (4) |
+| mask | `linc-reconstruct mask --subject <ID>` | segments the brain in 3D with the brain-mask network (4) |
 | volume | `linc-reconstruct volume --subject <ID>` | the reconstruction: interpolates missing sections by demons registration (3), corrects illumination, brightness steps and color (5), fills the marker tubes (6) |
-| tubes | `linc-reconstruct tubes --subject <ID>` | segments the marker tubes in 3D with an nnU-Net (6) and re-fills them if they changed |
+| tubes | `linc-reconstruct tubes --subject <ID>` | segments the marker tubes in 3D with the tube network (6) and re-fills them if they changed |
 | spacing | `linc-reconstruct spacing --subject <ID>` | writes the calibrated spacing into the headers |
 
 Outputs go to `$LINC_DATA/sub-<ID>/blockface/`: `<ID>_blockface.ome.zarr` (in-plane levels L1 to L4, native section step),
@@ -28,8 +28,8 @@ Outputs go to `$LINC_DATA/sub-<ID>/blockface/`: `<ID>_blockface.ome.zarr` (in-pl
 ## Environments
 
 - The Python steps: `env/tirl.yml` (TIRL 3.6.2 is also imported to read the camera-jump registrations back).
-- nnU-Net 2.5.1: `env/nnunet.yml`; set `NNUNET_BIN` to its bin folder and `LINC_MODELS` to the folder holding
-  `nnUNet_results/` (`models/blockface_segmentation.md`, `models/verify_weights.py`).
+- The networks: `env/deep.yml` (`LINC_SEGMENT_PYTHON`); `LINC_MODELS` holds their weights in `segment/<model>/`
+  (`models/segmentation.md`).
 - `tirl` (with tirlscripts-mgh-linc 1.0.1): `TIRL_BIN`; zarr2nii (nifti-zarr 1.0.0rc6): installed in `env/tirl.yml` (found on PATH; `ZARR2NII_BIN` points at another installation).
 - `LINC_RAW`: the root the photograph folders in `configs/subjects/<ID>.yaml` (`raw`) are relative to.
 

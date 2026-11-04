@@ -50,6 +50,29 @@ def _child_cuda_visible(dev):
     return vis[i] if i < len(vis) else dev
 
 
+# GPU memory of the deformable stage, measured: peak GiB = 0.10 + 1.286 x million voxels of the fixed working grid (33 runs of the
+# registrations to each brain's own b0 and of the cross-modal alignments, 2 Oct 2026; the 3 Nov dry run: MR252 18.0 Mvox, 23.2 GiB;
+# MF191 12.4 Mvox, 16.1 GiB, both as predicted).
+GPU_GIB_BASE, GPU_GIB_PER_MVOX = 0.10, 1.286
+
+
+def gpu_check(n_vox, env, base=GPU_GIB_BASE, per_mvox=GPU_GIB_PER_MVOX, label="the deformable stage"):
+    """Stop at once, with one line, when the GPU the child process will see (env's CUDA_VISIBLE_DEVICES, its device 0) has less free
+    memory than the stage needs (base + per_mvox x million grid voxels, GiB). Read with the engine's own torch."""
+    need = base + per_mvox * n_vox / 1e6
+    code = "import torch; f, t = torch.cuda.mem_get_info(0); print(f / 2**30, t / 2**30)"
+    out = subprocess.run([_python(), "-c", code], env=env, capture_output=True, text=True)
+    if out.returncode != 0:
+        return                                                          # no CUDA here: the engine itself will say so
+    free, total = (float(v) for v in out.stdout.split())
+    card = f"GPU {env.get('CUDA_VISIBLE_DEVICES', '0')}"
+    print(f"  [featurereg] {label}: needs about {need:.1f} GiB ({n_vox / 1e6:.1f} million voxels); {card} has {free:.1f} of "
+          f"{total:.1f} GiB free", flush=True)
+    if free < need:
+        raise SystemExit(f"{label} needs about {need:.1f} GiB free on the GPU; {card} has {free:.1f} GiB free. Run on a freer card "
+                         "(e.g. --device cuda:1, or CUDA_VISIBLE_DEVICES=1) or wait until this one frees up; nothing was registered.")
+
+
 def _x(s):
     """'8,4,2,1' -> '8x4x2x1' (the CLI's per-level separator)."""
     return "x".join(t.strip() for t in str(s).split(",") if t.strip())
@@ -66,7 +89,7 @@ def register(fixed, moving, fmask, mmask, outdir, *, affine=None, resolution=0.1
              smooth_grad_sigma=1.5, smooth_warp_sigma=0.5, fixed_clip_percentile=99.0,
              moving_clip_percentile=None, mindssc=True, device="cuda:0", lr=1.0, loss="cc",
              channel_chunk=8, fused_ops="off", fill_fixed_mask_holes=True, gate_features_by_mask=True,
-             seed=12345, verbose=True, allow_unmasked_reason=None):
+             seed=12345, verbose=True, allow_unmasked_reason=None, gpu_per_mvox=GPU_GIB_PER_MVOX):
     import numpy as np
     import nibabel as nib
     import nibabel.processing as nip
@@ -145,6 +168,8 @@ def register(fixed, moving, fmask, mmask, outdir, *, affine=None, resolution=0.1
     env.pop("LINC_UNGATED_FEATURES", None)
     if not gate_features_by_mask:
         env["LINC_UNGATED_FEATURES"] = "1"
+    if str(device).startswith("cuda"):
+        gpu_check(int(np.prod(F.shape[:3])), env, per_mvox=gpu_per_mvox)   # gpu_per_mvox: a caller's own measured rate
     cmd = [_python(), str(RUNNER)] + argv
     print("  [featurereg] $", " ".join(cmd), flush=True)
     subprocess.run(cmd, check=True, env=env)

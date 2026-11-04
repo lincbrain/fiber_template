@@ -5,10 +5,10 @@ The whole method, from the raw data to the paper's numbers and figures.
 **You need** each brain's raw data and hand-made inputs (`docs/inputs.md`), the environments (`docs/install.md`) and a GPU.
 
 **What it does**, in this order:
-1. prepares the MRI of each brain with MRI;
-2. builds the MRI template from four of those brains;
+1. builds the MRI template from the scanner's files of four brains;
+2. prepares the MRI of each sectioned brain with MRI for its registration;
 3. reconstructs each brain's blockface volume from its photographs;
-4. aligns each blockface volume to the MRI template, through the brain's own MRI or, without MRI, directly;
+4. aligns each blockface volume to the MRI template, through the brain's own MRI or, without MRI, by the cross-modal alignment;
 5. synthesizes each volume's missing caudal tissue;
 6. builds the blockface template from the 21 volumes with their synthesized tissue;
 7. registers the blockface template to the MRI template and registers the template to NMT v2, INIA19 and CIVM-R;
@@ -20,9 +20,9 @@ and numbers records to `$LINC_NUMBERS`.
 
 | Product | Command | Config | Environment | Time |
 |---|---|---|---|---|
+| the MRI template, from the four brains' Bruker sessions | `reproduce/templates/build_mri_channels.py` | `mri_construction.yaml` | linc; Julia, MRtrix3, FSL, ANTs, TORTOISE; MMORF on a 48 GB GPU | about 5 hours per brain, then 3.5 days on the GPU |
 | a brain's prepared MRI (brain mask, bias-corrected b0) | `cli/linc-mri prep` | `mri_construction.yaml` | linc, GPU | under a minute |
-| the MRI template | `reproduce/templates/build_mri_channels.py` | `mri_construction.yaml` | linc; MMORF on a 48 GB GPU | 3.5 days on the GPU, about 1 hour on a CPU |
-| a brain's blockface volume | `cli/linc-reconstruct all` | `blockface.yaml`, `subjects/<ID>.yaml` | tirl, GPU | about 2.5 hours for 1,400 photographs |
+| a brain's blockface volume | `cli/linc-reconstruct all` | `blockface.yaml`, `subjects/<ID>.yaml` | tirl, GPU | about 10 hours per brain |
 | the blockface volume in its own b0 | `cli/linc-register mri` | `registration.yaml` | linc, GPU | 13 minutes |
 | the b0 in the MRI template | `cli/linc-register mri-template` | `registration.yaml` | linc, GPU | 4 minutes |
 | a brain without MRI in the MRI template | `cli/linc-register direct-placement` | `registration.yaml` | linc, GPU | 5 minutes |
@@ -35,6 +35,7 @@ and numbers records to `$LINC_NUMBERS`.
 | the numbers records | `make numbers` | `reproduce/numbers/` | each record's own | `docs/reproduce.md` |
 | the figures | `make figures` | `figures.yaml` | linc; viz3d for Fig. 10 | `docs/reproduce.md` |
 
+From the scanner's files, the MRI build reproduces the paper's files, with the small differences `docs/mri.md` gives.
 The weights of the segmentation networks come with the data release; training them again is optional, and `--plan` lists a task's
 cases and brains first. Configs are in `configs/`. The times are from one node with an NVIDIA RTX 6000 Ada (48 GB). The per-brain commands are explained one
 by one in `docs/walkthrough.md`.
@@ -48,6 +49,9 @@ $PY reproduce/templates/build_mri_channels.py --plan
 $PY reproduce/templates/build_mri_channels.py --step prepare-MF283
 $PY reproduce/templates/build_mri_channels.py --from assemble --to channels
 ```
+
+The MRI build starts each brain from its Bruker sessions (step `raw-dwi-<ID>`), which `configs/mri_construction.yaml` `raw`
+names under `$LINC_RAW`, or from the data release's preprocessed files (step `tensor-<ID>`).
 
 `--plan` runs nothing. It prints every step with its environment, its time, its command, its inputs and its outputs. `--step` runs
 one step, and `--from` and `--to` run a range. Each step writes a provenance JSON beside its output and is not rerun without `--force`.

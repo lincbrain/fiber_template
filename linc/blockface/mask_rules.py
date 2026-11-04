@@ -1,4 +1,4 @@
-"""The post-processing rules of the blockface masks, as plain numpy / scipy functions, so both engines and the tests share one copy.
+"""The post-processing rules of the blockface masks, as plain numpy / scipy functions, so the pipeline and the tests share one copy.
 
 You need
   a predicted mask (a boolean array).
@@ -8,7 +8,7 @@ What it does
     tube_rule         step 6: marker tubes kept left of the brain's x-centroid + a tolerance, inside the brain, components smaller
                       than min_vox dropped (segment3d.post_holes)
   These are the rules the paper's masks were made with (the analysis project's code/tasks.py normalize_masks and code/segment.py).
-  Within linc-reconstruct each is applied once, here, whichever engine predicted the mask; each linc-segment model's spec.json
+  Within linc-reconstruct each is applied once, here, to the network's raw mask; each linc-segment model's spec.json
   holds the same rule for use outside the pipeline (tests/test_blockface_rules.py checks that they agree).
 You get
   the post-processed mask (the same shape).

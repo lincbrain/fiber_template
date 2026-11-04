@@ -75,7 +75,7 @@ def main():
         rp["nonlinear"].update(scaling=[4, 2], smoothing=[0, 0], maxiter=[10, 10])
         smoke_cfg = tmp / "histology_smoke.yaml"; smoke_cfg.write_text(yaml.safe_dump(hc, sort_keys=False))
         cmd = [sys.executable, str(REPO / "cli" / "linc-histology"), "all", "--config", str(smoke_cfg), "--subject", R.S, "--store", str(store), "--histology", str(hd),
-               "--table", str(table), "--regions", str(regions), "--regions-frame", "current", "--idx0", "1", "--out", str(out),
+               "--table", str(table), "--regions", str(regions), "--idx0", "1", "--out", str(out),
                "--threads", str(min(12, os.cpu_count() or 1))]
         print("  $", " ".join(cmd), flush=True)
         subprocess.run(cmd, check=True, cwd=str(REPO), env=env)

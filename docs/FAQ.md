@@ -6,10 +6,10 @@
 Specimen IDs (for example `sub-MR252` for MM2). `docs/specimen_labels.json` maps one to the other.
 
 **Which Python environment do I need?** `bash env/install.sh` builds them all: four, because their packages conflict (`linc`,
-`deep`, `anatomix`, `tirl`), and two optional ones (`nnunet`, only to reproduce the earlier networks' masks; `viz3d`, for the 3D
+`deep`, `anatomix`, `tirl`), and one optional one (`viz3d`, for the 3D
 tracer figure). `env/README.md` says which one runs each step, and each stage's page in `docs/` names its own.
 
-**Do I need a GPU?** Feature-based registration (anatomix + FireANTs), the synthesis of missing tissue and the nnU-Net models run on a GPU. The
+**Do I need a GPU?** Feature-based registration (anatomix + FireANTs), the synthesis of missing tissue and the segmentation networks run on a GPU. The
 paper's runs used 24 to 48 GB cards. The reconstruction uses the GPU for its segmentation networks; the label steps, numbers and figures run on a CPU.
 
 **I only want the template. Do I need any of this?** No. The template is a data release (see the README). This code is for

@@ -1,7 +1,7 @@
 # Inputs
 
-Everything the code assumes it is given, in three kinds: data, made by an instrument (the MRI given preprocessed: denoised,
-eddy-corrected and, for SANDI, fitted); hand-made inputs, made once per brain by a person; and downloads. Everything else is made by the code. Paths are relative to a brain's folder, `$LINC_DATA/sub-<ID>/`, unless
+Everything the code assumes it is given, in three kinds: data, made by an instrument; hand-made inputs, made once per brain by a
+person; and downloads. Everything else is made by the code. Paths are relative to a brain's folder, `$LINC_DATA/sub-<ID>/`, unless
 they start with another root (`docs/data_layout.md`).
 
 ## Data
@@ -9,15 +9,14 @@ they start with another root (`docs/data_layout.md`).
 | Input | Format and location | Read by |
 |---|---|---|
 | blockface photographs | JPEG, one per section, RGB, numbered in cutting order; one folder per brain under `$LINC_RAW`, named by `raw` in `configs/subjects/<ID>.yaml`, the numbers read by its `raw_regex` | `linc-reconstruct` |
-| diffusion MRI, preprocessed | NIfTI: the b0, `mri/dwi/b0.nii.gz` (0.25 mm), and the denoised, eddy-corrected series with its log, gradient table and fit mask, `mri/dwi/raw/` | `linc-mri`, the MRI template build |
-| T2-weighted MRI, preprocessed | NIfTI, `mri/t2/`: the denoised 32-echo multi-echo series (0.5 mm), whose fifth echo is the T2-weighted image | the MRI template build |
-| SANDI maps | NIfTI, `mri/micro/frac1_brain.nii.gz` and `frac2_brain.nii.gz` (soma and neurite fractions), from a second diffusion session (0.5 mm) | the MRI template build |
-| NMT v2 landmarks | NIfTI and ITK affine, `mri/landmarks/`: NMT v2's SARM labels on the b0 and the b0 → NMT v2 affine, from a registration of NMT v2 to the b0 | the MRI template build |
+| MRI sessions | Bruker ParaVision session folders (numbered scans, each with its `method`, `acqp` and `pdata/<n>/2dseq`): the diffusion scans, the 32-echo multi-echo scan and a second diffusion session for SANDI, under `$LINC_RAW`, as `configs/mri_construction.yaml` `raw` names them | the MRI template build |
+| a b0 or T2-weighted image | NIfTI, for a brain that is only registered to the template | `linc-mri prep` |
 | histology sections | JPEG 2000, one per section (`sourcedata/sub-<ID>/micr/<section>.jp2`), and their OME-Zarr stacks (`rawdata/sub-<ID>/micr/`), from LINC dataset 000003 | `linc-histology`, `linc-labels` |
 
-The MRI was acquired ex vivo on a 4.7 T Bruker scanner and processed by the lab's pipelines: conversion, MP-PCA denoising (MRtrix3),
-FSL `eddy_correct`, TORTOISE 4.1.0 for the second diffusion session, and the SANDI fit (Microstructure.jl). A new brain that is only
-registered to the template needs one b0 or T2-weighted image (`linc-mri prep`).
+The MRI was acquired ex vivo on a 4.7 T Bruker scanner. The MRI template build makes everything else from the sessions: the
+preprocessed diffusion, T2-weighted and SANDI images, the registration of NMT v2 to each brain, and the registrations between each
+brain's sessions. A new brain that is only registered
+to the template needs one b0 or T2-weighted image (`linc-mri prep`).
 
 ## Hand-made inputs
 

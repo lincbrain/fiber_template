@@ -96,7 +96,7 @@ class Subject:
         return os.path.join(self.root, "_work")
 
     @property
-    def seg3d_dir(self) -> str:                 # scratch for the 3D nnU-Net (RGB channels in/ + prediction out/)
+    def seg3d_dir(self) -> str:                 # scratch for the 3D networks (RGB channels in/ + prediction out/)
         return os.path.join(self.work, "seg3d")
 
     @property
@@ -150,7 +150,7 @@ class Subject:
         return os.path.join(self.root, f"{self.subject}.info")
 
     @property
-    def slices(self) -> str:                    # 00: the renamed photographs (2D nnU-Net input)
+    def slices(self) -> str:                    # 00: the renamed photographs (the 2D network's input)
         return os.path.join(self.root, "00_slices")
 
     def brainmask(self, kind: str = "00_predict") -> str:   # 01: 2D brain masks (x50 PNGs): 00_predict | 01_final
@@ -190,10 +190,6 @@ class Subject:
     @property
     def mask_edit_zarr(self) -> str:
         return os.path.join(self.work, "brainmask_edit.ome.zarr")
-
-    @property
-    def brainmask_predict(self) -> str:         # the raw 2D nnU-Net prediction (before post-processing)
-        return os.path.join(self.work, "brainmask_predict")
 
     @property
     def jumps_dir(self) -> str:                 # the camera-jump frames (TIRL input)

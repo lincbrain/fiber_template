@@ -9,7 +9,7 @@ What it does
                              component, holes filled
     prep_holes, post_holes   the tight-cropped color volume at 0.40 mm sections -> the network -> tubes in the left hemisphere
                              only, inside the brain, specks dropped
-  The two rules are mask_rules.largest_cc_fill and tube_rule, applied once here whichever engine predicted.
+  The two rules are mask_rules.largest_cc_fill and tube_rule, applied once here.
 You get
   curated/<S>_bg (the mask network's input), curated/<S>_mask and curated/<S>_holes on the curated grid. They are a starting point:
   a hand correction saved as <S>_mask_edited or <S>_holes_edited wins in the reconstruction, and is never overwritten here.
@@ -52,7 +52,7 @@ def _z_affine(A, f):
 
 
 def _write_channels(img_rgb, aff, cfg):
-    """Write the RGB volume as nnUNet channels <S>_0000/1/2.nii.gz into a fresh seg3d/in/ (+ ensure out/)."""
+    """Write the RGB volume as the network's channels <S>_0000/1/2.nii.gz into a fresh seg3d/in/ (+ ensure out/)."""
     IN = os.path.join(cfg.seg3d_dir, "in")
     if os.path.isdir(IN):
         shutil.rmtree(IN)

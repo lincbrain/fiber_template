@@ -9,7 +9,8 @@
 #   real folders of yours, with every file inside a link to the record (an OME-Zarr store is one link). Safe to rerun: what exists
 #   is left alone, missing parts are added; nothing is deleted or overwritten.
 #   --rebuild ID          for a brain you will reconstruct yourself: blockface/ gets only the hand inputs, as copies
-#                         (curated/<ID>_*_edited.*, 01_brainmask/01_final/, and for MF8 / MF9 the recorded series alignment that
+#                         (curated/<ID>_mask_edited.nii.gz and _holes_edited.nii.gz, 01_brainmask/01_final/ (MF8 / MF9: the
+#                         masks from before their series alignment), and for MF8 / MF9 the recorded series alignment that
 #                         configs/subjects/<ID>.yaml series_alignment names), and no reconstruction of record
 #   --raw NAME=PATH       <dest>/raw/NAME links to PATH (the photographs, the MRI and histology sources)
 #   --link ID:PATH=TARGET <dest>/data/sub-ID/PATH links to TARGET (an input of record kept outside data/sub-ID, e.g. the label
@@ -23,9 +24,10 @@
 #   <dest>/template/       (point LINC_TEMPLATE here)  links to $LINC_RECORDS/template/*, plus frames/mri_template_0p5.nii.gz (the
 #                          frame linc-register --place-b0 reads)
 #   <dest>/raw/            (point LINC_RAW here)       the --raw links
+#   <dest>/.complete       written last, when the tree is complete (env/lab.sh builds again when it is missing)
 set -eu
-[ $# -ge 1 ] && [ "$1" != "-h" ] && [ "$1" != "--help" ] || { sed -n '2,25p' "$0" | cut -c3-; exit 0; }
-DEST=$1; shift
+[ $# -ge 1 ] && [ "$1" != "-h" ] && [ "$1" != "--help" ] || { sed -n '2,27p' "$0" | cut -c3-; exit 0; }
+DEST=$1; shift; ARGS="$*"
 REC=${LINC_RECORDS:?set LINC_RECORDS to the project folder holding data/ and template/ (env/lab.sh sets it)}
 REPO=$(cd "$(dirname "$0")/.." && pwd)
 IDS=(); REBUILD=(); RAWS=(); LINKS=()
@@ -88,9 +90,13 @@ for S in "${IDS[@]}"; do
   fi
   if is_rebuild "$S"; then                # the hand inputs only, as copies (linc-reconstruct writes the rest)
     mkdir -p "$dst/blockface/curated" "$dst/blockface/01_brainmask/01_final"
-    for f in "$src/blockface/curated/${S}"_*_edited.*; do [ -e "$f" ] && copy "$f" "$dst/blockface/curated/$(basename "$f")"; done
-    for f in "$src/blockface/01_brainmask/01_final"/*; do [ -e "$f" ] && copy "$f" "$dst/blockface/01_brainmask/01_final/$(basename "$f")"; done
+    for k in mask holes; do                # the hand edits the reconstruction reads (curated/<ID>_mask_edited, _holes_edited)
+      f="$src/blockface/curated/${S}_${k}_edited.nii.gz"; [ -e "$f" ] && copy "$f" "$dst/blockface/curated/$(basename "$f")"
+    done
     al=$(awk '/^series_alignment:/{f=1; next} f && /^[^ #]/{f=0} f && /^ *align:/{print $2; exit}' "$REPO/configs/subjects/$S.yaml" 2>/dev/null)
+    m="$src/blockface/01_brainmask/01_final"  # the accepted photograph masks; for MF8 / MF9 those from before the series alignment,
+    [ -n "$al" ] && [ -d "$src/blockface/01_final_prealign" ] && m="$src/blockface/01_final_prealign"   # which the rebuild applies
+    for f in "$m"/*; do [ -e "$f" ] && copy "$f" "$dst/blockface/01_brainmask/01_final/$(basename "$f")"; done
     if [ -n "$al" ] && [ -e "$src/blockface/$al" ]; then          # MF8, MF9: the recorded alignment to their external series
       mkdir -p "$(dirname "$dst/blockface/$al")"; copy "$src/blockface/$al" "$dst/blockface/$al"
     fi
@@ -108,5 +114,6 @@ for kv in "${LINKS[@]:-}"; do                # ID:PATH=TARGET -> <dest>/data/sub
   [ -e "$tgt" ] || { echo "--link $kv: no $tgt"; continue; }
   mkdir -p "$(dirname "$DEST/data/sub-$id/$rel")"; link "$tgt" "$DEST/data/sub-$id/$rel"
 done
+echo "$(date '+%F %T') tools/make_local_data.sh $DEST $ARGS" > "$DEST/.complete"   # written last: env/lab.sh rebuilds a tree without it
 echo "made $DEST: $n_link links, $n_copy copies"
 echo "  export LINC_DATA=$DEST/data LINC_TEMPLATE=$DEST/template LINC_RAW=$DEST/raw"

@@ -14,7 +14,8 @@ GPU, shared with other jobs.
 ## Before you start
 
 - The setup in `docs/install.md` (on the lab cluster, `source env/lab.sh`).
-- A GPU, for the networks and the deformable registrations.
+- A GPU, for the networks and the deformable registrations. Each GPU step below gives the memory it needs; check the card's free
+  memory with `nvidia-smi`, and if the card is busy, choose another one with `CUDA_VISIBLE_DEVICES`.
 
 Every command below writes its results under `LINC_DATA` or `LINC_WORK`. The reconstruction reads `LINC_REBUILD_DATA`, a data folder
 that holds only the brains' hand-made inputs, so that it starts from the photographs.
@@ -32,8 +33,19 @@ $PY cli/linc-mri prep --subject MF283 --image $LINC_PRODUCTS/mri/data/sub-MF283/
 - `dwi/b0_brain.nii.gz` and `dwi/b0_brain_n4.nii.gz` (with its `_bias`), the masked and the bias-corrected brain;
 - `dwi/b0_brain_n4.provenance.json`, every step with its tool and version.
 
-It ends by printing the next command, the first registration (section 3). With the brain's hand-made mask instead
-(`--mask <mask>`), it reproduces the paper's preprocessed files of MF1 voxel for voxel. `docs/mri.md` gives the options.
+It ends by printing the next command, the first registration (section 3). `docs/mri.md` gives the options.
+
+With the brain's hand-made mask, `masks/dwi_brain_mask.nii.gz`, it reproduces the paper's preprocessed files of MF1 voxel for voxel
+(32 s, on a CPU):
+
+```bash
+$PY cli/linc-mri prep --subject MF283 --image $LINC_PRODUCTS/mri/data/sub-MF283/dwi/b0.nii.gz \
+    --mask $LINC_PRODUCTS/mri/data/sub-MF283/masks/dwi_brain_mask.nii.gz --mri-root $LINC_WORK/MF283_hand_mask
+$PY tools/compare_nifti.py $LINC_WORK/MF283_hand_mask/dwi $LINC_PRODUCTS/mri/data/sub-MF283/dwi \
+    b0_brain.nii.gz b0_brain_n4.nii.gz b0_brain_n4_bias.nii.gz
+```
+
+All three were identical.
 
 ## 2. Reconstruct the blockface volumes (MM2, MM14)
 
@@ -47,9 +59,11 @@ LINC_DATA=$LINC_REBUILD_DATA $PY_TIRL cli/linc-reconstruct all --subject MR263
 
 It runs its steps in order and prints each as it starts: `=== <ID>: photos`, then `stack`, `prepare`, `mask`, `volume`, `tubes` and
 `spacing`. In `photos`, the photographs are read and the network makes their brain masks, one line per photograph; `volume` ends with
-`=== DONE <ID> in <s>s`. On one node, reading the photographs took about 1.5 s each, their masks 0.8 to 4 s each on a shared GPU, and
-`prepare` about 30 minutes for about 1,400 photographs. The whole reconstruction of MM2 (1,440 photographs) or MM14 (1,401) takes
-about 2.5 hours.
+`=== DONE <ID> in <s>s`. A reconstruction takes about 10 hours per brain. For MM2 (1,440 photographs), the paper's run
+(`MR252_timing.tsv` in its blockface folder) took 1.6 hours for `photos`, 1.4 hours for `stack`, 4.9 hours for `prepare` and 2.7
+hours for `mask`, `volume` and `tubes`; MM14's (1,401 photographs) took 2.2, 0.8, 4.6 and 0.8 hours. The longest step is
+`prepare`, whose camera-jump registrations run one after another. Only the segmentation steps use the GPU: about 10 GB of free memory for `mask` and `tubes`, 1.5 GB for
+`photos`.
 
 Compare a volume with the paper's (here MM2's):
 
@@ -58,12 +72,9 @@ $PY tools/compare_reconstruction.py MR252 $LINC_REBUILD_DATA/sub-MR252/blockface
 ```
 
 It compares every level of the OME-Zarr stores (arrays, scale and translation), the NIfTI products (arrays and affines) and
-`MR252.info`, one line each, and exits with status 0 when all are identical. The results of this comparison for MM2 and MM14 are
-not yet on this page.
-
-MF8's volume of record was rebuilt on 24–26 Sep 2026 with an earlier padding of its canvas. The release reproduces its aligned
-photographs, brain mask and tubes exactly, and its volume up to a shift of the canvas by less than a voxel (its origin moves by 0.5
-and 2 µm; 26 % of the voxels differ, by a mean of 0.5 on a scale of 255).
+`MR252.info`, one line each, and exits with status 0 when all are identical. MM2's volume, rebuilt from its photographs in 9 hours 10 minutes on a shared
+node, was identical to the paper's in every item. MM14's (9 hours 52 minutes) matched the paper's up to the final volume, which
+was 0.4 % brighter overall.
 
 ## 3. Register the brains into the template's frame
 
@@ -75,7 +86,7 @@ First the blockface volume to its own b0 (on the GPU, through `ANATOMIX_PYTHON`)
 $PY cli/linc-register mri --subject MR252
 ```
 
-About 13 minutes on a shared GPU, with 23 GB of GPU memory. It ends with
+About 13 minutes on a shared GPU, with 23 GB of GPU memory (15 to 25 GB, depending on the brain). It ends with
 `done: $LINC_WORK/register/MR252 | entry $LINC_DATA/sub-MR252/xfm/bf-native__to__b0-native`. It writes the registration's entry,
 `$LINC_DATA/sub-MR252/xfm/bf-native__to__b0-native/` (the warp `MR252_warp.nii.gz`, its two pull matrices and `meta.json`), and the
 products in `$LINC_WORK/register/MR252/`, among them the blockface volume in the b0 (`MR252_bf_nonlin.nii.gz`) and the
@@ -90,6 +101,22 @@ done
 On the GPU model of the paper's runs, all three were identical; in another GPU session or on another model, the warp can differ by
 floating point (`docs/reproduce.md`, Exact reproduction).
 
+Then check the registration. `qc` checks its linear part (scales and rotations), the normalized cross-correlation of the two
+images, the folds and the displacement of its warp, and the outline of the moved brain against the target's, and records PASS or
+FAIL in the registration's entry, which clears the warning "link without passing QC". For one of the paper's brains, the outline
+target is the b0 mask the registration used (`registration_to_own_mri` in `configs/subjects/<ID>.yaml`); for a new brain, the mask
+`--place-b0` wrote (`<ID>_mri_mask.nii.gz`):
+
+```bash
+R=$LINC_WORK/register/MR252; D=$LINC_DATA/sub-MR252
+$PY cli/linc-register qc --preset bf2b0 --fixed $R/MR252_mri.nii.gz --moved $R/MR252_bf_nonlin.nii.gz --warp $R/MR252_warp.nii.gz \
+    --mat $R/linear/MR252_bf2mri_dof9.mat --mat-kind fsl --mat-src $D/blockface/MR252_blockface_iso_grey.nii.gz \
+    --mat-ref $R/linear/MR252_b0_masked.nii.gz --outline-target $D/mri/MR252_mri_mask_r1pair_reg_2026-10-03.nii.gz \
+    --slab-iso-mask $D/blockface/MR252_mask_iso.nii.gz --entry $D/xfm/bf-native__to__b0-native --name MR252
+```
+
+30 s, on a CPU. It ends with `outline PASS`.
+
 
 Then its b0 to the MRI template (on the GPU, through `ANATOMIX_PYTHON`):
 
@@ -98,7 +125,8 @@ $PY cli/linc-register mri-template --subject MR252 \
     --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
 ```
 
-About 4 minutes (4 min 16 s). It writes the registration's entry, `$LINC_DATA/sub-MR252/xfm/b0-native__to__mri-template/`. The
+About 4 minutes (4 min 16 s), with 13 GB of GPU memory (12 to 14 GB, depending on the brain). It writes the registration's entry, `$LINC_DATA/sub-MR252/xfm/b0-native__to__mri-template/`, with its own outline check, so
+no `qc` step follows it. The
 paper's entry sits beside it, in `xfm_record/`; the two differ by floating point only (`docs/reproduce.md`, Exact reproduction).
 The chain from the blockface volume to the template then reads:
 
@@ -127,6 +155,20 @@ done
 
 Both were identical. Run the registrations one at a time on one GPU: two at once need about 40 GB.
 
+Check it the same way. For the cross-modal alignment, the check runs on the part of the template the brain covers, with the
+brainstem cut flat, which `direct-placement` writes into its output folder (`_fixed_0.25.nii.gz` and its mask); against the whole
+template, the outline would fail where the photographed stack ends:
+
+```bash
+P=$LINC_WORK/direct_placement/MF191
+$PY cli/linc-register qc --preset direct --fixed $P/_fixed_0.25.nii.gz --moved $P/MF191_bf_in_template.nii.gz --warp $P/MF191_warp.nii.gz \
+    --mat $P/MF191_linear_world.txt --mat-kind world --fixed-mask $P/_fixed_mask_0.25.nii.gz \
+    --moved-mask $P/MF191_mask_in_template.nii.gz --outline-target $P/_fixed_mask_0.25.nii.gz \
+    --entry $LINC_DATA/sub-MF191/xfm/bf-native__to__mri-template --name MF191
+```
+
+19 s, on a CPU. It ends with `outline PASS`; the anisotropy of the scales is reported for a cross-modal alignment, not checked.
+
 ## 4. Synthesize the missing caudal tissue (MM2, MF8)
 
 Each brain in two steps: `prepare` makes its folder from its products (on a CPU), then the networks synthesize (on the GPU).
@@ -154,7 +196,14 @@ About 40 s, then 27 s. Keep the single quotes: `{mri}` stands for `$LINC_DATA/su
 Each brain's results are in `$LINC_WORK/complete/<ID>/`: the volume with its synthesized tissue (`<ID>_bf_completed.nii.gz`, and `_rgb` in color), the
 synthesized and the photographed parts (`_bf_synth`, `_bf_real`), the junction (`_seam_ramp`, `_seam_depth`), the photographed
 fraction of each voxel (`_photo_fraction`), the synthesized mask, the b0 used, the color model (`<ID>_chroma.json`) and the
-provenance. Every output volume of both brains is identical, voxel for voxel, to the volumes the paper used.
+provenance. Compare them with the paper's volumes (here MM2's; for MF8, `MF191` in place of `MR252`):
+
+```bash
+$PY tools/compare_nifti.py $LINC_WORK/complete/MR252 $LINC_PRODUCTS/synthesis/out_d3_full/MR252 \
+    MR252_bf_completed.nii.gz MR252_bf_completed_rgb.nii.gz MR252_bf_synth.nii.gz MR252_synth_mask.nii.gz
+```
+
+Every output volume of both brains was identical, voxel for voxel, to the paper's.
 
 ## 5. Register the histology (MM2, MF8)
 
@@ -187,9 +236,9 @@ transform (`fixed4_nonlinear.timg`).
 Compare MM2's registered sections with the paper's:
 
 ```bash
-for p in $(ls $LINC_DATA/sub-MR252/histology/registration/tirl); do
-  cmp -s $LINC_DATA/sub-MR252/histology/registration/tirl/$p/moving4_nonlinear.png \
-         $LINC_PRODUCTS/data_arm_final/sub-MR252/blockface/06_histo2bf/tirl/$p/moving4_nonlinear.png && echo "$p identical" || echo "$p differs"
+R=$LINC_PRODUCTS/data_arm_final/sub-MR252/blockface/06_histo2bf/tirl
+for d in $LINC_DATA/sub-MR252/histology/registration/tirl/*/; do p=$(basename $d)
+  cmp -s $d/moving4_nonlinear.png $R/$p/moving4_nonlinear.png && echo "$p identical" || echo "$p differs"
 done
 ```
 
@@ -197,14 +246,29 @@ All 47 of MM2's components were identical, byte for byte, at every stage.
 
 For MF8, the paper's registration divided its sections with an earlier regions volume, made before MF8's section step was corrected.
 That volume ships as the product `hidden_arm_regions` (`configs/products_blockface.yaml`). Run with it, at the spacing it was made at,
-all 58 of MF8's components are identical to the paper's, byte for byte:
+and into a folder of its own:
 
 ```bash
-$PY_TIRL cli/linc-histology all --subject MF191 <the other arguments, as for MM2> \
-    --regions <the hidden_arm_regions file> --regions-spacing-um 23.75 600
+$PY_TIRL cli/linc-histology all --subject MF191 \
+    --store $LINC_DATA/sub-MF191/blockface/MF191_blockface.ome.zarr \
+    --histology $LINC_RAW/linc_000003/sourcedata/sub-MF191/micr \
+    --table $LINC_PRODUCTS/labels/match_tables/num_MF191.txt \
+    --regions $LINC_PRODUCTS/labels/regions_t2_mf191_made_at_vz600/MF191_regions_t2.nii.gz --regions-spacing-um 23.75 600 \
+    --out $LINC_WORK/mf191_hidden --threads 12 --jobs 2
 ```
 
-This took 18 minutes for the masks, 5 minutes to prepare and 27 minutes to register the 31 components it divides, two at a time.
+The `--out` folder must be new: a folder that already holds a registration is resumed, and every component with results is
+skipped. About 18 minutes for the masks, 5 minutes to prepare and 75 minutes to register the 58 components, two at a time. Compare
+them with the paper's:
+
+```bash
+R=$LINC_PRODUCTS/data_arm_final/sub-MF191/blockface/06_histo2bf/tirl
+for d in $LINC_WORK/mf191_hidden/tirl/*/; do p=$(basename $d)
+  cmp -s $d/moving4_nonlinear.png $R/$p/moving4_nonlinear.png && echo "$p identical" || echo "$p differs"
+done
+```
+
+All 58 of MF8's components, with their masks, were identical to the paper's, byte for byte.
 
 ## 6. Transform the labels into the template (MM2)
 
@@ -212,13 +276,30 @@ Three steps, each with the Python of its environment: the labels go through each
 interpolated between the sections, and are transformed into the template.
 
 ```bash
-$PY_TIRL cli/linc-labels push        --subject MR252
-$PY      cli/linc-labels interpolate --subject MR252
+R=$LINC_PRODUCTS/data_arm_preinp/sub-MR252/blockface/06_histo2bf/tirl
+$PY_TIRL cli/linc-labels push        --subject MR252 --registrations $R
+$PY      cli/linc-labels interpolate --subject MR252 --registrations $R
 $PY      cli/linc-labels carry       --subject MR252 \
     --entry $LINC_DATA/sub-MR252/xfm_record/bf-native__to__b0-native --entry $LINC_DATA/sub-MR252/xfm_record/b0-native__to__mri-template
 ```
 
-About 3 minutes, half an hour and 3 minutes. `carry`, as written, goes through the paper's registrations of MM2 (`xfm_record/`);
+The paper's labels went through the histology registration made on the photographs before the marker tubes' holes were filled
+(`labels_histology_arm` in `configs/products_blockface.yaml`), so `push` and `interpolate` are given that registration
+(`--registrations`); without it, they use your own from section 5. About 3 minutes, half an hour and 3 minutes. `carry`, as written, goes through the paper's registrations of MM2 (`xfm_record/`);
 without `--entry` it goes through your own, from section 3 (`xfm/`). The interpolation writes the interpolated labels under
-`$LINC_DATA/sub-MR252/labels/blockface/tracer/`. Each step reproduces the paper's labels: the pushed sections and the interpolated
-labels byte for byte, and the densities in the template identical.
+`$LINC_DATA/sub-MR252/labels/blockface/tracer/`. Compare each step's labels with the paper's (the gzip bytes differ, so the arrays
+are compared):
+
+```bash
+D=$LINC_DATA/sub-MR252/labels
+P=$LINC_PRODUCTS/labels
+# push: the 6 sheets on the blockface grid
+$PY tools/compare_nifti.py $D/blockface/tracer $P/push_tracer_r058d/MR252 $(cd $P/push_tracer_r058d/MR252 && ls MR252_*_bfnative_L2.nii.gz)
+# interpolate: the 7 interpolated volumes
+$PY tools/compare_nifti.py $D/blockface/tracer $P/tracer_v2/MR252 $(cd $P/tracer_v2/MR252 && ls MR252_*_bfnative_L2_demons.nii.gz)
+# carry: the 21 files in the template (7 labels: solid, density, footprint)
+$PY tools/compare_nifti.py $D/template/tracer $P/tracer_template_v2/MR252 \
+    $(cd $P/tracer_template_v2/MR252 && ls MR252_*_mri-template.nii.gz MR252_*_mri-template_density.nii.gz MR252_*_mri-template_footprint.nii.gz)
+```
+
+All 6, 7 and 21 were identical.

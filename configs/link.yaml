@@ -127,9 +127,10 @@ b0_to_template:
   affine_anisotropy_max: 1.5    # the affine is rejected (similarity only) when the singular-value ratio of (A S) exceeds this
   grid_res_mm: 0.35             # Methods: "on a 0.35 mm grid"
   grid_margin_mm: 8.0           # working grid centered on (start-placed b0 brain | template brain) + 8 mm of zeros (meta.json config margin_mm)
-  grid_margin_fallback_mm: 6.0  # one retry with 6 mm when the engine fails at 8 mm (GPU memory); not used by any run of record
   grid_multiple: 16             # working-grid sizes rounded up to a multiple of 16
   brainstem_cut: true           # D11: moving input zeroed below the template brain's lowest axial slice, placed by the similarity (input only)
   engine:                       # linc/registration/featurereg.py options (all others at its defaults: 32 anatomix + 12 MIND-SSC channels, two stages)
     resolution: 0.35
     smooth_warp_sigma: 1.25     # Methods: "warp smoothing sigma = 1.25 voxels"
+    gpu_per_mvox: 1.41          # GPU memory of this stage, measured: 12.1 GiB for MR252's 208 x 256 x 160 grid (the whole process);
+                                # featurereg stops before the GPU stage when the card has less free (0.10 + 1.41 GiB per million voxels)

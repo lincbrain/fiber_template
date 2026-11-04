@@ -2,13 +2,9 @@
 
 Four networks segment new data: the brain in an ex vivo MRI image, the brain in a blockface photograph, the brain in a blockface
 volume, and the marker tubes in a blockface volume. They share one recipe and one code path, `linc/segment`, run by
-`cli/linc-segment`, and do not need nnU-Net. Each was trained once, on every mask of the project that was drawn or corrected by hand,
+`cli/linc-segment`. Each was trained once, on every mask of the project that was drawn or corrected by hand,
 and evaluated by a five-fold cross-validation grouped by brain. The paper's Supplementary Section S5 and Table S8 give the held-out
 results; each model's card gives them per brain, with the model's known limitations.
-
-The paper's masks were made with earlier nnU-Net networks (`models/blockface_segmentation.md`). `linc-reconstruct` now uses these
-models for all three of its segmentation tasks, and runs the earlier networks only with `--engine nnunet`, to reproduce the paper's
-masks (`env/nnunet.yml`, optional).
 
 ## Files
 
@@ -36,7 +32,7 @@ $PY_DEEP cli/linc-segment predict --model mri_brainmask --out <ID>_mask.nii.gz <
 ```
 
 `--model` takes a task name, which reads `$LINC_MODELS/segment/<task>/`, or a model folder. With `--in DIR` instead of the image
-files, every case in the folder is segmented; the cases are named as for nnU-Net (`<case>_0000<ext>`, one file per channel; an RGB
+files, every case in the folder is segmented; the cases are named `<case>_0000<ext>` (, one file per channel; an RGB
 photograph is one PNG), and each mask is written to `<out>/<case><ext>`. Every mask has the values 0 and 1, on its input's grid.
 
 For a folder of native photographs (named `<case>_0000.png`, as the reconstruction's photographs are):
@@ -48,7 +44,7 @@ $PY_DEEP cli/linc-segment predict --model bf_mask2d --native --in <photographs> 
 Ten native photographs of 3872 × 2592 pixels took 23 s on a GPU, about 1 s each after a few seconds of start-up. Each mask comes
 back at the photograph's native size, as `<case>.png`, with its holes filled.
 
-Prediction averages the network's output over every combination of flips, as nnU-Net does; `--mirror off` makes one pass, 4 times
+Prediction averages the network's output over every combination of flips; `--mirror off` makes one pass, 4 times
 faster for a photograph and 8 times for a volume.
 
 | Model | Input | Output and post-processing |
@@ -80,12 +76,8 @@ Each card lists them in full. In short:
 
 ## In the blockface reconstruction
 
-`segmentation.engine` in `configs/blockface.yaml` chooses the networks for each of the reconstruction's three segmentation tasks
-(`photos`, `mask`, `tubes`): `linc_segment`, these models, the default for all three, or `nnunet`, the networks of the paper's
-masks. `linc-reconstruct --engine`
-overrides it for every task of a step (`--engine linc_segment`) or per task (`--engine photos=linc_segment,mask=nnunet`). Either
-engine's output gets the same post-processing, once (`linc/blockface/mask_rules.py`), and a hand-corrected mask still replaces a
-network's. On MM9, for all three tasks, the reconstruction's masks are identical to those of `linc-segment` run on its own.
+The reconstruction runs these models for its three segmentation tasks (`photos`, `mask`, `tubes`). Their output gets the
+pipeline's post-processing once (`linc/blockface/mask_rules.py`), and a hand-corrected mask still replaces a network's. On MM9, for all three tasks, the reconstruction's masks are identical to those of `linc-segment` run on its own.
 
 In the registration, `linc-register mri --place-b0 <b0>` runs `mri_brainmask` on a new brain's b0 when no mask is given
 (`docs/register.md`).

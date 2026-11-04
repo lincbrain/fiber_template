@@ -29,8 +29,7 @@ You get
 Details. Hand corrections: after `prepare`, a brain mask edited on curated/<ID>_bg is saved as curated/<ID>_mask_edited.nii.gz;
 after `volume`, edited tubes as curated/<ID>_holes_edited.nii.gz (linc/blockface/curate.py folds edits made on the final grid back);
 configs/subjects/<ID>.yaml `masks_of_record` lists which of the paper's masks are hand edits. The networks: configs/blockface.yaml
-`segmentation.engine` (the released models for all three tasks; `--engine nnunet` reruns the earlier networks the paper's masks were
-made with, env/nnunet.yml); their post-processing is applied once by linc/blockface/mask_rules.py. MF8 and MF9 replay their recorded
+`segmentation.models` (cli/linc-segment); their post-processing is applied once by linc/blockface/mask_rules.py. MF8 and MF9 replay their recorded
 alignment to an external series in `photos`. Parameters: configs/blockface.yaml; per brain: configs/subjects/<ID>.yaml.
 """
 import argparse
@@ -45,43 +44,12 @@ from linc.blockface import curate, external, jumps, photos, prepare, reconstruct
 from linc.blockface.subject import Subject, params  # noqa: E402
 
 
-TASKS = ("photos", "mask", "tubes")
-ENGINES = ("linc_segment", "nnunet")
-
-
-def engine(a, task):
-    """The engine of one task (photos, mask, tubes): configs/blockface.yaml `segmentation.engine[task]` unless --engine overrides it,
-    linc_segment (the wrap-up networks) or nnunet (the networks the paper's masks of record were made with)."""
-    assert task in TASKS, task
-    e = params()["segmentation"]["engine"]
-    e = dict.fromkeys(TASKS, e) if isinstance(e, str) else dict(e)
-    e.update(parse_engine(getattr(a, "engine", None)))
-    assert e[task] in ENGINES, (task, e[task])
-    return e[task]
-
-
-def parse_engine(text):
-    """--engine: "linc_segment" | "nnunet" (every task) or "task=engine[,task=engine]" -> {task: engine}."""
-    if not text:
-        return {}
-    out = dict.fromkeys(TASKS, text) if "=" not in text else dict(kv.split("=", 1) for kv in text.split(","))
-    bad = sorted({t for t in out if t not in TASKS} | {v for v in out.values() if v not in ENGINES})
-    if bad:
-        raise SystemExit(f"--engine {text}: unknown {bad} (tasks {TASKS}, engines {ENGINES})")
-    return out
-
-
 def step_photos(cfg, a):
-    p = params()["photo_segmentation"]
     photos.ingest(cfg)
-    if engine(a, "photos") == "linc_segment":   # the raw masks straight into 00_predict; normalize_masks applies the fill once
-        external.segment(params()["segmentation"]["models"]["photos"], cfg.slices, cfg.brainmask("00_predict"), native=True,
-                         postprocess="none")
-    else:
-        external.predict_2d(p, cfg.slices, cfg.brainmask_predict, cfg.brainmask("00_predict"), cfg.work)
+    external.segment(params()["segmentation"]["models"]["photos"], cfg.slices, cfg.brainmask("00_predict"), native=True,
+                     postprocess="none")        # the raw masks; normalize_masks applies the fill once
     photos.normalize_masks(cfg)
     photos.finalize_brainmask(cfg)
-    shutil.rmtree(cfg.brainmask_predict, ignore_errors=True)
     sa = cfg.yaml.get("series_alignment")
     if sa:                                      # MF8, MF9: aligned to their external series instead of camera jumps
         series.apply(cfg, os.path.join(cfg.root, sa["align"]), sa["frame_shape_px"])
@@ -108,14 +76,10 @@ def step_prepare(cfg, a):
 
 
 def _seg3d(cfg, a, which, prep, post):
-    """which: "mask" or "tubes". The input (prep) and the post-processing (post) are the same for both engines."""
-    vs = params()["volume_segmentation"]
+    """which: "mask" or "tubes": the network's input (prep), the network, its post-processing (post)."""
     inp, out = os.path.join(cfg.seg3d_dir, "in"), os.path.join(cfg.seg3d_dir, "out")
     prep(cfg)
-    if engine(a, which) == "linc_segment":
-        external.segment(params()["segmentation"]["models"][which], inp, out, postprocess="none")
-    else:
-        external.predict_3d(vs, vs["brain_mask_dataset" if which == "mask" else "tubes_dataset"], inp, out, cfg.work)
+    external.segment(params()["segmentation"]["models"][which], inp, out, postprocess="none")
     post(cfg)
     shutil.rmtree(cfg.seg3d_dir, ignore_errors=True)
 
@@ -158,10 +122,6 @@ def main():
     for name in ["all", *STEPS]:
         s = sp.add_parser(name)
         s.add_argument("--subject", required=True)
-        if name in ("all", "photos", "mask", "tubes"):
-            s.add_argument("--engine", default=None, metavar="ENGINE | TASK=ENGINE[,...]",
-                           help="override configs/blockface.yaml segmentation.engine: linc_segment or nnunet for every task, or per "
-                                "task, e.g. photos=linc_segment,mask=nnunet (nnunet: the networks of the masks of record)")
         if name in ("all", "prepare"):
             s.add_argument("--reuse-jumps", action="store_true", help="reuse _work/tirl_jumps (valid while 00_slices is unchanged)")
         if name in ("all", "volume", "tubes"):
@@ -169,10 +129,9 @@ def main():
     e = sp.add_parser("edit-photo-masks")
     e.add_argument("action", choices=["export", "import"]); e.add_argument("--subject", required=True)
     a = ap.parse_args()
-    parse_engine(getattr(a, "engine", None))   # a bad --engine fails before any step runs
     cfg = Subject(a.subject)
     from linc import paths
-    paths.refuse_records(cfg.root, os.path.join(cfg.root, "curated"))    # a brain whose files link to the records: rebuild folder
+    paths.refuse_records(*[d for d, _, _ in os.walk(cfg.root)])    # any folder of the brain holding links to the records: refuse
     if a.step == "edit-photo-masks":
         return step_edit(cfg, a)
     if a.step == "all":

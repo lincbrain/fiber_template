@@ -12,7 +12,7 @@
 # Set the roots first (see ../CONVENTIONS.md): LINC_PRODUCTS, LINC_DATA, LINC_TEMPLATE, LINC_RAW, LINC_MODELS, LINC_NUMBERS.
 # Each target runs in the environment it ran in for the paper (env/README.md): PY = env/linc.yml; PY_MRI = the same python (an alias kept for the MRI records) (the heavy MRI
 # records and the figures FIGURES_MRI lists); PY_DEEP = env/deep.yml (the d3_* records, Supplementary S1 and the LGN/STN
-# budget, and their three figures); PY_TIRL = env/tirl.yml (histology;
+# budget, and their three figures); PY_TIRL = env/tirl.yml (histology, s_tracer_fidelity;
 # histo_pixel_sizes_r057).
 
 PY ?= python
@@ -25,6 +25,7 @@ PY_VIZ3D ?=
 # raw data outside the release, needed by two targets (they are skipped, with a message, when unset):
 #   MM_MRI_ARGS = --raw-bruker-root $$LINC_RAW/mri_mm --unpacked-root $$LINC_RAW/macaque_mri    (mm_mri_check_r054)
 #   HISTOLOGY_ARGS = --jp2-root <LINC source data>/sourcedata                                  (the histology figure)
+#   the LINC histology dataset 000003 at $$LINC_RAW/linc_000003                                  (s_tracer_fidelity)
 #   LINC_PARTICIPANTS = the LINC participants.tsv                                           (bf_cohort)
 MM_MRI_ARGS ?=
 HISTOLOGY_ARGS ?=
@@ -59,7 +60,7 @@ NUMBERS_SEGMENT := segmodels_mri_brainmask_2026-11 segmodels_bf_mask2d_2026-11 s
 FIGURES_MRI := template pipeline variability link tracer s_tracer_rules tracer_pathways
 FIGURES_LINC := reconstruction bf_template alignment_comparison
 FIGURES_COMPLETION := s_synthesis_depth s_synthesis_gallery lgnstn
-FIGURES := $(FIGURES_MRI) $(FIGURES_LINC) $(FIGURES_COMPLETION) histology
+FIGURES := $(FIGURES_MRI) $(FIGURES_LINC) $(FIGURES_COMPLETION) histology s_tracer_fidelity
 FIGURES_3D := tracer_3d                                  # optional (PY_VIZ3D): not in `make figures`; `make tracer_3d`
 
 .PHONY: all numbers numbers-gpu check test figures $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_GPU) $(FIGURES) $(FIGURES_3D)
@@ -145,6 +146,11 @@ figures: $(FIGURES)
 histology: tube_offsets_r054
 	@if [ -z "$(HISTOLOGY_ARGS)" ]; then echo "SKIPPED histology: set HISTOLOGY_ARGS (histology source data outside the release)"; \
 	else $(PY_TIRL) figures/histology.py $(HISTOLOGY_ARGS) --out $(OUT)/figures/$@.png; fi
+
+# the chart-to-template figure (Supplementary S3): the darkfield sections and charts of the LINC histology dataset
+s_tracer_fidelity:
+	@if [ ! -d "$(LINC_RAW)/linc_000003/rawdata" ]; then echo "SKIPPED s_tracer_fidelity: put the LINC histology dataset 000003 at \$$LINC_RAW/linc_000003"; \
+	else $(PY_TIRL) figures/$@.py --out $(OUT)/figures/$@.png; fi
 
 # the tracer figure (Fig. 10): the four-panel form always (record fig_tracer_pathways_panels); with PY_VIZ3D the three composite
 # stills render (no in-scene key, large letters; record fig_tracer_3d_stills) and the composite follows (the paper's figure, record

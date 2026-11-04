@@ -3,9 +3,9 @@
 Each of the four MRI brains (MF1-MF4 = LINC MF283-MF286) has three sessions on three grids: diffusion (b0 and tensor, 0.25 mm: the
 reference grid), T2 (multi-echo MSME, 0.5 mm) and SANDI microstructure (0.5 mm). The steps, in order:
 
-  1. staging (`stage_raw`, `stage_dwi`, `stage_t2`, `stage_micro`): each raw image under its hand mask's header (the masks were drawn
+  1. staging (`stage`, from linc.construction.mri_raw's outputs): each raw image under its hand mask's header (the masks were drawn
      after re-origining, so the mask affine is the authority; same array, no resampling); b0 and T2 N4-corrected; echo 5 of the MSME
-     is the T2 image; SANDI fractions renormalized to sum 1 inside the micro hand mask.
+     is the T2 image; SANDI fractions renormalized to sum 1 inside the micro hand mask; the tensor's diffusion files under dwi/raw/.
   2. the D9 tensor (`tensor_d9`): dtifit on the eddy-corrected b <= 4800 volumes (1 b0 + 42 DWIs), b-vectors rotated by each
      volume's eddy_correct matrix (polar part), axis convention from MRtrix dwigradcheck; staged on the dwi grid.
   3. the within-MRI registrations T2 -> b0 and micro -> b0 (one ITK displacement field each, the initial affine inside it) are
@@ -21,6 +21,7 @@ reference grid), T2 (multi-echo MSME, 0.5 mm) and SANDI microstructure (0.5 mm).
        model_mask    the final mask (lossless uint8 copy; the mask file itself is never modified)
      plus every output's exact mirror (<name>_flip; tensors with xy, xz negated).
 
+    python -m linc.construction.mri_prep stage --subject MF283 --raw <mri_raw folder: dwi/, msme/, dt2/> [--mri-root ...]
     python -m linc.construction.mri_prep prepare --subject MF283 --final-mask <MF283_mask_EDIT.nii.gz> --tensor <tensor_d9_dwigrid>
         [--mri-root $LINC_DATA/sub-MF283/mri] [--xfm-root $LINC_DATA/sub-MF283/xfm] [--canonical <canonical.json>] [--out <dir>]
 
@@ -172,17 +173,14 @@ def normalize_fracs_and_weights(b):
         nib.save(nib.Nifti1Image(arr, f1.affine, hdr), str(out))
 
 
-def stage_raw(b, dwi_series, dwi_tensor, msme, micro_series, dwi_mask, t2_mask, micro_mask):
-    """Raw data onto the hand-mask grids. dwi_series / micro_series: bias-corrected 4-D diffusion series (volume 0 = b0);
-    dwi_tensor: the reconstruction's dtifit tensor; msme: the denoised 32-echo MSME; *_mask: the hand-drawn masks."""
-    import shutil
-    for src, key in ((dwi_mask, "dwi_mask"), (t2_mask, "t2_mask"), (micro_mask, "micro_mask")):
-        b(key).parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(src, b(key))
+def stage_raw(b, dwi_series, msme, micro_series):
+    """Raw data onto the hand-mask grids (the three hand masks in place under masks/). dwi_series / micro_series: the
+    bias-corrected 4-D diffusion series (volume 0 = b0); msme: the denoised 32-echo MSME."""
+    for d in ("dwi", "t2", "micro"):
+        (b.mri_root / d).mkdir(parents=True, exist_ok=True)
     tmp = b.mri_root / "dwi" / "_b0_raw.nii.gz"
     _fslroi(dwi_series, tmp, 0)
     adopt_geometry(tmp, b("dwi_mask"), b("b0")); tmp.unlink()
-    adopt_geometry(dwi_tensor, b("dwi_mask"), b.mri_root / "dwi" / "tensor.nii.gz")
     adopt_geometry(msme, b("t2_mask"), b.mri_root / "t2" / "msme.nii.gz")
     tmp = b.mri_root / "micro" / "_b0_raw.nii.gz"
     _fslroi(micro_series, tmp, 0)
@@ -219,6 +217,27 @@ def stage_micro(b, sandi_fracs_mean, sandi_fracs_std):
         _fslroi(sandi_fracs_std, b(key), i)
         mask_image(b(key), mask, b(key))
     normalize_fracs_and_weights(b)
+
+
+def stage(b, raw):
+    """One brain's staged inputs from linc.construction.mri_raw's three folders (<raw>/dwi, <raw>/msme, <raw>/dt2): stage_raw,
+    stage_dwi, stage_t2, stage_micro (SANDIdot's fractions), and the tensor's diffusion files copied under dwi/raw/.
+    Refuses when the brain's staged b0 exists (released data are never overwritten)."""
+    import shutil
+    raw = Path(raw); d, t, m = raw / "dwi", raw / "msme", raw / "dt2" / "tortoise"
+    if b("b0").exists():
+        raise SystemExit(f"{b('b0')} exists: this brain is staged already")
+    missing = [str(b(k)) for k in ("dwi_mask", "t2_mask", "micro_mask") if not b(k).exists()]
+    if missing:
+        raise SystemExit("the hand masks are inputs: missing " + ", ".join(missing))
+    stage_raw(b, d / "dwi_biascorr.nii.gz", t / "msme_denoised_las.nii.gz", m / "dwi_biascorr.nii.gz")
+    stage_dwi(b); stage_t2(b)
+    sandi = m / "microstructure" / "SANDIdot"
+    stage_micro(b, sandi / "est.fracs.mean.nii.gz", sandi / "est.fracs.std.nii.gz")
+    for key, src in (("dwi_eddy", d / "dwi_eddycorrect.nii.gz"), ("dwi_ecclog", d / "dwi_eddycorrect.ecclog"),
+                     ("dwi_bvecs", d / "dwi_orig.bvecs"), ("dwi_bvals", d / "dwi_orig.bvals"), ("dwi_fit_mask", d / "brain_mask.nii.gz")):
+        b(key).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(src, b(key))
 
 
 # --------------------------------------------------------------------------- 2. the D9 tensor (tensor_refit_d9 --from-existing)
@@ -427,12 +446,17 @@ def main(argv=None):
     p.add_argument("--tensor", required=True, help="the D9 tensor on the dwi grid (tensor_d9)")
     p.add_argument("--mri-root"); p.add_argument("--xfm-root"); p.add_argument("--canonical")
     p.add_argument("--out", help="default <mri-root>/construction_inputs")
+    g = sub.add_parser("stage", help="one brain's staged inputs from linc.construction.mri_raw's outputs")
+    g.add_argument("--subject", required=True); g.add_argument("--raw", required=True, help="mri_raw's folder: <raw>/dwi, msme, dt2")
+    g.add_argument("--mri-root")
     t = sub.add_parser("tensor", help="the D9 tensor of one brain")
     for k in ("eddy-series", "ecclog", "bvecs", "bvals", "fit-mask", "dwi-mask", "out"):
         t.add_argument(f"--{k}", required=True)
     t.add_argument("--current-tensor"); t.add_argument("--threads", type=int, default=8)
     a = ap.parse_args(argv)
-    if a.cmd == "prepare":
+    if a.cmd == "stage":
+        stage(Brain(a.subject, a.mri_root), a.raw)
+    elif a.cmd == "prepare":
         b = Brain(a.subject, a.mri_root, a.xfm_root)
         rec = prepare(b, a.final_mask, a.tensor, a.out or b.mri_root / "construction_inputs", a.canonical)
         print(json.dumps(rec["coverage_in_model_mask"], indent=1))

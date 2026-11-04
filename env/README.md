@@ -1,6 +1,6 @@
 # Environments
 
-The pipeline runs in four Python environments, plus two optional ones. Their packages conflict (TIRL needs its own stack, the
+The pipeline runs in four Python environments, plus one optional one. Their packages conflict (TIRL needs its own stack, the
 registration engine pins torch 2.13 + CUDA 12.6, the networks torch 2.6 + CUDA 12.4), so they stay separate. `bash env/install.sh`
 builds them (`docs/install.md`), and `envs/linc_envs.sh`, which it writes, points the code at them. Each file's header says how to
 create it by hand, what it runs, and which variable points the code at it. Every step of `cli/` and `reproduce/` runs in the
@@ -12,14 +12,7 @@ environment it ran in for the paper. Figures are named by content; `docs/paper_t
 | `deep.yml` | the deep-learning networks: the four segmentation models (`cli/linc-segment`; trained and validated here) and the caudal completion: training, inference (`cli/linc-complete`), the `d3_*` records, `r057_s1_synthesis`, `r057_missing_extent`, `lgnstn_budget_r059`, and the figures `s_synthesis_depth`, `s_synthesis_gallery`, `lgnstn` | torch 2.6.0+cu124 (CUDA 12.4), MONAI 1.4.0, numpy 1.26.4; matplotlib 3.10.6 and its dependencies at the versions of record (the three figures render pixel-identical) | `PY_DEEP` (Makefile); `LINC_SEGMENT_PYTHON` (linc-reconstruct, linc-register) |
 | `anatomix.yml` | the feature-based deformable registration engine of every registration of record (anatomix features + FireANTs) | torch 2.13.0 (CUDA 12.6), anatomix @ 4c86aee (MIT license) and its FireANTs fork @ 21ae072 (Apache 2.0), both public commits, installed editable; pins every package the engine imported in a registration of record (traced) | `ANATOMIX_PYTHON` |
 | `tirl.yml` | histology → blockface registration (TIRL 3.6.3, 12 threads per piece), the label push, the tube evaluation, `histo_pixel_sizes_r057`, the `histology` figure, and the Python steps of the blockface reconstruction | TIRL 3.6.3 and its three script packages (from source; the paper's runs used 3.6.2, which registers byte for byte the same), zarr 3.1.5; nifti-zarr 1.0.0rc6 (`zarr2nii` / `nii2zarr`, the reconstruction's exports, found on PATH) | `PY_TIRL` |
-| `nnunet.yml` | optional, only to reproduce the masks of record: the three earlier blockface networks: 2D brain mask (Dataset500), 3D brain mask (Dataset506), marker tubes (Dataset508) | nnU-Net 2.5.1, torch 2.5.1 | `NNUNET_BIN`, weights in `LINC_MODELS` |
 | `viz3d.yml` | optional: the 3D tracer scene and its rotation video | pyvista 0.44.2 on the headless vtk-osmesa 9.3.1 wheel (from wheels.vtk.org), imageio-ffmpeg 0.6.0 | `PY_VIZ3D` |
-
-History: until 3 Nov 2026 the MRI construction and the label interpolation had their own files (`mri.yml`, `labels-interp.yml`); both were merged into `linc.yml` (their conda block and pins are its) and the files removed.
-the merged environment, the registration and the interpolation are byte-identical, every numbers record is identical, and the MRI
-figures are byte-identical to the paper's files. The figures `reconstruction`, `bf_template` and `alignment_comparison` were made
-with matplotlib 3.10.8; under the merged environment's 3.11.1, their text is laid out slightly differently, and the data drawn are
-the same.
 
 Removed on 3 Nov 2026: `niizarr.yml` (environment `linc-niizarr`, nifti-zarr 1.0.0rc6), where the paper's `zarr2nii` / `nii2zarr`
 exports ran; nifti-zarr is now installed in `tirl.yml`, whose exports are byte-identical.

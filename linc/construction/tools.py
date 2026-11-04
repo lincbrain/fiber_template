@@ -6,7 +6,10 @@ External programs are found from the environment, never from a hard-coded path, 
     FSLDIR      FSL 6.0.7.4             ($FSLDIR/etc/fslversion)
     MMORF       MMORF 1.0.1             (`mmorf --version`; set MMORF to the executable, default: `mmorf` on PATH)
     ANTSPATH    ANTs 2.5.4              (antsRegistration --version; default: ANTs on PATH)
-    MRTRIX      MRtrix3 3.0.2           (directory holding dwigradcheck; default: on PATH; only the D9 tensor refit needs it)
+    MRTRIX      MRtrix3 3.0.2           (directory holding dwigradcheck; default: on PATH; the tensor refit and mri_raw need it)
+    JULIA       Julia 1.11.4            (the executable; default: `julia` on PATH; mri_raw's Bruker conversion and SANDI fit)
+    TORTOISE    TORTOISE V4.1.0         (the folder holding TORTOISEProcess; default: on PATH; mri_raw's dt2 session; it prints
+                                         its version when it runs, and mri_raw checks that line)
 
 LINC_SKIP_VERSION_CHECK=1 turns a version mismatch into a warning (the result is then not the paper's).
 """
@@ -107,6 +110,32 @@ def mrtrix(tool):
     if not got.startswith(want):
         _mismatch("MRtrix3", want, got)
     return p
+
+
+@functools.lru_cache(maxsize=None)
+def julia():
+    """The Julia executable ($JULIA or `julia` on PATH), after the version check."""
+    want = recipe()["tools"]["julia"]
+    p = os.environ.get("JULIA") or _which("julia")
+    out = subprocess.run([p, "--version"], capture_output=True, text=True).stdout
+    got = out.split("version", 1)[1].split()[0] if "version" in out else "unknown"
+    if got != want:
+        _mismatch("Julia", want, got)
+    return p
+
+
+def tortoise():
+    """TORTOISEProcess ($TORTOISE or PATH). Its version is checked from the line it prints when it runs (check_tortoise)."""
+    return _which("TORTOISEProcess", "TORTOISE")
+
+
+def check_tortoise(log_text):
+    want = recipe()["tools"]["tortoise"]
+    line = next((l for l in log_text.splitlines() if l.startswith("TORTOISE version:")), "")
+    got = line.split(":", 1)[1].strip().replace("TORTOISE ", "") if line else "unknown"
+    if got != want:
+        _mismatch("TORTOISE", want, got)
+    return got
 
 
 def run(cmd, env=None, log=None):

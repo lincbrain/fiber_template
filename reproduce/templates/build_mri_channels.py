@@ -2,14 +2,23 @@
 """Build the MRI channels of the template.
 
 You need, for every brain of configs/mri_construction.yaml `inputs`, under $LINC_DATA/sub-<ID>/ (the config's `prep.layout`)
-  mri/dwi/raw/: the denoised, eddy-corrected diffusion series with its .ecclog, b-vectors, b-values and fit mask;
-  mri/dwi/, t2/, micro/: the staged b0, the 32-echo MSME and the SANDI fractions; mri/masks/: the hand masks of each session and the
-  final hand-edited brain mask; mri/landmarks/: the SARM labels and the brain -> NMT v2 affine on the b0 grid;
-  xfm/t2-native__to__b0-native and xfm/micro-native__to__b0-native: the within-brain registrations;
-  FSL (FSLDIR), ANTs (ANTSPATH), MRtrix (MRTRIX), and for the mmorf step MMORF (LINC_MMORF_EXE), the patched template-construction
-  driver (LINC_TEMPLATE_DRIVER, linc/construction/patches/README.md) and one 48 GB GPU.
+  either its Bruker sessions under $LINC_RAW (the config's `raw`; the raw-* and stage-* steps make the next two items from them)
+  or, from the data release, mri/dwi/raw/: the denoised, eddy-corrected diffusion series with its .ecclog, b-vectors, b-values and
+  fit mask, and mri/dwi/, t2/, micro/: the staged b0, the 32-echo MSME and the SANDI fractions (start with --from tensor-<ID>);
+  mri/masks/: the hand masks of each session and the final hand-edited brain mask (inputs drawn by hand); from the data release
+  or made by the nmt-, t2reg- and microreg-<ID> steps: mri/landmarks/ (the SARM labels and the brain -> NMT v2 affine on the b0
+  grid) and xfm/t2-native__to__b0-native, xfm/micro-native__to__b0-native (the within-brain registrations);
+  FSL (FSLDIR), ANTs (ANTSPATH), MRtrix (MRTRIX), for the raw steps Julia (JULIA, env/julia) and TORTOISE (TORTOISE, a GPU), and
+  for the mmorf step MMORF (LINC_MMORF_EXE), the patched template-construction driver (LINC_TEMPLATE_DRIVER,
+  linc/construction/patches/README.md) and one 48 GB GPU.
 
 What it does, one step per brain, then together (each step one command; --plan prints them all)
+  raw-dwi-<ID>    the diffusion session from its Bruker scans: conversion, denoising, eddy-current and bias correction
+  raw-msme-<ID>   the multi-echo spin-echo scan: conversion, denoising
+  raw-dt2-<ID>    the microstructure session: TORTOISE's motion and eddy-current correction (GPU), then SANDI
+  stage-<ID>      stages those outputs as the build's inputs in the brain's MRI folder (b0, T2 and b0 N4-corrected, fractions)
+  nmt-<ID>        registers NMT v2 to the b0 and pulls its SARM labels onto it (for the AC, the PC and the frame's pitch)
+  t2reg-<ID>      registers the T2 echo to the b0; microreg-<ID> the microstructure session's b0 to the b0 (one field each)
   tensor-<ID>     fits the diffusion tensor on the b <= 4800 volumes
   landmarks-<ID>  finds the AC and PC from the SARM labels on the b0
   frames-<ID>     maps the brain rigidly into the canonical frame (its own mid-sagittal plane, NMT's orientation, the AC)
@@ -18,12 +27,14 @@ What it does, one step per brain, then together (each step one command; --plan p
   mmorf           runs the groupwise construction (the config's schedule; the record: 8 steps x 3 iterations, 3 d 12 h on one GPU)
   channels        makes the template channels from the final step's warps
 
-You get, under --work (default $LINC_WORK/build_mri_channels); nothing is written into $LINC_DATA
-  tensor_d9/<ID>/tensor_d9_dwigrid.nii.gz, frames/<ID>/{landmarks,canonical}.json, prep/<ID>/ (the construction inputs and their
+You get, under --work (default $LINC_WORK/build_mri_channels); only stage-<ID> writes into $LINC_DATA, and never over existing files
+  raw/<ID>/{dwi,msme,dt2}/ (linc.construction.mri_raw), tensor_d9/<ID>/tensor_d9_dwigrid.nii.gz, frames/<ID>/{landmarks,canonical}.json, prep/<ID>/ (the construction inputs and their
   _flip mirrors, NIfTI on the 0.25 mm canonical grid), runs/<run>/ (the MMORF run), channels/linc_mri_*.nii.gz + provenance.json
   (T2, b0, fractions, tensor and its scalars, masks: the template's mri folder)
 
     python reproduce/templates/build_mri_channels.py --plan
+    python reproduce/templates/build_mri_channels.py --from raw-dwi-MF283 --to prepare-MF283   # one brain from its Bruker sessions
+    python reproduce/templates/build_mri_channels.py --from tensor-MF283 --to prepare-MF283    # one brain from the data release
     python reproduce/templates/build_mri_channels.py --step prepare-MF283
     python reproduce/templates/build_mri_channels.py --from assemble --to channels
 
@@ -52,13 +63,47 @@ def make_steps(W, paths):
     sub = lambda S: paths.subject_dir(S)                                              # noqa: E731
     m = lambda S, k: sub(S) / "mri" / L[k]                                            # noqa: E731
     run = w("runs", R["rebuild_run"])
+    bruker = Path(os.environ.get("LINC_RAW", "$LINC_RAW")) / R["raw"]["root"]       # the Bruker sessions (config `raw`)
     drv_dir = os.environ.get("LINC_TEMPLATE_DRIVER", "$LINC_TEMPLATE_DRIVER")
     driver_py = str(Path(drv_dir) / "run_template_construction.py")
     steps = []
     for S in ids:
         tensor = w("tensor_d9", S, "tensor_d9_dwigrid.nii.gz")
         lm, cj = w("frames", S, "landmarks.json"), w("frames", S, "canonical.json")
+        ses, raw = R["raw"]["sessions"][S], lambda *q: w("raw", S, *q)               # noqa: E731
+        sandi = raw("dt2", "tortoise", "microstructure", "SANDIdot")
         steps += [
+            D.Step(f"raw-dwi-{S}", f"per brain: {S}", "mri",
+                   ["-m", "linc.construction.mri_raw", "dwi", "--session", bruker / ses["dwi"][0], "--scans", ses["dwi"][1], "--out", raw("dwi")],
+                   outputs=[raw("dwi", "dwi_biascorr.nii.gz")], inputs=[bruker / ses["dwi"][0]],
+                   est="4 h (CPU; eddy_correct 3 h)", note="Julia (env/julia), MRtrix3, FSL, ANTs; resumes a stopped run"),
+            D.Step(f"raw-msme-{S}", f"per brain: {S}", "mri",
+                   ["-m", "linc.construction.mri_raw", "msme", "--session", bruker / ses["msme"][0], "--scan", ses["msme"][1], "--out", raw("msme")],
+                   outputs=[raw("msme", "msme_denoised_las.nii.gz")], inputs=[bruker / ses["msme"][0]], est="1 min (CPU)"),
+            D.Step(f"raw-dt2-{S}", f"per brain: {S}", "mri",
+                   ["-m", "linc.construction.mri_raw", "dt2", "--session", bruker / ses["dt2"][0], "--scans", ses["dt2"][1], "--out", raw("dt2")],
+                   outputs=[sandi / "est.fracs.mean.nii.gz"], inputs=[bruker / ses["dt2"][0]], gpu=True,
+                   est="30 min (TORTOISE 16 min on a GPU, SANDI 4 min on the CPU)", note="TORTOISE V4.1.0 ($TORTOISE)"),
+            D.Step(f"stage-{S}", f"per brain: {S}", "mri",
+                   ["-m", "linc.construction.mri_prep", "stage", "--subject", S, "--raw", w("raw", S)],
+                   outputs=[m(S, k) for k in ("b0", "b0_n4_brain", "t2_head", "t2_brain", "frac1", "frac2", "dwi_eddy")],
+                   inputs=[raw("dwi", "dwi_biascorr.nii.gz"), raw("msme", "msme_denoised_las.nii.gz"), sandi / "est.fracs.mean.nii.gz"]
+                          + [m(S, k) for k in ("dwi_mask", "t2_mask", "micro_mask")],
+                   est="3 min (CPU)", note="writes the brain's MRI folder; refuses when its staged files exist (the data release's)"),
+            D.Step(f"nmt-{S}", f"per brain: {S}", "mri",
+                   ["-m", "linc.construction.mri_register", "nmt", "--subject", S, "--out", w("register", S, "nmt")],
+                   outputs=[m(S, "nmt_affine"), m(S, "sarm_in_subject")], inputs=[m(S, "b0_n4_brain"), m(S, "dwi_mask")], gpu=True,
+                   est="8 min (GPU)", note="ANTs affine, then anatomix + FireANTs ($ANATOMIX_PYTHON); NMT v2 from configs/link.yaml"),
+            D.Step(f"t2reg-{S}", f"per brain: {S}", "mri",
+                   ["-m", "linc.construction.mri_register", "t2", "--subject", S, "--out", w("register", S, "t2")],
+                   outputs=[sub(S) / "xfm" / R["prep"]["within_mri_xfm"]["t2"] / "meta.json"],
+                   inputs=[m(S, k) for k in ("b0_n4_brain", "dwi_mask", "t2_brain", "t2_mask")], gpu=True,
+                   est="6 min (GPU)", note="ANTs affine, then anatomix + FireANTs ($ANATOMIX_PYTHON)"),
+            D.Step(f"microreg-{S}", f"per brain: {S}", "mri",
+                   ["-m", "linc.construction.mri_register", "micro", "--subject", S, "--out", w("register", S, "micro")],
+                   outputs=[sub(S) / "xfm" / R["prep"]["within_mri_xfm"]["micro"] / "meta.json"],
+                   inputs=[m(S, "b0_n4_brain"), m(S, "dwi_mask"), sub(S) / "mri" / "micro" / "b0_brain_n4.nii.gz", m(S, "micro_mask")],
+                   gpu=True, est="10 min (GPU)", note="ANTs affine, then the symmetric registration ($ANATOMIX_PYTHON), composed into one field"),
             D.Step(f"tensor-{S}", f"per brain: {S}", "mri",
                    ["-m", "linc.construction.mri_prep", "tensor", "--eddy-series", m(S, "dwi_eddy"), "--ecclog", m(S, "dwi_ecclog"),
                     "--bvecs", m(S, "dwi_bvecs"), "--bvals", m(S, "dwi_bvals"), "--fit-mask", m(S, "dwi_fit_mask"),

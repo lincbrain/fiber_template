@@ -35,3 +35,9 @@ bft_member_warps: bftemplate/d2b/final_s8/d2_member_warps.json      # each membe
 mf8_rigid: data/sub-MF191/mri/s2lin_prod/MF191_s2lin.json           # MF8's rigid placement (T_world_bf_to_run113)
 mf8_interp: data_arm_preinp_r058/sub-MF191/blockface/06_histo2bf/interp/interp.json   # MF8's interpolation table (interpolated pairs)
 mf8_label_grid: labels/push_tracer_r058d/MF191/MF191_Fiber_dense_bundle_bfnative_L2.nii.gz   # MF8's blockface label grid (its header)
+
+# --- the chart-to-template figure (Supplementary S3: reproduce/figures/s_tracer_fidelity.py) ---
+push_sheets: labels/push_tracer_r058d                             # <S>/<S>_<class>_bfnative_L2.nii.gz (one slice per charted section) + push_tracer_<S>.json (the pieces)
+section_maps: labels/section_maps                                 # <S>_<stain>.tsv: the histology stack's index -> section, level-0 extent
+r1_record: paper/numbers/r1_current_2026-10-03.json               # MM1-MM3's blockface -> b0 registry entries of record (with sub-<S>/xfm/b0-native__to__mri-template)
+data: data                                                        # sub-<S>/blockface/<S>_blockface_L2.nii.gz, sub-<S>/xfm/

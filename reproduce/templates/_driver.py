@@ -29,8 +29,8 @@ sys.path.insert(0, str(REPO))
 
 class Step:
     def __init__(self, name, stage, env, argv, outputs, inputs=(), est="", note="", setenv=None, gpu=False, fn=None, plan_argv=None):
-        """env: "linc" (this script's python, env/linc.yml), "mri" ($PY_MRI, env/mri.yml), "driver" (the patched template driver in
-        env/mri.yml, MMORF on a GPU) or "anatomix" ($ANATOMIX_PYTHON, env/anatomix.yml: the feature-based registration engine). argv: the command after the python (a list), or a callable returning it (evaluated at run time,
+        """env: "linc" (this script's python, env/linc.yml), "mri" ($PY_MRI, env/linc.yml's python), "driver" (the patched template
+        driver, env/linc.yml's python, MMORF on a GPU) or "anatomix" ($ANATOMIX_PYTHON, env/anatomix.yml: the feature-based registration engine). argv: the command after the python (a list), or a callable returning it (evaluated at run time,
         e.g. the driver's command line, which reads the run tree). fn: a Python function run in-process instead of a command."""
         self.name, self.stage, self.env, self.argv, self.outputs, self.inputs = name, stage, env, argv, list(outputs), list(inputs)
         self.est, self.note, self.setenv, self.gpu, self.fn, self.plan_argv = est, note, dict(setenv or {}), gpu, fn, plan_argv
@@ -72,7 +72,7 @@ def _commit():
 def _check_env(step):
     need = []
     if step.env in ("mri", "driver") and not os.environ.get("PY_MRI"):
-        need.append("PY_MRI (the python of env/mri.yml)")
+        need.append("PY_MRI (the python of env/linc.yml)")
     if step.env == "anatomix" and not os.environ.get("ANATOMIX_PYTHON"):
         need.append("ANATOMIX_PYTHON (the python of env/anatomix.yml)")
     if step.env == "driver":

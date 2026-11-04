@@ -25,9 +25,10 @@ You get
         --regions <ID>_regions.nii.gz --out $LINC_DATA/sub-<ID>/histology/registration --threads 12 --jobs 2
 
 Details. Parameters: configs/histology.yaml. The regions volume is scaled into the store's calibrated frame by the brain's own
-factors (calibrated / made-at spacing per axis, configs/histology.yaml regions.made_at_spacing_um; 1 for a brain not listed);
---regions-frame current skips that, and --regions-spacing-um gives the made-at spacing of another volume (MF8's registration of
-record with the tubes filled by inpainting: configs/products_blockface.yaml hidden_arm_regions). --idx0 / --ccs / --cce override
+factors (calibrated / made-at spacing per axis): the made-at spacing is configs/histology.yaml regions.made_at_spacing_um's entry for
+--subject (a brain not listed: factor 1), or --regions-spacing-um VX VZ for another volume (a volume made on the brain's current
+frame: its vx vz; MF8's registration of record with the tubes filled by inpainting: configs/products_blockface.yaml
+hidden_arm_regions, 23.75 600). --idx0 / --ccs / --cce override
 the yaml's values. --jobs N registers N components at a time (12 N cores).
 """
 import argparse
@@ -86,9 +87,6 @@ def main():
     ap.add_argument("--regions-spacing-um", nargs=2, type=float, metavar=("VX", "VZ"),
                     help="the spacing (um) these regions were made at, in place of configs/histology.yaml's for this brain (e.g. "
                          "MF8's hidden-arm regions of record, 23.75 600: configs/products_blockface.yaml hidden_arm_regions)")
-    ap.add_argument("--regions-frame", choices=["reconstruction", "current"], default="reconstruction",
-                    help="the regions' frame: the spacing they were made at (configs/histology.yaml regions.made_at_spacing_um; "
-                         "scaled by the brain's own factors; default) or already the store's calibrated frame")
     ap.add_argument("--out", required=True, help="output folder of this brain's histology registration")
     ap.add_argument("--masks", help="use these tissue masks instead of <out>/tissue_masks")
     ap.add_argument("--idx0", type=int, help="raw photograph index of the store's first slice")
@@ -126,16 +124,14 @@ def main():
             need(a, "store", "table", "regions")
             if idx0 is None:
                 sys.exit("pieces needs --idx0 or --subject")
-            sc = None
-            if a.regions_frame == "reconstruction":
-                sc_ = subject_cfg(a)
-                if not sc_:
-                    sys.exit("--regions-frame reconstruction needs --subject (configs/subjects/<ID>.yaml: vx, vz)")
-                made = ({"vx": a.regions_spacing_um[0], "vz": a.regions_spacing_um[1]} if a.regions_spacing_um
-                        else (cfg["regions"].get("made_at_spacing_um") or {}).get(a.subject))
-                sc = pieces.regions_scale(sc_, made)
+            sc_ = subject_cfg(a)
+            made = ({"vx": a.regions_spacing_um[0], "vz": a.regions_spacing_um[1]} if a.regions_spacing_um
+                    else (cfg["regions"].get("made_at_spacing_um") or {}).get(a.subject))
+            if made and not sc_:
+                sys.exit("--regions-spacing-um needs --subject (configs/subjects/<ID>.yaml: vx, vz)")
+            sc = pieces.regions_scale(sc_, made) if sc_ else None          # no --subject: the regions are on the store's frame
             pieces.partition(D["matched"], a.regions, a.store, a.table, idx0, D["partition"], cfg, scale_xyz=sc)
-            stamp(D["partition"], [D["matched"], a.regions, a.store, a.table, cfg_file], t0, idx0=idx0, regions_frame=a.regions_frame,
+            stamp(D["partition"], [D["matched"], a.regions, a.store, a.table, cfg_file], t0, idx0=idx0, regions_made_at_um=made,
                   regions_scale=list(sc) if sc else None)
             t0 = time.time()
             pieces.cut_pieces(D["matched"], D["partition"], a.table, ccs, cce, D["pieces"], wft, cfg)

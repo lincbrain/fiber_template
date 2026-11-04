@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""The LGN/STN 2D network (nnU-Net, Dataset532_LGNSTNnegdup) against the observer's outlines on held-out sections, leave one subject out
+"""The LGN / STN networks' predictions against the observer's outlines on held-out sections, leave one subject out
 (paper: Supplementary S3, Table S6's network rows; fold 0 = MM1, fold 1 = MM2, fold 2 = MM3).
 
-Inputs (products lgnstn_nnunet): the folds' own validation predictions nnUNet_results/Dataset532_LGNSTNnegdup/<trainer>/fold_<k>/
-validation/<case>.png, the references nnUNet_raw/Dataset532_LGNSTNnegdup/labelsTr/<case>.png and the fold assignment folds_loso_532.json.
+Inputs, read as data (products_mri.yaml `lgnstn_nnunet`; no network is run and no weights are in the repository): each fold's
+predictions on its held-out sections (nnUNet_results/Dataset532_LGNSTNnegdup/<trainer>/fold_<k>/validation/<case>.png), the
+observer's references (nnUNet_raw/Dataset532_LGNSTNnegdup/labelsTr/<case>.png) and the fold assignment folds_loso_532.json.
 Per held-out case (a whole-section piece on the blockface piece grid, halved as in training: 0.08 mm pixels) and nucleus (1 = LGN,
 2 = STN; both hemispheres in one class): Dice; per reference component (8-connected) matched to the nearest predicted component within
 2 mm: the centroid distance and the symmetric average surface distance (ASSD) of the matched pair. Pooled per fold: Dice over all cases

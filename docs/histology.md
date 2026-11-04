@@ -28,7 +28,7 @@ Two per-brain inputs are prepared before this step:
 - **The regions volume** (`<ID>_regions.nii.gz`: 1 left, 2 right, 3 cerebellum + brainstem, 4 marker tubes) gives the components the
   sections were cut into. It is the atlas regions transformed from the template into the brain's blockface volume.
   [`linc/histology/README.md`](../linc/histology/README.md) explains how the paper's volumes were made and how to make one for a new
-  brain (then pass `--regions-frame current`).
+  brain.
 
 Write the output to `$LINC_DATA/sub-<ID>/histology/registration`, as above: the label steps (`docs/labels.md`) read it from there.
 

@@ -31,7 +31,7 @@ CROP_ALIGN = 256          # reconstructed L0 rows/cols padded up to a multiple o
                           # blockface grid -> re-crops 03/05 and invalidates the histology TIRL; bump to
                           # 512 (so dim/2**8 is even) only if you re-run stage 4 onward.
 CROP_MARGIN_MM = 4.0      # tolerance kept around the tissue bbox on every side BEFORE the CROP_ALIGN pad:
-                          # if the nnUNet mask under-segments, the real tissue just outside it still lands
+                          # if the network's mask under-segments, the real tissue just outside it still lands
                           # inside the crop (visible in the background-intact bg twin, editable into the
                           # mask) so nothing real is cropped away. Physical (mm) -> px via the subject vx.
 Image.MAX_IMAGE_PIXELS = None
@@ -57,7 +57,7 @@ def save_mask(label, fname):
 
 
 def normalize_mask_dir(folder):
-    """Re-save every nnUNet label PNG in `folder` as *MASK_SCALE-scaled (visible: 0,50,100,...).
+    """Re-save every label PNG in `folder` as *MASK_SCALE-scaled (visible: 0,50,100,...).
     Idempotent (unscales first if already scaled). Project-wide mask visibility standard,
     for both Dataset500 (background) and Dataset704 (segmentation) outputs."""
     files = sorted(glob(os.path.join(folder, "*.png")))

@@ -2,44 +2,19 @@
 # cli/linc-reconstruct. Per-brain inputs (spacing, camera jumps, missing sections, caudal cutoff, masks of record) are in
 # configs/subjects/<ID>.yaml. Values as used for the paper (the analysis project's code/config.py).
 
-# Steps 1, 4 and 6: which networks segment, one switch per task. linc_segment: the models wrap-up's networks, one per task, trained
-# on every hand label (models/segmentation.md; cli/linc-segment, $LINC_MODELS/segment/<task>/). nnunet: the three nnU-Nets below,
-# with which the paper's masks of record were made (models/blockface_segmentation.md); use it to reproduce those masks
-# (linc-reconstruct --engine nnunet). Either way a task's post-processing is applied once, by the pipeline, with the same rule
-# (linc/blockface/mask_rules.py: photos fill_photo_mask, mask largest_cc_fill, tubes tube_rule): linc-segment runs with
-# --postprocess none here, and its spec.json holds the same rule only for use outside the pipeline.
+# Steps 1, 4 and 6: the networks that segment the photographs, the brain and the marker tubes (models/segmentation.md; cli/linc-segment,
+# weights in $LINC_MODELS/segment/<model>/). linc-reconstruct runs them with --postprocess none and applies each task's post-processing
+# once (linc/blockface/mask_rules.py: photos fill_photo_mask, mask largest_cc_fill, tubes tube_rule).
 segmentation:
-  engine:                            # each task -> linc_segment once its network passes the gate (models wrap-up PLAN.md §2.7)
-    photos: linc_segment             # T2 passed §2.7 (3 Nov 2026): weights $LINC_MODELS/segment/bf_mask2d (SHA256SUMS)
-    mask: linc_segment               # T3 passed §2.7 (3 Nov 2026): weights $LINC_MODELS/segment/bf_mask3d (SHA256SUMS)
-    tubes: linc_segment              # T4 passed §2.7 (3 Nov 2026): weights $LINC_MODELS/segment/bf_holes (SHA256SUMS)
   models: {photos: bf_mask2d, mask: bf_mask3d, tubes: bf_holes}
-
-# Step 1, engine nnunet: the 2D nnU-Net that segments the brain in each photograph (models/blockface_segmentation.md, Dataset500).
-photo_segmentation:
-  dataset: Dataset500_SLICE
-  configuration: 2d
-  plans: nnUNetPlans
-  trainer: nnUNetTrainer
-  folds: "0"                         # one fold: Dice 0.998 against the 4-fold ensemble on MM13, ~4x faster
-  postprocessing: crossval_results_folds_0_1_2_3_4   # postprocessing.pkl + plans.json of the cross-validation
 
 # Step 2: the camera jumps, each corrected by a 2D TIRL registration of the photographs on either side of it (rotation ->
 # rigid -> affine), composed over the stack.
 camera_jumps:
   tirl_parameters: configs/tirl/camera_jumps.yml   # TIRL `linc.h2b` script parameters (paths are filled in per jump)
 
-# Steps 4 and 6: the 3D inputs and post-processing (both engines), and the 3D nnU-Nets of engine nnunet (models/
-# blockface_segmentation.md), both on the 0.40 mm section grid, at in-plane level L4.
+# Steps 4 and 6: the 3D networks' inputs and post-processing, on the 0.40 mm section grid, at in-plane level L4.
 volume_segmentation:
-  brain_mask_dataset: "506"          # Dataset506_BFmask5: RGB background-intact volume -> brain mask
-  tubes_dataset: "508"               # Dataset508_holes3: masked color volume -> marker tubes
-  configuration: 3d_fullres
-  plans: nnUNetResEncUNetMPlans
-  trainer: nnUNetTrainer_250epochs
-  checkpoint: checkpoint_final.pth
-  folds: "0"
-  z_target_um: 400.0                 # the section step both models (and the hand-edit grid) live on
   tubes_min_voxels: 3                # tube components smaller than this are dropped (specks)
   tubes_left_tolerance_vox: 3.0      # tubes are kept only left of the brain's x-centroid + this tolerance (drilled on the left)
 

@@ -1,7 +1,6 @@
 # Segmentation models
 
-Four networks, one recipe and one code path (`linc/segment`, `cli/linc-segment`), with no nnU-Net. They replace the earlier
-nnU-Net models (`models/blockface_segmentation.md`) and the MRI brain-mask network:
+Four networks, one recipe and one code path (`linc/segment`, `cli/linc-segment`). They replace the earlier networks of the paper:
 
 | Model | Input | Output | Post-processing (in its spec) | Parameters |
 |---|---|---|---|---|

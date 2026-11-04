@@ -2,9 +2,9 @@
 """Build the blockface template: the brains, grids and MMORF schedule come from configs/blockface_template.yaml (the record's values).
 
 You need
-  the environments env/linc.yml (most steps) and env/mri.yml ($PY_MRI, the [mri] steps); a GPU with MMORF 1.0.1 (FSL's MultiMOdal
-  Registration Framework; 48 GB for the batch of record) for the two [driver] steps, and the edited template construction driver
-  (LINC_TEMPLATE_DRIVER, linc/construction/patches); LINC_MMORF_EXE and FSLDIR;
+  env/linc.yml for every step ($PY_MRI names the same Python for the [mri] steps); a GPU with MMORF 1.0.1 (FSL's MultiMOdal
+  Registration Framework, in env/linc.yml; 48 GB for the batch of record) for the two [driver] steps, and the edited template
+  construction driver (LINC_TEMPLATE_DRIVER, linc/construction/patches); LINC_MMORF_EXE and FSLDIR;
   under $LINC_PRODUCTS (configs/products_blockface.yaml, products_completion.yaml): every member brain's volume with its missing
   sections synthesized, and the synthesis cache; the MRI template's frames, b0 and mask; the bridge (the rigid transform between
   the frame of record and the template's stereotaxic frame); the affine stage of record (bf_plan_a_affine) and the final average's

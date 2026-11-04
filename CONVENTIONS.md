@@ -103,7 +103,6 @@ The pipeline calls these as external programs, at the versions used in the paper
 - MMORF 1.0.1
 - ANTs
 - TIRL 3.6.2
-- nnU-Net 2.5.1
 
 FireANTs 1.5.1 and anatomix are Python dependencies. Wrappers check versions before running.
 

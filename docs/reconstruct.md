@@ -26,11 +26,11 @@ Environment: `env/tirl.yml`, which brings TIRL and zarr2nii; the segmentation ne
 $PY_TIRL cli/linc-reconstruct all --subject MR252
 ```
 
+A reconstruction takes about 10 hours per brain; the longest step is `prepare`, whose camera-jump registrations run one after
+another. The GPU is used only by the segmentation steps: `mask` and `tubes` need about 10 GB of its free memory, `photos` about 1.5 GB;
+the other steps run on a CPU.
+
 This writes `$LINC_DATA/sub-<ID>/blockface/<ID>_blockface.ome.zarr`. The steps can also run one at a time: `photos`, `stack`,
 `prepare`, `mask`, `volume`, `tubes`, `spacing`, each with `--subject <ID>`. To hand-correct the 2D brain masks before `prepare`,
 use `cli/linc-reconstruct edit-photo-masks export|import --subject <ID>`. The steps, hand corrections and spacing are explained in
 [`linc/blockface/README.md`](../linc/blockface/README.md).
-
-For MF8 (`sub-MF191`), the volume of record was rebuilt on 24–26 Sep 2026 with an earlier padding of its canvas. The release reproduces its aligned
-photographs, brain mask and tubes exactly, and its volume up to a shift of the canvas by less than a voxel (its origin moves by 0.5
-and 2 µm; 26 % of the voxels differ, by a mean of 0.5 on a scale of 255).
