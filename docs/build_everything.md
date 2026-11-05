@@ -79,12 +79,12 @@ Rerun with this code, and identical to the paper's files or differing as the pag
   as `docs/mri.md` states;
 - the construction of the MRI template on the paper's four inputs: `assemble`; the `mmorf` step's affine stage and step 1, through the
   release's driver, byte-identical to the paper's run (202 of 202 comparable files); and `channels` on the paper's run (20 of 20 files identical);
-- the blockface template's build from its 21 brains through the first of seven nonlinear steps on one card, identical to the paper's files
-  (`reproduce/templates/blockface.md`);
+- the blockface template's build from its 21 brains through the seven steps of its first stage on one card: steps 1 to 5 identical to the
+  paper's files, steps 6 and 7 slightly different, starting at the first 1 mm level (`reproduce/templates/blockface.md`);
 - the registration between the two templates and to NMT v2, whose GPU step gives transforms within 1 mm of the paper's, with medians under
   0.1 mm (`reproduce/templates/link.md`).
 
-Not rerun: `microreg` on MF2 to MF4; steps 2 to 8 of the MRI template's construction; steps 2 to 7 and step 8 of the blockface template; the registrations to INIA19
+Not rerun: `microreg` on MF2 to MF4; steps 2 to 8 of the MRI template's construction; step 8 of the blockface template; the registrations to INIA19
 and CIVM-R; and the full training of the other networks. Their code and parameters are the paper's.
 
 ## Rebuilding a template

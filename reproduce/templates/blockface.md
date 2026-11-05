@@ -13,7 +13,7 @@ without `--force`. Its one step the commands below leave implicit is `bf-view` (
 average uses).
 
 The build has five stages: **members → the first stage (7 steps at 0.5 mm) → step 8 (0.25 mm) → final average → publish.** MMORF
-runs on a GPU, at 8 tasks at a time in the first stage and 4 in step 8 on one 48 GB card; everything else runs on CPU. The record ran the same tasks on three such cards (RTX 6000 Ada): the first stage in 4 h 24 min (44.6 task-hours), step 8 in 7 h 11 min (59.5 task-hours). On one card that is about 8 and 17 hours, estimated from those task times. The code is `linc/construction/blockface_build.py`,
+runs on a GPU, at 8 tasks at a time in the first stage and 4 in step 8 on one 48 GB card; everything else runs on CPU. The record ran the same tasks on three such cards (RTX 6000 Ada): the first stage in 4 h 24 min (44.6 task-hours), step 8 in 7 h 11 min (59.5 task-hours). On one card that is about 8 and 17 hours, estimated from those task times; the rerun below agrees with the first on a free card. The code is `linc/construction/blockface_build.py`,
 `blockface_finish.py`, `blockface_mmorf.py` and `blockface_shim/`; every step below is `python -m linc.construction.blockface_build
 <step> ...` from the repository root.
 
@@ -118,9 +118,9 @@ interpolated, synthesized; the synthesis of a brain without MRI has weight 0; ta
 `reproduce/numbers/precision_weights_b1_d2b_s8.py`), then symmetrized exactly, 0.5 (V + M(V)). The b0 channel uses the same warps
 (TPL through the bridge). `-j 6` reproduces the products of record bit for bit (the partial sums are chunked by input).
 
-## Rerun on one card (4 Nov 2026)
+## Rerun on one card (4-5 Nov 2026)
 
-The commands above, in a new folder, from `members` for all 21 brains through the first of the seven steps (`-nres 1 -nit 3 -b 8`), on one RTX 6000 Ada,
+The commands above, in a new folder, from `members` for all 21 brains through the seven steps (`-nres 7 -nit 3 -b 8`), on one RTX 6000 Ada,
 compared with the record file by file:
 
 | Stage | Result |
@@ -128,16 +128,37 @@ compared with the record file by file:
 | members, build frame, TPL | all 596 volumes identical |
 | run folder | every MMORF .ini and .tree, the standard space and the subject list identical; `run_spec.json` differs in six text fields (paths and the wording of decisions), no parameter |
 | the affine part | 181 of 182 volumes identical; the other is a backup of TPL's b0 cost mask from before the affine step, which nothing reads |
-| the first nonlinear step, 3 iterations, 43 inputs | all 1,315 files identical: warps, Jacobians, bias fields, templates |
+| nonlinear steps 1 to 5, 3 iterations each, 43 inputs | all 1,315 files of each step identical: warps, Jacobians, bias fields, templates |
+| nonlinear step 6 | 71 of 1,315 files identical |
+| nonlinear step 7 | 13 of 1,315 files identical |
 
-The record ran the same tasks on three such cards, 24 at a time, so neither the schedule nor the host changed the result. This run was also stopped in its third iteration and
-resumed with `--resume_from 1:3`, `LINC_SKIP_DONE_MMORF=1` and `FSLSUB_PARALLEL=8`. Steps 2 to 7 and step 8 were not rerun; the machine was busy, so the run gives no time to quote.
+The record ran the same tasks on three such cards, 24 at a time, so through step 5 neither the schedule nor the host changed the result. This run was also stopped twice and
+resumed (`--resume_from`, `LINC_SKIP_DONE_MMORF=1`, `FSLSUB_PARALLEL=8`). Step 8 was not rerun.
+
+**Steps 6 and 7.** The MMORF executable, its parameters and every input through step 5 are identical, both runs report one thread, and the cards are the same model. In step 6's first
+iteration, 42 of the 43 task logs print the same costs through six levels and part at the seventh, the first level of the build with 1 mm knots and the first below the parameter
+file's `hires = 1.9`; the last log prints the same costs throughout. The 43 warps differ by a median of 6e-8 mm. Each iteration's averages become the next one's target, so the difference is carried
+forward: the average warp's median difference is 1e-8 mm at 6:1, then 0.0013, 0.0014, 0.0015, 0.0011 and 0.0014 mm from 6:2 to 7:3, so it does not keep growing. What makes
+that level differ was not tested: this rerun does not show whether two runs on one card agree there.
+
+The last template, 7:3, against the record, inside tissue (563,757 voxels above 10% of either template's 99th percentile):
+
+| Compared | Difference |
+|---|---|
+| average warp | median 0.0008 mm, 99th percentile 0.004 mm, at most 0.04 mm; outside tissue at most 1.15 mm |
+| warps of the 43 inputs | median 0.0004 mm; 99th percentile 0.005 mm for the median input, 0.12 mm for the worst; at most 1.4 mm at single voxels; at most 829 voxels (0.15%) of one input over 0.25 mm |
+| blockface template | correlation 0.999999; absolute difference a median of 0.012% of the tissue median, 99th percentile 0.16%, at most 3.2% |
+| b0 template | correlation 0.999996; absolute difference a median of 0.022% of the tissue median, 99th percentile 0.23%, at most 4.5% |
+| blockface cost mask | 7 of 3,035,520 voxels cross its threshold of 0.1; the rescaling that follows changes the weight mask's every voxel slightly |
+
+**Time.** Steps 2 to 7 took 12 h 12 min at low priority (1 h 32 min, 1 h 47 min, 2 h 01 min, 1 h 33 min, 2 h 34 min, 2 h 45 min), with other people's jobs on the card for most of the first ten hours:
+about 25 GB until step 5, then about 5 GB in the second half of step 6 and the start of step 7. With the card free the rate matches the record: 36 min for step 6's first iteration and 50 min each for step 7's last two,
+which is the record's task times at 8 at a time plus about 10 min per iteration outside MMORF. MMORF peaked at 8.2 GB for 8 tasks; the seven steps take 120 GB on disk.
 
 ## Validation (22 Oct 2026; piecewise, MMORF not rerun)
 
 Every deterministic step was recomputed with this code from the products of record and compared file by file (arrays and headers);
-MMORF's own registrations were not rerun (GPU; "Exact reproduction" in docs/reproduce.md explains why they reproduce only on the GPU model
-of the record).
+MMORF's own registrations were not rerun here (GPU); the rerun above covers them.
 
 | Step | Recomputed | Result |
 |---|---|---|

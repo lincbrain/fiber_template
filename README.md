@@ -9,7 +9,8 @@ the blockface photographs and the preprocessed MRI:
 - brings new brains into the template.
 
 `docs/build_everything.md` runs it from start to end, and says which steps were rerun for this release and which were not (not all
-were: most nonlinear steps of the template builds were not). `docs/inputs.md` lists every input it assumes.
+were: most nonlinear steps of the MRI template's build and the last of the blockface template's were not). `docs/inputs.md` lists every
+input it assumes.
 
 > **Status: release in preparation.** This repository holds the analysis code of the paper, ported and checked against the
 > paper's products; it will be public on GitHub. The template, the paper's products and the network weights are a separate data

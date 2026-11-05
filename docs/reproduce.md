@@ -92,6 +92,13 @@ Four settings decide whether a rerun matches the paper's products bit for bit:
 - **Software versions.** The versions in each environment file. With another matplotlib version, a figure's text can be laid out
   slightly differently; the data drawn are the same.
 
+**MMORF (the template builds).** The blockface build's first five nonlinear steps reproduce byte for byte on another RTX 6000 Ada. From
+step 6 they do not: with the same executable, parameters, inputs and one thread, the runs part at the first level with 1 mm knots, by a
+median of 6e-8 mm. Carried through the template iterations, this settles at a median of about 0.001 mm in the average warp. At the last
+template, inside tissue, the average warp differs by at most 0.04 mm, the warps of single inputs by at most 1.4 mm at single voxels, and
+the templates correlate at 0.999996 or higher. Whether two runs on one card agree at that level was not tested
+(`reproduce/templates/blockface.md`).
+
 ## The figures, compared with the paper's files
 
 From a clean clone and an empty numbers folder, with `HISTOLOGY_ARGS` set, `make figures` took about 10 minutes with `-j 2`, on a CPU.
