@@ -42,7 +42,7 @@ tirl_py() {                                     # the env/tirl.yml steps: run in
 }
 
 # --- the tests (tests/), each in its environment
-step test_paths            "$PY"      tests/run.py tests/test_paths.py
+step test_paths            "$PY"      tests/run.py tests/test_paths.py tests/test_subjects_overview.py
 step test_segment          "$PY_DEEP" tests/run.py tests/test_segment.py
 step test_completion       "$PY_DEEP" tests/run.py tests/test_completion.py
 step test_blockface_rules  "$PY_DEEP" tests/run.py tests/test_blockface_rules.py

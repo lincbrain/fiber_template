@@ -46,4 +46,4 @@ registered to the template needs one b0 or T2-weighted image (`linc-mri prep`).
 | the blockface template in its own space | `$LINC_PRODUCTS/bftemplate/d2b/final_s8/` (the data release), with the frame and bridge of `$LINC_TEMPLATE` | `linc-register blockface-template` |
 | the paper's products | `$LINC_PRODUCTS` (the data release) | `make numbers`, `make figures`, the template builds |
 
-A new brain's settings go in `configs/subjects/<ID>.yaml`, copied from `configs/subjects/TEMPLATE.yaml`.
+A new brain's settings go in `configs/subjects/<ID>.yaml`, copied from `configs/subjects/TEMPLATE.yaml`. `tools/subjects_overview.py` prints all the brains' settings as a table, one row per brain, and with `--data` which hand-made files sit in each brain's folder; nothing reads that table, so changes go in the yaml files.

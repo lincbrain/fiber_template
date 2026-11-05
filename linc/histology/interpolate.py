@@ -299,6 +299,9 @@ def interpolate_v2(subject, *, registrations, match_table_path, first_photo_numb
             if cl in by_class:
                 cls_sheet[cl] = np.asarray(nib.load(by_class[cl]).dataobj) > 0
                 assert cls_sheet[cl].shape[:3] == (X, Y, Z), (by_class[cl], cls_sheet[cl].shape)
+    if not idxs or not cls_sheet:
+        raise SystemExit(f"{subject}: nothing to interpolate, nothing written: {len(idxs)} registered sections in {registrations}, "
+                         f"{len(cls_sheet)} tracer classes among the {len(label_files)} sheets given.")
     grp_sheet = {g: np.any([cls_sheet[c] for c in cls if c in cls_sheet], 0) for g, cls in GROUPS.items() if any(c in cls_sheet for c in cls)}
     outputs = []
     for g, L in grp_sheet.items():

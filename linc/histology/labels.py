@@ -167,6 +167,7 @@ def push_tracer(subject, *, annotations_dir, section_map, match_table_path, piec
     out_dir.mkdir(parents=True, exist_ok=True)
     sheets = {c: {} for c in classes}                                 # class -> {blockface slice: 2D array on the target grid}
     plog = []
+    n_masks = n_ready = 0
     for r in rows:
         ms = {}
         for c in classes:
@@ -188,8 +189,10 @@ def push_tracer(subject, *, annotations_dir, section_map, match_table_path, piec
             piece = os.path.basename(mpath)[:-4]
             tdir = os.path.join(str(registrations), piece)
             photo_p = os.path.join(str(blockface_pieces), piece + ".png")
+            n_masks += 1
             if not has_registration(tdir, photo_p):
                 continue
+            n_ready += 1
             pm = np.asarray(Image.open(mpath)) > 0
             if not (pm & (code > 0)).any():
                 continue
@@ -214,6 +217,10 @@ def push_tracer(subject, *, annotations_dir, section_map, match_table_path, piec
                                          px_blockface=int(sel.sum()), px_L2=int(pooled.sum()))
             plog.append(rec)
             log(f"{subject} {piece} -> slice {idx}: " + ", ".join(f"{c} {v['px_L2']}" for c, v in rec["classes"].items()))
+    if not plog:
+        raise SystemExit(f"{subject}: nothing pushed, nothing written. Found {len(classes)} annotation classes in {annotations_dir}; {n_masks} "
+                         f"component masks in {piece_masks}, {n_ready} of them with a photograph in {blockface_pieces} and a registration in "
+                         f"{registrations}. linc-histology makes the masks and the photographs.")
     summary, outputs = {}, []
     for c, sl in sheets.items():
         if not sl:

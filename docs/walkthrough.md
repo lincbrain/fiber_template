@@ -311,7 +311,7 @@ $PY      cli/linc-labels connect     --subject MR252
 
 The paper's labels went through the histology registration made on the photographs before the marker tubes' holes were filled,
 so `push` and `interpolate` are given that registration
-(`--registrations`); without it, they use your own from section 5. The four steps take about 3 minutes, 30 minutes, 3 minutes and 15 seconds. `carry`, as written, goes through the paper's registrations of MM2 (`xfm_record/`);
+(`--registrations`); without it, they use your own from section 5. `push` also reads the component masks and photographs that section 5 writes; `--registrations` replaces only the registrations. The four steps take about 3 minutes, 30 minutes, 3 minutes and 15 seconds. `carry`, as written, goes through the paper's registrations of MM2 (`xfm_record/`);
 without `--entry` it goes through your own, from section 3 (`xfm/`). The interpolation writes the interpolated labels under
 `$LINC_DATA/sub-MR252/labels/blockface/tracer/`. Compare each step's labels with the paper's (the gzip bytes differ, so the arrays
 are compared):

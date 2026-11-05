@@ -73,7 +73,7 @@ Rerun with this code, and identical to the paper's files or differing as the pag
 - one full training of two networks: `mri_brainmask`, whose weights came out byte-identical to the shipped ones on the same GPU model; and
   the synthesis network, the same recipe but not the same bits (`docs/complete.md`);
 - the MRI template's build from the preprocessed files, step by step: `stage` and `tensor` on all four brains, voxel-identical to the
-  paper's; `nmt`, `t2reg`, `landmarks`, `frames` and `prepare` on MF1, which differ as `docs/mri.md` states;
+  paper's; `nmt`, `t2reg`, `microreg`, `landmarks`, `frames` and `prepare` on MF1, each step on its own, which differ as `docs/mri.md` states;
 - the construction of the MRI template on the paper's four inputs: `assemble`; the `mmorf` step's affine stage and step 1, through the
   release's driver, byte-identical to the paper's run (202 of 202 comparable files); and `channels` on the paper's run (20 of 20 files identical);
 - the blockface template's build from its 21 brains through the first of seven nonlinear steps on one card, identical to the paper's files
@@ -81,7 +81,7 @@ Rerun with this code, and identical to the paper's files or differing as the pag
 - the registration between the two templates and to NMT v2, whose GPU step gives transforms within 1 mm of the paper's, with medians under
   0.1 mm (`reproduce/templates/link.md`).
 
-Not rerun: `nmt`, `t2reg`, `landmarks`, `frames` and `prepare` on MF2 to MF4, and `microreg` as a step of the build; steps 2 to 8 of the MRI template's construction; steps 2 to 7 and step 8 of the blockface template; the registrations to INIA19
+Not rerun: `nmt`, `t2reg`, `microreg`, `landmarks`, `frames` and `prepare` on MF2 to MF4; steps 2 to 8 of the MRI template's construction; steps 2 to 7 and step 8 of the blockface template; the registrations to INIA19
 and CIVM-R; and the full training of the other networks. Their code and parameters are the paper's.
 
 ## Rebuilding a template

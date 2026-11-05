@@ -73,6 +73,8 @@ def cmd_push(a, cfg):
                                        structs=structs, cfg=cfg)
         rec["stage_a"] = alog
         ins = [mt, grid, sd / "frame_map.json"]
+    if not outs:
+        raise SystemExit(f"{S}: nothing pushed, nothing written ({a.kind}): no label reached the blockface grid.")
     for f in outs:
         provenance.write_provenance(f, inputs=ins, wall_s=round(time.time() - t0, 1), extra=dict(stage="push", kind=a.kind), md5=False)
     return outs
@@ -83,6 +85,8 @@ def cmd_interpolate(a, cfg):
     S = a.subject
     L = lambda k: LB.layout(S, k, cfg)  # noqa: E731
     lab = a.labels or sorted(glob(str(L("labels") / "blockface" / "*" / f"{S}_*_bfnative_L2.nii.gz")))
+    if not lab:
+        raise SystemExit(f"{S}: nothing to interpolate: no {S}_*_bfnative_L2.nii.gz under {L('labels') / 'blockface'}. Run `linc-labels push` first.")
     out_for = (lambda p: a.out) if a.out else None
     t0 = time.time()
     method = getattr(a, "method", None) or cfg["interpolate"].get("method", "v2")
@@ -118,6 +122,8 @@ def cmd_carry(a, cfg):
     ref = Path(a.ref) if a.ref else paths.template_root() / C["ref"]
     brain = Path(a.brain) if a.brain else paths.template_root() / C["brain"]
     lab = a.labels or sorted(glob(str(L("labels") / "blockface" / "tracer" / f"{S}_*_bfnative_L2_demons.nii.gz")))
+    if not lab:
+        raise SystemExit(f"{S}: nothing to carry: no {S}_*_bfnative_L2_demons.nii.gz under {L('labels') / 'blockface' / 'tracer'}. Run `linc-labels interpolate` first.")
     out = _p(a.out, L("labels") / "template" / "tracer")
     chain = pull = desc = None
     steps = []

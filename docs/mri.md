@@ -90,13 +90,12 @@ Run from the paper's preprocessed files, step by step:
 - `stage` and `tensor`, on all four brains: the 17 staged images of each brain, N4 included, and its tensor are voxel-identical to the
   paper's.
 
-On MF1:
-- `t2reg`: the field differs from the paper's by a median of 0.019 mm (largest 0.52 mm). The registration of the microstructure session,
-  run through its module rather than the build, differs by a median of 0.033 mm (largest 2.2 mm).
+On MF1, each step on its own:
+- `t2reg`, `microreg`: the fields differ from the paper's by a median of 0.019 mm (largest 0.52 mm) and 0.033 mm (largest 1.9 mm).
 - `nmt`, `landmarks`, `frames`: the paper registered NMT v2 with an earlier version of the anatomix engine. With this release's, the SARM
   labels agree on 93.3 % of the brain's voxels, and the canonical frame differs by 0.04° and 0.16 mm (under 0.1° and 0.2 mm between runs).
 - `prepare`: every channel is resampled through that frame, so no file is identical. Inside both masks, the Pearson correlation with the
-  paper's is 0.968 for the T2-weighted image, 0.957 for the b0, 0.938 and 0.923 for the fractions and 0.995 for the tensor, and the Dice
+  paper's is 0.968 for the T2-weighted image, 0.957 for the b0, 0.923 and 0.909 for the fractions and 0.995 for the tensor, and the Dice
   coefficient of the masks is 0.989. With the paper's frame, tensor, registrations and staged inputs, all 36 files are identical.
 
-The time per brain is about 40 minutes: MF1 took 24 minutes without `microreg`.
+The time per brain is about 40 minutes. `microreg` needs about 22 GB free on the GPU.
