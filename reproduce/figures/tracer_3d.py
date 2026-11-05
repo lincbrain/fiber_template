@@ -180,7 +180,8 @@ def main(argv=None):
         for pos, txt in letters:
             p.add_point_labels([pos], [txt], text_color=FG, font_size=fs_letter, shape=None, show_points=False, always_visible=True)
         if key:
-            p.add_legend([[LABEL[S], COLOR[S]] for S in ("MR243", "MF191", "MR252")], bcolor=None, border=False, size=(0.26, 0.11), loc="lower right", face="rectangle")
+            legend = p.add_legend([[LABEL[S], COLOR[S]] for S in ("MR243", "MF191", "MR252")], bcolor=None, border=False, face="rectangle")
+            legend.SetPosition(0.70, 0.02); legend.SetPosition2(0.29, 0.11)   # by hand: pyvista's loc="lower right" lets the box run off the window, cutting the longest label
         p.camera_position = view; p.camera.zoom(zoom)
         return p, actors
 

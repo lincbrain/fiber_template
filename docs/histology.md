@@ -23,8 +23,9 @@ The steps run in order: match each section to its photograph, divide it into com
 result depends on the thread count; with 12 threads per component (the default), the paper's registrations are reproduced exactly.
 
 Two per-brain inputs are prepared before this step:
-- **The match table** maps each histology section to the blockface photograph of each of its components. It is made by hand, once
-  per brain and series; its format is in `linc/histology/match.py`.
+- **The match table** maps each histology section to the blockface photograph of each of its components, once per brain and series.
+  `linc-histology propose` proposes it for a person to review row by row ([`linc/histology/README.md`](../linc/histology/README.md));
+  its format and the order in which steps find it are in `linc/histology/match.py`.
 - **The regions volume** (`<ID>_regions.nii.gz`: 1 left, 2 right, 3 cerebellum + brainstem, 4 marker tubes) gives the components the
   sections were cut into. It is the atlas regions transformed from the template into the brain's blockface volume.
   [`linc/histology/README.md`](../linc/histology/README.md) explains how the paper's volumes were made and how to make one for a new

@@ -14,6 +14,40 @@ pieces:                           # piece suffix of a matched photo -> (piece cl
   left:  {suffix: "_left",  cls: 1, tag: "0001", column: 1}
   right: {suffix: "_right", cls: 2, tag: "0002", column: 2}
   cere:  {suffix: "_cere",  cls: 3, tag: "0003", column: 3}
+# --- the automated match table (linc-histology propose; linc/histology/propose.py) ---
+propose:
+  section_um: 1200                # histology section spacing; over the section step the volume was built at = photographs per section
+  section_level: 7                # sections are read at this resolution level (1/128)
+  section_pixel_um: 0.4397        # the sections' full-resolution pixel
+  tissue_threshold: 2.5           # dark background: tissue above this after smoothing, holes filled
+  tissue_sigma_px: 2
+  second_component_min_fraction: 0.4   # a section's tissue components: at least this fraction of the largest, at most two
+  photo_level: 2                  # photographs are read at this store level ...
+  photo_px_factor: 8              # ... whose pixel is this many times the brain's pixel size
+  fine_step_um: 50                # a stack this fine or finer ...
+  sample_step_fine: 6             # ... samples every 6th photograph (0.3 mm); coarser stacks sample every photograph
+  outline_px: 64                  # outlines are compared at 64 x 64
+  outline_jump: 0.25              # cost of changing a line's offset, in outline Dice
+  outline_none_score: 0.70        # below this Dice a component takes no place on the line
+  outline_max_offset_mm: 20       # other classes stay within this of the whole sections' line
+  outline_rounds: 2               # a single component's class is revised this many times against the fitted lines
+  window_mm: 4.0                  # registrations around the outline place, each side
+  registration:                   # each component to its class on each photograph in the window
+    bins: 32
+    sampling: 0.5
+    seed: 1
+    learning_rate: 1.0
+    min_step: 0.001
+    iterations: 150
+    relaxation: 0.6
+    shrink: [2, 1]
+    sigma: [1, 0]
+    threads: 1                    # per process (--jobs processes)
+  run_jump: 0.1                   # cost of changing a run's offset, in score
+  run_floor: 0.30                 # score of a section whose photograph on the line was not registered
+  own_best_margin: 0.02           # flag: its own best photograph is over one section away and higher by more than this
+  low_score: 0.45                 # flag: a score under this
+  score_floor: 0.45               # a component under this on its run line stays unmatched
 store_level: 0                    # matched photographs are cut from the blockface store's full-resolution level
 whole_from_table_default: "no_corpus_callosum_range"
                                   # a whole-section row is kept whole when the brain has no corpus-callosum range (ccs = cce = 0);

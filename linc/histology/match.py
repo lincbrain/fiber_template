@@ -7,6 +7,9 @@ You need
   section, the left and right hemispheres, the cerebellum). Rows are
       lower, upper, m_whole, a_whole, m_left, a_left, m_right, a_right, m_cere, a_cere
   and a section n with lower <= n <= upper ("inf" allowed as upper) matches photograph m * n + a for each component (-1: no match).
+  Every step finds the table the same way (find_table): the path given by flag; else, in the brain's histology folder,
+  match_table_edited.txt (a copy of the proposal changed by hand), match_table.txt (a table put there), match_table_proposed.txt
+  (linc-histology propose).
 What it does
   match_photos() reads, for every histology section, the reconstructed blockface section matched to each of its components,
   upright (rows and columns reversed from the store's (c, rows, sections, columns) order).
@@ -15,6 +18,7 @@ You get
 
 Ported from the analysis project's code/histo.py (_match_table, match_b2h).
 """
+import csv
 import os
 import re
 from functools import lru_cache
@@ -26,6 +30,7 @@ from PIL import Image
 
 Image.MAX_IMAGE_PIXELS = None
 CONFIG = Path(__file__).resolve().parents[2] / "configs" / "histology.yaml"
+EDITED, TABLE, PROPOSED, REVIEW = "match_table_edited.txt", "match_table.txt", "match_table_proposed.txt", "match_review.csv"
 
 
 @lru_cache(maxsize=None)
@@ -37,6 +42,28 @@ def _load_config(path):
 def config(path=None):
     """The histology parameters (configs/histology.yaml, or `path`)."""
     return _load_config(str(path or CONFIG))
+
+
+def flagged_count(review_csv):
+    """How many components a match_review.csv flags."""
+    with open(review_csv, newline="") as f:
+        return sum(1 for r in csv.DictReader(f) if r["flag"])
+
+
+def find_table(histology_dir, table=None):
+    """The match table a step uses and a line saying which, (None, None) when there is none. The one order of every step: the path
+    given by flag; match_table_edited.txt; match_table.txt; match_table_proposed.txt."""
+    if table:
+        return str(table), f"{table} (given)"
+    h = Path(histology_dir)
+    if (h / EDITED).exists():
+        return str(h / EDITED), f"{h / EDITED} (edited by hand)"
+    if (h / TABLE).exists():
+        return str(h / TABLE), str(h / TABLE)
+    if (h / PROPOSED).exists():
+        n = flagged_count(h / REVIEW) if (h / REVIEW).exists() else "?"
+        return str(h / PROPOSED), f"{h / PROPOSED} (an unreviewed proposal, {n} components flagged: see {h / REVIEW}; to change it, copy it to {EDITED})"
+    return None, None
 
 
 def piece_suffixes(cfg=None):

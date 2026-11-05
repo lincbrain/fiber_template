@@ -38,7 +38,7 @@ and numbers records to `$LINC_NUMBERS`.
 | the numbers records | `make numbers`, `make numbers-gpu`, `make numbers-figures` | `reproduce/numbers/` | each record's own | `docs/reproduce.md` |
 | the figures | `make figures` | `figures.yaml` | linc; viz3d for Fig. 10 | `docs/reproduce.md` |
 
-From the preprocessed files, the MRI build reproduces the paper's files, with the small differences `docs/mri.md` gives.
+From the preprocessed files, the MRI build reproduces the paper's files, with the differences `docs/mri.md` gives.
 The networks' weights come with the data release; training them again is optional, and `--plan` lists the brains and any missing
 files first. Configs are in `configs/`. The times are from one node with an NVIDIA RTX 6000 Ada (48 GB). The per-brain commands are explained one
 by one in `docs/walkthrough.md`.
@@ -70,10 +70,13 @@ Rerun with this code, and identical to the paper's files or differing as the pag
 - the reconstruction of MM2, MF8 and MM14 from their photographs (`docs/walkthrough.md`);
 - the registrations of MM2 and MF8, including MF8 through the blockface template, their synthesis, their histology, and MM2's labels
   (`docs/walkthrough.md`);
+- `linc-histology propose` on the series of the analysis's 12 rule-written tables and on the five brains with hand-made tables
+  (`linc/histology/README.md`);
 - one full training of two networks: `mri_brainmask`, whose weights came out byte-identical to the shipped ones on the same GPU model; and
   the synthesis network, the same recipe but not the same bits (`docs/complete.md`);
 - the MRI template's build from the preprocessed files, step by step: `stage` and `tensor` on all four brains, voxel-identical to the
-  paper's; `nmt`, `t2reg`, `microreg`, `landmarks`, `frames` and `prepare` on MF1, each step on its own, which differ as `docs/mri.md` states;
+  paper's; `nmt`, `t2reg`, `landmarks`, `frames` and `prepare` on all four brains and `microreg` on MF1, each step on its own, which differ
+  as `docs/mri.md` states;
 - the construction of the MRI template on the paper's four inputs: `assemble`; the `mmorf` step's affine stage and step 1, through the
   release's driver, byte-identical to the paper's run (202 of 202 comparable files); and `channels` on the paper's run (20 of 20 files identical);
 - the blockface template's build from its 21 brains through the first of seven nonlinear steps on one card, identical to the paper's files
@@ -81,7 +84,7 @@ Rerun with this code, and identical to the paper's files or differing as the pag
 - the registration between the two templates and to NMT v2, whose GPU step gives transforms within 1 mm of the paper's, with medians under
   0.1 mm (`reproduce/templates/link.md`).
 
-Not rerun: `nmt`, `t2reg`, `microreg`, `landmarks`, `frames` and `prepare` on MF2 to MF4; steps 2 to 8 of the MRI template's construction; steps 2 to 7 and step 8 of the blockface template; the registrations to INIA19
+Not rerun: `microreg` on MF2 to MF4; steps 2 to 8 of the MRI template's construction; steps 2 to 7 and step 8 of the blockface template; the registrations to INIA19
 and CIVM-R; and the full training of the other networks. Their code and parameters are the paper's.
 
 ## Rebuilding a template

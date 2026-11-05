@@ -13,7 +13,8 @@ The in_folder_ columns report the brain's own folder under --data and nothing el
   in_folder_edited_mask, _edited_tubes, _regions, _section_map   yes or no
   in_folder_mri_masks     those present of dwi, t2, micro, final (mri/masks/<name>_brain_mask.nii.gz) and of_record (the b0 mask the
                           yaml file names under registration_to_own_mri), joined by +, or none
-  in_folder_match_table   edited, proposed, table (match_table.txt) or none; when there are several, the first of that order
+  in_folder_match_table   edited, table (match_table.txt), proposed or none; when there are several, the first of that order, the
+                          one the pipeline uses (linc/histology/match.py, find_table)
 They are empty when --data has no folder for the brain. The paper's brains keep their match tables, regions and section maps under
 $LINC_PRODUCTS/labels/, so `no` or `none` there does not mean the paper has none.
 """
@@ -30,7 +31,7 @@ COLUMNS = ["subject", "vx", "vz", "idx_first", "idx_last", "rotate180", "ccs", "
 FOLDER_COLUMNS = ["in_folder_edited_mask", "in_folder_edited_tubes", "in_folder_mri_masks", "in_folder_regions",
                   "in_folder_section_map", "in_folder_match_table"]
 MRI_MASKS = ("dwi", "t2", "micro", "final")
-MATCH_TABLES = (("edited", "match_table_edited.txt"), ("proposed", "match_table_proposed.txt"), ("table", "match_table.txt"))
+MATCH_TABLES = (("edited", "match_table_edited.txt"), ("table", "match_table.txt"), ("proposed", "match_table_proposed.txt"))
 
 
 def settings(subject, y):

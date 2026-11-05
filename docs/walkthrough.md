@@ -244,6 +244,21 @@ $PY_TIRL cli/linc-histology all --subject MR252 --store $LINC_DATA/sub-MR252/blo
 
 For MF8, the same command with `MF191` in place of `MR252` and the match table `num_MF191.txt`.
 
+The match table here is the paper's. Without `--table`, a step uses the brain's own: `match_table_edited.txt`, else `match_table.txt`,
+else `match_table_proposed.txt`, all in `histology/`, and `all` runs `propose` first when there is none. Each step that reads it prints
+which table it used. To propose one yourself:
+
+```bash
+$PY_TIRL cli/linc-histology propose --subject MR252 --store $LINC_DATA/sub-MR252/blockface/MR252_blockface.ome.zarr \
+    --histology $LINC_RAW/linc_000003/sourcedata/sub-MR252/micr --regions $LINC_PRODUCTS/labels/regions_t2_final/MR252_regions_t2.nii.gz \
+    --out $LINC_DATA/sub-MR252/histology/registration --jobs 8
+```
+
+It prints `proposed 53 of 54 components matched; 14 flagged for review`, in about 6 minutes (most of it reading the sections) with 13 GB
+of memory. It writes `match_table_proposed.txt`, `match_review.csv` and `match_review/` in `$LINC_DATA/sub-MR252/histology/`. Review it
+row by row, starting from the flagged components. To correct the proposal, copy it to `match_table_edited.txt` and change numbers;
+nothing overwrites that file. `linc/histology/README.md` explains how it works and how it was tested.
+
 It prints each step as it starts and ends (`match`; `pieces`, which divides each section into components; `masks`, `prepare`, `register`, `rgb`), one line per component while it
 registers, and at the end, for MM2, `TIRL histology -> blockface: 47 ok, 0 failed`. On a shared 48-core node, MM2's 47 components took
 about 40 minutes for the masks, 6 minutes to prepare, 80 minutes to register two at a time and 5 minutes for the color images:
@@ -311,7 +326,7 @@ $PY      cli/linc-labels connect     --subject MR252
 
 The paper's labels went through the histology registration made on the photographs before the marker tubes' holes were filled,
 so `push` and `interpolate` are given that registration
-(`--registrations`); without it, they use your own from section 5. `push` also reads the component masks and photographs that section 5 writes; `--registrations` replaces only the registrations. The four steps take about 3 minutes, 30 minutes, 3 minutes and 15 seconds. `carry`, as written, goes through the paper's registrations of MM2 (`xfm_record/`);
+(`--registrations`); without it, they use your own from section 5. `push` also reads the component masks and photographs that section 5 writes; `--registrations` replaces only the registrations. `push` ends with a line saying how many annotated sections had no component mask and how many component masks had no photograph or registration. A partial set still pushes what it can and exits 0, so read that line. The four steps take about 3 minutes, 30 minutes, 3 minutes and 15 seconds. `carry`, as written, goes through the paper's registrations of MM2 (`xfm_record/`);
 without `--entry` it goes through your own, from section 3 (`xfm/`). The interpolation writes the interpolated labels under
 `$LINC_DATA/sub-MR252/labels/blockface/tracer/`. Compare each step's labels with the paper's (the gzip bytes differ, so the arrays
 are compared):

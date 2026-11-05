@@ -167,7 +167,7 @@ def push_tracer(subject, *, annotations_dir, section_map, match_table_path, piec
     out_dir.mkdir(parents=True, exist_ok=True)
     sheets = {c: {} for c in classes}                                 # class -> {blockface slice: 2D array on the target grid}
     plog = []
-    n_masks = n_ready = 0
+    n_masks = n_ready = n_sections = n_no_masks = 0
     for r in rows:
         ms = {}
         for c in classes:
@@ -185,7 +185,10 @@ def push_tracer(subject, *, annotations_dir, section_map, match_table_path, piec
         zero = int(np.nonzero(combos == 0)[0][0]) if (combos == 0).any() else None
         if zero not in (None, 0):
             raise RuntimeError("unexpected code order")
-        for mpath in sorted(glob(os.path.join(str(piece_masks), sid + "_*.png"))):
+        masks = sorted(glob(os.path.join(str(piece_masks), sid + "_*.png")))
+        n_sections += 1
+        n_no_masks += not masks
+        for mpath in masks:
             piece = os.path.basename(mpath)[:-4]
             tdir = os.path.join(str(registrations), piece)
             photo_p = os.path.join(str(blockface_pieces), piece + ".png")
@@ -221,6 +224,8 @@ def push_tracer(subject, *, annotations_dir, section_map, match_table_path, piec
         raise SystemExit(f"{subject}: nothing pushed, nothing written. Found {len(classes)} annotation classes in {annotations_dir}; {n_masks} "
                          f"component masks in {piece_masks}, {n_ready} of them with a photograph in {blockface_pieces} and a registration in "
                          f"{registrations}. linc-histology makes the masks and the photographs.")
+    log(f"{subject}: {n_sections} annotated sections, {n_no_masks} with no component mask; {n_masks} component masks, {n_masks - n_ready} with no "
+        f"photograph or registration. What these skip is missing from the labels. {len(plog)} components pushed.")
     summary, outputs = {}, []
     for c, sl in sheets.items():
         if not sl:

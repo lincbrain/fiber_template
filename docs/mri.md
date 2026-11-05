@@ -77,7 +77,7 @@ We also assume each session's brain mask and the final brain mask (`docs/inputs.
 
 This repository adds (`docs/build_everything.md`):
 - `stage`: the b0, the T2-weighted image (echo 5) and the microstructure session's b0, each corrected with N4 inside its brain mask; the
-  fractions masked, clipped to [0, 1] and divided by their sum;
+  soma and neurite fractions masked, clipped to [0, 1] and divided by their sum;
 - `tensor`: the diffusion tensor, fitted with FSL `dtifit` on the 43 volumes with b up to 4800 s/mm², with the b-vectors rotated from the
   `.ecclog` and checked with `dwigradcheck`;
 - `t2reg`, `microreg`, `nmt`: the registration of the T2-weighted image and the microstructure session to the b0, and of NMT v2 to the
@@ -93,9 +93,24 @@ Run from the paper's preprocessed files, step by step:
 On MF1, each step on its own:
 - `t2reg`, `microreg`: the fields differ from the paper's by a median of 0.019 mm (largest 0.52 mm) and 0.033 mm (largest 1.9 mm).
 - `nmt`, `landmarks`, `frames`: the paper registered NMT v2 with an earlier version of the anatomix engine. With this release's, the SARM
-  labels agree on 93.3 % of the brain's voxels, and the canonical frame differs by 0.04° and 0.16 mm (under 0.1° and 0.2 mm between runs).
+  labels agree on 93.3 % of the brain's voxels, and the canonical frame differs by 0.04° and 0.16 mm.
 - `prepare`: every channel is resampled through that frame, so no file is identical. Inside both masks, the Pearson correlation with the
   paper's is 0.968 for the T2-weighted image, 0.957 for the b0, 0.923 and 0.909 for the fractions and 0.995 for the tensor, and the Dice
   coefficient of the masks is 0.989. With the paper's frame, tensor, registrations and staged inputs, all 36 files are identical.
+
+On MF2 to MF4, each step on its own, with the paper's `microreg`, which was not rerun on these three (each brain's values are in
+`reproduce/templates/mri_channels.md`):
+- `nmt`: the SARM labels agree on 94.1 to 94.3 % of the brain's voxels.
+- `t2reg`: the fields differ from the paper's by a median of 0.009 to 0.037 mm (largest 0.84 mm).
+- `frames`: the canonical frame differs by 0.15° to 0.81° and 0.17 to 0.38 mm.
+- `prepare`: no file is identical. Inside both masks, the Pearson correlation with the paper's is 0.885 to 0.975 for the T2-weighted image,
+  0.879 to 0.975 for the b0, 0.845 to 0.961 for the fractions and 0.981 to 0.996 for the tensor, and the Dice coefficient of the masks is
+  0.979 to 0.993.
+
+These correlations follow the frame. With the difference between the frames undone, on all four brains, they are 0.991 to 0.993 for the
+T2-weighted image, 0.987 to 0.993 for the b0 and 0.942 to 0.974 for the fractions.
+
+Rerunning `nmt` and `frames` can land on a different mid-sagittal plane. On MF4 it was 0.8° from the paper's plane, a mean move of 0.31 mm,
+and the paper's plane scores higher (mirror r 0.635 against 0.628). The effect on a finished template was not tested.
 
 The time per brain is about 40 minutes. `microreg` needs about 22 GB free on the GPU.

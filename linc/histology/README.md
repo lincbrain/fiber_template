@@ -1,9 +1,52 @@
 # linc/histology
 
 Histology sections -> their blockface photographs -> the template, and annotations along the same path. Entry points:
-`cli/linc-histology` (match, pieces, masks, prepare, register, rgb) and `cli/linc-labels` (push, interpolate, carry). Parameters:
+`cli/linc-histology` (propose, match, pieces, masks, prepare, register, rgb) and `cli/linc-labels` (push, interpolate, carry, connect). Parameters:
 `configs/histology.yaml`, `configs/labels.yaml`. Environments: `env/tirl.yml` (TIRL 3.6.2; 12 threads per piece reproduce the
 registrations of record bit for bit), `env/labels-interp.yml` (the demons interpolation).
+
+## The match table (input of `linc-histology match`)
+
+**What it is.** One text file per brain and series: each histology section's number and the blockface photograph of each of its
+components (format in `match.py`). Of the paper's histology brains, the tables of MM1, MM2, MM3, MF5 and MF6 were made by hand. MF8's,
+and some components left unmatched by hand in MM2, MF5 and MF6, were written by the rule below.
+
+**Proposing it.** `linc-histology propose` reads the brain's store, brain mask, regions volume and sections (JPEG 2000 files, or an
+OME-Zarr stack with `--section-map`). It writes, in the brain's histology folder, `match_table_proposed.txt` (one row per section, so a
+person can read and change a number), `match_review.csv` (one row per component: its photograph, score, flag and next-best photographs)
+and `match_review/` (one image per flagged component: the section beside its proposed photograph). `match` and the later steps read
+JPEG 2000 files only.
+
+**How it works.** Each component's outline is compared with the outlines of the photographs' whole brain, hemispheres and cerebellum,
+taken from the regions volume. This gives the component's class and its approximate position in the stack. The component is then
+registered to its class on the photographs within 4 mm, and scored by half the Dice of the masks plus half the correlation. Sections
+cut in one run keep a fixed spacing and order, so a component takes the photograph on its run's line, not its own best. A component
+scoring under 0.45 stays unmatched. A component is flagged when a photograph over one section away scores higher, or when its score is
+under 0.45. The analysis took its first outlines from a 2D network; here they come from the regions volume.
+
+**Reviewing and correcting it.** Review the proposal row by row. The flags only set the order of the review: they catch 20 of the 33
+components over one section away from the hand-made tables. To correct a row, copy `match_table_proposed.txt` to
+`match_table_edited.txt` and change numbers. Nothing overwrites that file.
+
+**Which table a step uses.** The first of: the path given by flag (`--table`, `--match-table`), `match_table_edited.txt`,
+`match_table.txt`, `match_table_proposed.txt`. `linc-histology` and `linc-labels` print which, and say so with the flagged count when it
+is an unreviewed proposal. `linc-histology all` runs `propose` first only when there is no table.
+
+**Photographs per section.** 1200 µm over the section step the volume was built at. MF9's table was made at an 870 µm step and its
+volume built at 600 µm, so it takes `--photos-per-section 1.379`.
+
+**Time.** At 12 processes on a shared 48-core node: 15 s to 2 minutes and under 2 GB with an OME-Zarr stack; about 5 to 10 minutes and
+11 to 14 GB in the main process with JPEG 2000 files, most of it reading.
+
+**The test.** `tests/match_propose_records.py`, with each series' values in `tests/match_propose_records.json`:
+- From the analysis's saved scores, `propose`'s later steps rewrite all 12 tables the analysis wrote by this rule, byte for byte.
+- From the command on the release's inputs, which differs from the analysis in its first outlines, inputs and thread counts: 553 of the
+  621 components matched in both tables lie within one section of the analysis's table, and 45 components are matched in one table only.
+- Against the five hand-made tables, which are one person's choice and not a known truth: 28 of the 319 components matched are over one
+  section away. 90 of the 359 components are flagged, including 20 of the 33 such disagreements counted before the score floor.
+- The same command twice gives the same table and review list, and so does the environment of `env/tirl.yml` (MF10). An edited table is
+  used and survives a rerun, and a table given by flag takes precedence over it.
+- The registrations use one thread per process because the thread count changes the scores.
 
 ## The atlas regions volume (input of `linc-histology pieces`)
 

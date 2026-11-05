@@ -1,0 +1,818 @@
+{
+ "rule": {
+  "tables_byte_identical": 12,
+  "tables": 12,
+  "per_series": {
+   "MF191": {
+    "bytes_identical": true,
+    "components": 64,
+    "flagged": 17
+   },
+   "MF191_LY": {
+    "bytes_identical": true,
+    "components": 72,
+    "flagged": 23
+   },
+   "MF196_FS": {
+    "bytes_identical": true,
+    "components": 33,
+    "flagged": 11
+   },
+   "MF196_LY": {
+    "bytes_identical": true,
+    "components": 46,
+    "flagged": 16
+   },
+   "MF204": {
+    "bytes_identical": true,
+    "components": 68,
+    "flagged": 23
+   },
+   "MR244": {
+    "bytes_identical": true,
+    "components": 95,
+    "flagged": 20
+   },
+   "MR253": {
+    "bytes_identical": true,
+    "components": 83,
+    "flagged": 25
+   },
+   "MR254": {
+    "bytes_identical": true,
+    "components": 46,
+    "flagged": 18
+   },
+   "MR257": {
+    "bytes_identical": true,
+    "components": 53,
+    "flagged": 10
+   },
+   "MR263": {
+    "bytes_identical": true,
+    "components": 45,
+    "flagged": 7
+   },
+   "MR273_FR": {
+    "bytes_identical": true,
+    "components": 46,
+    "flagged": 12
+   },
+   "MR273_FS": {
+    "bytes_identical": true,
+    "components": 48,
+    "flagged": 5
+   }
+  }
+ },
+ "saved": {
+  "pooled": {
+   "components": 362,
+   "flagged": 74,
+   "kept": 318,
+   "wrong_kept": 17,
+   "dropped_by_floor": 10,
+   "dropped_wrong": 5,
+   "large": 22,
+   "large_flagged": 17
+  },
+  "per_brain": {
+   "MR243": {
+    "components": 102,
+    "flagged": 13,
+    "kept": 89,
+    "err_median_mm": 0.0,
+    "wrong_kept": 2,
+    "dropped_by_floor": 3,
+    "dropped_wrong": 1,
+    "large": 3,
+    "large_flagged": 3,
+    "i0": 4759
+   },
+   "MR252": {
+    "components": 54,
+    "flagged": 11,
+    "kept": 51,
+    "err_median_mm": 0.15,
+    "wrong_kept": 6,
+    "dropped_by_floor": 1,
+    "dropped_wrong": 1,
+    "large": 7,
+    "large_flagged": 6,
+    "i0": 8527
+   },
+   "MR256": {
+    "components": 53,
+    "flagged": 6,
+    "kept": 53,
+    "err_median_mm": 0.25,
+    "wrong_kept": 2,
+    "dropped_by_floor": 0,
+    "dropped_wrong": 0,
+    "large": 2,
+    "large_flagged": 1,
+    "i0": 20194
+   },
+   "MF278": {
+    "components": 76,
+    "flagged": 26,
+    "kept": 62,
+    "err_median_mm": 0.35,
+    "wrong_kept": 3,
+    "dropped_by_floor": 4,
+    "dropped_wrong": 1,
+    "large": 4,
+    "large_flagged": 4,
+    "i0": 63514
+   },
+   "MF275": {
+    "components": 77,
+    "flagged": 18,
+    "kept": 63,
+    "err_median_mm": 0.45,
+    "wrong_kept": 4,
+    "dropped_by_floor": 2,
+    "dropped_wrong": 2,
+    "large": 6,
+    "large_flagged": 3,
+    "i0": 58436
+   }
+  },
+  "note": "from the record's saved fit (20 Sep 2026): a 2D network's partition with whole components corrected by a 3D regions model, not yet the atlas regions as the classes"
+ },
+ "five": {
+  "pooled": {
+   "components": 359,
+   "flagged": 90,
+   "kept": 319,
+   "wrong_kept": 28,
+   "dropped_by_floor": 10,
+   "dropped_wrong": 5,
+   "large": 33,
+   "large_flagged": 20
+  },
+  "per_brain": {
+   "MR243": {
+    "components": 102,
+    "flagged": 21,
+    "kept": 91,
+    "err_median_mm": 0.4,
+    "wrong_kept": 2,
+    "dropped_by_floor": 3,
+    "dropped_wrong": 1,
+    "large": 3,
+    "large_flagged": 3,
+    "i0": 4759,
+    "wall_s": 593.6,
+    "peak_gb_main_process": 13.78
+   },
+   "MR252": {
+    "components": 54,
+    "flagged": 14,
+    "kept": 51,
+    "err_median_mm": 0.45,
+    "wrong_kept": 7,
+    "dropped_by_floor": 1,
+    "dropped_wrong": 1,
+    "large": 8,
+    "large_flagged": 6,
+    "i0": 8527,
+    "wall_s": 354.66,
+    "peak_gb_main_process": 12.65
+   },
+   "MR256": {
+    "components": 53,
+    "flagged": 13,
+    "kept": 49,
+    "err_median_mm": 0.25,
+    "wrong_kept": 1,
+    "dropped_by_floor": 4,
+    "dropped_wrong": 2,
+    "large": 3,
+    "large_flagged": 2,
+    "i0": 20194,
+    "wall_s": 602.95,
+    "peak_gb_main_process": 12.71
+   },
+   "MF278": {
+    "components": 73,
+    "flagged": 19,
+    "kept": 64,
+    "err_median_mm": 0.35,
+    "wrong_kept": 12,
+    "dropped_by_floor": 1,
+    "dropped_wrong": 0,
+    "large": 12,
+    "large_flagged": 8,
+    "i0": 63514,
+    "wall_s": 575.4,
+    "peak_gb_main_process": 11.44
+   },
+   "MF275": {
+    "components": 77,
+    "flagged": 23,
+    "kept": 64,
+    "err_median_mm": 0.45,
+    "wrong_kept": 6,
+    "dropped_by_floor": 1,
+    "dropped_wrong": 1,
+    "large": 7,
+    "large_flagged": 1,
+    "i0": 58436,
+    "wall_s": 421.72,
+    "peak_gb_main_process": 10.85
+   }
+  },
+  "with_record_outlines": {
+   "pooled": {
+    "components": 359,
+    "flagged": 91,
+    "kept": 316,
+    "wrong_kept": 22,
+    "dropped_by_floor": 10,
+    "dropped_wrong": 4,
+    "large": 26,
+    "large_flagged": 17
+   },
+   "per_brain": {
+    "MR243": {
+     "components": 102,
+     "flagged": 21,
+     "kept": 89,
+     "err_median_mm": 0.4,
+     "wrong_kept": 0,
+     "dropped_by_floor": 3,
+     "dropped_wrong": 1,
+     "large": 1,
+     "large_flagged": 1,
+     "i0": 4759
+    },
+    "MR252": {
+     "components": 54,
+     "flagged": 14,
+     "kept": 51,
+     "err_median_mm": 0.45,
+     "wrong_kept": 7,
+     "dropped_by_floor": 1,
+     "dropped_wrong": 1,
+     "large": 8,
+     "large_flagged": 6,
+     "i0": 8527
+    },
+    "MR256": {
+     "components": 53,
+     "flagged": 11,
+     "kept": 51,
+     "err_median_mm": 0.25,
+     "wrong_kept": 0,
+     "dropped_by_floor": 2,
+     "dropped_wrong": 0,
+     "large": 0,
+     "large_flagged": 0,
+     "i0": 20194
+    },
+    "MF278": {
+     "components": 73,
+     "flagged": 19,
+     "kept": 62,
+     "err_median_mm": 0.35,
+     "wrong_kept": 11,
+     "dropped_by_floor": 2,
+     "dropped_wrong": 0,
+     "large": 11,
+     "large_flagged": 7,
+     "i0": 63514
+    },
+    "MF275": {
+     "components": 77,
+     "flagged": 26,
+     "kept": 63,
+     "err_median_mm": 0.45,
+     "wrong_kept": 4,
+     "dropped_by_floor": 2,
+     "dropped_wrong": 2,
+     "large": 6,
+     "large_flagged": 3,
+     "i0": 58436
+    }
+   }
+  },
+  "note": "compared with one person's hand-made tables, not with a known truth; kept excludes the components the floor dropped"
+ },
+ "repeat": {
+  "series": "MF204",
+  "table_identical": true,
+  "review_identical": true
+ },
+ "full": {
+  "MF191": {
+   "photos_per_section": 2.0,
+   "wall_s": 273.84,
+   "peak_gb_main_process": 13.15,
+   "jobs": 12,
+   "vs_record": {
+    "sections": 46,
+    "rows_identical": 25,
+    "components_in_both": 57,
+    "components_identical": 38,
+    "within_one_section": 57,
+    "median_sections": 0.0,
+    "max_sections": 1.0,
+    "in_one_table_only": 4
+   },
+   "flagged": 18,
+   "outline_step": {
+    "components": 64,
+    "class_differs": 3
+   },
+   "with_record_outlines_vs_record": {
+    "sections": 46,
+    "rows_identical": 26,
+    "components_in_both": 59,
+    "components_identical": 39,
+    "within_one_section": 59,
+    "median_sections": 0.0,
+    "max_sections": 1.0,
+    "in_one_table_only": 1
+   },
+   "two_threads_vs_one": {
+    "sections": 45,
+    "rows_identical": 45,
+    "components_in_both": 59,
+    "components_identical": 59,
+    "within_one_section": 59,
+    "median_sections": 0.0,
+    "max_sections": 0.0,
+    "in_one_table_only": 0
+   }
+  },
+  "MF191_LY": {
+   "photos_per_section": 2.0,
+   "wall_s": 42.79,
+   "peak_gb_main_process": 0.71,
+   "jobs": 12,
+   "vs_record": {
+    "sections": 44,
+    "rows_identical": 27,
+    "components_in_both": 57,
+    "components_identical": 40,
+    "within_one_section": 57,
+    "median_sections": 0.0,
+    "max_sections": 1.0,
+    "in_one_table_only": 6
+   },
+   "flagged": 22,
+   "outline_step": {
+    "components": 72,
+    "class_differs": 6
+   },
+   "with_record_outlines_vs_record": {
+    "sections": 42,
+    "rows_identical": 29,
+    "components_in_both": 59,
+    "components_identical": 42,
+    "within_one_section": 59,
+    "median_sections": 0.0,
+    "max_sections": 1.0,
+    "in_one_table_only": 1
+   },
+   "two_threads_vs_one": {
+    "sections": 43,
+    "rows_identical": 38,
+    "components_in_both": 60,
+    "components_identical": 56,
+    "within_one_section": 60,
+    "median_sections": 0.0,
+    "max_sections": 1.0,
+    "in_one_table_only": 1
+   }
+  },
+  "MF196_FS": {
+   "photos_per_section": 1.3793,
+   "wall_s": 22.78,
+   "peak_gb_main_process": 0.97,
+   "jobs": 12,
+   "vs_record": {
+    "sections": 26,
+    "rows_identical": 13,
+    "components_in_both": 31,
+    "components_identical": 17,
+    "within_one_section": 25,
+    "median_sections": 0.0,
+    "max_sections": 2.9,
+    "in_one_table_only": 1
+   },
+   "flagged": 11,
+   "outline_step": {
+    "components": 33,
+    "class_differs": 0
+   },
+   "with_record_outlines_vs_record": {
+    "sections": 26,
+    "rows_identical": 13,
+    "components_in_both": 31,
+    "components_identical": 18,
+    "within_one_section": 26,
+    "median_sections": 0.0,
+    "max_sections": 3.625,
+    "in_one_table_only": 1
+   },
+   "two_threads_vs_one": {
+    "sections": 26,
+    "rows_identical": 26,
+    "components_in_both": 31,
+    "components_identical": 31,
+    "within_one_section": 31,
+    "median_sections": 0.0,
+    "max_sections": 0.0,
+    "in_one_table_only": 0
+   }
+  },
+  "MF196_LY": {
+   "photos_per_section": 1.3793,
+   "wall_s": 30.23,
+   "peak_gb_main_process": 0.96,
+   "jobs": 12,
+   "vs_record": {
+    "sections": 34,
+    "rows_identical": 19,
+    "components_in_both": 37,
+    "components_identical": 20,
+    "within_one_section": 30,
+    "median_sections": 0.0,
+    "max_sections": 3.625,
+    "in_one_table_only": 4
+   },
+   "flagged": 16,
+   "outline_step": {
+    "components": 46,
+    "class_differs": 1
+   },
+   "with_record_outlines_vs_record": {
+    "sections": 34,
+    "rows_identical": 20,
+    "components_in_both": 38,
+    "components_identical": 21,
+    "within_one_section": 28,
+    "median_sections": 0.0,
+    "max_sections": 4.35,
+    "in_one_table_only": 2
+   },
+   "two_threads_vs_one": {
+    "sections": 33,
+    "rows_identical": 33,
+    "components_in_both": 38,
+    "components_identical": 38,
+    "within_one_section": 38,
+    "median_sections": 0.0,
+    "max_sections": 0.0,
+    "in_one_table_only": 0
+   }
+  },
+  "MF204": {
+   "photos_per_section": 1.4815,
+   "wall_s": 15.08,
+   "peak_gb_main_process": 0.72,
+   "jobs": 12,
+   "vs_record": {
+    "sections": 42,
+    "rows_identical": 4,
+    "components_in_both": 52,
+    "components_identical": 7,
+    "within_one_section": 14,
+    "median_sections": 1.35,
+    "max_sections": 5.4,
+    "in_one_table_only": 8
+   },
+   "flagged": 28,
+   "outline_step": {
+    "components": 68,
+    "class_differs": 6
+   },
+   "with_record_outlines_vs_record": {
+    "sections": 39,
+    "rows_identical": 23,
+    "components_in_both": 55,
+    "components_identical": 39,
+    "within_one_section": 50,
+    "median_sections": 0.0,
+    "max_sections": 2.025,
+    "in_one_table_only": 1
+   },
+   "two_threads_vs_one": {
+    "sections": 41,
+    "rows_identical": 36,
+    "components_in_both": 57,
+    "components_identical": 53,
+    "within_one_section": 57,
+    "median_sections": 0.0,
+    "max_sections": 0.675,
+    "in_one_table_only": 1
+   }
+  },
+  "MR244": {
+   "photos_per_section": 3.0,
+   "wall_s": 59.45,
+   "peak_gb_main_process": 1.41,
+   "jobs": 12,
+   "vs_record": {
+    "sections": 61,
+    "rows_identical": 49,
+    "components_in_both": 82,
+    "components_identical": 72,
+    "within_one_section": 80,
+    "median_sections": 0.0,
+    "max_sections": 2.333,
+    "in_one_table_only": 6
+   },
+   "flagged": 24,
+   "outline_step": {
+    "components": 95,
+    "class_differs": 3
+   },
+   "with_record_outlines_vs_record": {
+    "sections": 61,
+    "rows_identical": 45,
+    "components_in_both": 85,
+    "components_identical": 68,
+    "within_one_section": 83,
+    "median_sections": 0.0,
+    "max_sections": 2.333,
+    "in_one_table_only": 2
+   },
+   "two_threads_vs_one": {
+    "sections": 58,
+    "rows_identical": 56,
+    "components_in_both": 84,
+    "components_identical": 82,
+    "within_one_section": 82,
+    "median_sections": 0.0,
+    "max_sections": 2.333,
+    "in_one_table_only": 0
+   }
+  },
+  "MR253": {
+   "photos_per_section": 24.0,
+   "wall_s": 123.62,
+   "peak_gb_main_process": 1.63,
+   "jobs": 12,
+   "vs_record": {
+    "sections": 61,
+    "rows_identical": 0,
+    "components_in_both": 72,
+    "components_identical": 12,
+    "within_one_section": 69,
+    "median_sections": 0.25,
+    "max_sections": 2.25,
+    "in_one_table_only": 11
+   },
+   "flagged": 21,
+   "outline_step": {
+    "components": 83,
+    "class_differs": 5
+   },
+   "with_record_outlines_vs_record": {
+    "sections": 61,
+    "rows_identical": 0,
+    "components_in_both": 77,
+    "components_identical": 12,
+    "within_one_section": 71,
+    "median_sections": 0.25,
+    "max_sections": 3.0,
+    "in_one_table_only": 2
+   },
+   "two_threads_vs_one": {
+    "sections": 60,
+    "rows_identical": 56,
+    "components_in_both": 77,
+    "components_identical": 73,
+    "within_one_section": 77,
+    "median_sections": 0.0,
+    "max_sections": 1.0,
+    "in_one_table_only": 0
+   }
+  },
+  "MR254": {
+   "photos_per_section": 24.0,
+   "wall_s": 82.4,
+   "peak_gb_main_process": 1.22,
+   "jobs": 12,
+   "vs_record": {
+    "sections": 32,
+    "rows_identical": 16,
+    "components_in_both": 43,
+    "components_identical": 23,
+    "within_one_section": 31,
+    "median_sections": 0.0,
+    "max_sections": 2.0,
+    "in_one_table_only": 3
+   },
+   "flagged": 20,
+   "outline_step": {
+    "components": 46,
+    "class_differs": 2
+   },
+   "with_record_outlines_vs_record": {
+    "sections": 32,
+    "rows_identical": 0,
+    "components_in_both": 45,
+    "components_identical": 7,
+    "within_one_section": 33,
+    "median_sections": 0.25,
+    "max_sections": 2.0,
+    "in_one_table_only": 1
+   },
+   "two_threads_vs_one": {
+    "sections": 30,
+    "rows_identical": 16,
+    "components_in_both": 44,
+    "components_identical": 30,
+    "within_one_section": 30,
+    "median_sections": 0.0,
+    "max_sections": 1.25,
+    "in_one_table_only": 0
+   }
+  },
+  "MR257": {
+   "photos_per_section": 24.0,
+   "wall_s": 73.05,
+   "peak_gb_main_process": 1.24,
+   "jobs": 12,
+   "vs_record": {
+    "sections": 40,
+    "rows_identical": 27,
+    "components_in_both": 51,
+    "components_identical": 27,
+    "within_one_section": 51,
+    "median_sections": 0.0,
+    "max_sections": 0.5,
+    "in_one_table_only": 2
+   },
+   "flagged": 8,
+   "outline_step": {
+    "components": 53,
+    "class_differs": 0
+   },
+   "with_record_outlines_vs_record": {
+    "sections": 39,
+    "rows_identical": 27,
+    "components_in_both": 51,
+    "components_identical": 27,
+    "within_one_section": 51,
+    "median_sections": 0.0,
+    "max_sections": 0.5,
+    "in_one_table_only": 0
+   },
+   "two_threads_vs_one": {
+    "sections": 40,
+    "rows_identical": 40,
+    "components_in_both": 53,
+    "components_identical": 53,
+    "within_one_section": 53,
+    "median_sections": 0.0,
+    "max_sections": 0.0,
+    "in_one_table_only": 0
+   }
+  },
+  "MR263": {
+   "photos_per_section": 24.0,
+   "wall_s": 67.25,
+   "peak_gb_main_process": 1.15,
+   "jobs": 12,
+   "vs_record": {
+    "sections": 37,
+    "rows_identical": 26,
+    "components_in_both": 45,
+    "components_identical": 29,
+    "within_one_section": 45,
+    "median_sections": 0.0,
+    "max_sections": 1.0,
+    "in_one_table_only": 0
+   },
+   "flagged": 10,
+   "outline_step": {
+    "components": 45,
+    "class_differs": 0
+   },
+   "with_record_outlines_vs_record": {
+    "sections": 37,
+    "rows_identical": 26,
+    "components_in_both": 45,
+    "components_identical": 29,
+    "within_one_section": 45,
+    "median_sections": 0.0,
+    "max_sections": 1.0,
+    "in_one_table_only": 0
+   },
+   "two_threads_vs_one": {
+    "sections": 37,
+    "rows_identical": 34,
+    "components_in_both": 45,
+    "components_identical": 42,
+    "within_one_section": 45,
+    "median_sections": 0.0,
+    "max_sections": 1.0,
+    "in_one_table_only": 0
+   }
+  },
+  "MR273_FR": {
+   "photos_per_section": 24.0,
+   "wall_s": 78.33,
+   "peak_gb_main_process": 1.05,
+   "jobs": 12,
+   "vs_record": {
+    "sections": 36,
+    "rows_identical": 26,
+    "components_in_both": 46,
+    "components_identical": 26,
+    "within_one_section": 46,
+    "median_sections": 0.0,
+    "max_sections": 0.75,
+    "in_one_table_only": 0
+   },
+   "flagged": 8,
+   "outline_step": {
+    "components": 46,
+    "class_differs": 0
+   },
+   "with_record_outlines_vs_record": {
+    "sections": 36,
+    "rows_identical": 26,
+    "components_in_both": 46,
+    "components_identical": 26,
+    "within_one_section": 46,
+    "median_sections": 0.0,
+    "max_sections": 0.75,
+    "in_one_table_only": 0
+   },
+   "two_threads_vs_one": {
+    "sections": 36,
+    "rows_identical": 36,
+    "components_in_both": 46,
+    "components_identical": 46,
+    "within_one_section": 46,
+    "median_sections": 0.0,
+    "max_sections": 0.0,
+    "in_one_table_only": 0
+   }
+  },
+  "MR273_FS": {
+   "photos_per_section": 24.0,
+   "wall_s": 90.33,
+   "peak_gb_main_process": 1.03,
+   "jobs": 12,
+   "vs_record": {
+    "sections": 37,
+    "rows_identical": 1,
+    "components_in_both": 48,
+    "components_identical": 3,
+    "within_one_section": 48,
+    "median_sections": 0.25,
+    "max_sections": 0.75,
+    "in_one_table_only": 0
+   },
+   "flagged": 6,
+   "outline_step": {
+    "components": 48,
+    "class_differs": 0
+   },
+   "with_record_outlines_vs_record": {
+    "sections": 37,
+    "rows_identical": 1,
+    "components_in_both": 48,
+    "components_identical": 3,
+    "within_one_section": 48,
+    "median_sections": 0.25,
+    "max_sections": 0.75,
+    "in_one_table_only": 0
+   },
+   "two_threads_vs_one": {
+    "sections": 37,
+    "rows_identical": 35,
+    "components_in_both": 48,
+    "components_identical": 46,
+    "within_one_section": 48,
+    "median_sections": 0.0,
+    "max_sections": 0.25,
+    "in_one_table_only": 0
+   }
+  }
+ },
+ "edited": {
+  "series": "MF191",
+  "section": 3,
+  "proposed_photograph": 9,
+  "edited_photograph": 11,
+  "uses_proposal_first": true,
+  "edited_used": true,
+  "edited_photo_differs": true,
+  "table_flag_wins": true,
+  "table_photo_equals_proposal": true,
+  "edited_file_survives_rerun": true,
+  "said": [
+   "match table: <work>/MF191/histology/match_table_proposed.txt (an unreviewed proposal, 18 components flagged: see <work>/MF191/histology/match_review.csv; to change it, copy it to match_table_edited.txt)",
+   "match table: <work>/MF191/histology/match_table_edited.txt (edited by hand)",
+   "match table: <work>/MF191/histology/other_table.txt (given)"
+  ]
+ }
+}

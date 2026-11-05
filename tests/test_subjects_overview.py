@@ -46,8 +46,8 @@ def test_what_the_folder_holds(tmp_path):
     assert (r["in_folder_edited_mask"], r["in_folder_edited_tubes"]) == ("yes", "no")
     assert (r["in_folder_mri_masks"], r["in_folder_regions"], r["in_folder_match_table"]) == ("dwi+t2", "no", "none")
     assert rows["MF191"]["in_folder_match_table"] == "" and rows["MF191"]["in_folder_edited_mask"] == ""      # no folder: not looked at
-    assert files("histology/match_table.txt")["MR252"]["in_folder_match_table"] == "table"
     assert files("histology/match_table_proposed.txt")["MR252"]["in_folder_match_table"] == "proposed"
+    assert files("histology/match_table.txt")["MR252"]["in_folder_match_table"] == "table"            # the files add up: the pipeline's order
     assert files("histology/match_table_edited.txt")["MR252"]["in_folder_match_table"] == "edited"
     r = files("mri/MR252_mri_mask_r1pair_reg_2026-10-03.nii.gz", "histology/section_map.tsv")["MR252"]
     assert r["in_folder_mri_masks"] == "dwi+t2+of_record" and r["in_folder_section_map"] == "yes"

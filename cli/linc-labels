@@ -3,7 +3,7 @@
 and resample them into the template, so that labels drawn on sections can be read in template space.
 
 You need, per brain under $LINC_DATA/sub-<ID>/ (configs/labels.yaml `layout`)
-  histology/annotations/<class>.ome.zarr (the annotators' masks), histology/section_map.tsv, histology/match_table.txt,
+  histology/annotations/<class>.ome.zarr (the annotators' masks), histology/section_map.tsv, the match table (linc/histology/match.py),
   histology/regions.nii.gz (the atlas regions: left, right, cerebellum), the histology registration under histology/registration/
   (linc-histology), the blockface grid blockface/<ID>_blockface_L2.nii.gz, and for `carry` the registry entries to the template.
 
@@ -42,7 +42,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from linc import paths, provenance  # noqa: E402
-from linc.histology import labels as LB  # noqa: E402
+from linc.histology import labels as LB, match  # noqa: E402
+
+
+def _table(a, L):
+    """The match table: --match-table, else the order every step uses (match.find_table). None found: the layout's path, whose read says so."""
+    table, said = match.find_table(Path(L("match_table")).parent, a.match_table)
+    if said:
+        print(f"match table: {said}", flush=True)
+    return table or L("match_table")
 
 
 def _p(v, default):
@@ -54,7 +62,7 @@ def cmd_push(a, cfg):
     L = lambda k: LB.layout(S, k, cfg)  # noqa: E731
     grid = _p(a.grid, L("grid"))
     reg = _p(a.registrations, L("registrations"))
-    mt = _p(a.match_table, L("match_table"))
+    mt = _table(a, L)
     i0 = a.first_photo if a.first_photo is not None else LB.first_photo(S)
     t0 = time.time()
     if a.kind == "tracer":
@@ -99,13 +107,13 @@ def cmd_interpolate(a, cfg):
                 else (hcfg["regions"].get("made_at_spacing_um") or {}).get(S))          # as linc-histology: no entry -> factor 1
         scale = pieces.regions_scale(LB.subject_config(S), made)
         out = _p(a.out, L("labels") / "blockface" / "tracer")
-        rec, outs = IP.interpolate_v2(S, registrations=_p(a.registrations, L("registrations")), match_table_path=_p(a.match_table, L("match_table")),
+        rec, outs = IP.interpolate_v2(S, registrations=_p(a.registrations, L("registrations")), match_table_path=_table(a, L),
                                       first_photo_number=a.first_photo if a.first_photo is not None else LB.first_photo(S),
                                       grid=_p(a.grid, L("grid")), label_files=lab, regions=regions, regions_scale=scale, out_dir=out, cfg=cfg)
         for f in outs:
             provenance.write_provenance(f, inputs=lab + [regions], wall_s=round(time.time() - t0, 1), extra=dict(stage="interpolate", method="v2", regions_scale=scale), md5=False)
         return outs
-    rec, outs = IP.interpolate(S, registrations=_p(a.registrations, L("registrations")), match_table_path=_p(a.match_table, L("match_table")),
+    rec, outs = IP.interpolate(S, registrations=_p(a.registrations, L("registrations")), match_table_path=_table(a, L),
                                first_photo_number=a.first_photo if a.first_photo is not None else LB.first_photo(S),
                                grid=_p(a.grid, L("grid")), label_files=lab, interp_dir=_p(a.interp_dir, L("interp")), out_for=out_for, cfg=cfg)
     for f in outs:
@@ -171,7 +179,7 @@ def main(argv=None):
     common.add_argument("--subject", required=True, help="LINC identifier, e.g. MR252")
     common.add_argument("--grid", help="target blockface grid (default: layout grid)")
     common.add_argument("--registrations", help="per-piece registration folders (default: layout registrations)")
-    common.add_argument("--match-table", help="section -> photograph table (default: layout match_table)")
+    common.add_argument("--match-table", help="section -> photograph table (default: the brain's, in the order of linc/histology/match.py find_table)")
     common.add_argument("--first-photo", type=int, help="photograph number of blockface slice 0 (default: configs/subjects/<S>.yaml)")
     common.add_argument("--out", help="output folder")
     p = sub.add_parser("push", parents=[common])
