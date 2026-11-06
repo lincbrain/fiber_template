@@ -1,0 +1,173 @@
+{
+ "data": {
+  "groups": {
+   "coarser": {
+    "n": 3,
+    "brains": [
+     "MF8",
+     "MF9",
+     "MF10"
+    ],
+    "ids": [
+     "MF191",
+     "MF196",
+     "MF204"
+    ],
+    "nominal_um_min": 600.0,
+    "nominal_um_max": 810.0,
+    "step_um_min": 750.0,
+    "step_um_max": 870.0,
+    "per_brain": {
+     "MF8": {
+      "nominal_um": 600.0,
+      "step_um": 750.0
+     },
+     "MF9": {
+      "nominal_um": 600.0,
+      "step_um": 870.0
+     },
+     "MF10": {
+      "nominal_um": 810.0,
+      "step_um": 810.0
+     }
+    }
+   },
+   "every_section": {
+    "n": 13,
+    "brains": [
+     "MF5",
+     "MF6",
+     "MF7",
+     "MM2",
+     "MM3",
+     "MM5",
+     "MM6",
+     "MM7",
+     "MM8",
+     "MM9",
+     "MM10",
+     "MM14",
+     "MM15"
+    ],
+    "ids": [
+     "MF278",
+     "MF275",
+     "MF282",
+     "MR252",
+     "MR256",
+     "MR250",
+     "MR251",
+     "MR253",
+     "MR254",
+     "MR257",
+     "MR261",
+     "MR263",
+     "MR273"
+    ],
+    "nominal_um_min": 50.0,
+    "nominal_um_max": 50.0,
+    "step_um_min": 45.0,
+    "step_um_max": 47.0,
+    "per_brain": {
+     "MF5": {
+      "nominal_um": 50.0,
+      "step_um": 47.0
+     },
+     "MF6": {
+      "nominal_um": 50.0,
+      "step_um": 47.0
+     },
+     "MF7": {
+      "nominal_um": 50.0,
+      "step_um": 47.0
+     },
+     "MM2": {
+      "nominal_um": 50.0,
+      "step_um": 45.0
+     },
+     "MM3": {
+      "nominal_um": 50.0,
+      "step_um": 45.0
+     },
+     "MM5": {
+      "nominal_um": 50.0,
+      "step_um": 45.0
+     },
+     "MM6": {
+      "nominal_um": 50.0,
+      "step_um": 45.0
+     },
+     "MM7": {
+      "nominal_um": 50.0,
+      "step_um": 45.0
+     },
+     "MM8": {
+      "nominal_um": 50.0,
+      "step_um": 45.0
+     },
+     "MM9": {
+      "nominal_um": 50.0,
+      "step_um": 45.0
+     },
+     "MM10": {
+      "nominal_um": 50.0,
+      "step_um": 45.0
+     },
+     "MM14": {
+      "nominal_um": 50.0,
+      "step_um": 45.0
+     },
+     "MM15": {
+      "nominal_um": 50.0,
+      "step_um": 47.0
+     }
+    }
+   },
+   "every_8th": {
+    "n": 5,
+    "brains": [
+     "MM1",
+     "MM4",
+     "MM11",
+     "MM12",
+     "MM13"
+    ],
+    "ids": [
+     "MR243",
+     "MR249",
+     "MR244",
+     "MR247",
+     "MR248"
+    ],
+    "nominal_um_min": 400.0,
+    "nominal_um_max": 400.0,
+    "step_um_min": 366.0,
+    "step_um_max": 366.0,
+    "per_brain": {
+     "MM1": {
+      "nominal_um": 400.0,
+      "step_um": 366.0
+     },
+     "MM4": {
+      "nominal_um": 400.0,
+      "step_um": 366.0
+     },
+     "MM11": {
+      "nominal_um": 400.0,
+      "step_um": 366.0
+     },
+     "MM12": {
+      "nominal_um": 400.0,
+      "step_um": 366.0
+     },
+     "MM13": {
+      "nominal_um": 400.0,
+      "step_um": 366.0
+     }
+    }
+   }
+  },
+  "section_um": 50.0,
+  "rule": "by the nominal step: 50 um = every section, 400 um = every 8th, >= 600 um = coarser (MF8, MF9 600 um = every 12th; MF10 810 um)"
+ }
+}

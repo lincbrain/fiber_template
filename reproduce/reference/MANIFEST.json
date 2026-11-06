@@ -17,6 +17,10 @@
    "md5_of_record": "16d2ec6b9d5a3dd04496ddfabca1f423",
    "created": "2026-09-27T04:10:20-04:00"
   },
+  "bf_spacing_summary_r073": {
+   "md5_of_record": "fd53817d7ba0e0a9d734cdb36358676e",
+   "created": "2026-11-06T12:22:40-05:00"
+  },
   "bf_spacing_used": {
    "md5_of_record": "81de404187f1b5e62a36f76b1db5390a",
    "created": "2026-10-14T21:26:53-04:00"
@@ -25,9 +29,21 @@
    "md5_of_record": "32f64fd19fa67cbbfa26dc08a9653888",
    "created": "2026-09-29T09:10:36-04:00"
   },
+  "bf_step_groups_r073": {
+   "md5_of_record": "8c9932ce15df3599f7599d987aaccf1b",
+   "created": "2026-11-06T13:03:59-05:00"
+  },
   "bf_template_metrics_d2b": {
    "md5_of_record": "9efbb49457151c9e7142371f1dde5449",
    "created": "2026-10-05T15:34:14-04:00"
+  },
+  "bf_tubes_per_brain_r073": {
+   "md5_of_record": "cd7133e83d7ca55c87288a73ec1440e0",
+   "created": "2026-11-06T12:25:53-05:00"
+  },
+  "blockface_params_r073": {
+   "md5_of_record": "54860a6346c236620447acd436324383",
+   "created": "2026-11-06T12:34:06-05:00"
   },
   "d2_s2_validation_prod_s125": {
    "md5_of_record": "507d481bf3b4cca45d0b0985fd3cfb2b",
@@ -160,6 +176,10 @@
   "r1_edge_summary": {
    "md5_of_record": "93a49ec75a15a2cec686495ad05041f8",
    "created": "2026-10-14T21:25:38-04:00"
+  },
+  "registration_params_r073": {
+   "md5_of_record": "8596b108c4d197322d2aab70302c8aba",
+   "created": "2026-11-06T12:30:39-05:00"
   },
   "registration_qc_histo2bf_20261001": {
    "md5_of_record": "455e17267eafe6790a785ea429e7e600",

@@ -1,0 +1,206 @@
+{
+ "data": {
+  "per_brain": {
+   "MF278": {
+    "name": "MF5",
+    "components": 14,
+    "tracks": 13,
+    "per_section_median": 2.0,
+    "per_section_p90": 5.0,
+    "per_section_max": 6
+   },
+   "MF275": {
+    "name": "MF6",
+    "components": 8,
+    "tracks": 8,
+    "per_section_median": 1.0,
+    "per_section_p90": 3.0,
+    "per_section_max": 4
+   },
+   "MF282": {
+    "name": "MF7",
+    "components": 13,
+    "tracks": 12,
+    "per_section_median": 2.0,
+    "per_section_p90": 4.0,
+    "per_section_max": 7
+   },
+   "MF191": {
+    "name": "MF8",
+    "components": 23,
+    "tracks": 20,
+    "per_section_median": 2.0,
+    "per_section_p90": 5.0,
+    "per_section_max": 7
+   },
+   "MF196": {
+    "name": "MF9",
+    "components": 18,
+    "tracks": 14,
+    "per_section_median": 2.0,
+    "per_section_p90": 4.0,
+    "per_section_max": 5
+   },
+   "MF204": {
+    "name": "MF10",
+    "components": 10,
+    "tracks": 8,
+    "per_section_median": 1.0,
+    "per_section_p90": 3.0,
+    "per_section_max": 4
+   },
+   "MR243": {
+    "name": "MM1",
+    "components": 19,
+    "tracks": 17,
+    "per_section_median": 1.5,
+    "per_section_p90": 3.0,
+    "per_section_max": 5
+   },
+   "MR252": {
+    "name": "MM2",
+    "components": 21,
+    "tracks": 17,
+    "per_section_median": 2.0,
+    "per_section_p90": 5.0,
+    "per_section_max": 6
+   },
+   "MR256": {
+    "name": "MM3",
+    "components": 16,
+    "tracks": 15,
+    "per_section_median": 2.0,
+    "per_section_p90": 5.0,
+    "per_section_max": 7
+   },
+   "MR249": {
+    "name": "MM4",
+    "components": 20,
+    "tracks": 18,
+    "per_section_median": 2.0,
+    "per_section_p90": 3.9000000000000057,
+    "per_section_max": 5
+   },
+   "MR250": {
+    "name": "MM5",
+    "components": 21,
+    "tracks": 21,
+    "per_section_median": 2.0,
+    "per_section_p90": 4.0,
+    "per_section_max": 7
+   },
+   "MR251": {
+    "name": "MM6",
+    "components": 16,
+    "tracks": 15,
+    "per_section_median": 2.0,
+    "per_section_p90": 3.0,
+    "per_section_max": 6
+   },
+   "MR253": {
+    "name": "MM7",
+    "components": 16,
+    "tracks": 16,
+    "per_section_median": 2.0,
+    "per_section_p90": 4.0,
+    "per_section_max": 6
+   },
+   "MR254": {
+    "name": "MM8",
+    "components": 20,
+    "tracks": 13,
+    "per_section_median": 2.0,
+    "per_section_p90": 4.0,
+    "per_section_max": 5
+   },
+   "MR257": {
+    "name": "MM9",
+    "components": 15,
+    "tracks": 14,
+    "per_section_median": 2.0,
+    "per_section_p90": 4.0,
+    "per_section_max": 5
+   },
+   "MR261": {
+    "name": "MM10",
+    "components": 15,
+    "tracks": 11,
+    "per_section_median": 2.0,
+    "per_section_p90": 3.0,
+    "per_section_max": 5
+   },
+   "MR244": {
+    "name": "MM11",
+    "components": 18,
+    "tracks": 17,
+    "per_section_median": 2.0,
+    "per_section_p90": 4.0,
+    "per_section_max": 5
+   },
+   "MR247": {
+    "name": "MM12",
+    "components": 18,
+    "tracks": 16,
+    "per_section_median": 2.0,
+    "per_section_p90": 4.099999999999994,
+    "per_section_max": 7
+   },
+   "MR248": {
+    "name": "MM13",
+    "components": 17,
+    "tracks": 14,
+    "per_section_median": 2.0,
+    "per_section_p90": 4.0,
+    "per_section_max": 4
+   },
+   "MR263": {
+    "name": "MM14",
+    "components": 21,
+    "tracks": 15,
+    "per_section_median": 2.0,
+    "per_section_p90": 6.0,
+    "per_section_max": 9
+   },
+   "MR273": {
+    "name": "MM15",
+    "components": 16,
+    "tracks": 13,
+    "per_section_median": 2.0,
+    "per_section_p90": 5.0,
+    "per_section_max": 6
+   }
+  },
+  "join_mm": 1.5,
+  "summary": {
+   "tracks": {
+    "median": 15.0,
+    "q25": 13.0,
+    "q75": 17.0,
+    "min": 8.0,
+    "max": 21.0
+   },
+   "components": {
+    "median": 17.0,
+    "q25": 15.0,
+    "q75": 20.0,
+    "min": 8.0,
+    "max": 23.0
+   },
+   "per_section_median": {
+    "median": 2.0,
+    "q25": 2.0,
+    "q75": 2.0,
+    "min": 1.0,
+    "max": 2.0
+   },
+   "per_section_max": {
+    "median": 6.0,
+    "q25": 5.0,
+    "q75": 7.0,
+    "min": 4.0,
+    "max": 9.0
+   }
+  },
+  "note": "tube masks of record; tracks = parts joined along the sections when the next starts within join_mm in plane of the last's end"
+ }
+}

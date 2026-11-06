@@ -43,7 +43,8 @@ NUMBERS_LINC := \
   atlas_final_v2_summary fig_histology_simple histo_tube_landmarks \
   mm_mri_check_r054 mri_recipe registration_qc_histo2bf_20261001 s5_link_d2bs8 s5_link_regions_d2bs8 table1_rebuild \
   table_specimens_check_r054 tracer_sections_r054 tracer_sections_r058d tracer_template_current_all tube_mf8_check_r054 tube_offsets_r054 \
-  s1_segmentation_r057 s1_perbrain_r057 s1_photographs_r068b tracer_label_volumes_r058d tracer_alic_topography_r058d r060_target_comparison \
+  s1_segmentation_r057 s1_perbrain_r057 s1_photographs_r068b bf_spacing_summary_r073 bf_step_groups_r073 bf_tubes_per_brain_r073 \
+  blockface_params_r073 registration_params_r073 tracer_label_volumes_r058d tracer_alic_topography_r058d r060_target_comparison \
   lgnstn_targets_r060c mf8_s46_drop_r068 \
   tracer_sections_v2 tracer_connected_v2c tracer_label_volumes_v2c tracer_alic_topography_v2c tracer_interp_accounting_v2 \
   tracer_placement_v2c tracer_template_v2_all
@@ -117,6 +118,7 @@ mm_mri_check_r054:
 tube_mf8_check_r054: tube_offsets_r054
 lgnstn_geometry_current: labels_overlap_current
 fig_histology_simple: registration_qc_histo2bf_20261001
+bf_spacing_summary_r073: bf_spacing_used
 mf8_s46_drop_r068: registration_qc_histo2bf_20261001     # writes registration_qc_histo2bf_r068, tube_offsets_r068, tube_mf8_check_r068
 r057_missing_extent: d3_methods d3_predicted_share
 alignment_comparison: route_test_1c

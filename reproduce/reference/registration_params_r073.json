@@ -1,0 +1,73 @@
+{
+ "data": {
+  "grid_mm": 0.25,
+  "pad_rule": "4.5:8",
+  "pad_mm_min": 4.5,
+  "backbone": "anatomix-dev-vit",
+  "anatomix_channels": 32,
+  "mindssc_channels": 12,
+  "mindssc_radius": 1,
+  "mindssc_dilation": 2,
+  "loss": "cc",
+  "lr": 1.0,
+  "fixed_clip_percentile": 99.0,
+  "stage1": {
+   "shrink": [
+    8,
+    4,
+    2,
+    1
+   ],
+   "iterations": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "cc_window_vox": [
+    17,
+    9,
+    5,
+    3
+   ]
+  },
+  "stage2": {
+   "shrink": [
+    2,
+    1
+   ],
+   "iterations": [
+    200,
+    200
+   ],
+   "cc_window_vox": [
+    5,
+    3
+   ]
+  },
+  "smooth_grad_sigma_vox": 1.5,
+  "smooth_warp_sigma_vox": 1.25,
+  "smooth_warp_sigma_mm": 0.3125,
+  "smooth_grad_sigma_mm": 0.375,
+  "gate_features_by_mask": {
+   "to_own_mri": false,
+   "cross_modal": false
+  },
+  "linear": {
+   "to_own_mri": "FLIRT 7 then 9 dof, correlation ratio, weighted to the photographed slab (slab_inset_mm 0.5)",
+   "cross_modal": "FLIRT 6 dof on the brain masks (full-sphere search), 7 then 9 dof (scales kept in [0.6, 1.25])"
+  },
+  "run_of_record_MM2": {
+   "channels": "anatomix(32)+mindssc(12)",
+   "stages": [
+    "deformable",
+    "deformable"
+   ],
+   "grid_voxel_mm": 0.25,
+   "grid_mvox": 18.0,
+   "wall_s": 236.0,
+   "engine": "neel-dey/anatomix@4c86aee + neel-dey/FireANTs@21ae072"
+  },
+  "note": "sigma in voxels of the 0.25 mm working grid; smoothing applied to the update gradient and to the deformation after each step"
+ }
+}

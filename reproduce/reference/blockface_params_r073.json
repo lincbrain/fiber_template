@@ -1,0 +1,130 @@
+{
+ "data": {
+  "levels": {
+   "final_level": 1,
+   "view_level": 2,
+   "reduction": {
+    "L1": 2,
+    "L2": 4,
+    "L4": 16
+   }
+  },
+  "curation_z_target_um": 400.0,
+  "curation_f": {
+   "MF191": 1,
+   "MF196": 1,
+   "MF204": 1,
+   "MF275": 8,
+   "MF278": 8,
+   "MF282": 8,
+   "MR243": 1,
+   "MR244": 1,
+   "MR247": 1,
+   "MR248": 1,
+   "MR249": 1,
+   "MR250": 8,
+   "MR251": 8,
+   "MR252": 8,
+   "MR253": 8,
+   "MR254": 8,
+   "MR256": 8,
+   "MR257": 8,
+   "MR261": 8,
+   "MR263": 8,
+   "MR273": 8
+  },
+  "crop_margin_mm": 2.0,
+  "crop_multiple": 16,
+  "camera_jumps": {
+   "stages": [
+    "rotation",
+    "rigid",
+    "affine"
+   ],
+   "resolution_mm": 0.034,
+   "per_brain": {
+    "MF191": 0,
+    "MF196": 0,
+    "MF204": 14,
+    "MF275": 1,
+    "MF278": 1,
+    "MF282": 1,
+    "MR243": 1,
+    "MR244": 3,
+    "MR247": 7,
+    "MR248": 2,
+    "MR249": 2,
+    "MR250": 1,
+    "MR251": 2,
+    "MR252": 13,
+    "MR253": 5,
+    "MR254": 5,
+    "MR256": 5,
+    "MR257": 4,
+    "MR261": 3,
+    "MR263": 11,
+    "MR273": 2
+   },
+   "summary": {
+    "min": 0.0,
+    "max": 14.0,
+    "median": 2.0,
+    "total": 83,
+    "brains_with_jumps": 19
+   }
+  },
+  "demons": {
+   "shrink": [
+    4,
+    2,
+    1
+   ],
+   "sigma": [
+    2,
+    1,
+    0
+   ],
+   "iterations": 200,
+   "field_sd": 1.5,
+   "mask_dilation_vox_L4": 15
+  },
+  "mask3d_component_min_fraction": 0.1,
+  "illumination": {
+   "poly_degree": 2,
+   "zref": {
+    "coarse_mm": 0.64,
+    "sigma_mm": 3.84,
+    "window_mm": 0.4
+   },
+   "zref_brains": [
+    "MR263"
+   ]
+  },
+  "destep": {
+   "window_sections": 8,
+   "ratio": 1.05,
+   "abs_jump": 6.0,
+   "edge_sections": 6,
+   "harmonize_mm": 1.0
+  },
+  "gain_clip": [
+   0.4,
+   2.5
+  ],
+  "w_lum": [
+   0.299,
+   0.587,
+   0.114
+  ],
+  "tubes": {
+   "left_tolerance_vox": 3.0,
+   "min_voxels": 3,
+   "halo_frac": 0.88,
+   "dilate_vox": 2,
+   "margin_vox": 12,
+   "feather_band_vox": 3
+  },
+  "registration_iso_mm": 0.15,
+  "note": "settings of record from the release's configs (values as used for the paper's volumes); counts per brain from configs/subjects"
+ }
+}

@@ -6,7 +6,7 @@ You need
 What it does
   It models L[i] = T[i] (a smooth tissue trend) x G[session(i)] (one exposure gain per session) x N[i] (flicker):
   detect_steps(L)            the change-points p between sessions (a jump in level between sections p-1 and p)
-  destep_reference(L, ...)   each session's gain divided out (every session brought to the first), then smoothed
+  destep_reference(L, ...)   each session's gain divided out (every session brought to the level of the longest), then smoothed
 You get
   (ref, steps, gains): ref[i] is section i's target level, with the session jumps and the flicker removed and the gentle
   anatomical trend kept.

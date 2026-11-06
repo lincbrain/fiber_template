@@ -1,0 +1,21 @@
+{
+ "data": {
+  "vx_um": {
+   "n": 21,
+   "median": 20.0,
+   "q25": 20.0,
+   "q75": 23.75,
+   "min": 20.0,
+   "max": 43.0
+  },
+  "vz_um": {
+   "n": 21,
+   "median": 47.0,
+   "q25": 45.0,
+   "q75": 366.0,
+   "min": 45.0,
+   "max": 870.0
+  },
+  "note": "over the 21 sectioned brains, from bf_spacing_used.per_brain (vx_um: pixel size; vz_um: section step)"
+ }
+}
