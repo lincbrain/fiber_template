@@ -1330,7 +1330,7 @@ steps:
     hours: 0.15
     timed: clone
     optional: false
-    note: 'Today from a clone: 10 of 10 identical, 329 s. With the R-058 table (num_MR243_r058c.txt) instead, 9 of 10 labels differ by 1 to 3,213
+    note: 'On 6 Nov from a clone: 10 of 10 identical, 329 s. With the rule-made table (num_MR243_r058c.txt) instead, 9 of 10 labels differ by 1 to 3,213
       voxels: the paper''s interpolation read the hand-made table.'
   - name: labels-interpolate
     group: labels
