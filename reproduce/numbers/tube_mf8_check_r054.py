@@ -23,17 +23,22 @@ METHOD = [
 ]
 
 
-def main():
-    src = paths.numbers_root() / "tube_offsets_r054.json"
+def check(src, method):
+    """The record's data from a tube offsets record (src)."""
     P = json.loads(src.read_text())["data"]["per_subject"]
     oth = [S for S in P if S != MF8]
     k, a = "diag_share_tube_sized_within_2mm", "detected_hole_area_mm2_median"
-    out = dict(method=METHOD,
-               MF8=dict(share_tube_sized_within_2mm=P[MF8][k], detected_hole_area_mm2_median=P[MF8][a], rate=P[MF8]["hole_hidden"]["rate"]),
-               others=dict(brains=oth, share_tube_sized_within_2mm_min=min(P[S][k] for S in oth),
-                           share_tube_sized_within_2mm_max=max(P[S][k] for S in oth),
-                           detected_hole_area_mm2_median_min=min(P[S][a] for S in oth),
-                           detected_hole_area_mm2_median_max=max(P[S][a] for S in oth)))
+    return dict(method=method,
+                MF8=dict(share_tube_sized_within_2mm=P[MF8][k], detected_hole_area_mm2_median=P[MF8][a], rate=P[MF8]["hole_hidden"]["rate"]),
+                others=dict(brains=oth, share_tube_sized_within_2mm_min=min(P[S][k] for S in oth),
+                            share_tube_sized_within_2mm_max=max(P[S][k] for S in oth),
+                            detected_hole_area_mm2_median_min=min(P[S][a] for S in oth),
+                            detected_hole_area_mm2_median_max=max(P[S][a] for S in oth)))
+
+
+def main():
+    src = paths.numbers_root() / "tube_offsets_r054.json"
+    out = check(src, METHOD)
     provenance.write_numbers("tube_mf8_check_r054", out, inputs=[src], md5=False, cmd="python reproduce/numbers/tube_mf8_check_r054.py")
 
 

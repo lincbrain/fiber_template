@@ -1,0 +1,293 @@
+{
+ "data": {
+  "protocol": "Fig. 10, the tracer figure: three injections in the template, each charted section's labels where it lands (a) and the bundles in\nthe anterior limb of the internal capsule (b), with a rotation video of (a) for the supplement.",
+  "cases": {
+   "MR243": {
+    "Bundles": {
+     "points": 8739,
+     "outside_brain_mask": 1,
+     "share_outside_brain_mask": 0.00011,
+     "share_left_of_midline_as_drawn": 0.0117,
+     "sections": 34,
+     "points_in_csv": 8839
+    },
+    "Injection_site": {
+     "points": 143,
+     "outside_brain_mask": 0,
+     "share_outside_brain_mask": 0.0,
+     "share_left_of_midline_as_drawn": 0.0,
+     "sections": 1,
+     "points_in_csv": 143
+    },
+    "sections_with_bundles_or_injection": 34
+   },
+   "MF191": {
+    "Bundles": {
+     "points": 26421,
+     "outside_brain_mask": 55,
+     "share_outside_brain_mask": 0.00208,
+     "share_left_of_midline_as_drawn": 0.1373,
+     "sections": 28,
+     "points_in_csv": 26978
+    },
+    "Injection_site": {
+     "points": 625,
+     "outside_brain_mask": 0,
+     "share_outside_brain_mask": 0.0,
+     "share_left_of_midline_as_drawn": 0.0,
+     "sections": 3,
+     "points_in_csv": 625
+    },
+    "sections_with_bundles_or_injection": 28
+   },
+   "MR252": {
+    "Bundles": {
+     "points": 2208,
+     "outside_brain_mask": 0,
+     "share_outside_brain_mask": 0.0,
+     "share_left_of_midline_as_drawn": 0.0,
+     "sections": 26,
+     "points_in_csv": 4353
+    },
+    "Injection_site": {
+     "points": 50,
+     "outside_brain_mask": 0,
+     "share_outside_brain_mask": 0.0,
+     "share_left_of_midline_as_drawn": 0.0,
+     "sections": 2,
+     "points_in_csv": 50
+    },
+    "sections_with_bundles_or_injection": 27
+   }
+  },
+  "mirrored": [
+   "MF191"
+  ],
+  "mirror": "x -> -x (grid centered on x = 0)",
+  "projection": "parallel",
+  "view": {
+   "position_mm": [
+    150.0,
+    30.0,
+    40.0
+   ],
+   "focal_point_mm": [
+    6.0,
+    10.0,
+    14.0
+   ],
+   "up": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "half_height_mm": 26.0
+  },
+  "drawing": "layered: each case hidden only by the planes, the cases stacked MF8 < MM1 < MM2",
+  "planes": {
+   "midline_x_mm": 0.0,
+   "coronal_y_mm": 22.0,
+   "coronal_half": "right (x >= 0)",
+   "channel": "template T2, brain cells only",
+   "window": "linear, brain percentiles 5-99 (465-1517), times 0.55"
+  },
+  "point_px_at_window": 7.0,
+  "injection_point_factor": 1.7,
+  "window_px": [
+   4200,
+   2800
+  ],
+  "still_visibility_pixels": {
+   "MR243": {
+    "pixels_alone_no_planes": 201521,
+    "pixels_alone_with_planes": 186245,
+    "pixels_as_drawn": 182655,
+    "share_hidden_by_planes": 0.0758,
+    "share_hidden_by_other_cases": 0.0193,
+    "injection_pixels_alone": 5360,
+    "injection_pixels_as_drawn": 5360,
+    "points_projected_outside_brain_outline": 0
+   },
+   "MF191": {
+    "pixels_alone_no_planes": 429700,
+    "pixels_alone_with_planes": 378643,
+    "pixels_as_drawn": 267339,
+    "share_hidden_by_planes": 0.1188,
+    "share_hidden_by_other_cases": 0.294,
+    "injection_pixels_alone": 19636,
+    "injection_pixels_as_drawn": 14662,
+    "points_projected_outside_brain_outline": 0
+   },
+   "MR252": {
+    "pixels_alone_no_planes": 57503,
+    "pixels_alone_with_planes": 54843,
+    "pixels_as_drawn": 54843,
+    "share_hidden_by_planes": 0.0463,
+    "share_hidden_by_other_cases": 0.0,
+    "injection_pixels_alone": 3215,
+    "injection_pixels_as_drawn": 3215,
+    "points_projected_outside_brain_outline": 0
+   }
+  },
+  "capsule": {
+   "20.0": {
+    "cases": {
+     "MR243": {
+      "voxels_drawn": 22,
+      "voxels_in_capsule": 5,
+      "voxels_whole_slab": 73,
+      "in_capsule_below_capsule_median_z": 5
+     },
+     "MF191": {
+      "voxels_drawn": 39,
+      "voxels_in_capsule": 18,
+      "voxels_whole_slab": 84,
+      "in_capsule_below_capsule_median_z": 17
+     },
+     "MR252": {
+      "voxels_drawn": 29,
+      "voxels_in_capsule": 0,
+      "voxels_whole_slab": 31,
+      "in_capsule_below_capsule_median_z": 0
+     }
+    },
+    "capsule_voxels": 202,
+    "capsule_median_z_mm": 19.0
+   },
+   "22.0": {
+    "cases": {
+     "MR243": {
+      "voxels_drawn": 14,
+      "voxels_in_capsule": 11,
+      "voxels_whole_slab": 121,
+      "in_capsule_below_capsule_median_z": 11
+     },
+     "MF191": {
+      "voxels_drawn": 34,
+      "voxels_in_capsule": 26,
+      "voxels_whole_slab": 116,
+      "in_capsule_below_capsule_median_z": 23
+     },
+     "MR252": {
+      "voxels_drawn": 0,
+      "voxels_in_capsule": 0,
+      "voxels_whole_slab": 0,
+      "in_capsule_below_capsule_median_z": 0
+     }
+    },
+    "capsule_voxels": 161,
+    "capsule_median_z_mm": 19.0
+   },
+   "24.0": {
+    "cases": {
+     "MR243": {
+      "voxels_drawn": 45,
+      "voxels_in_capsule": 4,
+      "voxels_whole_slab": 109,
+      "in_capsule_below_capsule_median_z": 4
+     },
+     "MF191": {
+      "voxels_drawn": 111,
+      "voxels_in_capsule": 2,
+      "voxels_whole_slab": 135,
+      "in_capsule_below_capsule_median_z": 2
+     },
+     "MR252": {
+      "voxels_drawn": 0,
+      "voxels_in_capsule": 0,
+      "voxels_whole_slab": 0,
+      "in_capsule_below_capsule_median_z": 0
+     }
+    },
+    "capsule_voxels": 88,
+    "capsule_median_z_mm": 19.25
+   }
+  },
+  "alic_y_mm": [
+   20.0,
+   22.0,
+   24.0
+  ],
+  "alic_slab_mm": 0.5,
+  "capsule_totals": {
+   "MR243": {
+    "voxels_in_capsule": 20,
+    "in_capsule_below_capsule_median_z": 20,
+    "voxels_drawn": 81
+   },
+   "MF191": {
+    "voxels_in_capsule": 46,
+    "in_capsule_below_capsule_median_z": 42,
+    "voxels_drawn": 184
+   },
+   "MR252": {
+    "voxels_in_capsule": 0,
+    "in_capsule_below_capsule_median_z": 0,
+    "voxels_drawn": 29
+   }
+  },
+  "capsule_box_mm": {
+   "x": [
+    1.5,
+    12.5
+   ],
+   "z": [
+    13.5,
+    24.5
+   ],
+   "slab_mm": 0.5,
+   "note": "labels cut at the box edges; no shared box tested up to x 1.5-16, z 9.5-26.5 mm avoided that"
+  },
+  "capsule_rule": "slab density (0.25, 0.5, 0.25 over three 0.25 mm planes = the 0.5 mm box centered on y) > 0.5; inside = on the SARM label 50 of the slab's middle plane; counts within the panel's box x 1.5-12.5, z 13.5-24.5 mm",
+  "injection_label_anchor_px": {
+   "MR243": [
+    3418.4,
+    753.9
+   ],
+   "MF191": [
+    2821.5,
+    913.0
+   ],
+   "MR252": [
+    2482.3,
+    446.5
+   ]
+  },
+  "layout_mm": {
+   "width": 180.0,
+   "height": 148.6,
+   "a": [
+    16.0,
+    10.0,
+    142.0,
+    83.63
+   ],
+   "b_panel": [
+    32.0,
+    32.0
+   ],
+   "a_print_mm_per_tissue_mm": 2.1293,
+   "b_print_mm_per_tissue_mm": 2.9091,
+   "crop_px": {
+    "rows": [
+     162,
+     2277
+    ],
+    "cols": [
+     348,
+     3939
+    ]
+   }
+  },
+  "video": {
+   "frames": 360,
+   "fps": 30,
+   "size_px": [
+    1600,
+    1072
+   ],
+   "drawing": "layered",
+   "turn": "one full turn about the vertical axis through the view's focal point"
+  }
+ }
+}

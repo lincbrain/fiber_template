@@ -61,9 +61,9 @@ LINC_DATA=$LINC_REBUILD_DATA $PY_TIRL cli/linc-reconstruct all --subject MR263
 
 It runs its steps in order and prints each as it starts: `=== <ID>: photos`, then `stack`, `prepare`, `mask`, `volume`, `tubes` and
 `spacing`. In `photos`, the photographs are read and the network makes their brain masks, one line per photograph; `volume` ends with
-`=== DONE <ID> in <s>s`. A reconstruction takes about 10 hours per brain. For MM2 (1,440 photographs), the paper's run
+`=== DONE <ID> in <s>s`. A reconstruction takes about 10 hours per brain. For MM2 (1,430 photographs), the paper's run
 (`MR252_timing.tsv` in its blockface folder) took 1.6 hours for `photos`, 1.4 hours for `stack`, 4.9 hours for `prepare` and 2.7
-hours for `mask`, `volume` and `tubes`; MM14's (1,401 photographs) took 2.2, 0.8, 4.6 and 0.8 hours. The longest step is
+hours for `mask`, `volume` and `tubes`; MM14's (1,396 photographs) took 2.2, 0.8, 4.6 and 0.8 hours. The longest step is
 `prepare`, whose camera-jump registrations run one after another. Only the segmentation steps use the GPU: about 10 GB of free memory for `mask` and `tubes`, 1.5 GB for
 `photos`. A reconstruction also needs memory (RAM) in proportion to its stack: 88 GB
 for MM2 and 85 GB for MM14, 9 GB for MF8's 77 photographs.

@@ -10,7 +10,7 @@
   d  the 3D brain mask on the aligned stack
   e  a brightness step between imaging sessions in a jump-free stretch: reslices of the photographs | of the corrected stack, and each
      section's median brightness before and after correction
-  f  marker tubes (orange outlines) before and after filling, on the section with the most tube voxels
+  f  marker tubes (an orange arrowhead beside each) before and after filling, on the section with the most tube voxels
   g  the reconstructed volume: coronal, sagittal and axial
 Two print scales: whole-brain views (a, c, d, g) and zoomed views (b, e, f); scale bars below the panels, their values in the caption.
 A grid of three columns, (a, d, g coronal), (b, e, g sagittal), (c, f, g axial): each cell is a rectangle of its column's width, its
@@ -18,8 +18,8 @@ content centered in it and its letter and topic at its left edge; the free width
 Reads one brain's reconstruction ($LINC_PRODUCTS data/sub-<ID>/blockface: the photographs, 2D masks, the aligned stack, the color
 store before tube filling, the final volume, the tubes, the curated background and mask) and its configs/subjects/<ID>.yaml.
 Display parameters: configs/figures.yaml `reconstruction`.
-Ported from the analysis project's code/fig4_bf_steps.py at the house print scales (the figure of record); helpers of
-code/fig_pipeline_bf.py are included below.
+Ported from the analysis project's code/fig4_bf_steps.py at the house print scales, with panel (f) as in its copy
+code/fig4_bf_steps_r068.py; helpers of code/fig_pipeline_bf.py are included below.
 """
 import argparse
 import json
@@ -359,8 +359,10 @@ def main():
     med_raw, med_cor = np.array(med_raw), np.array(med_cor)
     rel_raw = np.where(used, med_raw, np.nan) / np.median(med_raw[used]); rel_cor = med_cor / np.median(med_cor[used])
     sd = lambda r: float(np.std(r[used] / np.median(r[used])))                                          # noqa: E731
-    # (f) marker tubes before and after filling: the tubes themselves outlined (orange), i.e. the dark pixels (< 60 % of the
-    # region's median luminance, >= 3 pixels) inside each region of the tube mask (0.32 mm in-plane: its own outline is a box)
+    # (f) marker tubes before and after filling, each marked by an orange arrowhead beside it in both images (an outline drawn over
+    # a tube, 0.25-0.5 mm across, would cover it). A tube = a dark part (< 60 % of the region's median luminance, >= 3 pixels)
+    # inside a region of the tube mask (0.32 mm in-plane: its own outline is a box), or, in a region without one, the region's
+    # darkest pixel when it is that dark
     ext_f = P.extent_coronal(col[:, kt], Ac)
     hs = np.rot90(hvo[:, kt]).astype(float)
     cxh, czh, wh, hh = P.bbox_mm(hs, ext_f)
@@ -370,8 +372,15 @@ def main():
         if comp.any():
             dark |= comp & (Lb < 0.6 * np.median(Lb[comp]))
     lb2, n2 = ndi.label(dark); sz2 = ndi.sum(dark, lb2, range(1, n2 + 1))
-    dark = np.isin(lb2, 1 + np.where(sz2 >= 3)[0]); hs_s = ndi.binary_dilation(dark, iterations=2).astype(float)
-    rec["tubes"].update(mask_regions=int(nlab), tubes_outlined=int((sz2 >= 3).sum()))
+    keep = 1 + np.where(sz2 >= 3)[0]; dark = np.isin(lb2, keep)
+    tubes_rc = [tuple(c_) for c_ in ndi.center_of_mass(dark, lb2, keep)]
+    for q in range(1, nlab + 1):
+        comp = (lab_ == q) & (Lb > 0)
+        if comp.any() and not (dark & comp).any():
+            rc_ = np.argwhere(comp)[int(np.argmin(Lb[comp]))]
+            if Lb[tuple(rc_)] < 0.6 * np.median(Lb[comp]):
+                tubes_rc.append((float(rc_[0]), float(rc_[1])))
+    rec["tubes"].update(mask_regions=int(nlab), tubes_marked=len(tubes_rc))
     # (g) coronal / sagittal / axial, each its brain box (tissue mm; x 1.08 at the print scale)
     ext_ax = (Af2[0, 3] - Af2[0, 0] / 2, Af2[0, 3] + (fin2.shape[0] - 0.5) * Af2[0, 0],
               Af2[1, 3] + (fin2.shape[1] - 0.5) * Af2[1, 1], Af2[1, 3] - Af2[1, 1] / 2)
@@ -497,9 +506,10 @@ def main():
             ax = FS.axes_mm(fig, x_ + n * (fw + SUB), TOP2, fw, fh); axf.append(ax)
             e_ = P.extent_coronal(vol[:, kt], A_)
             ax.imshow(soft(P.rgb01(np.rot90(vol[:, kt])), *SOFT_F), extent=e_, origin="upper", aspect="auto")
-            if n == 0:
-                xs_ = np.linspace(ext_f[0], ext_f[1], col.shape[0]); zz2 = np.linspace(ext_f[3], ext_f[2], col.shape[2])
-                ax.contour(xs_, zz2, hs_s, levels=[0.5], colors=[FS.COL["pred"]], linewidths=0.6)
+            xs_ = np.linspace(ext_f[0], ext_f[1], col.shape[0]); zz2 = np.linspace(ext_f[3], ext_f[2], col.shape[2])
+            for r_t, c_t in tubes_rc:                                  # an arrowhead left of each tube, its tip 0.25 mm short of the center
+                ax.plot([np.interp(c_t, np.arange(xs_.size), xs_) - 0.7], [np.interp(r_t, np.arange(zz2.size), zz2)], marker=">", ms=3.0,
+                        mew=0, ls="none", color=FS.COL["pred"])
             window(ax, (cxh, czh), fw / zs, fh / zs)
             sublab(ax, lab)
             if n == 0:

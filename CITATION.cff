@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this code or the template, please cite the paper below."
 title: "fiber_template: code for a multimodal macaque template"
-repository-code: "https://github.com/ra-gonzales/fiber_template"
+repository-code: "https://github.com/lincbrain/fiber_template"
 type: software
 version: 0.1.0
 license: Apache-2.0

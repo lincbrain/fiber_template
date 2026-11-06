@@ -1,0 +1,217 @@
+{
+ "data": {
+  "per_brain": {
+   "MF278": {
+    "name": "MF5",
+    "photographed_sections": 1130,
+    "interpolated_sections": 4,
+    "volume_sections": 1132,
+    "placeholder_frames_in_volume": 2,
+    "frames": 1134,
+    "frames_past_cutoff": 2,
+    "table_r057_photographed": 1134
+   },
+   "MF275": {
+    "name": "MF6",
+    "photographed_sections": 884,
+    "interpolated_sections": 192,
+    "volume_sections": 1021,
+    "placeholder_frames_in_volume": 137,
+    "frames": 1104,
+    "frames_past_cutoff": 83,
+    "table_r057_photographed": 1104
+   },
+   "MF282": {
+    "name": "MF7",
+    "photographed_sections": 1286,
+    "interpolated_sections": 48,
+    "volume_sections": 1286,
+    "placeholder_frames_in_volume": 0,
+    "frames": 1293,
+    "frames_past_cutoff": 7,
+    "table_r057_photographed": 1293
+   },
+   "MF191": {
+    "name": "MF8",
+    "photographed_sections": 77,
+    "interpolated_sections": 0,
+    "volume_sections": 77,
+    "placeholder_frames_in_volume": 0,
+    "frames": 77,
+    "frames_past_cutoff": 0,
+    "table_r057_photographed": 77
+   },
+   "MF196": {
+    "name": "MF9",
+    "photographed_sections": 79,
+    "interpolated_sections": 1,
+    "volume_sections": 79,
+    "placeholder_frames_in_volume": 0,
+    "frames": 79,
+    "frames_past_cutoff": 0,
+    "table_r057_photographed": 79
+   },
+   "MF204": {
+    "name": "MF10",
+    "photographed_sections": 71,
+    "interpolated_sections": 1,
+    "volume_sections": 71,
+    "placeholder_frames_in_volume": 0,
+    "frames": 71,
+    "frames_past_cutoff": 0,
+    "table_r057_photographed": 71
+   },
+   "MR243": {
+    "name": "MM1",
+    "photographed_sections": 163,
+    "interpolated_sections": 0,
+    "volume_sections": 163,
+    "placeholder_frames_in_volume": 0,
+    "frames": 164,
+    "frames_past_cutoff": 1,
+    "table_r057_photographed": 164
+   },
+   "MR252": {
+    "name": "MM2",
+    "photographed_sections": 1427,
+    "interpolated_sections": 35,
+    "volume_sections": 1437,
+    "placeholder_frames_in_volume": 10,
+    "frames": 1440,
+    "frames_past_cutoff": 3,
+    "table_r057_photographed": 1440
+   },
+   "MR256": {
+    "name": "MM3",
+    "photographed_sections": 1290,
+    "interpolated_sections": 1,
+    "volume_sections": 1292,
+    "placeholder_frames_in_volume": 2,
+    "frames": 1325,
+    "frames_past_cutoff": 33,
+    "table_r057_photographed": 1325
+   },
+   "MR249": {
+    "name": "MM4",
+    "photographed_sections": 173,
+    "interpolated_sections": 2,
+    "volume_sections": 176,
+    "placeholder_frames_in_volume": 3,
+    "frames": 176,
+    "frames_past_cutoff": 0,
+    "table_r057_photographed": 176
+   },
+   "MR250": {
+    "name": "MM5",
+    "photographed_sections": 1355,
+    "interpolated_sections": 28,
+    "volume_sections": 1376,
+    "placeholder_frames_in_volume": 21,
+    "frames": 1381,
+    "frames_past_cutoff": 5,
+    "table_r057_photographed": 1381
+   },
+   "MR251": {
+    "name": "MM6",
+    "photographed_sections": 1284,
+    "interpolated_sections": 9,
+    "volume_sections": 1300,
+    "placeholder_frames_in_volume": 16,
+    "frames": 1301,
+    "frames_past_cutoff": 1,
+    "table_r057_photographed": 1301
+   },
+   "MR253": {
+    "name": "MM7",
+    "photographed_sections": 1313,
+    "interpolated_sections": 15,
+    "volume_sections": 1322,
+    "placeholder_frames_in_volume": 9,
+    "frames": 1322,
+    "frames_past_cutoff": 0,
+    "table_r057_photographed": 1322
+   },
+   "MR254": {
+    "name": "MM8",
+    "photographed_sections": 1375,
+    "interpolated_sections": 5,
+    "volume_sections": 1380,
+    "placeholder_frames_in_volume": 5,
+    "frames": 1410,
+    "frames_past_cutoff": 30,
+    "table_r057_photographed": 1410
+   },
+   "MR257": {
+    "name": "MM9",
+    "photographed_sections": 1315,
+    "interpolated_sections": 3,
+    "volume_sections": 1320,
+    "placeholder_frames_in_volume": 5,
+    "frames": 1320,
+    "frames_past_cutoff": 0,
+    "table_r057_photographed": 1320
+   },
+   "MR261": {
+    "name": "MM10",
+    "photographed_sections": 1376,
+    "interpolated_sections": 39,
+    "volume_sections": 1383,
+    "placeholder_frames_in_volume": 7,
+    "frames": 1587,
+    "frames_past_cutoff": 204,
+    "table_r057_photographed": 1587
+   },
+   "MR244": {
+    "name": "MM11",
+    "photographed_sections": 152,
+    "interpolated_sections": 0,
+    "volume_sections": 155,
+    "placeholder_frames_in_volume": 3,
+    "frames": 159,
+    "frames_past_cutoff": 4,
+    "table_r057_photographed": 159
+   },
+   "MR247": {
+    "name": "MM12",
+    "photographed_sections": 160,
+    "interpolated_sections": 5,
+    "volume_sections": 165,
+    "placeholder_frames_in_volume": 5,
+    "frames": 165,
+    "frames_past_cutoff": 0,
+    "table_r057_photographed": 165
+   },
+   "MR248": {
+    "name": "MM13",
+    "photographed_sections": 149,
+    "interpolated_sections": 1,
+    "volume_sections": 152,
+    "placeholder_frames_in_volume": 3,
+    "frames": 152,
+    "frames_past_cutoff": 0,
+    "table_r057_photographed": 152
+   },
+   "MR263": {
+    "name": "MM14",
+    "photographed_sections": 1396,
+    "interpolated_sections": 88,
+    "volume_sections": 1401,
+    "placeholder_frames_in_volume": 5,
+    "frames": 1401,
+    "frames_past_cutoff": 0,
+    "table_r057_photographed": 1401
+   },
+   "MR273": {
+    "name": "MM15",
+    "photographed_sections": 1406,
+    "interpolated_sections": 21,
+    "volume_sections": 1411,
+    "placeholder_frames_in_volume": 5,
+    "frames": 1411,
+    "frames_past_cutoff": 0,
+    "table_r057_photographed": 1411
+   }
+  },
+  "note": "photographed_sections = sections of the volume (native frames 0 .. volume_sections - 1) whose frame is a photograph, not a black placeholder; replaces s1_perbrain_r057.photographed_sections (all frames)"
+ }
+}

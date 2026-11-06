@@ -43,8 +43,8 @@ NUMBERS_LINC := \
   atlas_final_v2_summary fig_histology_simple histo_tube_landmarks \
   mm_mri_check_r054 mri_recipe registration_qc_histo2bf_20261001 s5_link_d2bs8 s5_link_regions_d2bs8 table1_rebuild \
   table_specimens_check_r054 tracer_sections_r054 tracer_sections_r058d tracer_template_current_all tube_mf8_check_r054 tube_offsets_r054 \
-  s1_segmentation_r057 s1_perbrain_r057 tracer_label_volumes_r058d tracer_alic_topography_r058d r060_target_comparison \
-  lgnstn_targets_r060c \
+  s1_segmentation_r057 s1_perbrain_r057 s1_photographs_r068b tracer_label_volumes_r058d tracer_alic_topography_r058d r060_target_comparison \
+  lgnstn_targets_r060c mf8_s46_drop_r068 \
   tracer_sections_v2 tracer_connected_v2c tracer_label_volumes_v2c tracer_alic_topography_v2c tracer_interp_accounting_v2 \
   tracer_placement_v2c tracer_template_v2_all
 NUMBERS_MRI := variants_leave_self_out_rebuild_fa025 variability_rebuild_rb_final variability_four_brains_r061 lobo_t2_rebuild lobo_multichannel_cost_r061 \
@@ -60,7 +60,7 @@ NUMBERS_SEGMENT := segmodels_mri_brainmask_2026-11 segmodels_bf_mask2d_2026-11 s
 FIGURES_MRI := template pipeline variability link tracer s_tracer_rules tracer_pathways
 FIGURES_LINC := reconstruction bf_template alignment_comparison
 FIGURES_COMPLETION := s_synthesis_depth s_synthesis_gallery lgnstn
-FIGURES := $(FIGURES_MRI) $(FIGURES_LINC) $(FIGURES_COMPLETION) histology s_tracer_fidelity
+FIGURES := $(FIGURES_MRI) $(FIGURES_LINC) $(FIGURES_COMPLETION) histology s_tracer_fidelity tracer_sections3d
 FIGURES_3D := tracer_3d                                  # optional (PY_VIZ3D): not in `make figures`; `make tracer_3d`
 
 .PHONY: all numbers numbers-gpu numbers-figures check test figures $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_GPU) $(FIGURES) $(FIGURES_3D)
@@ -72,7 +72,7 @@ numbers: $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(
 numbers-gpu: $(NUMBERS_GPU)
 
 # the figures that also write a numbers record: `make check` needs them (tracer_3d: env/install.sh --with-figures-3d)
-numbers-figures: tracer tracer_pathways alignment_comparison tracer_3d
+numbers-figures: tracer tracer_pathways alignment_comparison tracer_3d tracer_sections3d
 
 $(filter-out mm_mri_check_r054 bf_cohort bf_species s1_perbrain_r057 s1_segmentation_r057 r060_target_comparison lgnstn_targets_r060c,$(NUMBERS_LINC)):
 	$(PY) numbers/$@.py
@@ -117,6 +117,7 @@ mm_mri_check_r054:
 tube_mf8_check_r054: tube_offsets_r054
 lgnstn_geometry_current: labels_overlap_current
 fig_histology_simple: registration_qc_histo2bf_20261001
+mf8_s46_drop_r068: registration_qc_histo2bf_20261001     # writes registration_qc_histo2bf_r068, tube_offsets_r068, tube_mf8_check_r068
 r057_missing_extent: d3_methods d3_predicted_share
 alignment_comparison: route_test_1c
 s_synthesis_depth: r057_s1_synthesis
@@ -156,8 +157,14 @@ s_tracer_fidelity:
 	@if [ ! -d "$(LINC_RAW)/linc_000003/rawdata" ]; then echo "SKIPPED s_tracer_fidelity: put the LINC histology dataset 000003 at \$$LINC_RAW/linc_000003"; \
 	else $(PY_TIRL) figures/$@.py --out $(OUT)/figures/$@.png; fi
 
-# the tracer figure (Fig. 10): the four-panel form always (record fig_tracer_pathways_panels); with PY_VIZ3D the three composite
-# stills render (no in-scene key, large letters; record fig_tracer_3d_stills) and the composite follows (the paper's figure, record
+# Fig. 10, the tracer figure: each charted section's labels in 3D (a) and the internal capsule slabs (b), with its rotation video;
+# renders headless in env/viz3d.yml (record fig_tracer_sections3d_v2): skipped with a message when PY_VIZ3D is unset
+tracer_sections3d:
+	@if [ -z "$(PY_VIZ3D)" ]; then echo "SKIPPED tracer_sections3d: set PY_VIZ3D (env/viz3d.yml; install.sh --with-figures-3d)"; \
+	else $(PY_VIZ3D) figures/$@.py --video --out $(OUT)/figures/$@.png; fi
+
+# the earlier form of the tracer figure (the connected pathways): the four-panel form always (record fig_tracer_pathways_panels); with PY_VIZ3D the three composite
+# stills render (no in-scene key, large letters; record fig_tracer_3d_stills) and the composite follows (record
 # fig_tracer_pathways); `make tracer_3d` renders the full scene with its two rotation videos for the supplement
 tracer_pathways:
 	$(PY_MRI) figures/tracer_pathways.py --layout panels --out $(OUT)/figures/tracer_pathways_panels.png

@@ -47,12 +47,13 @@ def stats(rows, key):
                 detected=len(e), searched=len(s), rate=round(len(e) / len(s), 4) if s else None)
 
 
-def main():
+def offsets(method, drop=()):
+    """The record's data from the tube landmarks, without the pieces named in drop. Returns (data, inputs)."""
     P = paths.products("products_mri")
-    out = dict(method=METHOD, per_subject={}, pooled={}); allrows = []; ins = []
+    out = dict(method=method, per_subject={}, pooled={}); allrows = []; ins = []
     for S in BRAINS:
         p = P["tube_landmarks"] / f"r054hole_{S}_native.json"; ins.append(p)
-        rows = json.loads(p.read_text())["pieces"]; allrows += rows
+        rows = [r for r in json.loads(p.read_text())["pieces"] if r["piece"] not in drop]; allrows += rows
         s = [r for r in rows if r.get("bf_tube")]; h = [r["hole"] for r in s]
         shift = [r["center_shift_fixed_px"] * FIX_MM for r in s]
         out["per_subject"][S] = dict(
@@ -68,6 +69,11 @@ def main():
     s = [r for r in allrows if r.get("bf_tube")]
     out["pooled"]["center_shift_mm_median"] = round(float(np.median([r["center_shift_fixed_px"] * FIX_MM for r in s])), 3)
     out["pooled"]["refined_share"] = round(float(np.mean([r["refined"] for r in s])), 4)
+    return out, ins
+
+
+def main():
+    out, ins = offsets(METHOD)
     provenance.write_numbers("tube_offsets_r054", out, inputs=ins, md5=False, cmd="python reproduce/numbers/tube_offsets_r054.py")
 
 

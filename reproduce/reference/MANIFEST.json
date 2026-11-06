@@ -61,6 +61,10 @@
    "md5_of_record": "8bab6175e9d2adedf272eac34897a4de",
    "created": "2026-10-30T18:10:18-04:00"
   },
+  "fig_tracer_sections3d_v2": {
+   "md5_of_record": "97c0231e18aa3cf969a02664f1288cf3",
+   "created": "2026-11-05T23:00:09-05:00"
+  },
   "histo_pixel_sizes_r057": {
    "md5_of_record": "4bdd6130dc070cedfb24acc3b4a033f1",
    "created": "2026-10-30T12:39:44-04:00"
@@ -149,6 +153,10 @@
    "md5_of_record": "455e17267eafe6790a785ea429e7e600",
    "created": "2026-10-01T03:30:47-04:00"
   },
+  "registration_qc_histo2bf_r068": {
+   "md5_of_record": "0c03c57776e6615e20717d3515b13ce9",
+   "created": "2026-11-05T22:47:06-05:00"
+  },
   "route_test_1c": {
    "md5_of_record": "c004efd62e57f0898ea9180318baed65",
    "created": "2026-10-05T18:10:02-04:00"
@@ -156,6 +164,10 @@
   "s1_perbrain_r057": {
    "md5_of_record": "f937f63bfefa98e61ea7f72013b0d1ce",
    "created": "2026-10-30T12:24:14-04:00"
+  },
+  "s1_photographs_r068b": {
+   "md5_of_record": "0f18e9f076fcb9be3c2bb0800ec9de7d",
+   "created": "2026-11-05T22:50:58-05:00"
   },
   "s1_segmentation_r057": {
    "md5_of_record": "be105e3f33d85fba6ae699a615c134cf",
@@ -209,9 +221,17 @@
    "md5_of_record": "f18d93286d937c192eaf49f1b0173ff6",
    "created": "2026-10-14T22:13:09-04:00"
   },
+  "tube_mf8_check_r068": {
+   "md5_of_record": "6a104b628e80adf4e8557e72cfa0e792",
+   "created": "2026-11-05T22:47:07-05:00"
+  },
   "tube_offsets_r054": {
    "md5_of_record": "b2afaf2bca6f62adc5908e1f68d3805f",
    "created": "2026-10-14T21:58:40-04:00"
+  },
+  "tube_offsets_r068": {
+   "md5_of_record": "7e2ecb1f0d2b966d18cbf125e9c179f3",
+   "created": "2026-11-05T22:47:06-05:00"
   },
   "variability_four_brains_r061": {
    "md5_of_record": "5b86acbb6f04394ec2b4651bbc93836a",
