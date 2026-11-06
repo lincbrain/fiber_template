@@ -57,18 +57,24 @@ Availability promises their weights.
   - On the withheld slabs, joined as in the volumes of record: mean SSIM 0.684 over 12 brains (`d3_domain_shift`,
     `summary.ssim.mean_own`).
   - From a stand-in b0 instead of the own b0, the same network scores 0.559 (difference −0.125, 95 % CI −0.165 to −0.083).
-- **Reproduce.** `reproduce/numbers/d3_domain_shift.py`.
+  - From the final stand-in b0s (those the brains without MRI were completed from), 0.553 (difference −0.130, 95 % CI −0.170 to
+    −0.088; `d3_domain_shift_prod`).
+- **Reproduce.** `reproduce/numbers/d3_domain_shift.py` (`--final` for the final stand-in b0s).
 
 ## 4. Leave-slab-out, stand-in b0: `d3p_lso_A_s0`
 
 - **Purpose.** The stand-in counterpart of network 3. No number in the paper comes from it.
 - **Included because** `d3_methods` records its configuration.
+- **The paper's stand-in test** (Supplementary S1) uses its rerun on the final stand-in b0s, `d3p_lso_prod_A_s0`: the same recipe,
+  trained on `canon_d3p_prod`. Its withheld-slab evaluation (`completion_eval/d3p_lso_prod_A_s0.json`) is released, its weights
+  are not. Reproduce: `reproduce/numbers/d3p_vs_d3_pseudo.py --final`.
 
 ## Provenance
 
-- The numbers above are from the records `d3_methods`, `d3_domain_shift` and `d3_predicted_share` (`reproduce/reference/`).
+- The numbers above are from the records `d3_methods`, `d3_domain_shift`, `d3_domain_shift_prod` and `d3_predicted_share`
+  (`reproduce/reference/`).
   - Their scripts (`reproduce/numbers/d3_*.py`) regenerate them identically from these files and the products of record.
 - Training ran on 3–4 Oct 2026 on an NVIDIA RTX 6000 Ada GPU in the environment `env/completion.yml`, now `env/deep.yml` with the same pins (torch 2.6.0, CUDA 12.4,
-  MONAI 1.4.0).
+  MONAI 1.4.0). `d3p_lso_prod_A_s0` was trained on 6 Nov 2026 on the same GPU model, in the same environment.
 - Checksums: `models/completion.sha256` (sha256 of the files as used for the paper, 21 Oct 2026).
   - The md5 of each `last.pt` is also in `d3_methods` (`models.<group>.checkpoint_md5`).

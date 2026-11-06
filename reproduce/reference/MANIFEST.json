@@ -37,6 +37,10 @@
    "md5_of_record": "9eefcde2e6119d73948e88337100b437",
    "created": "2026-10-04T01:39:25-04:00"
   },
+  "d3_domain_shift_prod": {
+   "md5_of_record": "8a5a18b2bc4a5a3fbea4226ee42ab155",
+   "created": "2026-11-06T10:10:27-05:00"
+  },
   "d3_methods": {
    "md5_of_record": "f937d634f1ebc55cc56423872bece9be",
    "created": "2026-10-07T08:49:00-04:00"
@@ -48,6 +52,10 @@
   "d3p_vs_d3_pseudo": {
    "md5_of_record": "ca91d713c3ac1cfc46367fa2610e57d6",
    "created": "2026-10-04T02:46:27-04:00"
+  },
+  "d3p_vs_d3_pseudo_prod": {
+   "md5_of_record": "ec67d28fd6474f8f0aeb943e2415b2c7",
+   "created": "2026-11-06T11:05:16-05:00"
   },
   "fig_histology_simple": {
    "md5_of_record": "9ecb760ba319cc0e3de66307ebaaa683",
@@ -120,6 +128,10 @@
   "mm_mri_check_r054": {
    "md5_of_record": "5b70168bef0d63e08ad847558eb3ded0",
    "created": "2026-10-14T22:09:29-04:00"
+  },
+  "mri_acq_params_r065": {
+   "md5_of_record": "12646027a8dc699f742aee456c046e9d",
+   "created": "2026-11-05T22:34:25-05:00"
   },
   "mri_recipe": {
    "md5_of_record": "6d90639a7171e0b24937469d802c5f3a",

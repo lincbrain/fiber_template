@@ -10,8 +10,8 @@
 # - linc-complete: the four completion networks were trained, the completed volumes and the withheld-slab evaluation made, and the
 #   d3_* records written here.
 #   - d3_methods and d3_predicted_share (CPU only) regenerate identically here and in linc.yml.
-#   - d3_domain_shift runs the network on the GPU: identical here on the same GPU model; other library versions or GPUs can change
-#     the last digits.
+#   - d3_domain_shift and d3_domain_shift_prod run the network on the GPU: identical here on the same GPU model; other library versions
+#     or GPUs can change the last digits.
 # - The figures of the completion and of the LGN/STN error budget (reproduce/figures/s_synthesis_depth, s_synthesis_gallery,
 #   s_lgnstn) were drawn here: matplotlib and its dependencies at the versions of record render them pixel-identical to the paper's.
 #     conda env create -f env/deep.yml && conda activate linc-deep && pip install -e . --no-deps

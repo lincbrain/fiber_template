@@ -1,0 +1,2537 @@
+{
+ "data": {
+  "method": [
+   "sessions. Supersedes mri_acq_params_r057 for the paper's text: r057 read four of the ten M. mulatta brains from copies that hold",
+   "no acqp file (so no scanner fields) and said the other six had no raw session. All ten have one; r057 stays as it is.",
+   "  sessions    MM1-MM10 (MR243, MR249-MR254, MR256, MR257, MR261): $LINC_RAW/mri_mm/<session> (PV 5.1;",
+   "              MR252 exists under two spellings with the same content, the first is read). MF5-MF7 (MF278, MF275, MF282):",
+   "              $LINC_RAW/mri_mf/<session>, every session folder of the brain, as in r057. Read only.",
+   "  per scan    every numbered scan folder with a method file and acquired data (fid or rawdata.job0): Method; TE (EPI methods:",
+   "              EchoTime, the spin-echo time); PVM_RepetitionTime; segments; averages; resolution and matrix; scan time; diffusion",
+   "              timing PVM_DwGradDur / PVM_DwGradSep (delta / Delta); the effective b-values (PVM_DwEffBval: count of",
+   "              b < 200 s/mm^2 = b0 volumes, maximum). From acqp: ACQ_institution, ACQ_station, ACQ_sw_version, BF1 (MHz).",
+   "  b0 series   the diffusion scans at the resolution of the curated b0 (data/_lcn_src/data/curated/<S>/dwi_b0.nii.gz). The",
+   "              curated b0 is volume 0 of that series (lcn_atlas step0_structure_curated_data_macaque.extract_b0: fslroi <dwi> 0 1).",
+   "              MM brains: every daiDtiEpi scan of the session at that resolution with delta 15 ms, b0 scans included, as acquired",
+   "              (MM4 and MM5 hold one more single-volume b0 scan than the 515 curated volumes use). MF brains: r057's rule, the",
+   "              largest contiguous block of such scans with no b0 volume, plus the b0 scan just before it.",
+   "  b_shells    the distinct effective b-values of the series' diffusion-weighted volumes, rounded to 100 s/mm^2 (count, least, most).",
+   "  scanner     the acqp fields of the series' scans (not of other scans in the session). tesla = BF1 / 42.577 MHz per tesla (the",
+   "              proton's gyromagnetic ratio), one decimal.",
+   "  summary     per group (MM = the ten M. mulatta brains, MF = MF5-MF7): the distinct values of each parameter over its brains.",
+   "  check       for the four brains r057 also read (MR253, MR254, MR256, MR257; other copies of the sessions): whether the series'",
+   "              parameters agree with r057's.",
+   "-> paper/numbers/mri_acq_params_r065.json",
+   "    mri/env/mmorf/bin/python paper/scripts/mri_acq_params_r065.py"
+  ],
+  "brains": {
+   "MR243": {
+    "name": "MM1",
+    "sessions": [
+     "MR243_20130326.j41"
+    ],
+    "other_copies": [],
+    "curated_b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "scanner": {
+     "institution": [
+      "MGH Biospec 47/40"
+     ],
+     "station": [
+      "spect"
+     ],
+     "software": [
+      "PV 5.1"
+     ],
+     "bf1_mhz": [
+      200.34,
+      200.34
+     ],
+     "tesla": 4.7
+    },
+    "b0_series": {
+     "n_scans": 23,
+     "methods": [
+      "daiDtiEpi"
+     ],
+     "n_volumes": 515,
+     "n_b0": 1,
+     "n_dw_volumes": 514,
+     "b_max": 40180,
+     "b_shells": {
+      "n": 53,
+      "least": 1600,
+      "most": 40200
+     },
+     "te_ms": [
+      43.087
+     ],
+     "tr_ms": [
+      750.0
+     ],
+     "delta_ms": [
+      15.0
+     ],
+     "Delta_ms": [
+      19.182
+     ],
+     "segments": [
+      2.0
+     ],
+     "averages": [
+      2.0
+     ],
+     "dim": [
+      "3D"
+     ],
+     "matrix": [
+      [
+       96.0,
+       96.0,
+       112.0
+      ]
+     ],
+     "voxel_mm": [
+      [
+       0.7,
+       0.7,
+       0.7
+      ]
+     ],
+     "scans": [
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30",
+      "31",
+      "32"
+     ],
+     "session": [
+      "MR243_20130326.j41"
+     ],
+     "scan_time_h": 48.07,
+     "b0_scans": [
+      {
+       "scan": "10",
+       "b": 14,
+       "te_ms": 43.087,
+       "tr_ms": 750.0,
+       "delta_ms": 15.0,
+       "Delta_ms": 19.182
+      }
+     ]
+    },
+    "total_scan_time_h": 48.6,
+    "n_scans_acquired": 30
+   },
+   "MR252": {
+    "name": "MM2",
+    "sessions": [
+     "MR252_20140131.o61"
+    ],
+    "other_copies": [
+     "MR_252_20140131.o61"
+    ],
+    "curated_b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "scanner": {
+     "institution": [
+      "MGH Biospec 47/40"
+     ],
+     "station": [
+      "spect"
+     ],
+     "software": [
+      "PV 5.1"
+     ],
+     "bf1_mhz": [
+      200.334,
+      200.334
+     ],
+     "tesla": 4.7
+    },
+    "b0_series": {
+     "n_scans": 23,
+     "methods": [
+      "daiDtiEpi"
+     ],
+     "n_volumes": 515,
+     "n_b0": 1,
+     "n_dw_volumes": 514,
+     "b_max": 40180,
+     "b_shells": {
+      "n": 53,
+      "least": 1600,
+      "most": 40200
+     },
+     "te_ms": [
+      43.087
+     ],
+     "tr_ms": [
+      750.0
+     ],
+     "delta_ms": [
+      15.0
+     ],
+     "Delta_ms": [
+      19.182
+     ],
+     "segments": [
+      2.0
+     ],
+     "averages": [
+      2.0
+     ],
+     "dim": [
+      "3D"
+     ],
+     "matrix": [
+      [
+       96.0,
+       96.0,
+       112.0
+      ]
+     ],
+     "voxel_mm": [
+      [
+       0.7,
+       0.7,
+       0.7
+      ]
+     ],
+     "scans": [
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27"
+     ],
+     "session": [
+      "MR252_20140131.o61"
+     ],
+     "scan_time_h": 48.07,
+     "b0_scans": [
+      {
+       "scan": "5",
+       "b": 2,
+       "te_ms": 43.087,
+       "tr_ms": 750.0,
+       "delta_ms": 15.0,
+       "Delta_ms": 19.182
+      }
+     ]
+    },
+    "total_scan_time_h": 48.1,
+    "n_scans_acquired": 25
+   },
+   "MR256": {
+    "name": "MM3",
+    "sessions": [
+     "MR256_02172015.uh1"
+    ],
+    "other_copies": [],
+    "curated_b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "scanner": {
+     "institution": [
+      "MGH Biospec 47/40"
+     ],
+     "station": [
+      "spect"
+     ],
+     "software": [
+      "PV 5.1"
+     ],
+     "bf1_mhz": [
+      200.326,
+      200.326
+     ],
+     "tesla": 4.7
+    },
+    "b0_series": {
+     "n_scans": 23,
+     "methods": [
+      "daiDtiEpi"
+     ],
+     "n_volumes": 515,
+     "n_b0": 1,
+     "n_dw_volumes": 514,
+     "b_max": 40180,
+     "b_shells": {
+      "n": 53,
+      "least": 1600,
+      "most": 40200
+     },
+     "te_ms": [
+      43.087
+     ],
+     "tr_ms": [
+      750.0
+     ],
+     "delta_ms": [
+      15.0
+     ],
+     "Delta_ms": [
+      19.182
+     ],
+     "segments": [
+      2.0
+     ],
+     "averages": [
+      2.0
+     ],
+     "dim": [
+      "3D"
+     ],
+     "matrix": [
+      [
+       96.0,
+       96.0,
+       112.0
+      ]
+     ],
+     "voxel_mm": [
+      [
+       0.7,
+       0.7,
+       0.7
+      ]
+     ],
+     "scans": [
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28"
+     ],
+     "session": [
+      "MR256_02172015.uh1"
+     ],
+     "scan_time_h": 48.07,
+     "b0_scans": [
+      {
+       "scan": "6",
+       "b": 14,
+       "te_ms": 43.087,
+       "tr_ms": 750.0,
+       "delta_ms": 15.0,
+       "Delta_ms": 19.182
+      }
+     ]
+    },
+    "total_scan_time_h": 48.2,
+    "n_scans_acquired": 26
+   },
+   "MR249": {
+    "name": "MM4",
+    "sessions": [
+     "MR_249_20130809.lg1"
+    ],
+    "other_copies": [],
+    "curated_b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "scanner": {
+     "institution": [
+      "MGH Biospec 47/40"
+     ],
+     "station": [
+      "spect"
+     ],
+     "software": [
+      "PV 5.1"
+     ],
+     "bf1_mhz": [
+      200.337,
+      200.337
+     ],
+     "tesla": 4.7
+    },
+    "b0_series": {
+     "n_scans": 24,
+     "methods": [
+      "daiDtiEpi"
+     ],
+     "n_volumes": 516,
+     "n_b0": 2,
+     "n_dw_volumes": 514,
+     "b_max": 40180,
+     "b_shells": {
+      "n": 53,
+      "least": 1600,
+      "most": 40200
+     },
+     "te_ms": [
+      43.087
+     ],
+     "tr_ms": [
+      750.0
+     ],
+     "delta_ms": [
+      15.0
+     ],
+     "Delta_ms": [
+      19.182
+     ],
+     "segments": [
+      2.0
+     ],
+     "averages": [
+      2.0
+     ],
+     "dim": [
+      "3D"
+     ],
+     "matrix": [
+      [
+       96.0,
+       96.0,
+       112.0
+      ]
+     ],
+     "voxel_mm": [
+      [
+       0.7,
+       0.7,
+       0.7
+      ]
+     ],
+     "scans": [
+      "4",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30",
+      "31"
+     ],
+     "session": [
+      "MR_249_20130809.lg1"
+     ],
+     "scan_time_h": 48.16,
+     "b0_scans": [
+      {
+       "scan": "4",
+       "b": 2,
+       "te_ms": 43.087,
+       "tr_ms": 750.0,
+       "delta_ms": 15.0,
+       "Delta_ms": 19.182
+      },
+      {
+       "scan": "9",
+       "b": 2,
+       "te_ms": 43.087,
+       "tr_ms": 750.0,
+       "delta_ms": 15.0,
+       "Delta_ms": 19.182
+      }
+     ]
+    },
+    "total_scan_time_h": 61.5,
+    "n_scans_acquired": 38
+   },
+   "MR250": {
+    "name": "MM5",
+    "sessions": [
+     "MR_250_20130927.m31"
+    ],
+    "other_copies": [],
+    "curated_b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "scanner": {
+     "institution": [
+      "MGH Biospec 47/40"
+     ],
+     "station": [
+      "spect"
+     ],
+     "software": [
+      "PV 5.1"
+     ],
+     "bf1_mhz": [
+      200.336,
+      200.336
+     ],
+     "tesla": 4.7
+    },
+    "b0_series": {
+     "n_scans": 24,
+     "methods": [
+      "daiDtiEpi"
+     ],
+     "n_volumes": 516,
+     "n_b0": 2,
+     "n_dw_volumes": 514,
+     "b_max": 40180,
+     "b_shells": {
+      "n": 53,
+      "least": 1600,
+      "most": 40200
+     },
+     "te_ms": [
+      43.087
+     ],
+     "tr_ms": [
+      750.0
+     ],
+     "delta_ms": [
+      15.0
+     ],
+     "Delta_ms": [
+      19.182
+     ],
+     "segments": [
+      2.0
+     ],
+     "averages": [
+      2.0
+     ],
+     "dim": [
+      "3D"
+     ],
+     "matrix": [
+      [
+       96.0,
+       96.0,
+       112.0
+      ]
+     ],
+     "voxel_mm": [
+      [
+       0.7,
+       0.7,
+       0.7
+      ]
+     ],
+     "scans": [
+      "5",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30",
+      "31",
+      "32",
+      "33",
+      "34",
+      "35",
+      "36",
+      "37"
+     ],
+     "session": [
+      "MR_250_20130927.m31"
+     ],
+     "scan_time_h": 48.16,
+     "b0_scans": [
+      {
+       "scan": "5",
+       "b": 2,
+       "te_ms": 43.087,
+       "tr_ms": 750.0,
+       "delta_ms": 15.0,
+       "Delta_ms": 19.182
+      },
+      {
+       "scan": "15",
+       "b": 2,
+       "te_ms": 43.087,
+       "tr_ms": 750.0,
+       "delta_ms": 15.0,
+       "Delta_ms": 19.182
+      }
+     ]
+    },
+    "total_scan_time_h": 59.1,
+    "n_scans_acquired": 44
+   },
+   "MR251": {
+    "name": "MM6",
+    "sessions": [
+     "MR_251_20140124.nZ1"
+    ],
+    "other_copies": [],
+    "curated_b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "scanner": {
+     "institution": [
+      "MGH Biospec 47/40"
+     ],
+     "station": [
+      "spect"
+     ],
+     "software": [
+      "PV 5.1"
+     ],
+     "bf1_mhz": [
+      200.334,
+      200.334
+     ],
+     "tesla": 4.7
+    },
+    "b0_series": {
+     "n_scans": 23,
+     "methods": [
+      "daiDtiEpi"
+     ],
+     "n_volumes": 515,
+     "n_b0": 1,
+     "n_dw_volumes": 514,
+     "b_max": 40180,
+     "b_shells": {
+      "n": 53,
+      "least": 1600,
+      "most": 40200
+     },
+     "te_ms": [
+      43.087
+     ],
+     "tr_ms": [
+      750.0
+     ],
+     "delta_ms": [
+      15.0
+     ],
+     "Delta_ms": [
+      19.182
+     ],
+     "segments": [
+      2.0
+     ],
+     "averages": [
+      2.0
+     ],
+     "dim": [
+      "3D"
+     ],
+     "matrix": [
+      [
+       96.0,
+       96.0,
+       112.0
+      ]
+     ],
+     "voxel_mm": [
+      [
+       0.7,
+       0.7,
+       0.7
+      ]
+     ],
+     "scans": [
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27"
+     ],
+     "session": [
+      "MR_251_20140124.nZ1"
+     ],
+     "scan_time_h": 48.07,
+     "b0_scans": [
+      {
+       "scan": "5",
+       "b": 2,
+       "te_ms": 43.087,
+       "tr_ms": 750.0,
+       "delta_ms": 15.0,
+       "Delta_ms": 19.182
+      }
+     ]
+    },
+    "total_scan_time_h": 48.1,
+    "n_scans_acquired": 25
+   },
+   "MR253": {
+    "name": "MM7",
+    "sessions": [
+     "MR253_2014_11_21_c.sQ1"
+    ],
+    "other_copies": [],
+    "curated_b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "scanner": {
+     "institution": [
+      "MGH Biospec 47/40"
+     ],
+     "station": [
+      "spect"
+     ],
+     "software": [
+      "PV 5.1"
+     ],
+     "bf1_mhz": [
+      200.327,
+      200.327
+     ],
+     "tesla": 4.7
+    },
+    "b0_series": {
+     "n_scans": 23,
+     "methods": [
+      "daiDtiEpi"
+     ],
+     "n_volumes": 515,
+     "n_b0": 1,
+     "n_dw_volumes": 514,
+     "b_max": 40180,
+     "b_shells": {
+      "n": 53,
+      "least": 1600,
+      "most": 40200
+     },
+     "te_ms": [
+      43.087
+     ],
+     "tr_ms": [
+      750.0
+     ],
+     "delta_ms": [
+      15.0
+     ],
+     "Delta_ms": [
+      19.182
+     ],
+     "segments": [
+      2.0
+     ],
+     "averages": [
+      2.0
+     ],
+     "dim": [
+      "3D"
+     ],
+     "matrix": [
+      [
+       96.0,
+       96.0,
+       112.0
+      ]
+     ],
+     "voxel_mm": [
+      [
+       0.7,
+       0.7,
+       0.7
+      ]
+     ],
+     "scans": [
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30"
+     ],
+     "session": [
+      "MR253_2014_11_21_c.sQ1"
+     ],
+     "scan_time_h": 48.07,
+     "b0_scans": [
+      {
+       "scan": "8",
+       "b": 14,
+       "te_ms": 43.087,
+       "tr_ms": 750.0,
+       "delta_ms": 15.0,
+       "Delta_ms": 19.182
+      }
+     ]
+    },
+    "total_scan_time_h": 48.2,
+    "n_scans_acquired": 28
+   },
+   "MR254": {
+    "name": "MM8",
+    "sessions": [
+     "MR254_2014_1126.sV1"
+    ],
+    "other_copies": [],
+    "curated_b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "scanner": {
+     "institution": [
+      "MGH Biospec 47/40"
+     ],
+     "station": [
+      "spect"
+     ],
+     "software": [
+      "PV 5.1"
+     ],
+     "bf1_mhz": [
+      200.327,
+      200.327
+     ],
+     "tesla": 4.7
+    },
+    "b0_series": {
+     "n_scans": 23,
+     "methods": [
+      "daiDtiEpi"
+     ],
+     "n_volumes": 515,
+     "n_b0": 1,
+     "n_dw_volumes": 514,
+     "b_max": 40180,
+     "b_shells": {
+      "n": 53,
+      "least": 1600,
+      "most": 40200
+     },
+     "te_ms": [
+      43.087
+     ],
+     "tr_ms": [
+      750.0
+     ],
+     "delta_ms": [
+      15.0
+     ],
+     "Delta_ms": [
+      19.182
+     ],
+     "segments": [
+      2.0
+     ],
+     "averages": [
+      2.0
+     ],
+     "dim": [
+      "3D"
+     ],
+     "matrix": [
+      [
+       96.0,
+       96.0,
+       112.0
+      ]
+     ],
+     "voxel_mm": [
+      [
+       0.7,
+       0.7,
+       0.7
+      ]
+     ],
+     "scans": [
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28"
+     ],
+     "session": [
+      "MR254_2014_1126.sV1"
+     ],
+     "scan_time_h": 48.07,
+     "b0_scans": [
+      {
+       "scan": "6",
+       "b": 14,
+       "te_ms": 43.087,
+       "tr_ms": 750.0,
+       "delta_ms": 15.0,
+       "Delta_ms": 19.182
+      }
+     ]
+    },
+    "total_scan_time_h": 48.2,
+    "n_scans_acquired": 27
+   },
+   "MR257": {
+    "name": "MM9",
+    "sessions": [
+     "MR257_02192015.uk1"
+    ],
+    "other_copies": [],
+    "curated_b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "scanner": {
+     "institution": [
+      "MGH Biospec 47/40"
+     ],
+     "station": [
+      "spect"
+     ],
+     "software": [
+      "PV 5.1"
+     ],
+     "bf1_mhz": [
+      200.325,
+      200.325
+     ],
+     "tesla": 4.7
+    },
+    "b0_series": {
+     "n_scans": 23,
+     "methods": [
+      "daiDtiEpi"
+     ],
+     "n_volumes": 515,
+     "n_b0": 1,
+     "n_dw_volumes": 514,
+     "b_max": 40180,
+     "b_shells": {
+      "n": 53,
+      "least": 1600,
+      "most": 40200
+     },
+     "te_ms": [
+      43.087
+     ],
+     "tr_ms": [
+      750.0
+     ],
+     "delta_ms": [
+      15.0
+     ],
+     "Delta_ms": [
+      19.182
+     ],
+     "segments": [
+      2.0
+     ],
+     "averages": [
+      2.0
+     ],
+     "dim": [
+      "3D"
+     ],
+     "matrix": [
+      [
+       96.0,
+       96.0,
+       112.0
+      ]
+     ],
+     "voxel_mm": [
+      [
+       0.7,
+       0.7,
+       0.7
+      ]
+     ],
+     "scans": [
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29"
+     ],
+     "session": [
+      "MR257_02192015.uk1"
+     ],
+     "scan_time_h": 48.07,
+     "b0_scans": [
+      {
+       "scan": "7",
+       "b": 14,
+       "te_ms": 43.087,
+       "tr_ms": 750.0,
+       "delta_ms": 15.0,
+       "Delta_ms": 19.182
+      }
+     ]
+    },
+    "total_scan_time_h": 48.2,
+    "n_scans_acquired": 26
+   },
+   "MR261": {
+    "name": "MM10",
+    "sessions": [
+     "MR261_10272015.yl1"
+    ],
+    "other_copies": [],
+    "curated_b0_voxel_mm": [
+     0.7,
+     0.7,
+     0.7
+    ],
+    "scanner": {
+     "institution": [
+      "MGH Biospec 47/40"
+     ],
+     "station": [
+      "spect"
+     ],
+     "software": [
+      "PV 5.1"
+     ],
+     "bf1_mhz": [
+      200.32,
+      200.32
+     ],
+     "tesla": 4.7
+    },
+    "b0_series": {
+     "n_scans": 23,
+     "methods": [
+      "daiDtiEpi"
+     ],
+     "n_volumes": 515,
+     "n_b0": 1,
+     "n_dw_volumes": 514,
+     "b_max": 40180,
+     "b_shells": {
+      "n": 53,
+      "least": 1600,
+      "most": 40200
+     },
+     "te_ms": [
+      43.087
+     ],
+     "tr_ms": [
+      750.0
+     ],
+     "delta_ms": [
+      15.0
+     ],
+     "Delta_ms": [
+      19.182
+     ],
+     "segments": [
+      2.0
+     ],
+     "averages": [
+      2.0
+     ],
+     "dim": [
+      "3D"
+     ],
+     "matrix": [
+      [
+       96.0,
+       96.0,
+       112.0
+      ]
+     ],
+     "voxel_mm": [
+      [
+       0.7,
+       0.7,
+       0.7
+      ]
+     ],
+     "scans": [
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28"
+     ],
+     "session": [
+      "MR261_10272015.yl1"
+     ],
+     "scan_time_h": 48.07,
+     "b0_scans": [
+      {
+       "scan": "6",
+       "b": 14,
+       "te_ms": 43.087,
+       "tr_ms": 750.0,
+       "delta_ms": 15.0,
+       "Delta_ms": 19.182
+      }
+     ]
+    },
+    "total_scan_time_h": 48.2,
+    "n_scans_acquired": 26
+   },
+   "MF278": {
+    "name": "MF5",
+    "sessions": [
+     "20221021_163632_MF278_2022_10_21_1_3",
+     "20221028_172354_MF278_2022_10_28_1_4"
+    ],
+    "other_copies": [],
+    "curated_b0_voxel_mm": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "scanner": {
+     "institution": [
+      "Massachusetts General Hospital"
+     ],
+     "station": [
+      "BioSpec 47/40"
+     ],
+     "software": [
+      "PV-7.0.0"
+     ],
+     "bf1_mhz": [
+      200.34,
+      200.34
+     ],
+     "tesla": 4.7
+    },
+    "b0_series": {
+     "n_scans": 23,
+     "methods": [
+      "Bruker:DtiEpi"
+     ],
+     "n_volumes": 515,
+     "n_b0": 1,
+     "n_dw_volumes": 514,
+     "b_max": 40006,
+     "b_shells": {
+      "n": 22,
+      "least": 1600,
+      "most": 40000
+     },
+     "te_ms": [
+      47.726
+     ],
+     "tr_ms": [
+      500.0
+     ],
+     "delta_ms": [
+      15.0
+     ],
+     "Delta_ms": [
+      19.192
+     ],
+     "segments": [
+      2.0
+     ],
+     "averages": [
+      2.0
+     ],
+     "dim": [
+      "3D"
+     ],
+     "matrix": [
+      [
+       116.0,
+       96.0,
+       140.0
+      ]
+     ],
+     "voxel_mm": [
+      [
+       0.5,
+       0.5,
+       0.5
+      ]
+     ],
+     "scans": [
+      "6",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29"
+     ],
+     "session": [
+      "20221021_163632_MF278_2022_10_21_1_3"
+     ],
+     "scan_time_h": 40.06,
+     "b0_scans": [
+      {
+       "scan": "6",
+       "b": 45,
+       "te_ms": 47.726,
+       "tr_ms": 500.0,
+       "delta_ms": 15.0,
+       "Delta_ms": 19.192
+      }
+     ]
+    },
+    "total_scan_time_h": 98.9,
+    "n_scans_acquired": 65
+   },
+   "MF275": {
+    "name": "MF6",
+    "sessions": [
+     "20220318_162703_MF275_2022_03_18_1_1",
+     "20220325_181114_MF275_2022_03_25_2_1",
+     "20220328_180605_MF275_2022_03_28_2_2"
+    ],
+    "other_copies": [],
+    "curated_b0_voxel_mm": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "scanner": {
+     "institution": [
+      "Massachusetts General Hospital"
+     ],
+     "station": [
+      "BioSpec 47/40"
+     ],
+     "software": [
+      "PV-7.0.0"
+     ],
+     "bf1_mhz": [
+      200.339,
+      200.339
+     ],
+     "tesla": 4.7
+    },
+    "b0_series": {
+     "n_scans": 23,
+     "methods": [
+      "Bruker:DtiEpi"
+     ],
+     "n_volumes": 515,
+     "n_b0": 1,
+     "n_dw_volumes": 514,
+     "b_max": 40006,
+     "b_shells": {
+      "n": 22,
+      "least": 1600,
+      "most": 40000
+     },
+     "te_ms": [
+      48.166
+     ],
+     "tr_ms": [
+      500.0
+     ],
+     "delta_ms": [
+      15.0
+     ],
+     "Delta_ms": [
+      19.192
+     ],
+     "segments": [
+      2.0
+     ],
+     "averages": [
+      2.0
+     ],
+     "dim": [
+      "3D"
+     ],
+     "matrix": [
+      [
+       120.0,
+       96.0,
+       140.0
+      ]
+     ],
+     "voxel_mm": [
+      [
+       0.5,
+       0.5,
+       0.5
+      ]
+     ],
+     "scans": [
+      "34",
+      "35",
+      "36",
+      "37",
+      "38",
+      "39",
+      "40",
+      "41",
+      "42",
+      "43",
+      "44",
+      "45",
+      "46",
+      "47",
+      "48",
+      "49",
+      "50",
+      "51",
+      "52",
+      "53",
+      "54",
+      "55",
+      "56"
+     ],
+     "session": [
+      "20220318_162703_MF275_2022_03_18_1_1"
+     ],
+     "scan_time_h": 40.06,
+     "b0_scans": [
+      {
+       "scan": "34",
+       "b": 45,
+       "te_ms": 48.166,
+       "tr_ms": 500.0,
+       "delta_ms": 15.0,
+       "Delta_ms": 19.192
+      }
+     ]
+    },
+    "total_scan_time_h": 129.9,
+    "n_scans_acquired": 90
+   },
+   "MF282": {
+    "name": "MF7",
+    "sessions": [
+     "20240814_175748_MF282_2024_08_14_1_1",
+     "20240816_102721_MF282_2024_08_16_1_2",
+     "20240829_141447_MF282_2024_08_29_1_3"
+    ],
+    "other_copies": [],
+    "curated_b0_voxel_mm": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "scanner": {
+     "institution": [
+      "Mass General Brigham Incorporated Somerville"
+     ],
+     "station": [
+      "BAP47/40"
+     ],
+     "software": [
+      "PV-360.3.5"
+     ],
+     "bf1_mhz": [
+      200.339,
+      200.339
+     ],
+     "tesla": 4.7
+    },
+    "b0_series": {
+     "n_scans": 23,
+     "methods": [
+      "Bruker:DtiEpi"
+     ],
+     "n_volumes": 515,
+     "n_b0": 1,
+     "n_dw_volumes": 514,
+     "b_max": 40001,
+     "b_shells": {
+      "n": 22,
+      "least": 1600,
+      "most": 40000
+     },
+     "te_ms": [
+      33.0,
+      40.381
+     ],
+     "tr_ms": [
+      500.0
+     ],
+     "delta_ms": [
+      11.0,
+      15.0
+     ],
+     "Delta_ms": [
+      15.192,
+      19.192
+     ],
+     "segments": [
+      8.0
+     ],
+     "averages": [
+      1.0
+     ],
+     "dim": [
+      "3D"
+     ],
+     "matrix": [
+      [
+       148.0,
+       124.0,
+       86.0
+      ]
+     ],
+     "voxel_mm": [
+      [
+       0.5,
+       0.5,
+       0.5
+      ]
+     ],
+     "scans": [
+      "5",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30"
+     ],
+     "session": [
+      "20240816_102721_MF282_2024_08_16_1_2"
+     ],
+     "scan_time_h": 49.21,
+     "b0_scans": [
+      {
+       "scan": "5",
+       "b": 115,
+       "te_ms": 33.0,
+       "tr_ms": 500.0,
+       "delta_ms": 11.0,
+       "Delta_ms": 15.192
+      }
+     ]
+    },
+    "total_scan_time_h": 177.0,
+    "n_scans_acquired": 99
+   }
+  },
+  "inputs": [
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/3/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/4/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/5/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/6/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/7/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/8/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/9/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/10/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/11/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/12/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/13/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/14/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/15/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/16/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/17/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/18/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/19/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/20/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/21/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/22/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/23/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/24/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/25/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/26/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/27/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/28/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/29/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/30/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/31/method",
+   "$LINC_RAW/mri_mm/MR243_20130326.j41/32/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/2/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/3/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/5/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/6/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/7/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/8/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/9/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/10/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/11/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/12/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/13/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/14/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/15/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/16/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/17/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/18/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/19/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/20/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/21/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/22/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/23/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/24/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/25/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/26/method",
+   "$LINC_RAW/mri_mm/MR252_20140131.o61/27/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/3/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/4/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/5/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/6/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/7/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/8/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/9/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/10/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/11/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/12/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/13/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/14/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/15/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/16/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/17/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/18/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/19/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/20/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/21/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/22/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/23/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/24/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/25/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/26/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/27/method",
+   "$LINC_RAW/mri_mm/MR256_02172015.uh1/28/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/1/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/2/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/4/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/5/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/6/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/7/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/8/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/9/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/10/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/11/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/12/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/13/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/14/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/15/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/16/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/17/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/18/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/19/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/20/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/21/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/22/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/23/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/24/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/25/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/26/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/27/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/28/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/29/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/30/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/31/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/32/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/33/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/34/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/35/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/36/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/37/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/38/method",
+   "$LINC_RAW/mri_mm/MR_249_20130809.lg1/39/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/2/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/3/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/5/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/6/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/7/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/8/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/9/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/10/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/11/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/12/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/13/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/14/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/15/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/16/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/17/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/18/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/19/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/20/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/21/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/22/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/23/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/24/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/25/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/26/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/27/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/28/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/29/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/30/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/31/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/32/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/33/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/34/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/35/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/36/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/37/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/38/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/39/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/40/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/41/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/42/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/43/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/44/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/45/method",
+   "$LINC_RAW/mri_mm/MR_250_20130927.m31/46/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/2/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/3/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/5/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/6/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/7/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/8/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/9/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/10/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/11/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/12/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/13/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/14/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/15/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/16/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/17/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/18/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/19/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/20/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/21/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/22/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/23/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/24/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/25/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/26/method",
+   "$LINC_RAW/mri_mm/MR_251_20140124.nZ1/27/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/1/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/2/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/5/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/6/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/7/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/8/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/9/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/10/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/11/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/12/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/13/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/14/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/15/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/16/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/17/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/18/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/19/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/20/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/21/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/22/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/23/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/24/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/25/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/26/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/27/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/28/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/29/method",
+   "$LINC_RAW/mri_mm/MR253_2014_11_21_c.sQ1/30/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/1/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/2/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/4/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/5/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/6/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/7/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/8/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/9/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/10/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/11/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/12/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/13/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/14/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/15/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/16/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/17/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/18/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/19/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/20/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/21/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/22/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/23/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/24/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/25/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/26/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/27/method",
+   "$LINC_RAW/mri_mm/MR254_2014_1126.sV1/28/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/3/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/5/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/6/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/7/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/8/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/9/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/10/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/11/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/12/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/13/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/14/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/15/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/16/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/17/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/18/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/19/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/20/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/21/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/22/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/23/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/24/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/25/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/26/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/27/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/28/method",
+   "$LINC_RAW/mri_mm/MR257_02192015.uk1/29/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/3/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/4/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/5/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/6/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/7/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/8/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/9/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/10/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/11/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/12/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/13/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/14/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/15/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/16/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/17/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/18/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/19/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/20/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/21/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/22/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/23/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/24/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/25/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/26/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/27/method",
+   "$LINC_RAW/mri_mm/MR261_10272015.yl1/28/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/1/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/2/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/3/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/4/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/5/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/6/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/7/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/8/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/9/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/10/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/11/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/12/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/13/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/14/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/15/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/16/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/17/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/18/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/19/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/20/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/21/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/22/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/23/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/24/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/25/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/26/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/27/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/28/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/29/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/30/method",
+   "$LINC_RAW/mri_mf/20221021_163632_MF278_2022_10_21_1_3/31/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/1/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/2/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/3/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/4/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/5/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/6/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/7/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/8/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/9/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/10/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/11/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/12/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/13/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/14/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/15/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/16/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/17/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/18/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/19/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/20/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/21/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/22/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/23/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/24/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/25/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/26/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/27/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/28/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/29/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/30/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/31/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/32/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/33/method",
+   "$LINC_RAW/mri_mf/20221028_172354_MF278_2022_10_28_1_4/34/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/1/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/2/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/3/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/4/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/5/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/6/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/7/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/8/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/9/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/10/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/11/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/12/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/13/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/14/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/15/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/16/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/17/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/18/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/19/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/20/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/21/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/22/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/23/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/34/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/35/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/36/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/37/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/38/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/39/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/40/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/41/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/42/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/43/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/44/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/45/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/46/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/47/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/48/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/49/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/50/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/51/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/52/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/53/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/54/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/55/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/56/method",
+   "$LINC_RAW/mri_mf/20220318_162703_MF275_2022_03_18_1_1/57/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/1/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/2/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/4/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/5/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/6/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/7/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/8/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/9/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/10/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/12/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/13/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/14/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/15/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/16/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/17/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/18/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/19/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/20/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/21/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/22/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/23/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/24/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/25/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/26/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/27/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/28/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/29/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/30/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/31/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/32/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/33/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/34/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/35/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/36/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/37/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/38/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/39/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/40/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/41/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/42/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/43/method",
+   "$LINC_RAW/mri_mf/20220325_181114_MF275_2022_03_25_2_1/44/method",
+   "$LINC_RAW/mri_mf/20220328_180605_MF275_2022_03_28_2_2/13/method",
+   "$LINC_RAW/mri_mf/20240814_175748_MF282_2024_08_14_1_1/2/method",
+   "$LINC_RAW/mri_mf/20240814_175748_MF282_2024_08_14_1_1/3/method",
+   "$LINC_RAW/mri_mf/20240814_175748_MF282_2024_08_14_1_1/4/method",
+   "$LINC_RAW/mri_mf/20240814_175748_MF282_2024_08_14_1_1/5/method",
+   "$LINC_RAW/mri_mf/20240814_175748_MF282_2024_08_14_1_1/6/method",
+   "$LINC_RAW/mri_mf/20240814_175748_MF282_2024_08_14_1_1/7/method",
+   "$LINC_RAW/mri_mf/20240814_175748_MF282_2024_08_14_1_1/8/method",
+   "$LINC_RAW/mri_mf/20240814_175748_MF282_2024_08_14_1_1/9/method",
+   "$LINC_RAW/mri_mf/20240814_175748_MF282_2024_08_14_1_1/10/method",
+   "$LINC_RAW/mri_mf/20240814_175748_MF282_2024_08_14_1_1/11/method",
+   "$LINC_RAW/mri_mf/20240814_175748_MF282_2024_08_14_1_1/12/method",
+   "$LINC_RAW/mri_mf/20240814_175748_MF282_2024_08_14_1_1/13/method",
+   "$LINC_RAW/mri_mf/20240814_175748_MF282_2024_08_14_1_1/14/method",
+   "$LINC_RAW/mri_mf/20240814_175748_MF282_2024_08_14_1_1/15/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/1/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/2/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/3/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/5/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/6/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/9/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/10/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/11/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/12/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/13/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/14/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/15/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/16/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/17/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/18/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/19/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/20/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/21/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/22/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/23/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/24/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/25/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/26/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/27/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/28/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/29/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/30/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/32/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/33/method",
+   "$LINC_RAW/mri_mf/20240816_102721_MF282_2024_08_16_1_2/34/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/1/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/2/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/4/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/5/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/6/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/7/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/8/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/9/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/10/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/11/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/12/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/13/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/14/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/15/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/16/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/17/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/18/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/19/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/20/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/21/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/22/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/23/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/24/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/25/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/26/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/27/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/28/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/29/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/30/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/31/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/32/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/33/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/34/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/35/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/36/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/37/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/38/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/39/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/40/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/41/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/42/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/43/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/44/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/45/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/46/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/47/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/48/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/49/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/50/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/51/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/52/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/53/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/54/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/55/method",
+   "$LINC_RAW/mri_mf/20240829_141447_MF282_2024_08_29_1_3/56/method"
+  ],
+  "check_against_r057": {
+   "MR253": {
+    "agree": true,
+    "differing": [],
+    "r057_sessions": [
+     "MR253_2014_1114"
+    ],
+    "r065_sessions": [
+     "MR253_2014_11_21_c.sQ1"
+    ]
+   },
+   "MR254": {
+    "agree": true,
+    "differing": [],
+    "r057_sessions": [
+     "MR254_2014_1126"
+    ],
+    "r065_sessions": [
+     "MR254_2014_1126.sV1"
+    ]
+   },
+   "MR256": {
+    "agree": true,
+    "differing": [],
+    "r057_sessions": [
+     "MR256_02172015.uh"
+    ],
+    "r065_sessions": [
+     "MR256_02172015.uh1"
+    ]
+   },
+   "MR257": {
+    "agree": true,
+    "differing": [],
+    "r057_sessions": [
+     "MR257_02192015"
+    ],
+    "r065_sessions": [
+     "MR257_02192015.uk1"
+    ]
+   },
+   "MF275": {
+    "agree": true,
+    "differing": [],
+    "r057_sessions": [
+     "20220318_162703_MF275_2022_03_18_1_1",
+     "20220325_181114_MF275_2022_03_25_2_1",
+     "20220328_180605_MF275_2022_03_28_2_2"
+    ],
+    "r065_sessions": [
+     "20220318_162703_MF275_2022_03_18_1_1",
+     "20220325_181114_MF275_2022_03_25_2_1",
+     "20220328_180605_MF275_2022_03_28_2_2"
+    ]
+   },
+   "MF278": {
+    "agree": true,
+    "differing": [],
+    "r057_sessions": [
+     "20221021_163632_MF278_2022_10_21_1_3",
+     "20221028_172354_MF278_2022_10_28_1_4"
+    ],
+    "r065_sessions": [
+     "20221021_163632_MF278_2022_10_21_1_3",
+     "20221028_172354_MF278_2022_10_28_1_4"
+    ]
+   },
+   "MF282": {
+    "agree": true,
+    "differing": [],
+    "r057_sessions": [
+     "20240814_175748_MF282_2024_08_14_1_1",
+     "20240816_102721_MF282_2024_08_16_1_2",
+     "20240829_141447_MF282_2024_08_29_1_3"
+    ],
+    "r065_sessions": [
+     "20240814_175748_MF282_2024_08_14_1_1",
+     "20240816_102721_MF282_2024_08_16_1_2",
+     "20240829_141447_MF282_2024_08_29_1_3"
+    ]
+   }
+  },
+  "summary": {
+   "MM": {
+    "n_brains": 10,
+    "brains": [
+     "MM1",
+     "MM2",
+     "MM3",
+     "MM4",
+     "MM5",
+     "MM6",
+     "MM7",
+     "MM8",
+     "MM9",
+     "MM10"
+    ],
+    "institution": [
+     [
+      "MGH Biospec 47/40"
+     ]
+    ],
+    "station": [
+     [
+      "spect"
+     ]
+    ],
+    "software": [
+     [
+      "PV 5.1"
+     ]
+    ],
+    "tesla": [
+     4.7
+    ],
+    "bf1_mhz": [
+     200.32,
+     200.34
+    ],
+    "methods": [
+     [
+      "daiDtiEpi"
+     ]
+    ],
+    "voxel_mm": [
+     [
+      [
+       0.7,
+       0.7,
+       0.7
+      ]
+     ]
+    ],
+    "matrix": [
+     [
+      [
+       96.0,
+       96.0,
+       112.0
+      ]
+     ]
+    ],
+    "te_ms": [
+     [
+      43.087
+     ]
+    ],
+    "tr_ms": [
+     [
+      750.0
+     ]
+    ],
+    "delta_ms": [
+     [
+      15.0
+     ]
+    ],
+    "Delta_ms": [
+     [
+      19.182
+     ]
+    ],
+    "segments": [
+     [
+      2.0
+     ]
+    ],
+    "averages": [
+     [
+      2.0
+     ]
+    ],
+    "dim": [
+     [
+      "3D"
+     ]
+    ],
+    "n_scans": [
+     23,
+     24
+    ],
+    "n_volumes": [
+     515,
+     516
+    ],
+    "n_b0": [
+     1,
+     2
+    ],
+    "n_dw_volumes": [
+     514
+    ],
+    "b_max": [
+     40180
+    ],
+    "b_shells": [
+     {
+      "n": 53,
+      "least": 1600,
+      "most": 40200
+     }
+    ],
+    "scan_time_h": [
+     48.07,
+     48.16
+    ],
+    "b0_te_ms": [
+     43.087
+    ],
+    "b0_tr_ms": [
+     750.0
+    ]
+   },
+   "MF": {
+    "n_brains": 3,
+    "brains": [
+     "MF5",
+     "MF6",
+     "MF7"
+    ],
+    "institution": [
+     [
+      "Mass General Brigham Incorporated Somerville"
+     ],
+     [
+      "Massachusetts General Hospital"
+     ]
+    ],
+    "station": [
+     [
+      "BAP47/40"
+     ],
+     [
+      "BioSpec 47/40"
+     ]
+    ],
+    "software": [
+     [
+      "PV-360.3.5"
+     ],
+     [
+      "PV-7.0.0"
+     ]
+    ],
+    "tesla": [
+     4.7
+    ],
+    "bf1_mhz": [
+     200.339,
+     200.34
+    ],
+    "methods": [
+     [
+      "Bruker:DtiEpi"
+     ]
+    ],
+    "voxel_mm": [
+     [
+      [
+       0.5,
+       0.5,
+       0.5
+      ]
+     ]
+    ],
+    "matrix": [
+     [
+      [
+       116.0,
+       96.0,
+       140.0
+      ]
+     ],
+     [
+      [
+       120.0,
+       96.0,
+       140.0
+      ]
+     ],
+     [
+      [
+       148.0,
+       124.0,
+       86.0
+      ]
+     ]
+    ],
+    "te_ms": [
+     [
+      33.0,
+      40.381
+     ],
+     [
+      47.726
+     ],
+     [
+      48.166
+     ]
+    ],
+    "tr_ms": [
+     [
+      500.0
+     ]
+    ],
+    "delta_ms": [
+     [
+      11.0,
+      15.0
+     ],
+     [
+      15.0
+     ]
+    ],
+    "Delta_ms": [
+     [
+      15.192,
+      19.192
+     ],
+     [
+      19.192
+     ]
+    ],
+    "segments": [
+     [
+      2.0
+     ],
+     [
+      8.0
+     ]
+    ],
+    "averages": [
+     [
+      1.0
+     ],
+     [
+      2.0
+     ]
+    ],
+    "dim": [
+     [
+      "3D"
+     ]
+    ],
+    "n_scans": [
+     23
+    ],
+    "n_volumes": [
+     515
+    ],
+    "n_b0": [
+     1
+    ],
+    "n_dw_volumes": [
+     514
+    ],
+    "b_max": [
+     40001,
+     40006
+    ],
+    "b_shells": [
+     {
+      "n": 22,
+      "least": 1600,
+      "most": 40000
+     }
+    ],
+    "scan_time_h": [
+     40.06,
+     49.21
+    ],
+    "b0_te_ms": [
+     33.0,
+     47.726,
+     48.166
+    ],
+    "b0_tr_ms": [
+     500.0
+    ]
+   }
+  }
+ }
+}

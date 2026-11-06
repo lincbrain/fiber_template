@@ -13,6 +13,10 @@ The paired difference (b) - (a) per brain, mean with a 95 % bootstrap CI over th
 Needs a GPU (or --device cpu, slower); the record was made on an NVIDIA Ada GPU.
 -> $LINC_NUMBERS/d3_domain_shift.json
     python reproduce/numbers/d3_domain_shift.py [--device cuda]
+With --final, (b) is the final stand-in b0 (the placement the 8 brains without MRI were completed from, nonlinear_s2val_prod)
+instead of the development one: the input of the stand-in network's test as the paper reports it (d3p_vs_d3_pseudo.py --final).
+-> $LINC_NUMBERS/d3_domain_shift_prod.json
+    python reproduce/numbers/d3_domain_shift.py --final [--device cuda]
 """
 import argparse
 import hashlib
@@ -30,7 +34,9 @@ from linc.completion import CFG, data, deploy, network  # noqa: E402
 
 RUN = "d3_lso_A_s0"                     # the leave-slab-out network with the own b0 as input
 PROTOCOL_DIR = "canon_d3"               # the prepared brains with MRI (own b0)
-STAND_IN = "nonlinear_s2val"            # the stand-in b0 per brain: data/sub-<ID>/mri/<STAND_IN>/<ID>_mri_full.nii.gz
+STAND_IN = {False: "nonlinear_s2val",    # the stand-in b0 per brain: data/sub-<ID>/mri/<STAND_IN>/<ID>_mri_full.nii.gz
+            True: "nonlinear_s2val_prod"}   # --final: the final stand-in b0
+NAME = {False: "d3_domain_shift", True: "d3_domain_shift_prod"}
 SEED = 20261004
 
 # the record's own texts, verbatim (they are part of the record's data)
@@ -42,6 +48,7 @@ CAVEATS = ["the pseudo-b0s come from S2 dev_s125 (template b0 v1, md5 8624a5af..
            "may be slightly worse or better, depending on their anatomy",
            "real vs pseudo-b0 intensity correlation inside both masks 0.43-0.79 (another animal, scanner and protocol): "
            "that contrast difference is what this test measures"]
+FINAL_NOTE = "rerun of 6 Nov: the pseudo-b0s are nonlinear_s2val_prod (the final stand-ins); the original caveat read: "   # --final
 
 md5 = lambda p: hashlib.md5(open(p, "rb").read()).hexdigest()  # noqa: E731
 
@@ -61,7 +68,9 @@ def box_copy(src, lo, n, fill=0):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--device", default="cuda")
+    ap.add_argument("--final", action="store_true", help="the final stand-in b0 (nonlinear_s2val_prod): writes d3_domain_shift_prod")
     a = ap.parse_args()
+    stand_in = STAND_IN[a.final]
     P = paths.products("products_completion")
     root = P["completion_inputs"] / PROTOCOL_DIR
     ckp = P["completion_runs"] / RUN / "last.pt"
@@ -75,7 +84,7 @@ def main():
         sd = data.load_subject(D, "lso", cfg.get("photographed_only"))
         T = sd["y"]                                                       # the photographs, normalized as in training
         xa = sd["x"]
-        pp = P["brain_data"] / f"sub-{S}/mri/{STAND_IN}/{S}_mri_full.nii.gz"; pim = nib.load(pp)
+        pp = P["brain_data"] / f"sub-{S}/mri/{stand_in}/{S}_mri_full.nii.gz"; pim = nib.load(pp)
         own = nib.load(data.recorded_path(rec["sources"]["b0"]))
         assert pim.shape == own.shape and np.allclose(pim.affine, own.affine, atol=1e-5), f"{S}: the stand-in b0 is not on the b0's frame grid"
         bm = np.asanyarray(nib.load(data.recorded_path(rec["sources"]["brain"])).dataobj) > 0
@@ -98,8 +107,10 @@ def main():
         bs = [d[rng.integers(0, len(d), len(d))].mean() for _ in range(CFG["evaluation"]["n_boot"])]
         summ[m] = dict(mean_own=float(np.mean([rows[S]["own"][m] for S in subs])), mean_pseudo=float(np.mean([rows[S]["pseudo"][m] for S in subs])),
                        mean_diff=float(d.mean()), ci95=[float(np.percentile(bs, 2.5)), float(np.percentile(bs, 97.5))], n=len(d))
-    out = dict(what=WHAT, run=RUN, root=str(root), pseudo_dir=STAND_IN, per_brain=rows, summary=summ, reading=READING, caveats=CAVEATS)
-    provenance.write_numbers("d3_domain_shift", out, inputs=inputs, md5=False, cmd="python reproduce/numbers/d3_domain_shift.py")
+    caveats = [FINAL_NOTE + CAVEATS[0]] + CAVEATS[1:] if a.final else CAVEATS
+    out = dict(what=WHAT, run=RUN, root=str(root), pseudo_dir=stand_in, per_brain=rows, summary=summ, reading=READING, caveats=caveats)
+    provenance.write_numbers(NAME[a.final], out, inputs=inputs, md5=False,
+                             cmd="python reproduce/numbers/d3_domain_shift.py" + (" --final" if a.final else ""))
     for m, v in summ.items():
         print(f"{m}: own {v['mean_own']:.4f} stand-in {v['mean_pseudo']:.4f} diff {v['mean_diff']:+.4f} "
               f"CI [{v['ci95'][0]:+.4f}, {v['ci95'][1]:+.4f}]")

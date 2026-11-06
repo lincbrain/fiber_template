@@ -3,14 +3,18 @@
 # are its own folders; a data release remaps them here only.
 
 # --- records of the analysis that later records read as inputs (dated snapshots, never rewritten) ---
-numbers_of_record: paper/numbers                 # d3_methods.json (read by d3_predicted_share), d3_A_sigma2_pred.json, d3p_A_sigma2_pred.json
+numbers_of_record: paper/numbers                 # d3_methods.json (read by d3_predicted_share), d3_A_sigma2_pred.json, d3p_A_sigma2_pred.json,
+                                                 # d3_domain_shift{,_prod}.json (read by d3p_vs_d3_pseudo, without and with --final)
 
 # --- the networks: one folder per network with last.pt (weights + training configuration), config.json, train_log.jsonl ---
 completion_runs: isbi2027/runs                   # d3_full_A_s0 (brains with MRI), d3p_full_A_s0 (stand-in b0), d3_lso_A_s0 / d3p_lso_A_s0
                                                  # (leave slab out: the withheld-slab evaluation). A data release ships the copies
-                                                 # without machine paths, isbi2027/runs_public (models/completion_checksum_map.tsv)
+                                                 # without machine paths, isbi2027/runs_public (models/completion_checksum_map.tsv).
+                                                 # d3p_lso_prod_A_s0: d3p_lso_A_s0's recipe on the final stand-ins (canon_d3p_prod),
+                                                 # the paper's stand-in test; its evaluation is released, its weights are not
 completion_eval: isbi2027/eval_v3                # d3_lso_A_s0.json: the withheld-slab evaluation of record (slab geometry per brain);
-                                                 # d3p_lso_A_s0.json (d3p_vs_d3_pseudo); d3_cv{0..5}_A_s0.json and their saved
+                                                 # d3p_lso_A_s0.json (d3p_vs_d3_pseudo), d3p_lso_prod_A_s0.json (d3p_vs_d3_pseudo_prod);
+                                                 # d3_cv{0..5}_A_s0.json and their saved
                                                  # predictions pred/d3_cv<k>_A_s0_<ID>_deployed.nii.gz (s_synthesis_depth)
 
 # --- the prepared brains (the networks' inputs; layout: linc/completion/__init__.py) and their join-plane records ---
@@ -23,7 +27,8 @@ completed: synthesis/out_d3_full                 # <ID>/<ID>_{bf_completed, synt
 completed_masks: synthesis/cache_d3              # <ID>/deploy/{brain, real_mask}.nii.gz (product grid)
 
 # --- per-brain data: the stand-in b0 carried into each brain with MRI (the domain-shift test) ---
-brain_data: data                                 # sub-<ID>/mri/nonlinear_s2val/<ID>_mri_full.nii.gz
+brain_data: data                                 # sub-<ID>/mri/nonlinear_s2val/<ID>_mri_full.nii.gz, and nonlinear_s2val_prod/ (the final
+                                                 # stand-in b0: d3_domain_shift.py --final)
 
 # --- Supplementary S1 (r057_s1_synthesis; figures s_synthesis_depth, s_synthesis_gallery): the network's own validation, tau^2 ---
 isbi_numbers: isbi2027_repo/isbi2027/numbers     # {table1,extra,results,data,compute}_v3.json, brain_labels_v4.json: the number records of

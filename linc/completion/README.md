@@ -12,7 +12,7 @@ cli/linc-complete prepare --subject <ID> --out <dir>     # one brain's products 
 cli/linc-complete --brain <prepared folder> --out <dir> [--stand-in]   # one brain -> its volume with synthesized tissue (GPU)
 cli/linc-complete train --root <prepared folders> [--plan]             # the network, trained again (train.py; GPU)
 python reproduce/numbers/d3_methods.py (d3_predicted_share, d3_domain_shift, d3_sigma2_pred)    # the paper's numbers
-python reproduce/numbers/r057_s1_synthesis.py (r057_missing_extent, d3p_vs_d3_pseudo)            # Supplementary S1's numbers
+python reproduce/numbers/r057_s1_synthesis.py (r057_missing_extent, d3p_vs_d3_pseudo --final)    # Supplementary S1's numbers
 ```
 
 Parameters: `configs/completion.yaml`. Weights: `models/completion.md`. Environment: `env/deep.yml`.

@@ -23,5 +23,5 @@ and model cards made before then name that file. `PY_COMPLETION` is still honore
 **External programs** (not pip-installable): FSL 6.0.7.4 and ANTs 2.5.4. MMORF 1.0.1 comes with `linc.yml`.
 
 **Exact reproduction** (`docs/reproduce.md`): the deformable registrations are deterministic within a GPU session and differ by
-floating point across sessions or GPU models (median 0.002–0.025 mm; single voxels up to 1.9 mm); TIRL must run with 12 threads; one
-GPU record (`d3_domain_shift`) is reproducible only to its last digits.
+floating point across sessions or GPU models (median 0.002–0.025 mm; single voxels up to 1.9 mm); TIRL must run with 12 threads; two
+GPU records (`d3_domain_shift`, and `d3_domain_shift_prod` on the final stand-in b0s) are reproducible only to their last digits.

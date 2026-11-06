@@ -14,4 +14,5 @@
 - ["<raw macaque MRI, unpacked>", "$LINC_RAW/macaque_mri"]
 - ["<the microstructure fits' source series (Microstructure: dmri.dt2, msme log)>", "$LINC_RAW/microstructure"]
 - ["<raw Bruker MRI of the MM brains>", "$LINC_RAW/mri_mm"]
+- ["<raw Bruker MRI of the MF brains>", "$LINC_RAW/mri_mf"]
 - ["<the LINC dataset 000003 (participants.tsv)>", "$LINC_RAW/linc_000003"]

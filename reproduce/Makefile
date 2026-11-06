@@ -2,7 +2,7 @@
 #
 #   cd reproduce
 #   make numbers        # every number record the paper reads (CPU), into $LINC_NUMBERS (default ../outputs/numbers)
-#   make numbers-gpu    # the one record that needs a GPU (d3_domain_shift; CUDA card, env/deep.yml)
+#   make numbers-gpu    # the two records that need a GPU (d3_domain_shift, d3_domain_shift_prod; CUDA card, env/deep.yml)
 #   make check          # compare the regenerated records with the paper's (reference/), exceptions as documented
 #   make test           # the installation check: tests + toy smokes of the command lines, no data (selftest.sh, minutes)
 #   make figures        # the paper's figures, into ../outputs/figures/ (one target per figure, named by its content;
@@ -52,8 +52,8 @@ NUMBERS_MRI := variants_leave_self_out_rebuild_fa025 variability_rebuild_rb_fina
   lgnstn_model_agreement_r059 lgnstn_model_loso_r059 lgnstn_b0_visibility_r059 lgnstn_midplane_planes_r059 r057_mri_facts_b
 NUMBERS_TIRL := histo_pixel_sizes_r057
 NUMBERS_COMPLETION := d3_sigma2_pred d3_methods d3_predicted_share \
-  d3p_vs_d3_pseudo r057_missing_extent r057_s1_synthesis lgnstn_budget_r059
-NUMBERS_GPU := d3_domain_shift
+  d3p_vs_d3_pseudo d3p_vs_d3_pseudo_prod r057_missing_extent r057_s1_synthesis lgnstn_budget_r059
+NUMBERS_GPU := d3_domain_shift d3_domain_shift_prod
 # the segmentation models' records (Supplementary S5, Table S8): CPU, env/deep.yml (torch counts the parameters); bf_mask2d ~6 min
 NUMBERS_SEGMENT := segmodels_mri_brainmask_2026-11 segmodels_bf_mask2d_2026-11 segmodels_bf_mask3d_2026-11 segmodels_bf_holes_2026-11
 
@@ -135,8 +135,12 @@ histo_pixel_sizes_r057:
 	@if [ -z "$(LINC_RAW)" ]; then echo "SKIPPED histo_pixel_sizes_r057: set LINC_RAW (raw histology outside the release)"; \
 	else $(PY_TIRL) numbers/$@.py; fi
 
-$(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_GPU):
+$(filter-out d3p_vs_d3_pseudo_prod d3_domain_shift_prod,$(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_GPU)):
 	$(PY_DEEP) numbers/$@.py
+
+# the stand-in test on the final stand-in b0s (the paper's): the same two scripts with --final
+d3p_vs_d3_pseudo_prod d3_domain_shift_prod:
+	$(PY_DEEP) numbers/$(patsubst %_prod,%,$@).py --final
 
 check:
 	$(PY) check_numbers.py --ref reference --new $(LINC_NUMBERS)
