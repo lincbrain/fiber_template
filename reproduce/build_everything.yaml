@@ -77,10 +77,11 @@ steps:
     ram_gb: 32
     cores: 4
     disk_gb: 11
-    hours: 2.3
+    hours: 2.8
     timed: clone
     optional: false
-    note: 2 h 16 min serial at nice 10 on a shared machine (4 Nov clone, run 5-6 Nov); RAM not measured (32 GB is an estimate)
+    note: '6 Nov, clone 7929dc3 on a shared machine at nice 10, these lines verbatim: 2 h 46 min, check 81 of 81 records match (2 h 16 min on 4-5
+      Nov); RAM not measured (32 GB is an estimate)'
   - name: paper-numbers-gpu
     group: paper
     title: Compute the two numbers records that run a network on the GPU
@@ -149,7 +150,7 @@ steps:
     title: Compare every numbers record with the paper's
     inputs: $LINC_NUMBERS (all records of the four paper steps)
     outputs: the comparison, on screen
-    run: LINC_DATA=$LINC_PRODUCTS/data make bf_camera_exif mm_mri_check_r054
+    run: LINC_DATA=$LINC_PRODUCTS/data make -C reproduce bf_camera_exif mm_mri_check_r054
     check: $PY reproduce/check_numbers.py --ref reproduce/reference --new $LINC_NUMBERS
     expect: every reference record has a regenerated record and they match ("N of N records match"; 81 of 81 at 7929dc3)
     needs: [paper-numbers, paper-numbers-gpu, paper-numbers-figures, paper-figures]
@@ -162,7 +163,8 @@ steps:
     hours: 0.02
     timed: clone
     optional: false
-    note: the run line regenerates the two records that hold the clone's raw paths, so a copied numbers folder cannot make them differ
+    note: '6 Nov, clone 7929dc3 on a shared machine, these lines verbatim: 11 s, check 81 of 81 records match. The run line regenerates the two records
+      that hold the clone''s raw paths; single records need make -C reproduce (the root Makefile forwards only the group targets)'
 
   # ---- mri-template
   - name: mri-stage
@@ -351,7 +353,7 @@ steps:
     hours: 0.01
     timed: clone
     optional: false
-    note: 'The construction starts from the paper''s inputs, not from mri-prepare''s, so that its comparison can be exact. Today from a clone: 11
+    note: 'The construction starts from the paper''s inputs, not from mri-prepare''s, so that its comparison can be exact. On 6 Nov from a clone: 11
       s, 16 of 16.'
   - name: mri-construction-step1
     group: mri-template
@@ -443,7 +445,7 @@ steps:
     hours: 0.01
     timed: clone
     optional: false
-    note: 'Today from a clone, all four brains: 2 of 2 files identical, QC pass, 15 to 21 s each.'
+    note: 'On 6 Nov from a clone, all four brains: 2 of 2 files identical, QC pass, 15 to 21 s each.'
   - name: mri-prep
     group: mri-template
     for: [MF283]
@@ -464,7 +466,7 @@ steps:
     hours: 0.01
     timed: clone
     optional: false
-    note: 'Today from a clone with env/lab.sh''s ANTs 2.5.4: 3 of 3 identical, 29 s. Without ANTs it skips N4 and still exits 0, and the check then
+    note: 'On 6 Nov from a clone with env/lab.sh''s ANTs 2.5.4: 3 of 3 identical, 29 s. Without ANTs it skips N4 and still exits 0, and the check then
       fails.'
 
   # ---- blockface
@@ -1354,7 +1356,7 @@ steps:
     hours: 0.3
     timed: clone
     optional: false
-    note: 'Today from a clone: 9 of 9 identical, 1076 s (ITK at 16 threads on a loaded node; the paper''s run: 746 s).'
+    note: 'On 6 Nov from a clone: 9 of 9 identical, 1076 s (ITK at 16 threads on a loaded node; the paper''s run: 746 s).'
   - name: labels-interpolate
     group: labels
     for: [MF191]
@@ -1377,7 +1379,7 @@ steps:
     hours: 0.1
     timed: clone
     optional: false
-    note: 'Today from a clone: 10 of 10 identical, 216 s (the paper''s run: 147 s).'
+    note: 'On 6 Nov from a clone: 10 of 10 identical, 216 s (the paper''s run: 147 s).'
   - name: labels-carry
     group: labels
     for: [MR243]
@@ -1399,7 +1401,7 @@ steps:
     hours: 0.06
     timed: clone
     optional: false
-    note: 'Today from a clone: 30 of 30, 186 s.'
+    note: 'On 6 Nov from a clone: 30 of 30, 186 s.'
   - name: labels-carry
     group: labels
     for: [MR252, MR256]
@@ -1421,7 +1423,7 @@ steps:
     hours: 0.08
     timed: clone
     optional: false
-    note: 'Today from a clone: MM2 21 of 21 (285 s), MM3 27 of 27 (304 s).'
+    note: 'On 6 Nov from a clone: MM2 21 of 21 (285 s), MM3 27 of 27 (304 s).'
   - name: labels-carry
     group: labels
     for: [MF191]
@@ -1444,7 +1446,7 @@ steps:
     hours: 0.08
     timed: clone
     optional: false
-    note: 'Today from a clone: 30 of 30, 41 s (the walkthrough''s form, with the records'' paths).'
+    note: 'On 6 Nov from a clone: 30 of 30, 41 s (the walkthrough''s form, with the records'' paths).'
   - name: labels-connect
     group: labels
     for: labels
@@ -1465,7 +1467,7 @@ steps:
     hours: 0.03
     timed: clone
     optional: false
-    note: 'Today from a clone, all four cases: 3 of 3 identical; 11 to 15 s for MM1 to MM3, 58 s for MF8.'
+    note: 'On 6 Nov from a clone, all four cases: 3 of 3 identical; 11 to 15 s for MM1 to MM3, 58 s for MF8.'
   - name: labels-sections
     group: labels
     title: Carry each charted section into the template, without interpolation
@@ -1481,11 +1483,11 @@ steps:
     ram_gb: 16
     cores: 16
     disk_gb: 1
-    hours: 1
-    timed: estimated
+    hours: 0.5
+    timed: clone
     optional: false
-    note: Running from a clone since 15:23, not finished at 15:50 (16 cores, loaded node); result to follow. Writes its own numbers folder, so it
-      can run beside make numbers, which writes the same records into $LINC_NUMBERS.
+    note: 'On 6 Nov from a clone: 2 of 2 records match; about 15 to 30 minutes of running on 16 cores (the wall time, 2.2 h, includes a pause). Writes
+      its own numbers folder, so it can run beside make numbers, which writes the same records into $LINC_NUMBERS.'
 
   # ---- training
   - name: training-segment-mri-brainmask
