@@ -56,9 +56,9 @@ steps:
     hours: 0.15
     timed: clone
     optional: false
-    note: 'Tested: 7 min 6 s, 132,901 links and 15,571 copies (1.0 GB), check 21 of 21. Adds to the folders env/lab.sh built and overwrites
-      nothing, so it is safe to rerun; but not beside another tools/make_local_data.sh writing to the same folder (two runs can race on one link):
-      run other lanes'' data-folder steps after it.'
+    note: 'Tested: 7 min 6 s, 132,901 links and 15,571 copies (1.0 GB), check 21 of 21. Adds to the folders env/lab.sh built and overwrites nothing,
+      so it is safe to rerun; but not beside another tools/make_local_data.sh writing to the same folder (two runs can race on one link): run other
+      lanes'' data-folder steps after it.'
 
   # ---- paper
   - name: paper-numbers
@@ -96,10 +96,10 @@ steps:
     ram_gb: 16
     cores: 4
     disk_gb: 0.01
-    hours: 0.06
+    hours: 0.09
     timed: clone
     optional: false
-    note: about 3 min for both; within the 1e-4 tolerance on any card, identical on the RTX 6000 Ada
+    note: '6 Nov, clone 7929dc3, an RTX 6000 Ada, beside other test jobs: 319 s, check 2 of 2 records match; within the 1e-4 tolerance on any card'
   - name: paper-numbers-figures
     group: paper
     title: Draw the figures that also write a numbers record
@@ -116,10 +116,10 @@ steps:
     ram_gb: 16
     cores: 4
     disk_gb: 1
-    hours: 0.2
+    hours: 0.14
     timed: clone
     optional: false
-    note: needs PY_VIZ3D (env/install.sh --with-figures-3d); tracer_sections3d also renders its video
+    note: '6 Nov, clone 7929dc3 on a shared machine, beside other test jobs: 497 s, check 7 of 7 records match; needs PY_VIZ3D (env/install.sh --with-figures-3d)'
   - name: paper-figures
     group: paper
     title: Draw the paper's figures
@@ -141,8 +141,9 @@ steps:
     hours: 0.25
     timed: clone
     optional: false
-    note: '713 s with -j 2 (4 Nov clean clone): 7 of 14 byte-identical to the paper''s, 3 more under matplotlib 3.10.8, 3 differ only in the PDF date.
-      The 6 Nov figures (Fig. 2 MM6, Figs. S2 and S3, the lean withheld-slab figure) are not yet in the release'
+    note: '6 Nov, clone 7929dc3 on a shared machine, beside other test jobs: 826 s, check 16 of 16 figures written. 4 Nov clean clone: 713 s; 7 of
+      14 byte-identical to the paper''s, 3 more under matplotlib 3.10.8, 3 differ only in the PDF date. The 6 Nov figures (Fig. 2 MM6, Figs. S2 and
+      S3, the lean withheld-slab figure) are not yet in the release'
   - name: paper-check
     group: paper
     title: Compare every numbers record with the paper's
@@ -373,8 +374,8 @@ steps:
     timed: clone
     optional: false
     note: 'Stops the driver when step 2''s first task is written. 4 Nov from a clone on a shared RTX 6000 Ada: 202 of 202 identical, 3.9 GB of GPU
-      memory at most, 2.9 h with one stop and resume (the paper''s run: 7 min + 1.2 h). The plan asks for the card alone; the 4 Nov run shared the card
-      and was still identical. run_until.py is new (tested today on a small command); the 4 Nov run was stopped the same way by a script.'
+      memory at most, 2.9 h with one stop and resume (the paper''s run: 7 min + 1.2 h). The plan asks for the card alone; the 4 Nov run shared the
+      card and was still identical. run_until.py is new (tested today on a small command); the 4 Nov run was stopped the same way by a script.'
   - name: mri-construction-full
     group: mri-template
     title: Run the whole groupwise construction (8 steps), 3.5 days on one card
@@ -529,11 +530,12 @@ steps:
     gpu_alone: false
     ram_gb: 12
     cores: 8
-    disk_gb: 3
-    hours: 0.3
+    disk_gb: 2
+    hours: 0.8
     timed: clone
     optional: false
-    note: 'Rerun from a clone on 3 Nov (13 min 34 s CPU on a loaded host, 9 GB RAM): identical to the paper''s in every item.'
+    note: 'Rerun from a clone on 6 Nov on an RTX 6000 Ada: 47 min 16 s on a loaded machine (13 min 34 s on 3 Nov), 8.9 GB RAM, 1.2 GB written; check
+      18 of 18 items identical (22 s).'
   - name: reconstruct
     group: blockface
     for: [MF196, MR243, MR249, MR244, MR247, MR248]
@@ -723,8 +725,8 @@ steps:
     hours: 0.2
     timed: clone
     optional: false
-    note: 'Tested 6 Nov on an RTX 4000 Ada (the record ran on an RTX 6000 Ada): 12 min 34 s (4 min on an RTX 6000 Ada in the walkthrough), 2.5
-      GB RAM; start affine identical, warp within tolerance (median 0.0011 mm, 99th percentile 0.040 mm, largest 0.35 mm); its own outline check PASS.'
+    note: 'Tested 6 Nov on an RTX 4000 Ada (the record ran on an RTX 6000 Ada): 12 min 34 s (4 min on an RTX 6000 Ada in the walkthrough), 2.5 GB
+      RAM; start affine identical, warp within tolerance (median 0.0011 mm, 99th percentile 0.040 mm, largest 0.35 mm); its own outline check PASS.'
   - name: register-mri-template
     group: registration
     for: [MF278, MF275, MF282, MR243, MR256, MR249, MR250, MR251, MR253, MR254, MR257, MR261]
@@ -768,9 +770,9 @@ steps:
     hours: 0.2
     timed: clone
     optional: false
-    note: 'Tested 6 Nov on an RTX 4000 Ada (the record ran on an RTX 6000 Ada): 7 min 40 s, 16.1 GiB GPU, 2.9 GB RAM; linear part identical,
-      warp within tolerance (median 0.0001 mm, 99th percentile 0.0017 mm, largest 0.029 mm); it also writes mri/stand_in/, which synthesis reads for
-      a brain without MRI.'
+    note: 'Tested 6 Nov on an RTX 4000 Ada (the record ran on an RTX 6000 Ada): 7 min 40 s, 16.1 GiB GPU, 2.9 GB RAM; linear part identical, warp
+      within tolerance (median 0.0001 mm, 99th percentile 0.0017 mm, largest 0.029 mm); it also writes mri/stand_in/, which synthesis reads for a
+      brain without MRI.'
   - name: direct-placement
     group: registration
     for: [MF196, MF204, MR244, MR247, MR248, MR263, MR273]
@@ -837,11 +839,12 @@ steps:
     ram_gb: 4
     cores: 8
     disk_gb: 1
-    hours: 0.25
-    timed: docs
+    hours: 0.15
+    timed: clone
     optional: false
     note: 'The paper has no registration to the final blockface template: its members (all 21) go through their own construction warp. This is the
-      walkthrough''s demonstration on MF8 (docs/walkthrough.md: 15 min, 19 GB GPU, check passed); not rerun today.'
+      walkthrough''s demonstration on MF8. Tested 6 Nov on an RTX 6000 Ada: 6 min 10 s with its qc, 3.0 GB RAM; QC PASS (outline PASS, scales 1.058,
+      0 folds).'
 
   # ---- synthesis
   - name: synthesis-prepare
@@ -865,7 +868,8 @@ steps:
     hours: 0.03
     timed: clone
     optional: false
-    note: 85 s for MM2 (4 Nov clone); seam.json is not compared (it records paths and times)
+    note: '6 Nov, clone 7929dc3 on a shared machine, these lines verbatim: 13 of 13 identical, 50 to 98 s, 4.7 GB RAM for MM2; seam.json is not compared
+      (it records paths and times)'
   - name: synthesis-prepare
     group: synthesis
     for: without_mri
@@ -887,7 +891,7 @@ steps:
     hours: 0.01
     timed: clone
     optional: false
-    note: 27 s for MF8 (4 Nov clone)
+    note: '6 Nov, clone 7929dc3 on a shared machine, these lines verbatim: 8 of 8 identical, 22 to 76 s, 1.2 GB RAM for MF8'
   - name: synthesis-complete
     group: synthesis
     for: with_mri
@@ -910,8 +914,8 @@ steps:
     hours: 0.01
     timed: clone
     optional: false
-    note: 20 to 32 s; identical on the 48 GB RTX 6000 Ada of record; a 20 GB RTX 4000 Ada was not tested (a network on another card model can differ
-      in the last bits)
+    note: '6 Nov, clone 7929dc3, an RTX 6000 Ada, these lines verbatim: 13 of 13 identical, 16 to 27 s, 3.5 GB RAM (MR252); a 20 GB RTX 4000 Ada was
+      not tested (a network on another card model can differ in the last bits)'
   - name: synthesis-complete
     group: synthesis
     for: without_mri
@@ -933,7 +937,7 @@ steps:
     hours: 0.01
     timed: clone
     optional: false
-    note: 27 s for MF8 (4 Nov clone); a 20 GB RTX 4000 Ada was not tested
+    note: '6 Nov, clone 7929dc3, an RTX 6000 Ada, these lines verbatim: 8 of 8 identical, 16 to 27 s; a 20 GB RTX 4000 Ada was not tested'
 
   # ---- blockface-template
   - name: bf-template-members
@@ -958,6 +962,59 @@ steps:
     timed: clone
     optional: false
     note: 'Tested 6 Nov: 5 min 1 s, 1.3 GB RAM, 0.96 GB written; check 294 of 294 and 8 of 8 identical (1 min).'
+  - name: bf-template-first-stage
+    group: blockface-template
+    title: Blockface template, first stage (MMORF steps 1 to 7 at 0.5 mm)
+    inputs: $LINC_WORK/build_blockface_template/canon_tpl; the affine stage of record ($LINC_PRODUCTS/bftemplate/d2b/plan_a_affine); the patched driver
+      (LINC_BLOCKFACE_DRIVER), MMORF (LINC_MMORF_EXE)
+    outputs: $LINC_WORK/build_blockface_template/runs/d2b/ (out/nln_step_01 to 07 with their warps, Jacobians, bias fields and templates)
+    run: $PY reproduce/templates/build_blockface_template.py --from run-plan-a --to plan-a-mmorf
+    check: W=$LINC_WORK/build_blockface_template/runs/d2b/out && R=$LINC_PRODUCTS/bftemplate/d2b/tc/d2b/out && I=nln_step_07/iteration_03 && $PY tools/compare_mri_build.py
+      run $W $R --parts nln_step_01 nln_step_02 nln_step_03 nln_step_04 nln_step_05 --min 6575 && $PY tools/compare_registration.py image $W/$I/nln_template_07_03_scalar_mod_01_brain.nii.gz
+      $R/$I/nln_template_07_03_scalar_mod_01_brain.nii.gz && $PY tools/compare_registration.py image $W/$I/nln_template_07_03_scalar_mod_02_brain.nii.gz
+      $R/$I/nln_template_07_03_scalar_mod_02_brain.nii.gz && $PY tools/compare_registration.py warp $W/$I/average_warp.nii.gz $R/$I/average_warp.nii.gz
+      --median-mm 0.01 --p99-mm 0.05
+    expect: 'steps 1 to 5 identical (6,575 files); steps 6 and 7 within tolerance: the two 7:3 templates correlate with the paper''s at r >= 0.9999,
+      the average warp within a median of 0.01 mm and a 99th percentile of 0.05 mm'
+    needs: [bf-template-members]
+    gpu_gb: 10
+    gpu_model: RTX 6000 Ada
+    gpu_alone: true
+    ram_gb: 64
+    cores: 8
+    disk_gb: 120
+    hours: 9
+    timed: estimated
+    optional: false
+    note: 'Rerun with this code on 4-5 Nov on an RTX 6000 Ada (not from a clone): steps 1 to 5 identical (this check: 6,575 of 6,575 files, 43 min
+      on a loaded machine), steps 6 and 7 within its tolerance (7:3 templates r 0.9999999 and 0.9999997; average warp median 0.0014 mm, 99th percentile
+      0.008 mm). 12 h 12 min on a shared card, about 8.5 h on a free one; MMORF peaked at 8.2 GB for its 8 tasks; 120 GB on disk. On the paper''s
+      card model only (the identity was shown there), and alone on the card: MMORF once failed to allocate its memory beside other jobs. From a clone
+      on 6 Nov, on an RTX 6000 Ada: the set-up steps (2 min) and MMORF until step 1, iteration 1 was written (about 7 min), then stopped: the run
+      folder (13 files) and that iteration (438 of 438 files) identical to the paper''s; the affine stage as on 4 Nov (the analysis''s backup folders
+      absent, a backup of TPL''s cost mask and two run records differ, nothing reads them).'
+  - name: bf-template-step8
+    group: blockface-template
+    title: Blockface template, step 8 at 0.25 mm and the final average
+    inputs: the first stage ($LINC_WORK/build_blockface_template/runs/d2b); the members at 0.25 mm (made here); the precision rule of record
+    outputs: $LINC_WORK/build_blockface_template/runs/d2bs8/, final/ (d2bs8_grey, d2bs8_b0, masks), final_run113/ (the published files, member warps)
+    run: $PY reproduce/templates/build_blockface_template.py --from s8-frame --to member-warps
+    check: W=$LINC_WORK/build_blockface_template/final && R=$LINC_PRODUCTS/bftemplate/d2b/final_s8 && $PY tools/compare_registration.py image $W/d2bs8_b0.nii.gz
+      $R/d2bs8_b0.nii.gz && $PY tools/compare_registration.py image $W/d2bs8_grey.nii.gz $R/d2bs8_grey.nii.gz
+    expect: the published template's blockface and b0 channels correlate with the paper's at r >= 0.9999 (a tolerance never tested)
+    needs: [bf-template-first-stage]
+    gpu_gb: 44
+    gpu_model: RTX 6000 Ada
+    gpu_alone: true
+    ram_gb: 96
+    cores: 8
+    disk_gb: 200
+    hours: 20
+    timed: estimated
+    optional: true
+    note: 'Never rerun: MMORF''s step 8 took 59.5 task-hours on three cards in the paper (about 17 h on one card, estimated), plus about 2.5 h of
+      CPU steps; its memory and disk are estimates. Starts from this run''s first stage, which already differs from the paper''s at steps 6 and 7,
+      so it cannot be identical.'
 
   # ---- link
   - name: link
@@ -981,8 +1038,137 @@ steps:
     hours: 0.3
     timed: clone
     optional: false
-    note: 'Tested 6 Nov on an RTX 6000 Ada (the record ran on an RTX 3090): 13 min 18 s, 3.4 GB RAM; linear parts identical; maps within a
-      median of 0.0044 and 0.0075 mm, 99th percentiles 0.077 and 0.094 mm, largest 0.84 and 0.86 mm.'
+    note: 'Tested 6 Nov on an RTX 6000 Ada (the record ran on an RTX 3090): 13 min 18 s, 3.4 GB RAM; linear parts identical; maps within a median
+      of 0.0044 and 0.0075 mm, 99th percentiles 0.077 and 0.094 mm, largest 0.84 and 0.86 mm.'
+  - name: link-consistency
+    group: link
+    title: The link's consistency check (the registrations composed through the brains)
+    inputs: the brains' registrations of record ($LINC_RECORDS/data, read only) and the members' construction warps of record; this run's link (link/sym);
+      the one-way link of record (greedy)
+    outputs: $LINC_WORK/build_link/link/s5_compose_d2bs8_r05_guard/, s5_tpl_d2bs8_r05_guard/, s5_compare_d2bs8.json
+    run: LINC_DATA=$LINC_RECORDS/data $PY reproduce/templates/build_link.py --from greedy-link --to compare
+    check: 'W=$LINC_WORK/build_link/link && R=$LINC_PRODUCTS/bftemplate/cv && $PY tools/compare_mri_build.py run $W/s5_compose_d2bs8_r05_guard $R/s5_compose_d2bs8_r05_guard
+      --parts link_ras_disp.nii.gz template_mask_on_mri_grid.nii.gz --min 2 && $PY tools/compare_mri_build.py run $W/s5_tpl_d2bs8_r05_guard $R/s5_tpl_d2bs8_r05_guard
+      --parts link_ras_disp.nii.gz link_spread_mm.nii.gz template_mask_on_mri_grid.nii.gz --min 3 && $PY -c "import json, sys; a, b = (json.load(open(f))[''composition_vs_direct_sym_mm'']
+      for f in sys.argv[1:]); d = max(abs(a[k] - b[k]) for k in (''p50'', ''p95'')); print(''composition against the link: median %.3f mm, 95th percentile
+      %.3f mm (paper %.3f and %.3f mm); largest change %.4f mm (at most 0.05)'' % (a[''p50''], a[''p95''], b[''p50''], b[''p95''], d)); sys.exit(d
+      > 0.05)" $W/s5_compare_d2bs8.json $R/s5_compare_d2bs8.json'
+    expect: the composition identical to the paper's (its displacement and mask; the MRI template's member in full), and the composition against the
+      link within 0.05 mm of the paper's (median and 95th percentile)
+    needs: [link]
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 24
+    cores: 40
+    disk_gb: 1
+    hours: 0.15
+    timed: clone
+    optional: false
+    note: 'Reads the brains'' registrations of record from the records (read only): a clone''s xfm/ holds only its own runs'' entries, and without
+      them compose takes every brain for one without MRI and stops on a missing file. Its 8 workers use about 5 threads each. Tested 6 Nov: 6 min
+      11 s; composition identical (its spread differs at a few voxels by about 1e-7 mm, as reproduce/templates/link.md says for the default member
+      order); median 0.311 and 95th percentile 1.010 mm against the paper''s 0.312 and 1.005 mm.'
+  - name: atlas-NMT
+    group: link
+    title: Register the MRI template to NMT v2 (symmetric) (affine start, then symmetric)
+    inputs: the MRI template of record; the published template's image and mask (/data/_lcn_src/templates/reference, not redistributed)
+    outputs: /build_link/mri/tc/atlas_v2/NMT_v2.0_sym/ (prep.json, run/ with both maps, score.json); /build_link/numbers/atlas_final_v2_NMT_v2.0_sym.json
+    run: LINC_NUMBERS=/build_link/numbers  reproduce/templates/build_link.py --from atlas-affine-NMT_v2.0_sym --to atlas-score-NMT_v2.0_sym
+    check: '$PY -c "import json, sys; a, b = (json.load(open(f)) for f in sys.argv[1:3]); k = sorted(b[''mask_dice'']); d = max(abs(a[''mask_dice''][x]
+      - b[''mask_dice''][x]) for x in k); f = max(a[''folds_fraction''].values()); print(sys.argv[3] + '': mask Dice '' + '' and ''.join(''%.4f''
+      % a[''mask_dice''][x] for x in k) + '' (paper '' + '' and ''.join(''%.4f'' % b[''mask_dice''][x] for x in k) + ''); largest change %.4f (at
+      most 0.005); fraction of folded voxels %g'' % (d, f)); sys.exit(d > 0.005 or f > 0)" $LINC_WORK/build_link/mri/tc/atlas_v2/NMT_v2.0_sym/score.json
+      $LINC_PRODUCTS/mri/tc/atlas_v2/NMT_v2.0_sym/score.json NMT_v2.0_sym'
+    expect: the mask Dice in both directions within 0.005 of the paper's, and no folded voxel (ANTs gives a different affine start on every run, so
+      the maps cannot be identical)
+    needs: []
+    gpu_gb: 26
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 4
+    cores: 8
+    disk_gb: 2
+    hours: 0.15
+    timed: clone
+    optional: false
+    note: 'Tested 6 Nov on an RTX 6000 Ada: 5 min 28 s (affine 36 s, solve 4 min 20 s, score 31 s), 23.5 GiB GPU peak; mask Dice 0.9775 and 0.9797
+      against the paper''s 0.9788 and 0.9809. Its record goes to the link''s work folder, not to $LINC_NUMBERS, so that make check is not given a
+      record without a reference (make numbers writes atlas_final_v2_summary from the records).'
+  - name: atlas-INIA19
+    group: link
+    title: Register the MRI template to INIA19 (affine start, then symmetric)
+    inputs: the MRI template of record; the published template's image and mask (/data/_lcn_src/templates/reference, not redistributed)
+    outputs: /build_link/mri/tc/atlas_v2/INIA19/ (prep.json, run/ with both maps, score.json); /build_link/numbers/atlas_final_v2_INIA19.json
+    run: LINC_NUMBERS=/build_link/numbers  reproduce/templates/build_link.py --from atlas-affine-INIA19 --to atlas-score-INIA19
+    check: '$PY -c "import json, sys; a, b = (json.load(open(f)) for f in sys.argv[1:3]); k = sorted(b[''mask_dice'']); d = max(abs(a[''mask_dice''][x]
+      - b[''mask_dice''][x]) for x in k); f = max(a[''folds_fraction''].values()); print(sys.argv[3] + '': mask Dice '' + '' and ''.join(''%.4f''
+      % a[''mask_dice''][x] for x in k) + '' (paper '' + '' and ''.join(''%.4f'' % b[''mask_dice''][x] for x in k) + ''); largest change %.4f (at
+      most 0.005); fraction of folded voxels %g'' % (d, f)); sys.exit(d > 0.005 or f > 0)" $LINC_WORK/build_link/mri/tc/atlas_v2/INIA19/score.json
+      $LINC_PRODUCTS/mri/tc/atlas_v2/INIA19/score.json INIA19'
+    expect: the mask Dice in both directions within 0.005 of the paper's, and no folded voxel (ANTs gives a different affine start on every run, so
+      the maps cannot be identical)
+    needs: []
+    gpu_gb: 30
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 4
+    cores: 8
+    disk_gb: 2
+    hours: 0.15
+    timed: clone
+    optional: false
+    note: 'Tested 6 Nov on an RTX 6000 Ada: 7 min 11 s (affine 15 s, solve 6 min 38 s, score 18 s), 27.8 GiB GPU peak; mask Dice 0.9777 and 0.9769
+      against the paper''s 0.9779 and 0.9771. Its record goes to the link''s work folder, not to $LINC_NUMBERS, so that make check is not given a
+      record without a reference (make numbers writes atlas_final_v2_summary from the records).'
+  - name: atlas-CIVM-R
+    group: link
+    title: Register the MRI template to CIVM-R (affine start, then symmetric)
+    inputs: the MRI template of record; the published template's image and mask (/data/_lcn_src/templates/reference, not redistributed)
+    outputs: /build_link/mri/tc/atlas_v2/CIVM-R/ (prep.json, run/ with both maps, score.json); /build_link/numbers/atlas_final_v2_CIVM-R.json
+    run: LINC_NUMBERS=/build_link/numbers  reproduce/templates/build_link.py --from atlas-affine-CIVM-R --to atlas-score-CIVM-R
+    check: '$PY -c "import json, sys; a, b = (json.load(open(f)) for f in sys.argv[1:3]); k = sorted(b[''mask_dice'']); d = max(abs(a[''mask_dice''][x]
+      - b[''mask_dice''][x]) for x in k); f = max(a[''folds_fraction''].values()); print(sys.argv[3] + '': mask Dice '' + '' and ''.join(''%.4f''
+      % a[''mask_dice''][x] for x in k) + '' (paper '' + '' and ''.join(''%.4f'' % b[''mask_dice''][x] for x in k) + ''); largest change %.4f (at
+      most 0.005); fraction of folded voxels %g'' % (d, f)); sys.exit(d > 0.005 or f > 0)" $LINC_WORK/build_link/mri/tc/atlas_v2/CIVM-R/score.json
+      $LINC_PRODUCTS/mri/tc/atlas_v2/CIVM-R/score.json CIVM-R'
+    expect: the mask Dice in both directions within 0.005 of the paper's, and no folded voxel (ANTs gives a different affine start on every run, so
+      the maps cannot be identical)
+    needs: []
+    gpu_gb: 28
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 4
+    cores: 8
+    disk_gb: 2
+    hours: 0.1
+    timed: clone
+    optional: false
+    note: 'Tested 6 Nov on an RTX 6000 Ada: 4 min 31 s (affine 21 s, solve 3 min 44 s, score 26 s), 25.1 GiB GPU peak; mask Dice 0.9781 and 0.9809
+      against the paper''s 0.9779 and 0.9805. Its record goes to the link''s work folder, not to $LINC_NUMBERS, so that make check is not given a
+      record without a reference (make numbers writes atlas_final_v2_summary from the records).'
+  - name: template-registry
+    group: link
+    title: The template-level entries of the transform registry (both directions of each)
+    inputs: this run's link maps and its three registrations to published templates
+    outputs: /build_link/xfm/ (8 entries, as $LINC_TEMPLATE/xfm/ in the released template)
+    run: reproduce/templates/build_link.py --step registry
+    check: X=$LINC_WORK/build_link/xfm && n=$(ls -d $X/*__to__* | wc -l) && echo "$n template-level entries" && [ $n -eq 8 ] && $PY tools/compare_registration.py
+      entry $X/mri-template__to__bf-template $LINC_TEMPLATE/xfm/mri-template__to__bf-template && $PY tools/compare_registration.py entry $X/bf-template__to__mri-template
+      $LINC_TEMPLATE/xfm/bf-template__to__mri-template
+    expect: 8 entries; the link's two with their linear part identical and their maps within a median of 0.05 mm and a 99th percentile of 0.5 mm of
+      the released entries (the published templates' entries follow each run's ANTs start, so their atlas steps check them by Dice)
+    needs: [link, atlas-NMT, atlas-INIA19, atlas-CIVM-R]
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 8
+    cores: 2
+    disk_gb: 2
+    hours: 0.02
+    timed: clone
+    optional: false
+    note: 'Tested 6 Nov: 30 s; 8 entries; the link''s maps median 0.0044 and 0.0075 mm, 99th percentiles 0.077 and 0.094 mm from the released ones.'
 
   # ---- histology
   - name: histology
@@ -1052,8 +1238,8 @@ steps:
     timed: estimated
     optional: false
     note: 'Never rerun whole from a clone. The tables are the hand-made ones the paper''s run read ($LINC_RAW/match_tables_hand, a line in env/lab.sh):
-      today the first stage (match) of MM3 gave 53 of 53 matched photographs identical to the paper''s, in 62 s. Time scaled from MM2 (MM1 has 97
-      components).'
+      today the first stage (match) gave all matched photographs identical to the paper''s, 97 of 97 for MM1 and 53 of 53 for MM3, about 1 minute
+      each. Time scaled from MM2 (MM1 has 97 components).'
   - name: histology
     group: histology
     for: [MF191]
@@ -1142,9 +1328,10 @@ steps:
     cores: 16
     disk_gb: 1
     hours: 0.15
-    timed: estimated
+    timed: clone
     optional: false
-    note: 'Not yet rerun from a clone. The paper''s run: 310 s.'
+    note: 'Today from a clone: 10 of 10 identical, 329 s. With the R-058 table (num_MR243_r058c.txt) instead, 9 of 10 labels differ by 1 to 3,213
+      voxels: the paper''s interpolation read the hand-made table.'
   - name: labels-interpolate
     group: labels
     for: [MR256]
@@ -1165,9 +1352,9 @@ steps:
     cores: 16
     disk_gb: 1
     hours: 0.3
-    timed: estimated
+    timed: clone
     optional: false
-    note: 'Not yet rerun from a clone. The paper''s run: 746 s.'
+    note: 'Today from a clone: 9 of 9 identical, 1076 s (ITK at 16 threads on a loaded node; the paper''s run: 746 s).'
   - name: labels-interpolate
     group: labels
     for: [MF191]
@@ -1188,9 +1375,9 @@ steps:
     cores: 16
     disk_gb: 1
     hours: 0.1
-    timed: estimated
+    timed: clone
     optional: false
-    note: 'Not yet rerun from a clone. The paper''s run: 147 s.'
+    note: 'Today from a clone: 10 of 10 identical, 216 s (the paper''s run: 147 s).'
   - name: labels-carry
     group: labels
     for: [MR243]
@@ -1294,10 +1481,11 @@ steps:
     ram_gb: 16
     cores: 16
     disk_gb: 1
-    hours: 0.2
-    timed: clone
+    hours: 1
+    timed: estimated
     optional: false
-    note: Not yet rerun from a clone. Writes its own numbers folder, so it can run beside make numbers, which writes the same records into $LINC_NUMBERS.
+    note: Running from a clone since 15:23, not finished at 15:50 (16 cores, loaded node); result to follow. Writes its own numbers folder, so it
+      can run beside make numbers, which writes the same records into $LINC_NUMBERS.
 
   # ---- training
   - name: training-segment-mri-brainmask
@@ -1319,7 +1507,7 @@ steps:
     hours: 2
     timed: docs
     optional: true
-    note: byte-identical once (4 Nov, on an RTX 6000 Ada); other card models and the other three segmentation models were not retrained
+    note: byte-identical once (4 Nov, an RTX 6000 Ada); other card models and the other three segmentation models were not retrained
   - name: training-synthesis
     group: training
     title: Train the synthesis network again (the 13 brains with MRI)
@@ -1338,4 +1526,4 @@ steps:
     hours: 1
     timed: docs
     optional: true
-    note: 'retrained once (on an RTX 6000 Ada): last-10-epoch loss within 0.06 %, MF5''s synthesized tissue r = 0.95 against the released network (docs/complete.md)'
+    note: 'retrained once (an RTX 6000 Ada): last-10-epoch loss within 0.06 %, MF5''s synthesized tissue r = 0.95 against the released network (docs/complete.md)'
