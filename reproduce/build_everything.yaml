@@ -1126,11 +1126,11 @@ steps:
     group: labels
     for: [MR243]
     title: Interpolate the labels between sections, from the paper's pushed labels
-    inputs: the paper's pushed labels (labels/push_tracer_r058d); the registered sections of record; the regions; the match table of the labels
+    inputs: the paper's pushed labels (labels/push_tracer_r058d); the registered sections of record; the regions; the hand-made match table
     outputs: $LINC_WORK/labels/{id}/blockface/{id}_*_bfnative_L2_demons.nii.gz
     run: $PY cli/linc-labels interpolate --subject {id} --labels $LINC_PRODUCTS/labels/push_tracer_r058d/{id}/{id}_*_bfnative_L2.nii.gz --registrations
       $LINC_PRODUCTS/data_arm_preinp/sub-{id}/blockface/06_histo2bf/tirl --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --match-table
-      $LINC_PRODUCTS/labels/match_tables/num_{id}_r058c.txt --grid $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface_L2.nii.gz --out $LINC_WORK/labels/{id}/blockface
+      $LINC_RAW/match_tables_hand/num_{id}.txt --grid $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface_L2.nii.gz --out $LINC_WORK/labels/{id}/blockface
     check: $PY tools/compare_nifti.py $LINC_WORK/labels/{id}/blockface $LINC_PRODUCTS/labels/tracer_v2/{id} $(ls $LINC_PRODUCTS/labels/tracer_v2/{id}
       | grep -E '^{id}_.*_bfnative_L2_demons\.nii\.gz$')
     expect: every interpolated label identical to the paper's
