@@ -38,19 +38,19 @@ export LINC_WORK ?= $(OUT)/work
 export PYTHONNOUSERSITE ?= 1
 
 NUMBERS_LINC := \
-  bf_camera_exif bf_cohort bf_sanity bf_spacing_used bf_species bf_template_metrics_d2b \
-  d2_s2_validation_prod_s125 precision_weights_b1_d2b_s8 r1_edge_summary route_test_1c \
+  bf_camera_exif bf_cohort bf_sanity bf_spacing_used bf_template_metrics_d2b \
+  precision_weights_b1_d2b_s8 r1_edge_summary route_test_1c \
   atlas_final_v2_summary fig_histology_simple histo_tube_landmarks \
   mm_mri_check_r054 mri_recipe registration_qc_histo2bf_20261001 s5_link_d2bs8 s5_link_regions_d2bs8 table1_rebuild \
-  table_specimens_check_r054 tracer_sections_r054 tracer_sections_r058d tracer_template_current_all tube_mf8_check_r054 tube_offsets_r054 \
+  tracer_sections_r054 tracer_sections_r058d tube_mf8_check_r054 tube_offsets_r054 \
   s1_segmentation_r057 s1_perbrain_r057 s1_photographs_r068b bf_spacing_summary_r073 bf_step_groups_r073 bf_tubes_per_brain_r073 \
   blockface_params_r073 registration_params_r073 tracer_label_volumes_r058d tracer_alic_topography_r058d r060_target_comparison \
   lgnstn_targets_r060c mf8_s46_drop_r068 \
   tracer_sections_v2 tracer_connected_v2c tracer_label_volumes_v2c tracer_alic_topography_v2c tracer_interp_accounting_v2 \
   tracer_placement_v2c tracer_template_v2_all
-NUMBERS_MRI := variants_leave_self_out_rebuild_fa025 variability_rebuild_rb_final variability_four_brains_r061 lobo_t2_rebuild lobo_multichannel_cost_r061 \
+NUMBERS_MRI := variants_leave_self_out_rebuild_fa025 variability_four_brains_r061 lobo_t2_rebuild \
   labels_overlap_current lgnstn_geometry_current \
-  lgnstn_model_agreement_r059 lgnstn_model_loso_r059 lgnstn_b0_visibility_r059 lgnstn_midplane_planes_r059 r057_mri_facts_b
+  lgnstn_b0_visibility_r059 lgnstn_midplane_planes_r059 r057_mri_facts_b
 NUMBERS_TIRL := histo_pixel_sizes_r057
 NUMBERS_COMPLETION := d3_sigma2_pred d3_methods d3_predicted_share \
   d3p_vs_d3_pseudo d3p_vs_d3_pseudo_prod r057_missing_extent r057_s1_synthesis lgnstn_budget_r059
@@ -58,13 +58,12 @@ NUMBERS_GPU := d3_domain_shift d3_domain_shift_prod
 # the segmentation models' records (Supplementary S5, Table S8): CPU, env/deep.yml (torch counts the parameters); bf_mask2d ~6 min
 NUMBERS_SEGMENT := segmodels_mri_brainmask_2026-11 segmodels_bf_mask2d_2026-11 segmodels_bf_mask3d_2026-11 segmodels_bf_holes_2026-11
 
-FIGURES_MRI := template pipeline variability link tracer s_tracer_rules tracer_pathways
+FIGURES_MRI := template pipeline variability link tracer
 FIGURES_LINC := reconstruction bf_template alignment_comparison
 FIGURES_COMPLETION := s_synthesis_depth s_synthesis_gallery lgnstn
 FIGURES := $(FIGURES_MRI) $(FIGURES_LINC) $(FIGURES_COMPLETION) histology s_tracer_fidelity tracer_sections3d
-FIGURES_3D := tracer_3d                                  # optional (PY_VIZ3D): not in `make figures`; `make tracer_3d`
 
-.PHONY: all numbers numbers-gpu numbers-figures check test figures $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_GPU) $(FIGURES) $(FIGURES_3D)
+.PHONY: all numbers numbers-gpu numbers-figures check test figures $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_GPU) $(FIGURES)
 
 all: numbers figures check
 
@@ -72,20 +71,15 @@ numbers: $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(
 
 numbers-gpu: $(NUMBERS_GPU)
 
-# the figures that also write a numbers record: `make check` needs them (tracer_3d: env/install.sh --with-figures-3d)
-numbers-figures: tracer tracer_pathways alignment_comparison tracer_3d tracer_sections3d
+# the figures that also write a numbers record: `make check` needs them (tracer_sections3d: env/install.sh --with-figures-3d)
+numbers-figures: tracer alignment_comparison tracer_sections3d
 
-$(filter-out mm_mri_check_r054 bf_cohort bf_species s1_perbrain_r057 s1_segmentation_r057 r060_target_comparison lgnstn_targets_r060c,$(NUMBERS_LINC)):
+$(filter-out mm_mri_check_r054 bf_cohort s1_perbrain_r057 s1_segmentation_r057 r060_target_comparison lgnstn_targets_r060c,$(NUMBERS_LINC)):
 	$(PY) numbers/$@.py
 
 bf_cohort:
 	@if [ -z "$(LINC_PARTICIPANTS)" ]; then echo "SKIPPED bf_cohort: set LINC_PARTICIPANTS (the LINC participants.tsv)"; \
 	else LINC_PARTICIPANTS="$(LINC_PARTICIPANTS)" $(PY) numbers/$@.py; fi
-
-# reads the regenerated bf_cohort, so it needs LINC_PARTICIPANTS as bf_cohort does (skipped with it)
-bf_species: bf_cohort
-	@if [ -z "$(LINC_PARTICIPANTS)" ]; then echo "SKIPPED bf_species: set LINC_PARTICIPANTS (it reads bf_cohort)"; \
-	else $(PY) numbers/$@.py; fi
 
 # reads the regenerated bf_cohort, bf_camera_exif and bf_spacing_used, so it needs LINC_PARTICIPANTS as bf_cohort does
 s1_perbrain_r057: bf_cohort bf_camera_exif bf_spacing_used
@@ -169,21 +163,7 @@ tracer_sections3d:
 	@if [ -z "$(PY_VIZ3D)" ]; then echo "SKIPPED tracer_sections3d: set PY_VIZ3D (env/viz3d.yml; install.sh --with-figures-3d)"; \
 	else $(PY_VIZ3D) figures/$@.py --video --out $(OUT)/figures/$@.png; fi
 
-# the earlier form of the tracer figure (the connected pathways): the four-panel form always (record fig_tracer_pathways_panels); with PY_VIZ3D the three composite
-# stills render (no in-scene key, large letters; record fig_tracer_3d_stills) and the composite follows (record
-# fig_tracer_pathways); `make tracer_3d` renders the full scene with its two rotation videos for the supplement
-tracer_pathways:
-	$(PY_MRI) figures/tracer_pathways.py --layout panels --out $(OUT)/figures/tracer_pathways_panels.png
-	@if [ -z "$(PY_VIZ3D)" ]; then echo "SKIPPED the composite of tracer_pathways: set PY_VIZ3D (env/viz3d.yml) for the 3D stills; the four-panel form is drawn"; \
-	else $(PY_VIZ3D) figures/tracer_3d.py --for-composite --views oblique lateral glass --no-video --record fig_tracer_3d_stills --out $(OUT)/figures/tracer_3d_stills && \
-	$(PY_MRI) figures/tracer_pathways.py --stills $(OUT)/figures/tracer_3d_stills_oblique.png $(OUT)/figures/tracer_3d_stills_lateral.png $(OUT)/figures/tracer_3d_stills_glass.png --out $(OUT)/figures/tracer_pathways.png; fi
-
-# the 3D tracer scene (Fig. 10 a, b and the rotation video) renders headless in env/viz3d.yml: skipped with a message when PY_VIZ3D is unset
-tracer_3d:
-	@if [ -z "$(PY_VIZ3D)" ]; then echo "SKIPPED tracer_3d: set PY_VIZ3D (env/viz3d.yml; install.sh --with-figures-3d)"; \
-	else $(PY_VIZ3D) figures/tracer_3d.py --glass-video --out $(OUT)/figures/tracer_3d; fi
-
-$(filter-out pipeline tracer_pathways,$(FIGURES_MRI)):
+$(filter-out pipeline,$(FIGURES_MRI)):
 	$(PY_MRI) figures/$@.py --out $(OUT)/figures/$@.png
 
 # the pipeline figure prints the cohort's size from the regenerated bf_cohort: skipped with it when LINC_PARTICIPANTS is unset

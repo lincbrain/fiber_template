@@ -92,38 +92,6 @@ brains passes that frame's spacing with `--regions-spacing-um VX VZ` (the brain'
 registration to the template, whereas the paper registered the T2 template to each blockface directly (step 3): check the pieces on a
 few photographs before registering.
 
-## The test of the registration settings (Supplementary S4, Table S7)
-
-Eight single changes to the TIRL settings were tested against the settings of record (C0) on the same 284 tube-bearing pieces of
-the six histology brains, scored by the offset of the hidden marker tubes and by tissue Dice, under a decision rule fixed before
-the runs. None was adopted. `configs/histology_sweep.yaml` holds each setting as its change to `configs/histology.yaml`:
-
-| setting | change (record) | key under `tirl.config` |
-|---|---|---|
-| C0 | none: the settings of record | |
-| C1 | regularization weight 0.15 (0.30) | `regparams.nonlinear.regweight` |
-| C2 | regularization weight 0.60 (0.30) | `regparams.nonlinear.regweight` |
-| C3 | affine scaling bounds 0.90-1.10 (0.95-1.05) | `regparams.init.affine.lb`, `.ub` |
-| C4 | rotation search step 2 degrees (5) | `regparams.rotsearch.coarse` |
-| C5 | tissue masks in the similarity: automask threshold 0.02 on both images (none) | `histology.mask.automask`, `block.mask.automask` |
-| C6 | MIND neighborhood truncated at 3.0 (1.5) | `regparams.nonlinear.truncate` |
-| C8 | regularization weight 0.40 (0.30), chosen after the C1-C6 result | `regparams.nonlinear.regweight` |
-| C9 | regularization weight 0.45 (0.30), chosen after the C1-C6 result | `regparams.nonlinear.regweight` |
-
-To register one piece with one setting:
-
-    python -m linc.histology.sweep C2 > histology_C2.yaml
-    cli/linc-histology register --config histology_C2.yaml --out <folder> --pieces <piece>
-
-With 12 threads per piece this reproduces the test's transforms exactly (checked for C2 on one MF5 piece, 1 Nov 2026). The test's
-moving images were made from tissue masks with the corrected masking step on every piece. This release's `masks` step makes the
-original masks (the correction is not in this snapshot yet), so pass corrected masks to `prepare` with `--masks`. The fixed images
-are those of record (the blockface with the marker tubes inpainted).
-
-The results are the reference records `tirl_sweep_r058` (C0-C6) and `tirl_sweep_r058b` (C0-C6, C8, C9) in `reproduce/reference`.
-This release does not regenerate them: their scoring reads the test's 2,556 TIRL outputs (284 pieces x 9 settings), which are not
-released (`configs/numbers_exceptions.yaml`).
-
 ## Known issue (TIRL 3.6.2)
 
 The affine stage can stop with nlopt's `ValueError: bounds 0 fail -1 <= -1 <= 1`. When a diagonal entry of the affine matrix ends a

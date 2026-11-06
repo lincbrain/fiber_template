@@ -1,4 +1,4 @@
-# Products of record read by the figure scripts (reproduce/figures/pipeline.py, tracer.py, s_tracer_rules.py).
+# Products of record read by the figure scripts (reproduce/figures/pipeline.py, tracer.py).
 # Paths are relative to $LINC_PRODUCTS (linc/paths.py products()). For validation, LINC_PRODUCTS = the analysis project, so these are
 # its own folders; a data release remaps them here only.
 
@@ -27,7 +27,7 @@ photographs: data/sub-MR252/blockface/00_slices                      # SLICE_<k>
 photo_masks: data/sub-MR252/blockface/01_brainmask/01_final          # SLICE_<k>.png
 histology_piece: data_arm_final/sub-MR252/blockface/06_histo2bf/tirl/mr252FS_c11_s28nDF_0000   # moving4_nonlinear_rgb.png, fixed.png
 
-# --- the tracer labels figure and its rules companion (reproduce/figures/tracer.py, s_tracer_rules.py) ---
+# --- the tracer labels figure (reproduce/figures/tracer.py) ---
 tracer_template: labels/tracer_template_r058d                       # <S>/<S>_<class>_mri-template{,_density}.nii.gz: the final tracer labels
 template_fa: template/mri/linc_mri_FA.nii.gz
 sarm_level6: mri/tc/atlas_v2/NMT_v2.0_sym/SARM_level6_in_template.nii.gz    # SARM level 6 carried from NMT v2 (internal capsule = 50)

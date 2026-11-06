@@ -26,6 +26,8 @@ $PY cli/linc-register direct-placement --subject MF191 --template-b0 $LINC_TEMPL
 $PY cli/linc-register blockface-template --subject MF191
 ```
 
+The steps and settings of `mri-template` are in `reproduce/templates/b0_to_template.md`.
+
 Each runs on a GPU, and its memory grows with the brain's working grid. `mri` needs 15 to 25 GB, depending on the brain: MM2,
 MM5 and MM8 need more than a 24 GB card has free. `mri-template` needs 12 to 14 GB, `direct-placement` 15 to 17 GB and `blockface-template`
 about 19 GB. Each prints its need and

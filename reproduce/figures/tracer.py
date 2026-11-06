@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """The paper's figure "Tracer labels carried into the template" (--figure main) and its supplementary figure "Two rules for drawing a
-label" (--figure rules; reproduce/figures/s_tracer_rules.py runs it).
+label" (--figure rules).
 
     python reproduce/figures/tracer.py [--out figures/tracer.png]
     python reproduce/figures/tracer.py --figure rules [--out figures/s_tracer_rules.png]

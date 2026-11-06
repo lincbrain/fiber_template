@@ -1,4 +1,4 @@
-# The 3D tracer scene (paper/fig_tracer_3d.py of the analysis; the release's figure script of the same name): pyvista on a headless
+# The 3D tracer scene (reproduce/figures/tracer_sections3d.py): pyvista on a headless
 # VTK (the OSMesa wheel from wheels.vtk.org: no display, no GPU needed) and imageio-ffmpeg for the rotation video. Pinned to the
 # versions that rendered the figure of record (3 Nov 2026). The OSMesa wheel is not on PyPI, so the VTK line needs the extra index:
 #     conda env create -f env/viz3d.yml && conda activate linc-viz3d

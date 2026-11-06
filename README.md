@@ -59,7 +59,7 @@ docs/          one page per stage (install, mri, reconstruct, register, complete
 CONVENTIONS.md brains and names, data layout, spaces and transforms, provenance
 ```
 
-Start with `docs/paper_to_code.md` to find where a part of the paper lives in the code.
+Start with `docs/paper_to_code.md` to find where a part of the paper lives in the code. Questions that come up often are answered in `docs/FAQ.md`.
 
 ## Install
 
@@ -168,6 +168,8 @@ laboratory's collection (MF283 for the paper's MF1, MR252 for MM2; `docs/specime
 The segmentation networks can also be run on their own (`cli/linc-segment`, [`env/deep.yml`]).
 
 ## Reproduce the paper
+
+To run everything, from the photographs and the preprocessed MRI to the numbers and figures, with each step checked against the paper: `reproduce/build_everything.py` (`docs/build_everything.md`, Run it all).
 
 `make test` checks the installation without any data. The other commands need the paper's intermediate products
 (`$LINC_PRODUCTS`, from the data release):

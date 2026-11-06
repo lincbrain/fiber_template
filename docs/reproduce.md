@@ -16,7 +16,7 @@ you need the paper's intermediate products (`$LINC_PRODUCTS`), which come with t
 ```bash
 make numbers          # the numbers records that run on a CPU, into $LINC_NUMBERS (default outputs/numbers)
 make numbers-gpu      # the one record that needs a GPU (env/deep.yml)
-make numbers-figures  # the figures that also write a record; tracer_3d needs env/install.sh --with-figures-3d
+make numbers-figures  # the figures that also write a record; tracer_sections3d needs env/install.sh --with-figures-3d
 make figures          # the paper's figures, into outputs/figures
 make check            # compare the recomputed records with the paper's (reference/), counts exact, floats to 1e-9
 ```
@@ -30,13 +30,13 @@ records: `$PY reproduce/check_numbers.py --ref reproduce/reference <record> ...`
   for example `make figures PY=<linc env>/bin/python`.
 - **Targets that need more than the products:** they are skipped, with a message, when their input is not given:
   - `LINC_PARTICIPANTS`, the LINC participants table (`rawdata/participants.tsv` of the data release): `bf_cohort`, and
-    `bf_species`, `s1_perbrain_r057` and the `pipeline` figure, which read it;
+    `s1_perbrain_r057` and the `pipeline` figure, which read it;
   - `LINC_MODELS`, the network weights: `s1_segmentation_r057`;
   - your copies of NMT v2 and CIVM-R (`configs/targets.yaml`): `r060_target_comparison` and `lgnstn_targets_r060c`;
   - raw data outside the release: `r057_mri_facts_b` and `histo_pixel_sizes_r057` (`LINC_RAW`), `mm_mri_check_r054`
     (`MM_MRI_ARGS`, the ParaVision files, which are not in the data release) and the `histology` figure
     (`HISTOLOGY_ARGS = --jp2-root <source data>/sourcedata`).
-- **One record or figure at a time.** Some records read others (for example, `bf_species` reads `bf_cohort`); the Makefile runs
+- **One record or figure at a time.** Some records read others (for example, `s1_perbrain_r057` reads `bf_cohort`); the Makefile runs
   them in order, so run a record alone only after the records it reads are in `$LINC_NUMBERS`:
 
   ```bash
@@ -103,9 +103,9 @@ the templates correlate at 0.999996 or higher. Whether two runs on one card agre
 
 From a clean clone and an empty numbers folder, with `HISTOLOGY_ARGS` set, `make figures` took about 10 minutes with `-j 2`, on a CPU.
 Compared with the paper's files:
-- **Byte-identical:** `template`, `pipeline`, `variability`, `link`, `histology`, `tracer_pathways`, `s_tracer_fidelity`, `s_tracer_rules`.
+- **Byte-identical:** `template`, `pipeline`, `variability`, `link`, `histology`, `s_tracer_fidelity`.
 - **Byte-identical under matplotlib 3.10.8, the version they were made with:** `reconstruction`, `bf_template`, `alignment_comparison`.
   Under `env/linc.yml`'s 3.11.1, their text is laid out slightly differently.
 - **Identical except for the PDF's creation date, with identical pixels at 200 dpi:** `lgnstn`, `s_synthesis_depth`, `s_synthesis_gallery`.
 
-`tracer_3d`, the 3D panels of Fig. 10, is not part of `make figures` or of this comparison.
+`tracer_sections3d` (`PY_VIZ3D`) is not part of this comparison.

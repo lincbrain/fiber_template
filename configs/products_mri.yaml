@@ -18,7 +18,6 @@ push_tracer_r058d: labels/push_tracer_r058d           # the per-density-class sh
 tracer_template_demons: labels/tracer_template_current_demons   # tracer labels in the MRI template (Fig. 10)
 
 # --- MRI channels: construction runs, evaluation caches, template ---
-mri_logs: mri/logs                                    # the runs' own logs (lobo_multichannel_cost_r061 reads the leave-one-brain-out registrations' times)
 mri_runs: mri/tc                                      # construction runs (rb_*, mmsym_model_dti_v) and evaluator outputs (crossmodal_*.json)
 crossmodal_cache: mri/data/_crossmodal_rebuild        # each input's images pushed through its construction warp (<arm>__<MOD>__<ID>.nii.gz)
 template_mri: template/mri                            # the MRI channels of record (linc_mri_*.nii.gz)

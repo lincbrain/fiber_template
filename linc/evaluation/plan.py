@@ -1,4 +1,4 @@
-"""`--plan` for the evaluation entry points (reproduce/numbers/{variants_leave_self_out_rebuild_fa025, variability_rebuild_rb_final,
+"""`--plan` for the evaluation entry points (reproduce/numbers/{variants_leave_self_out_rebuild_fa025,
 lobo_t2_rebuild, r060_target_comparison}.py): print what the script would read, write and need, and run nothing. The same idea as the
 build drivers' --plan (reproduce/templates/_driver.py), for scripts that are one command each.
 

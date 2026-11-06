@@ -5,7 +5,8 @@
 
 You need two folders that hold files of the same names.
 What it does: loads each pair and compares their voxel values and their affines.
-You get one line per file, "identical" or how the two differ; the exit status is 0 when all are identical.
+You get one line per file, "identical" or how the two differ, then a last line "<n> of <N> identical"; the exit status is 0 when all
+are identical.
 """
 import sys
 from pathlib import Path
@@ -39,6 +40,7 @@ def main():
             print(f"{name}: differs ({int((d > 0).sum())} voxels, largest difference {d.max():g}; "
                   f"affine {'equal' if same_affine else 'differs'})")
             bad += 1
+    print(f"{len(names) - bad} of {len(names)} identical")
     sys.exit(1 if bad else 0)
 
 

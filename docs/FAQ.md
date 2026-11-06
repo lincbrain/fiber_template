@@ -1,7 +1,5 @@
 # Frequently asked questions
 
-*A stub; questions are added as they come up.*
-
 **Which brain is which?** The paper names brains MF1–MF10 (*Macaca fascicularis*) and MM1–MM15 (*Macaca mulatta*). Files use the
 Specimen IDs (for example `sub-MR252` for MM2). `docs/specimen_labels.json` maps one to the other.
 

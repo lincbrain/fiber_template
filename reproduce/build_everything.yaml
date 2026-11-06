@@ -1,0 +1,1341 @@
+# The plan reproduce/build_everything.py runs: every step of docs/build_everything.md, as one entry each.
+# Every step reads the paper's inputs from the data folders (links to the records) and writes into the clone; its check compares
+# what it wrote with the paper's file. Fields:
+#   name      the step's id; with `for`, the step is written out once per brain as <name>-<ID>, and {id} in the other fields is the brain
+#   group     setup | paper | mri-template | blockface | registration | synthesis | blockface-template | link | histology | labels | training
+#   for       a set of brains (`sets` below) or a list of LINC IDs
+#   title, inputs, outputs   what it does, reads and writes, in plain words
+#   run       the command: one shell line, from the repository root, in the shell that `source envs/linc_envs.sh` (or env/lab.sh) gives
+#   check     a command that exits 0 only when `expect` holds and prints its evidence on its last line; left out when there is no
+#             file of record to compare with
+#   expect    what the check proves
+#   needs     steps that must have run to their end first; a per-brain step's base name means the same brain's step
+#   gpu_gb, gpu_model, gpu_alone, ram_gb, cores, disk_gb   what it needs: free GPU memory (GB), the card model when the check only
+#             holds on it, the card to itself, RAM (GB), cores, the disk it writes (GB)
+#   hours, timed   how long it took, and where that time comes from: clone | docs | paper's run | estimated
+#   optional  true: runs only when named with --only
+#   note      one sentence a tester must know
+
+sets:
+  mri_template: [MF283, MF284, MF285, MF286]
+  all: [MF278, MF275, MF282, MF191, MF196, MF204, MR243, MR252, MR256, MR249, MR250, MR251, MR253, MR254, MR257, MR261, MR244, MR247, MR248, MR263, MR273]
+  with_mri: [MF278, MF275, MF282, MR243, MR252, MR256, MR249, MR250, MR251, MR253, MR254, MR257, MR261]
+  without_mri: [MF191, MF196, MF204, MR244, MR247, MR248, MR263, MR273]
+  large: [MF278, MF275, MF282, MR252, MR256, MR250, MR251, MR253, MR254, MR257, MR261, MR263, MR273]
+  small: [MF191, MF196, MF204, MR243, MR249, MR244, MR247, MR248]
+  histology: [MR243, MR252, MR256, MF278, MF275, MF191]
+  labels: [MR243, MR252, MR256, MF191]
+
+steps:
+
+  # ---- setup
+  - name: data-folders
+    group: setup
+    title: Data folders of all 21 brains (records linked, hand inputs copied)
+    inputs: the records ($LINC_RECORDS/data/sub-<ID>, read only); configs/subjects/<ID>.yaml
+    outputs: $LINC_DATA/sub-<ID>/ (links to the records; xfm/ empty, xfm_record/ the entries of record); $LINC_REBUILD_DATA/sub-<ID>/blockface/ (copies
+      of the hand inputs only)
+    run: tools/make_local_data.sh $(dirname $LINC_DATA) MF278 MF275 MF282 MF191 MF196 MF204 MR243 MR252 MR256 MR249 MR250 MR251 MR253 MR254 MR257
+      MR261 MR244 MR247 MR248 MR263 MR273 && tools/make_local_data.sh $(dirname $LINC_REBUILD_DATA) --rebuild MF278 --rebuild MF275 --rebuild MF282
+      --rebuild MF191 --rebuild MF196 --rebuild MF204 --rebuild MR243 --rebuild MR252 --rebuild MR256 --rebuild MR249 --rebuild MR250 --rebuild MR251
+      --rebuild MR253 --rebuild MR254 --rebuild MR257 --rebuild MR261 --rebuild MR244 --rebuild MR247 --rebuild MR248 --rebuild MR263 --rebuild MR273
+    check: 'n=0; for S in MF278 MF275 MF282 MF191 MF196 MF204 MR243 MR252 MR256 MR249 MR250 MR251 MR253 MR254 MR257 MR261 MR244 MR247 MR248 MR263
+      MR273; do E=$LINC_REBUILD_DATA/sub-$S/blockface/curated/$S; [ -e $LINC_DATA/sub-$S/blockface/$S"_blockface.ome.zarr" ] && [ -f $E"_mask_edited.nii.gz"
+      ] && [ -f $E"_holes_edited.nii.gz" ] && [ ! -L $E"_mask_edited.nii.gz" ] && n=$((n+1)); done; l=$(find $LINC_REBUILD_DATA/sub-*/blockface -type
+      l | wc -l); echo "$n of 21 brains: products of record linked, hand inputs copied; $l links in the rebuild''s blockface folders"; [ $n -eq 21
+      ] && [ $l -eq 0 ]'
+    expect: all 21 brains in both folders, and no link into the records in the rebuild's blockface folders (so a reconstruction cannot write into
+      the records)
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 1
+    cores: 1
+    disk_gb: 2
+    hours: 0.15
+    timed: clone
+    optional: false
+    note: 'Tested: 7 min 6 s, 132,901 links and 15,571 copies (1.0 GB), check 21 of 21. Adds to the folders env/lab.sh built and overwrites
+      nothing, so it is safe to rerun; but not beside another tools/make_local_data.sh writing to the same folder (two runs can race on one link):
+      run other lanes'' data-folder steps after it.'
+
+  # ---- paper
+  - name: paper-numbers
+    group: paper
+    title: Compute every numbers record of the paper (CPU)
+    inputs: the paper's products (records, read only), the raw MRI and histology links of local_data/raw
+    outputs: $LINC_NUMBERS/<record>.json (about 70 records), $LINC_WORK (about 10 GB of intermediate files)
+    run: LINC_DATA=$LINC_PRODUCTS/data make numbers
+    check: $PY reproduce/check_numbers.py --ref reproduce/reference --new $LINC_NUMBERS $($PY -c "import os, pathlib; print(' '.join(sorted(p.stem
+      for p in pathlib.Path(os.environ['LINC_NUMBERS']).glob('*.json') if p.name != 'provenance.json')))")
+    expect: every record written so far matches the paper's reference (documented exceptions on their paper-read fields)
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 32
+    cores: 4
+    disk_gb: 11
+    hours: 2.3
+    timed: clone
+    optional: false
+    note: 2 h 16 min serial at nice 10 on a shared machine (4 Nov clone, run 5-6 Nov); RAM not measured (32 GB is an estimate)
+  - name: paper-numbers-gpu
+    group: paper
+    title: Compute the two numbers records that run a network on the GPU
+    inputs: the leave-slab-out network and the prepared brains of record; the development and final stand-in b0s
+    outputs: $LINC_NUMBERS/d3_domain_shift.json, d3_domain_shift_prod.json
+    run: LINC_DATA=$LINC_PRODUCTS/data make numbers-gpu
+    check: $PY reproduce/check_numbers.py --ref reproduce/reference --new $LINC_NUMBERS d3_domain_shift d3_domain_shift_prod
+    expect: both records match the paper's on the fields the comparison reads, to 1e-4 (GPU predictions; identical on an RTX 6000 Ada)
+    needs: []
+    gpu_gb: 4
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 16
+    cores: 4
+    disk_gb: 0.01
+    hours: 0.06
+    timed: clone
+    optional: false
+    note: about 3 min for both; within the 1e-4 tolerance on any card, identical on the RTX 6000 Ada
+  - name: paper-numbers-figures
+    group: paper
+    title: Draw the figures that also write a numbers record
+    inputs: the paper's products (records, read only); the 3D environment (install.sh --with-figures-3d)
+    outputs: outputs/figures/ (tracer, tracer_pathways, alignment_comparison, tracer_3d, tracer_sections3d) and their records in $LINC_NUMBERS
+    run: LINC_DATA=$LINC_PRODUCTS/data make numbers-figures
+    check: $PY reproduce/check_numbers.py --ref reproduce/reference --new $LINC_NUMBERS fig_tracer_r058 fig_tracer_pathways fig_tracer_pathways_panels
+      fig_routes_1c_section fig_tracer_3d fig_tracer_3d_stills fig_tracer_sections3d_v2
+    expect: the 7 figure records match the paper's
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 16
+    cores: 4
+    disk_gb: 1
+    hours: 0.2
+    timed: clone
+    optional: false
+    note: needs PY_VIZ3D (env/install.sh --with-figures-3d); tracer_sections3d also renders its video
+  - name: paper-figures
+    group: paper
+    title: Draw the paper's figures
+    inputs: the paper's products (records, read only); HISTOLOGY_ARGS and LINC_RAW (env/lab.sh)
+    outputs: outputs/figures/<target>.{pdf,png} and their provenance
+    run: LINC_DATA=$LINC_PRODUCTS/data make -j 2 figures
+    check: '$PY -c "import pathlib, sys; T=''template pipeline variability link tracer s_tracer_rules tracer_pathways reconstruction bf_template alignment_comparison
+      s_synthesis_depth s_synthesis_gallery lgnstn histology s_tracer_fidelity tracer_sections3d''.split(); m=[t for t in T if not any(pathlib.Path(''outputs/figures'').glob(t
+      + ''.*''))]; print(f''{len(T) - len(m)} of {len(T)} figures written'' + (''; missing: '' + '' ''.join(m) if m else '''')); sys.exit(1 if m else
+      0)"'
+    expect: every figure target wrote its file (none skipped); the drawings are not compared bit for bit
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 16
+    cores: 4
+    disk_gb: 0.5
+    hours: 0.25
+    timed: clone
+    optional: false
+    note: '713 s with -j 2 (4 Nov clean clone): 7 of 14 byte-identical to the paper''s, 3 more under matplotlib 3.10.8, 3 differ only in the PDF date.
+      The 6 Nov figures (Fig. 2 MM6, Figs. S2 and S3, the lean withheld-slab figure) are not yet in the release'
+  - name: paper-check
+    group: paper
+    title: Compare every numbers record with the paper's
+    inputs: $LINC_NUMBERS (all records of the four paper steps)
+    outputs: the comparison, on screen
+    run: LINC_DATA=$LINC_PRODUCTS/data make bf_camera_exif mm_mri_check_r054
+    check: $PY reproduce/check_numbers.py --ref reproduce/reference --new $LINC_NUMBERS
+    expect: every reference record has a regenerated record and they match ("N of N records match"; 81 of 81 at 7929dc3)
+    needs: [paper-numbers, paper-numbers-gpu, paper-numbers-figures, paper-figures]
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 4
+    cores: 1
+    disk_gb: 0.01
+    hours: 0.02
+    timed: clone
+    optional: false
+    note: the run line regenerates the two records that hold the clone's raw paths, so a copied numbers folder cannot make them differ
+
+  # ---- mri-template
+  - name: mri-stage
+    group: mri-template
+    for: mri_template
+    title: Stage the brain's preprocessed MRI as the build's inputs (N4, fractions)
+    inputs: the preprocessed files ($LINC_MRI_PREPROCESSED/{id}); the brain masks (local_mri, built by env/lab.sh)
+    outputs: $LINC_MRI_DATA/sub-{id}/mri/{dwi,t2,micro}/ and dwi/raw/ (the tensor's inputs)
+    run: LINC_DATA=$LINC_MRI_DATA $PY reproduce/templates/build_mri_channels.py --step stage-{id}
+    check: $PY tools/compare_mri_build.py staged $LINC_MRI_DATA/sub-{id}/mri $LINC_PRODUCTS/mri/data/sub-{id} --min 17
+    expect: every staged image (23 on MF1) identical to the paper's, N4 included
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 8
+    cores: 8
+    disk_gb: 6
+    hours: 0.07
+    timed: clone
+    optional: false
+    note: 'All four brains identical from a clone on 4 Nov; MF1 again today, 231 s, 23 of 23. Steps of the build refuse to write over their own outputs:
+      rerun a failed step with --force added.'
+  - name: mri-tensor
+    group: mri-template
+    for: mri_template
+    title: Fit the diffusion tensor on the b <= 4800 volumes
+    inputs: mri-stage's dwi/raw/ files
+    outputs: $LINC_WORK/build_mri_channels/tensor_d9/{id}/tensor_d9_dwigrid.nii.gz
+    run: LINC_DATA=$LINC_MRI_DATA $PY reproduce/templates/build_mri_channels.py --step tensor-{id}
+    check: $PY tools/compare_nifti.py $LINC_WORK/build_mri_channels/tensor_d9/{id} $LINC_PRODUCTS/mri/tensor_refit_d9/{id}_existing tensor_d9_dwigrid.nii.gz
+    expect: the tensor identical to the paper's, voxel for voxel
+    needs: [mri-stage]
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 12
+    cores: 8
+    disk_gb: 3
+    hours: 0.13
+    timed: clone
+    optional: false
+    note: Identical on all four brains from a clone (4 Nov); MF1 again today, 1 of 1 identical, 381 s (481 s in the paper's run).
+  - name: mri-nmt
+    group: mri-template
+    for: mri_template
+    title: Register NMT v2 to the b0 and carry its SARM labels (for the AC and PC)
+    inputs: mri-stage's b0 and mask; NMT v2
+    outputs: $LINC_MRI_DATA/sub-{id}/mri/landmarks/{nmt_affine_0GenericAffine.mat,SARM6_in_subject.nii.gz}
+    run: LINC_DATA=$LINC_MRI_DATA $PY reproduce/templates/build_mri_channels.py --step nmt-{id}
+    check: $PY tools/compare_mri_build.py nmt $LINC_MRI_DATA/sub-{id}/mri $LINC_PRODUCTS/mri/data/sub-{id} --min-agree 93
+    expect: the SARM labels agree with the paper's on at least 93 % of the brain's voxels (93.3 to 94.3 % from a clone)
+    needs: [mri-stage]
+    gpu_gb: 16
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 16
+    cores: 4
+    disk_gb: 1
+    hours: 0.13
+    timed: clone
+    optional: false
+    note: A GPU registration (ANTs, then anatomix + FireANTs); the paper's ran on an earlier version of the engine, so it is never identical. 205
+      to 460 s, 11.4 to 15.3 GB of GPU memory. Run from a clone on 4 Nov; today its check was run on those outputs (93.3 to 94.3 %), the card being
+      busy.
+  - name: mri-t2reg
+    group: mri-template
+    for: mri_template
+    title: Register the T2-weighted image to the b0 (one field)
+    inputs: mri-stage's b0, T2 and masks
+    outputs: $LINC_MRI_DATA/sub-{id}/xfm/t2-native__to__b0-native/
+    run: LINC_DATA=$LINC_MRI_DATA $PY reproduce/templates/build_mri_channels.py --step t2reg-{id}
+    check: $PY tools/compare_mri_build.py field t2 $LINC_MRI_DATA/sub-{id} $LINC_PRODUCTS/mri/data/sub-{id} --median 0.05 --largest 1.0
+    expect: the field within a median of 0.05 mm and at most 1 mm of the paper's inside the brain (0.009 to 0.037 mm, largest 0.84 mm from a clone)
+    needs: [mri-stage]
+    gpu_gb: 16
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 16
+    cores: 4
+    disk_gb: 1
+    hours: 0.1
+    timed: clone
+    optional: false
+    note: 'GPU registration: not identical between GPU sessions, even on one card model. 205 to 413 s, 13.9 to 15.6 GB of GPU memory. Run from a clone
+      on 4 Nov; today its check was run on those outputs.'
+  - name: mri-microreg
+    group: mri-template
+    for: [MF283]
+    title: Register the microstructure session's b0 to the b0 (one field)
+    inputs: mri-stage's b0 images and masks of both sessions
+    outputs: $LINC_MRI_DATA/sub-{id}/xfm/micro-native__to__b0-native/
+    run: LINC_DATA=$LINC_MRI_DATA $PY reproduce/templates/build_mri_channels.py --step microreg-{id}
+    check: $PY tools/compare_mri_build.py field micro $LINC_MRI_DATA/sub-{id} $LINC_PRODUCTS/mri/data/sub-{id} --median 0.05 --largest 2.5
+    expect: the field within a median of 0.05 mm and at most 2.5 mm of the paper's inside the brain (0.033 mm, largest 1.9 mm on MF1)
+    needs: [mri-stage]
+    gpu_gb: 23
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 16
+    cores: 4
+    disk_gb: 1
+    hours: 0.15
+    timed: clone
+    optional: false
+    note: 'Needs 22.1 GB of GPU memory as nvidia-smi counts it: a 48 GB card, not a 20 GB one. 379 s on MF1 (4 Nov).'
+  - name: mri-microreg
+    group: mri-template
+    for: [MF284, MF285, MF286]
+    title: Register the microstructure session's b0 to the b0 (one field)
+    inputs: mri-stage's b0 images and masks of both sessions
+    outputs: $LINC_MRI_DATA/sub-{id}/xfm/micro-native__to__b0-native/
+    run: LINC_DATA=$LINC_MRI_DATA $PY reproduce/templates/build_mri_channels.py --step microreg-{id}
+    check: $PY tools/compare_mri_build.py field micro $LINC_MRI_DATA/sub-{id} $LINC_PRODUCTS/mri/data/sub-{id} --median 0.05 --largest 2.5
+    expect: the field within a median of 0.05 mm and at most 2.5 mm of the paper's inside the brain (the tolerance of MF1)
+    needs: [mri-stage]
+    gpu_gb: 23
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 16
+    cores: 4
+    disk_gb: 1
+    hours: 0.15
+    timed: estimated
+    optional: false
+    note: 'Never rerun on MF2 to MF4 (docs/mri.md says so): this is its first test, and the tolerance is MF1''s. A 48 GB card.'
+  - name: mri-frames
+    group: mri-template
+    for: mri_template
+    title: Find the AC and PC, then the brain's canonical frame
+    inputs: mri-nmt's labels and affine; mri-stage's b0 and mask
+    outputs: $LINC_MRI_DATA/sub-{id}/mri/landmarks/{landmarks.json,canonical.json}
+    run: LINC_DATA=$LINC_MRI_DATA $PY reproduce/templates/build_mri_channels.py --from landmarks-{id} --to frames-{id}
+    check: $PY tools/compare_mri_build.py frame $LINC_MRI_DATA/sub-{id}/mri $LINC_PRODUCTS/mri/data/sub-{id} --deg 1.0 --mm 0.5
+    expect: the frame within 1 degree and a mean move of 0.5 mm of the paper's (0.04 to 0.81 degrees, 0.09 to 0.31 mm from a clone)
+    needs: [mri-nmt]
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 4
+    cores: 2
+    disk_gb: 0
+    hours: 0.03
+    timed: clone
+    optional: false
+    note: 'From the clone''s own NMT registration the plane fit can land on another optimum: on MF4 (MF286) 0.81 degrees from the paper''s plane,
+      close to the 1 degree limit.'
+  - name: mri-prepare
+    group: mri-template
+    for: mri_template
+    title: Resample every channel onto the canonical grid, cut to the mask, mirror
+    inputs: mri-frames' frame; mri-tensor's tensor; mri-t2reg's and mri-microreg's fields; the staged images; the final mask
+    outputs: $LINC_WORK/build_mri_channels/prep/{id}/ (the construction inputs and their _flip mirrors)
+    run: LINC_DATA=$LINC_MRI_DATA $PY reproduce/templates/build_mri_channels.py --step prepare-{id}
+    check: $PY tools/compare_mri_build.py prepare $LINC_WORK/build_mri_channels/prep/{id} $LINC_PRODUCTS/mri/data/sub-{id}/canonical_rebuild_handfrac
+    expect: inside both masks, r with the paper's of at least 0.88 (T2), 0.87 (b0), 0.84 (fractions), 0.98 (tensor), mask Dice at least 0.97
+    needs: [mri-frames, mri-tensor, mri-t2reg, mri-microreg]
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 16
+    cores: 4
+    disk_gb: 1
+    hours: 0.05
+    timed: clone
+    optional: false
+    note: 'Never identical: every image goes through the rerun''s frame. From a clone (4 Nov, MF2 to MF4 with the paper''s microreg): MF4 (MF286)
+      T2 r 0.885, b0 0.879, fractions 0.871 and 0.845, tensor 0.981, Dice 0.979, near the limits; with its own microreg it was never run.'
+  - name: mri-assemble
+    group: mri-template
+    title: Write the MMORF run folder from the paper's construction inputs
+    inputs: the paper's construction inputs ($LINC_PRODUCTS/mri/data/sub-<ID>/canonical_rebuild_handfrac); configs/mri_construction.yaml
+    outputs: $LINC_WORK/mri_construction/runs/rb_final/ (config/, subject_ids.csv, standardspace.nii.gz, data/ links, run_spec.json)
+    run: mkdir -p $LINC_WORK/mri_construction/prep && for S in MF283 MF284 MF285 MF286; do ln -sfn $LINC_PRODUCTS/mri/data/sub-$S/canonical_rebuild_handfrac
+      $LINC_WORK/mri_construction/prep/$S; done && $PY reproduce/templates/build_mri_channels.py --work $LINC_WORK/mri_construction --step assemble
+    check: $PY tools/compare_mri_build.py run $LINC_WORK/mri_construction/runs/rb_final $LINC_PRODUCTS/mri/tc/rb_final --parts config subject_ids.csv
+      standardspace.nii.gz --min 16
+    expect: the 14 parameter files, the subject list and the standard space identical to the paper's run (16 of 16)
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 2
+    cores: 1
+    disk_gb: 0.1
+    hours: 0.01
+    timed: clone
+    optional: false
+    note: 'The construction starts from the paper''s inputs, not from mri-prepare''s, so that its comparison can be exact. Today from a clone: 11
+      s, 16 of 16.'
+  - name: mri-construction-step1
+    group: mri-template
+    title: Run the groupwise construction through its affine stage and step 1
+    inputs: mri-assemble's run folder; MMORF 1.0.1 ($LINC_MMORF_EXE); the patched driver ($LINC_TEMPLATE_DRIVER)
+    outputs: $LINC_WORK/mri_construction/runs/rb_final/out/{affine_step1,affine_step2,nln_step_01}/
+    run: $PY tools/run_until.py $LINC_WORK/mri_construction/runs/rb_final/out/scripts/021_nlnT_mmorf.sh -- $PY reproduce/templates/build_mri_channels.py
+      --work $LINC_WORK/mri_construction --step mmorf
+    check: $PY tools/compare_mri_build.py run $LINC_WORK/mri_construction/runs/rb_final/out $LINC_PRODUCTS/mri/tc/rb_final/out --parts affine_step1
+      affine_step2 nln_step_01 --skip-ini --min 202
+    expect: every file the paper kept of its affine stage and step 1 identical, byte for byte or voxel for voxel (202 of 202)
+    needs: [mri-assemble]
+    gpu_gb: 6
+    gpu_model: RTX 6000 Ada
+    gpu_alone: true
+    ram_gb: 32
+    cores: 8
+    disk_gb: 30
+    hours: 2
+    timed: clone
+    optional: false
+    note: 'Stops the driver when step 2''s first task is written. 4 Nov from a clone on a shared RTX 6000 Ada: 202 of 202 identical, 3.9 GB of GPU
+      memory at most, 2.9 h with one stop and resume (the paper''s run: 7 min + 1.2 h). The plan asks for the card alone; the 4 Nov run shared the card
+      and was still identical. run_until.py is new (tested today on a small command); the 4 Nov run was stopped the same way by a script.'
+  - name: mri-construction-full
+    group: mri-template
+    title: Run the whole groupwise construction (8 steps), 3.5 days on one card
+    inputs: the paper's construction inputs; MMORF 1.0.1; the patched driver
+    outputs: '$LINC_WORK/mri_construction_full/runs/rb_final/out/ (nln_step_08/iteration_03: the warps the channels read)'
+    run: mkdir -p $LINC_WORK/mri_construction_full/prep && for S in MF283 MF284 MF285 MF286; do ln -sfn $LINC_PRODUCTS/mri/data/sub-$S/canonical_rebuild_handfrac
+      $LINC_WORK/mri_construction_full/prep/$S; done && $PY reproduce/templates/build_mri_channels.py --work $LINC_WORK/mri_construction_full --from
+      assemble --to mmorf
+    check: $PY tools/compare_mri_build.py run $LINC_WORK/mri_construction_full/runs/rb_final/out $LINC_PRODUCTS/mri/tc/rb_final/out --parts nln_step_08
+      --skip-ini --min 175
+    expect: the final step's 175 files identical to the paper's run (steps 2 to 8 never rerun)
+    needs: []
+    gpu_gb: 46
+    gpu_model: RTX 6000 Ada
+    gpu_alone: true
+    ram_gb: 64
+    cores: 8
+    disk_gb: 100
+    hours: 84.5
+    timed: paper's run
+    optional: true
+    note: 'Never rerun past step 1. The paper''s run: 30 Sep 14:39 to 4 Oct 02:59 on one card, alone, batch 8 for steps 1-5, 4 for 6-7, 4 then 3 for
+      8 (the batch does not change results). After a stop: add -aff False -resume <step>:<iteration> through the driver (reproduce/templates/mri_channels.md).'
+  - name: mri-channels
+    group: mri-template
+    title: Make the template's MRI channels from the paper's construction run
+    inputs: the paper's run ($LINC_PRODUCTS/mri/tc/rb_final, step 8 iteration 3); the brains' native images, fields and construction inputs of record
+    outputs: $LINC_WORK/mri_paper_run/channels/linc_mri_*.nii.gz and provenance.json
+    run: W=$LINC_WORK/mri_paper_run && mkdir -p $W/prep $W/runs && ln -sfn $LINC_PRODUCTS/mri/tc/rb_final $W/runs/rb_final && for S in MF283 MF284
+      MF285 MF286; do mkdir -p $W/data/sub-$S && ln -sfn $LINC_PRODUCTS/mri/data/sub-$S $W/data/sub-$S/mri && ln -sfn $LINC_PRODUCTS/mri/data/sub-$S/xfm
+      $W/data/sub-$S/xfm && ln -sfn $LINC_PRODUCTS/mri/data/sub-$S/canonical_rebuild_handfrac $W/prep/$S; done && LINC_DATA=$W/data $PY reproduce/templates/build_mri_channels.py
+      --work $W --step channels
+    check: '[ $(ls $LINC_WORK/mri_paper_run/channels | grep -c "^linc_mri_.*\.nii\.gz$") -ge 20 ] && $PY tools/compare_nifti.py $LINC_WORK/mri_paper_run/channels
+      $LINC_PRODUCTS/template/mri $(ls $LINC_WORK/mri_paper_run/channels | grep "^linc_mri_.*\.nii\.gz$")'
+    expect: all 20 channel files identical to the template's, voxel for voxel
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 32
+    cores: 8
+    disk_gb: 7
+    hours: 0.25
+    timed: clone
+    optional: false
+    note: '4 Nov from a clone: 20 of 20 identical, 840 s under full machine load (10.5 min in the paper''s run).'
+  - name: mri-links
+    group: mri-template
+    for: mri_template
+    title: Register the brain's links to the template (frame, construction warp)
+    inputs: the paper's run; the brain's frame of record (landmarks/canonical.json)
+    outputs: $LINC_WORK/mri_links/{id}/xfm/{b0-native__to__mri-canonical,mri-canonical__to__mri-template}/
+    run: $PY -m linc.construction.mri_register links --subject {id} --run $LINC_PRODUCTS/mri/tc/rb_final --mri-root $LINC_PRODUCTS/mri/data/sub-{id}
+      --xfm-root $LINC_WORK/mri_links/{id}/xfm --out $LINC_WORK/mri_links/{id}/run
+    check: $PY tools/compare_mri_build.py entries $LINC_WORK/mri_links/{id}/xfm $LINC_PRODUCTS/mri/xfm_rb_final/sub-{id}/xfm b0-native__to__mri-canonical
+      mri-canonical__to__mri-template
+    expect: both entries' files identical to the paper's, and their QC passes
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 4
+    cores: 1
+    disk_gb: 0.5
+    hours: 0.01
+    timed: clone
+    optional: false
+    note: 'Today from a clone, all four brains: 2 of 2 files identical, QC pass, 15 to 21 s each.'
+  - name: mri-prep
+    group: mri-template
+    for: [MF283]
+    title: Prepare one brain's MRI for registration (linc-mri prep, hand-edited mask)
+    inputs: the brain's b0 and hand-edited brain mask of record
+    outputs: $LINC_WORK/mri_prep/{id}/dwi/{b0_brain,b0_brain_n4,b0_brain_n4_bias}.nii.gz, masks/, provenance
+    run: $PY cli/linc-mri prep --subject {id} --image $LINC_PRODUCTS/mri/data/sub-{id}/dwi/b0.nii.gz --mask $LINC_PRODUCTS/mri/data/sub-{id}/masks/dwi_brain_mask.nii.gz
+      --mri-root $LINC_WORK/mri_prep/{id}
+    check: $PY tools/compare_nifti.py $LINC_WORK/mri_prep/{id}/dwi $LINC_PRODUCTS/mri/data/sub-{id}/dwi b0_brain.nii.gz b0_brain_n4.nii.gz b0_brain_n4_bias.nii.gz
+    expect: the masked, the bias-corrected brain and its bias field identical to the paper's (3 of 3)
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 4
+    cores: 4
+    disk_gb: 0.2
+    hours: 0.01
+    timed: clone
+    optional: false
+    note: 'Today from a clone with env/lab.sh''s ANTs 2.5.4: 3 of 3 identical, 29 s. Without ANTs it skips N4 and still exits 0, and the check then
+      fails.'
+
+  # ---- blockface
+  - name: reconstruct
+    group: blockface
+    for: [MR252, MR263]
+    title: Reconstruct the blockface volume from the photographs
+    inputs: the photographs ($LINC_RAW/blockface_curated); the hand inputs ($LINC_REBUILD_DATA/sub-{id}/blockface/curated, 01_brainmask/01_final);
+      configs/subjects/{id}.yaml
+    outputs: $LINC_REBUILD_DATA/sub-{id}/blockface/ ({id}_blockface.ome.zarr, {id}_mask, {id}_holes, {id}_blockface_L2, {id}.info)
+    run: LINC_DATA=$LINC_REBUILD_DATA $PY_TIRL cli/linc-reconstruct all --subject {id}
+    check: $PY tools/compare_reconstruction.py {id} $LINC_REBUILD_DATA/sub-{id}/blockface $LINC_PRODUCTS/data/sub-{id}/blockface
+    expect: identical to the paper's volume, mask and tubes (every level of the four stores, the three NIfTI files, {id}.info)
+    needs: [data-folders]
+    gpu_gb: 10
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 90
+    cores: 8
+    disk_gb: 35
+    hours: 10
+    timed: clone
+    optional: false
+    note: 'Rerun from a clone on 3 Nov on a loaded machine: MM2 in 9 h 10 min, identical; MM14 in 9 h 52 min, identical except its volume step, whose
+      illumination setting the release then gained (shading poly2+zref), after which volume, tubes and spacing reran identical (46 min, 80 GB peak).
+      The hand-corrected masks win over the networks'' outputs, so the card model does not matter; the GPU serves the segmentation (1.5 GB for photos,
+      10 GB for mask and tubes).'
+  - name: reconstruct
+    group: blockface
+    for: [MF278, MF275, MF282, MR256, MR250, MR251, MR253, MR254, MR257, MR261, MR273]
+    title: Reconstruct the blockface volume from the photographs
+    inputs: the photographs ($LINC_RAW/blockface_curated); the hand inputs ($LINC_REBUILD_DATA/sub-{id}/blockface/curated, 01_brainmask/01_final);
+      configs/subjects/{id}.yaml
+    outputs: $LINC_REBUILD_DATA/sub-{id}/blockface/ ({id}_blockface.ome.zarr, {id}_mask, {id}_holes, {id}_blockface_L2, {id}.info)
+    run: LINC_DATA=$LINC_REBUILD_DATA $PY_TIRL cli/linc-reconstruct all --subject {id}
+    check: $PY tools/compare_reconstruction.py {id} $LINC_REBUILD_DATA/sub-{id}/blockface $LINC_PRODUCTS/data/sub-{id}/blockface
+    expect: identical to the paper's volume, mask and tubes (every level of the four stores, the three NIfTI files, {id}.info)
+    needs: [data-folders]
+    gpu_gb: 10
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 90
+    cores: 8
+    disk_gb: 35
+    hours: 10
+    timed: estimated
+    optional: false
+    note: 'Never rerun from a clone: this is their first test. Time, memory and disk from MM2 and MM14 (similar stacks: 884 to 1,427 sections); the
+      camera jumps (configs/subjects/{id}.yaml) take about 15 min each.'
+  - name: reconstruct
+    group: blockface
+    for: [MF191]
+    title: Reconstruct the blockface volume from the photographs
+    inputs: the photographs ($LINC_RAW/blockface_curated); the hand inputs and MF8's recorded alignment to its external series ($LINC_REBUILD_DATA/sub-{id}/blockface);
+      configs/subjects/{id}.yaml
+    outputs: $LINC_REBUILD_DATA/sub-{id}/blockface/ ({id}_blockface.ome.zarr, {id}_mask, {id}_holes, {id}_blockface_L2, {id}.info)
+    run: LINC_DATA=$LINC_REBUILD_DATA $PY_TIRL cli/linc-reconstruct all --subject {id}
+    check: $PY tools/compare_reconstruction.py {id} $LINC_REBUILD_DATA/sub-{id}/blockface $LINC_PRODUCTS/data/sub-{id}/blockface
+    expect: identical to the paper's volume, mask and tubes (every level of the four stores, the three NIfTI files, {id}.info)
+    needs: [data-folders]
+    gpu_gb: 10
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 12
+    cores: 8
+    disk_gb: 3
+    hours: 0.3
+    timed: clone
+    optional: false
+    note: 'Rerun from a clone on 3 Nov (13 min 34 s CPU on a loaded host, 9 GB RAM): identical to the paper''s in every item.'
+  - name: reconstruct
+    group: blockface
+    for: [MF196, MR243, MR249, MR244, MR247, MR248]
+    title: Reconstruct the blockface volume from the photographs
+    inputs: the photographs ($LINC_RAW/blockface_curated); the hand inputs ($LINC_REBUILD_DATA/sub-{id}/blockface; for MF9 its recorded alignment
+      to its external series); configs/subjects/{id}.yaml
+    outputs: $LINC_REBUILD_DATA/sub-{id}/blockface/ ({id}_blockface.ome.zarr, {id}_mask, {id}_holes, {id}_blockface_L2, {id}.info)
+    run: LINC_DATA=$LINC_REBUILD_DATA $PY_TIRL cli/linc-reconstruct all --subject {id}
+    check: $PY tools/compare_reconstruction.py {id} $LINC_REBUILD_DATA/sub-{id}/blockface $LINC_PRODUCTS/data/sub-{id}/blockface
+    expect: identical to the paper's volume, mask and tubes (every level of the four stores, the three NIfTI files, {id}.info)
+    needs: [data-folders]
+    gpu_gb: 10
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 24
+    cores: 8
+    disk_gb: 6
+    hours: 2.5
+    timed: estimated
+    optional: false
+    note: 'Never rerun from a clone (MM1 was rebuilt with this code in the analysis tree on 22 Oct: identical). 150 to 175 sections; about 15 min
+      per listed camera jump (MM12 has 7, the others 0 to 3).'
+  - name: reconstruct
+    group: blockface
+    for: [MF204]
+    title: Reconstruct the blockface volume from the photographs
+    inputs: the photographs ($LINC_RAW/blockface_curated); the hand inputs ($LINC_REBUILD_DATA/sub-{id}/blockface/curated); configs/subjects/{id}.yaml
+    outputs: $LINC_REBUILD_DATA/sub-{id}/blockface/ ({id}_blockface.ome.zarr, {id}_mask, {id}_holes, {id}_blockface_L2, {id}.info)
+    run: LINC_DATA=$LINC_REBUILD_DATA $PY_TIRL cli/linc-reconstruct all --subject {id}
+    check: $PY tools/compare_reconstruction.py {id} $LINC_REBUILD_DATA/sub-{id}/blockface $LINC_PRODUCTS/data/sub-{id}/blockface
+    expect: identical to the paper's volume, mask and tubes (every level of the four stores, the three NIfTI files, {id}.info)
+    needs: [data-folders]
+    gpu_gb: 10
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 12
+    cores: 8
+    disk_gb: 3
+    hours: 4
+    timed: estimated
+    optional: false
+    note: 'Never rerun from a clone. MF10 has no photograph masks of record (01_brainmask is empty), so the 2D network makes them, and that network
+      is not reproducible run to run: its volume can differ from the paper''s (the 3D mask and tubes are its hand edits). 14 camera jumps, about 15
+      min each.'
+
+  # ---- registration
+  - name: register-mri
+    group: registration
+    for: [MR252]
+    title: Register the blockface volume to the brain's own b0
+    inputs: $LINC_DATA/sub-{id}/blockface ({id}_blockface_iso_grey, the iso mask), $LINC_DATA/sub-{id}/mri (b0, the b0 mask of record); configs/registration.yaml,
+      configs/subjects/{id}.yaml
+    outputs: $LINC_DATA/sub-{id}/xfm/bf-native__to__b0-native/ (warp, two affines, meta.json); $LINC_WORK/register/{id}/
+    run: $PY cli/linc-register mri --subject {id} --overwrite
+    check: $PY tools/compare_registration.py entry $LINC_DATA/sub-{id}/xfm/bf-native__to__b0-native $LINC_DATA/sub-{id}/xfm_record/bf-native__to__b0-native
+    expect: the paper's registration, its two affines identical and its warp identical or within a median of 0.05 mm and a 99th percentile of 0.5
+      mm
+    needs: [data-folders]
+    gpu_gb: 24
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 16
+    cores: 8
+    disk_gb: 2
+    hours: 0.25
+    timed: clone
+    optional: false
+    note: 'Tested 6 Nov on an RTX 6000 Ada (as the record): 9 min 57 s, 13 GB RAM; 3 of 3 files identical to the paper''s.'
+  - name: register-mri
+    group: registration
+    for: [MF278, MF275]
+    title: Register the blockface volume to the brain's own b0
+    inputs: $LINC_DATA/sub-{id}/blockface ({id}_blockface_iso_grey, the iso mask), $LINC_DATA/sub-{id}/mri (b0, the b0 mask of record); configs/registration.yaml,
+      configs/subjects/{id}.yaml
+    outputs: $LINC_DATA/sub-{id}/xfm/bf-native__to__b0-native/ (warp, two affines, meta.json); $LINC_WORK/register/{id}/
+    run: $PY cli/linc-register mri --subject {id} --overwrite
+    check: $PY tools/compare_registration.py entry $LINC_DATA/sub-{id}/xfm/bf-native__to__b0-native $LINC_DATA/sub-{id}/xfm_record/bf-native__to__b0-native
+    expect: the paper's registration, its two affines identical and its warp identical or within a median of 0.05 mm and a 99th percentile of 0.5
+      mm
+    needs: [data-folders]
+    gpu_gb: 17
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 16
+    cores: 8
+    disk_gb: 2
+    hours: 0.25
+    timed: estimated
+    optional: false
+    note: 'Never rerun from a clone (MF6 with this code on 21 Oct: identical on an RTX 6000 Ada, its record made on an RTX 4000 Ada). GPU memory from
+      the grid of record (0.10 + 1.286 GiB per million voxels): 15.9 and 14.9 GiB, so a 20 GB card fits. MF5''s record ran on an RTX 3090: only the
+      tolerance can hold.'
+  - name: register-mri
+    group: registration
+    for: [MF282, MR243, MR256, MR249, MR250, MR251, MR253, MR254, MR257, MR261]
+    title: Register the blockface volume to the brain's own b0
+    inputs: $LINC_DATA/sub-{id}/blockface ({id}_blockface_iso_grey, the iso mask), $LINC_DATA/sub-{id}/mri (b0, the b0 mask of record); configs/registration.yaml,
+      configs/subjects/{id}.yaml
+    outputs: $LINC_DATA/sub-{id}/xfm/bf-native__to__b0-native/ (warp, two affines, meta.json); $LINC_WORK/register/{id}/
+    run: $PY cli/linc-register mri --subject {id} --overwrite
+    check: $PY tools/compare_registration.py entry $LINC_DATA/sub-{id}/xfm/bf-native__to__b0-native $LINC_DATA/sub-{id}/xfm_record/bf-native__to__b0-native
+    expect: the paper's registration, its two affines identical and its warp identical or within a median of 0.05 mm and a 99th percentile of 0.5
+      mm
+    needs: [data-folders]
+    gpu_gb: 26
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 16
+    cores: 8
+    disk_gb: 2
+    hours: 0.25
+    timed: estimated
+    optional: false
+    note: 'Never rerun from a clone. GPU memory from the grid of record: 19.1 to 25.0 GiB, so a 48 GB card. The records of MF7, MM1, MM3, MM4, MM6,
+      MM7, MM9 and MM10 were made on RTX 3090 cards (MM5 and MM8 on an RTX 6000 Ada): for those only the tolerance can hold.'
+  - name: qc-mri
+    group: registration
+    for: [MF278, MF275, MR243, MR252, MR256, MR249, MR250, MR251, MR253, MR254, MR257, MR261]
+    title: Check the registration to the own b0 (scales, NCC, folds, outline)
+    inputs: $LINC_WORK/register/{id}/ and the entry $LINC_DATA/sub-{id}/xfm/bf-native__to__b0-native
+    outputs: $LINC_WORK/qc/{id}.json and .png; the verdict in the entry's meta.json
+    run: 'R=$LINC_WORK/register/{id} && D=$LINC_DATA/sub-{id} && $PY cli/linc-register qc --preset bf2b0 --fixed $R/{id}_mri.nii.gz --moved $R/{id}_bf_nonlin.nii.gz
+      --warp $R/{id}_warp.nii.gz --mat $R/linear/{id}_bf2mri_dof9.mat --mat-kind fsl --mat-src $D/blockface/{id}_blockface_iso_grey.nii.gz --mat-ref
+      $R/linear/{id}_b0_masked.nii.gz --outline-target $D/mri/$(sed -n "s/^  b0_mask: *//p" configs/subjects/{id}.yaml) --slab-iso-mask $D/blockface/{id}_mask_iso.nii.gz
+      --entry $D/xfm/bf-native__to__b0-native --name {id}'
+    check: '$PY -c "import json, sys; q = json.load(open(sys.argv[1]))[''qc'']; print(sys.argv[2] + '': QC '' + q[''status''] + '' (expected '' +
+      sys.argv[3] + ''); outline '' + str(q.get(''outline'')) + ''; reasons '' + str(q.get(''reasons''))); sys.exit(q[''status''] != sys.argv[3])"
+      $LINC_DATA/sub-{id}/xfm/bf-native__to__b0-native/meta.json {id} pass'
+    expect: QC pass, the verdict the same QC gives on the paper's registration of this brain (outline WARN, which passes, on MM7 and MM8)
+    needs: [register-mri]
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 8
+    cores: 2
+    disk_gb: 0.1
+    hours: 0.03
+    timed: clone
+    optional: false
+    note: 'Tested 6 Nov: on MM2''s rerun, PASS (33 s, 2.7 GB RAM); the same qc on the paper''s own registrations of all 13 brains gives PASS for these
+      12 and FAIL for MF7 (its own step below).'
+  - name: qc-mri
+    group: registration
+    for: [MF282]
+    title: Check the registration to the own b0 (scales, NCC, folds, outline)
+    inputs: $LINC_WORK/register/{id}/ and the entry $LINC_DATA/sub-{id}/xfm/bf-native__to__b0-native
+    outputs: $LINC_WORK/qc/{id}.json and .png; the verdict in the entry's meta.json
+    run: 'R=$LINC_WORK/register/{id} && D=$LINC_DATA/sub-{id} && $PY cli/linc-register qc --preset bf2b0 --fixed $R/{id}_mri.nii.gz --moved $R/{id}_bf_nonlin.nii.gz
+      --warp $R/{id}_warp.nii.gz --mat $R/linear/{id}_bf2mri_dof9.mat --mat-kind fsl --mat-src $D/blockface/{id}_blockface_iso_grey.nii.gz --mat-ref
+      $R/linear/{id}_b0_masked.nii.gz --outline-target $D/mri/$(sed -n "s/^  b0_mask: *//p" configs/subjects/{id}.yaml) --slab-iso-mask $D/blockface/{id}_mask_iso.nii.gz
+      --entry $D/xfm/bf-native__to__b0-native --name {id}'
+    check: '$PY -c "import json, sys; q = json.load(open(sys.argv[1]))[''qc'']; print(sys.argv[2] + '': QC '' + q[''status''] + '' (expected '' +
+      sys.argv[3] + ''); outline '' + str(q.get(''outline'')) + ''; reasons '' + str(q.get(''reasons''))); sys.exit(q[''status''] != sys.argv[3])"
+      $LINC_DATA/sub-{id}/xfm/bf-native__to__b0-native/meta.json {id} fail'
+    expect: 'QC fail, the verdict the same QC gives on the paper''s registration of MF7: scales 0.853, 0.915, 0.969 outside [0.9, 1.1] (MF7''s calibrated
+      -11 % in-plane deviation) and outline undershoot'
+    needs: [register-mri]
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 8
+    cores: 2
+    disk_gb: 0.1
+    hours: 0.03
+    timed: clone
+    optional: false
+    note: 'The paper''s entry for MF7 records pass because its check applied the author''s decision on this brain, which the release''s qc does not
+      carry; this step confirms the release''s qc still says FAIL, as on the paper''s registration (tested 6 Nov: 1 min 11 s).'
+  - name: register-mri-template
+    group: registration
+    for: [MR252]
+    title: Register the brain's b0 to the MRI template
+    inputs: $LINC_DATA/sub-{id}/mri (b0 and its mask of record); $LINC_TEMPLATE/mri/linc_mri_b0, linc_mri_brainmask
+    outputs: $LINC_DATA/sub-{id}/xfm/b0-native__to__mri-template/ (warp, start affine, meta.json with its own outline check); $LINC_WORK/b0_to_template/{id}/
+    run: $PY cli/linc-register mri-template --subject {id} --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
+      --overwrite
+    check: $PY tools/compare_registration.py entry $LINC_DATA/sub-{id}/xfm/b0-native__to__mri-template $LINC_DATA/sub-{id}/xfm_record/b0-native__to__mri-template
+    expect: the paper's registration, its start affine identical and its warp identical or within a median of 0.05 mm and a 99th percentile of 0.5
+      mm
+    needs: [data-folders]
+    gpu_gb: 15
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 4
+    cores: 8
+    disk_gb: 1
+    hours: 0.2
+    timed: clone
+    optional: false
+    note: 'Tested 6 Nov on an RTX 4000 Ada (the record ran on an RTX 6000 Ada): 12 min 34 s (4 min on an RTX 6000 Ada in the walkthrough), 2.5
+      GB RAM; start affine identical, warp within tolerance (median 0.0011 mm, 99th percentile 0.040 mm, largest 0.35 mm); its own outline check PASS.'
+  - name: register-mri-template
+    group: registration
+    for: [MF278, MF275, MF282, MR243, MR256, MR249, MR250, MR251, MR253, MR254, MR257, MR261]
+    title: Register the brain's b0 to the MRI template
+    inputs: $LINC_DATA/sub-{id}/mri (b0 and its mask of record); $LINC_TEMPLATE/mri/linc_mri_b0, linc_mri_brainmask
+    outputs: $LINC_DATA/sub-{id}/xfm/b0-native__to__mri-template/ (warp, start affine, meta.json with its own outline check); $LINC_WORK/b0_to_template/{id}/
+    run: $PY cli/linc-register mri-template --subject {id} --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
+      --overwrite
+    check: $PY tools/compare_registration.py entry $LINC_DATA/sub-{id}/xfm/b0-native__to__mri-template $LINC_DATA/sub-{id}/xfm_record/b0-native__to__mri-template
+    expect: the paper's registration, its start affine identical and its warp identical or within a median of 0.05 mm and a 99th percentile of 0.5
+      mm
+    needs: [data-folders]
+    gpu_gb: 15
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 4
+    cores: 8
+    disk_gb: 1
+    hours: 0.2
+    timed: estimated
+    optional: false
+    note: 'Never rerun from a clone. The paper''s runs (4 Oct, RTX 6000 Ada) are not reproducible bit for bit even on that model (docs/reproduce.md:
+      medians 0.002 to 0.025 mm, 99th percentiles 0.04 to 0.47 mm in the brain), hence the tolerance.'
+  - name: direct-placement
+    group: registration
+    for: [MF191]
+    title: Align the blockface volume to the MRI template's b0 (cross-modal alignment)
+    inputs: $LINC_DATA/sub-{id}/blockface ({id}_blockface_iso_grey, the iso mask); $LINC_TEMPLATE/mri/linc_mri_b0, linc_mri_brainmask
+    outputs: $LINC_DATA/sub-{id}/xfm/bf-native__to__mri-template/; $LINC_DATA/sub-{id}/mri/stand_in/; $LINC_WORK/direct_placement/{id}/
+    run: $PY cli/linc-register direct-placement --subject {id} --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
+      --overwrite
+    check: $PY tools/compare_registration.py entry $LINC_DATA/sub-{id}/xfm/bf-native__to__mri-template $LINC_DATA/sub-{id}/xfm_record/bf-native__to__mri-template
+    expect: the paper's alignment, its linear part identical and its warp identical or within a median of 0.05 mm and a 99th percentile of 0.5 mm
+    needs: [data-folders]
+    gpu_gb: 18
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 4
+    cores: 8
+    disk_gb: 1
+    hours: 0.2
+    timed: clone
+    optional: false
+    note: 'Tested 6 Nov on an RTX 4000 Ada (the record ran on an RTX 6000 Ada): 7 min 40 s, 16.1 GiB GPU, 2.9 GB RAM; linear part identical,
+      warp within tolerance (median 0.0001 mm, 99th percentile 0.0017 mm, largest 0.029 mm); it also writes mri/stand_in/, which synthesis reads for
+      a brain without MRI.'
+  - name: direct-placement
+    group: registration
+    for: [MF196, MF204, MR244, MR247, MR248, MR263, MR273]
+    title: Align the blockface volume to the MRI template's b0 (cross-modal alignment)
+    inputs: $LINC_DATA/sub-{id}/blockface ({id}_blockface_iso_grey, the iso mask); $LINC_TEMPLATE/mri/linc_mri_b0, linc_mri_brainmask
+    outputs: $LINC_DATA/sub-{id}/xfm/bf-native__to__mri-template/; $LINC_DATA/sub-{id}/mri/stand_in/; $LINC_WORK/direct_placement/{id}/
+    run: $PY cli/linc-register direct-placement --subject {id} --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
+      --overwrite
+    check: $PY tools/compare_registration.py entry $LINC_DATA/sub-{id}/xfm/bf-native__to__mri-template $LINC_DATA/sub-{id}/xfm_record/bf-native__to__mri-template
+    expect: the paper's alignment, its linear part identical and its warp identical or within a median of 0.05 mm and a 99th percentile of 0.5 mm
+    needs: [data-folders]
+    gpu_gb: 18
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 4
+    cores: 8
+    disk_gb: 1
+    hours: 0.2
+    timed: estimated
+    optional: false
+    note: Never rerun from a clone. The records ran on RTX 6000 Ada cards; GPU memory 15.1 to 17.0 GiB, so a 20 GB card fits one at a time.
+  - name: qc-direct
+    group: registration
+    for: without_mri
+    title: Check the cross-modal alignment (NCC, folds, outline on the covered template)
+    inputs: $LINC_WORK/direct_placement/{id}/ and the entry $LINC_DATA/sub-{id}/xfm/bf-native__to__mri-template
+    outputs: $LINC_WORK/qc/{id}.json and .png; the verdict in the entry's meta.json
+    run: P=$LINC_WORK/direct_placement/{id} && $PY cli/linc-register qc --preset direct --fixed $P/_fixed_0.25.nii.gz --moved $P/{id}_bf_in_template.nii.gz
+      --warp $P/{id}_warp.nii.gz --mat $P/{id}_linear_world.txt --mat-kind world --fixed-mask $P/_fixed_mask_0.25.nii.gz --moved-mask $P/{id}_mask_in_template.nii.gz
+      --outline-target $P/_fixed_mask_0.25.nii.gz --entry $LINC_DATA/sub-{id}/xfm/bf-native__to__mri-template --name {id}
+    check: '$PY -c "import json, sys; q = json.load(open(sys.argv[1]))[''qc'']; print(sys.argv[2] + '': QC '' + q[''status''] + '' (expected '' +
+      sys.argv[3] + ''); outline '' + str(q.get(''outline'')) + ''; reasons '' + str(q.get(''reasons''))); sys.exit(q[''status''] != sys.argv[3])"
+      $LINC_DATA/sub-{id}/xfm/bf-native__to__mri-template/meta.json {id} pass'
+    expect: QC pass, the verdict the same QC gives on the paper's alignment of each of the 8 (outline WARN, which passes, on MM13 and MM14)
+    needs: [direct-placement]
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 8
+    cores: 2
+    disk_gb: 0.1
+    hours: 0.02
+    timed: clone
+    optional: false
+    note: 'Tested 6 Nov: on MF8''s rerun, PASS (28 s, 1.9 GB RAM); the same qc on the paper''s own alignments of all 8 gives PASS.'
+  - name: register-blockface-template
+    group: registration
+    for: [MF191]
+    title: Register a brain without MRI to the blockface template (new-brain route)
+    inputs: $LINC_DATA/sub-{id}/blockface; the blockface template of record and its brain mask (configs/registration.yaml)
+    outputs: $LINC_DATA/sub-{id}/xfm/bf-native__to__bf-template/; $LINC_WORK/register_direct/{id}/
+    run: $PY cli/linc-register blockface-template --subject {id} --overwrite && P=$LINC_WORK/register_direct/{id} && $PY cli/linc-register qc --preset
+      bf2bftemplate --fixed $P/_fixed_0.25.nii.gz --moved $P/{id}_bf_in_template.nii.gz --warp $P/{id}_warp.nii.gz --mat $P/{id}_dof7_world.txt --mat-kind
+      world --fixed-mask $P/_fixed_mask_0.25.nii.gz --moved-mask $P/{id}_mask_in_template_cut.nii.gz --outline-target $P/_fixed_mask_0.25.nii.gz --entry
+      $LINC_DATA/sub-{id}/xfm/bf-native__to__bf-template --name {id}_bftemplate
+    check: '$PY -c "import json, sys; q = json.load(open(sys.argv[1]))[''qc'']; print(sys.argv[2] + '': QC '' + q[''status''] + '' (expected '' +
+      sys.argv[3] + ''); outline '' + str(q.get(''outline'')) + ''; reasons '' + str(q.get(''reasons''))); sys.exit(q[''status''] != sys.argv[3])"
+      $LINC_DATA/sub-{id}/xfm/bf-native__to__bf-template/meta.json {id} pass'
+    expect: QC pass (there is no record to compare with; the paper's route for its members is their own construction warp)
+    needs: [data-folders]
+    gpu_gb: 20
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 4
+    cores: 8
+    disk_gb: 1
+    hours: 0.25
+    timed: docs
+    optional: false
+    note: 'The paper has no registration to the final blockface template: its members (all 21) go through their own construction warp. This is the
+      walkthrough''s demonstration on MF8 (docs/walkthrough.md: 15 min, 19 GB GPU, check passed); not rerun today.'
+
+  # ---- synthesis
+  - name: synthesis-prepare
+    group: synthesis
+    for: with_mri
+    title: Prepare the brain's synthesis inputs (its own b0)
+    inputs: the brain's blockface volume, its registration to its own b0, the b0 and its completion mask (records)
+    outputs: $LINC_WORK/prepared/{id}/ (coarse/ and fine/ arrays, seam.json)
+    run: LINC_DATA=$LINC_PRODUCTS/data $PY_DEEP cli/linc-complete prepare --subject {id} --out $LINC_WORK/prepared
+    check: '$PY tools/compare_nifti.py $LINC_WORK/prepared/{id} $LINC_COMPLETION_PREPARED/{id} coarse/brain.nii.gz coarse/in.nii.gz fine/bf.nii.gz
+      fine/bf_rgb.nii.gz fine/brain.nii.gz fine/photo_fraction.nii.gz fine/real_mask.nii.gz fine/valid.nii.gz && echo "{id}: 8 of 8 prepared arrays
+      identical to the paper''s"'
+    expect: the 8 prepared arrays and their affines identical to the paper's prepared folder
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 8
+    cores: 1
+    disk_gb: 0.05
+    hours: 0.03
+    timed: clone
+    optional: false
+    note: 85 s for MM2 (4 Nov clone); seam.json is not compared (it records paths and times)
+  - name: synthesis-prepare
+    group: synthesis
+    for: without_mri
+    title: Prepare the brain's synthesis inputs (the stand-in b0)
+    inputs: the brain's blockface volume, its direct placement and stand-in b0, its completion mask (records)
+    outputs: $LINC_WORK/prepared/{id}/ (coarse/ and fine/ arrays, seam.json)
+    run: LINC_DATA=$LINC_PRODUCTS/data $PY_DEEP cli/linc-complete prepare --subject {id} --out $LINC_WORK/prepared
+    check: '$PY tools/compare_nifti.py $LINC_WORK/prepared/{id} $LINC_COMPLETION_PREPARED_STANDIN/{id} coarse/brain.nii.gz coarse/in.nii.gz fine/bf.nii.gz
+      fine/bf_rgb.nii.gz fine/brain.nii.gz fine/photo_fraction.nii.gz fine/real_mask.nii.gz fine/valid.nii.gz && echo "{id}: 8 of 8 prepared arrays
+      identical to the paper''s"'
+    expect: the 8 prepared arrays and their affines identical to the paper's deployed stand-in folder (input lower limit 0)
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 4
+    cores: 1
+    disk_gb: 0.03
+    hours: 0.01
+    timed: clone
+    optional: false
+    note: 27 s for MF8 (4 Nov clone)
+  - name: synthesis-complete
+    group: synthesis
+    for: with_mri
+    title: Synthesize the missing caudal tissue (own b0 network)
+    inputs: $LINC_WORK/prepared/{id}/; the released network d3_full_A_s0 ($LINC_MODELS/completion)
+    outputs: $LINC_WORK/complete/{id}/ (the completed volume in grey and color, its synthesized and photographed parts, junction, photographed fraction,
+      masks)
+    run: $PY_DEEP cli/linc-complete --brain $LINC_WORK/prepared/{id} --out $LINC_WORK/complete
+    check: '$PY tools/compare_nifti.py $LINC_WORK/complete/{id} $LINC_PRODUCTS/synthesis/out_d3_full/{id} {id}_bf_completed.nii.gz {id}_bf_completed_rgb.nii.gz
+      {id}_bf_real.nii.gz {id}_bf_synth.nii.gz {id}_synth_mask.nii.gz {id}_seam_depth.nii.gz {id}_seam_ramp.nii.gz {id}_seam_ramp_real.nii.gz {id}_photo_fraction.nii.gz
+      {id}_provenance.nii.gz {id}_b0_input_0p5.nii.gz && echo "{id}: 11 of 11 volumes identical to the paper''s"'
+    expect: the 11 volumes of the brain's completion identical to the paper's, voxel for voxel
+    needs: [synthesis-prepare]
+    gpu_gb: 2
+    gpu_model: RTX 6000 Ada
+    gpu_alone: false
+    ram_gb: 8
+    cores: 1
+    disk_gb: 0.1
+    hours: 0.01
+    timed: clone
+    optional: false
+    note: 20 to 32 s; identical on the 48 GB RTX 6000 Ada of record; a 20 GB RTX 4000 Ada was not tested (a network on another card model can differ
+      in the last bits)
+  - name: synthesis-complete
+    group: synthesis
+    for: without_mri
+    title: Synthesize the missing caudal tissue (stand-in b0 network)
+    inputs: $LINC_WORK/prepared/{id}/; the released network d3p_full_A_s0 ($LINC_MODELS/completion)
+    outputs: $LINC_WORK/complete/{id}/ (as for the brains with MRI)
+    run: $PY_DEEP cli/linc-complete --brain $LINC_WORK/prepared/{id} --stand-in --out $LINC_WORK/complete
+    check: '$PY tools/compare_nifti.py $LINC_WORK/complete/{id} $LINC_PRODUCTS/synthesis/out_d3_full/{id} {id}_bf_completed.nii.gz {id}_bf_completed_rgb.nii.gz
+      {id}_bf_real.nii.gz {id}_bf_synth.nii.gz {id}_synth_mask.nii.gz {id}_seam_depth.nii.gz {id}_seam_ramp.nii.gz {id}_seam_ramp_real.nii.gz {id}_photo_fraction.nii.gz
+      {id}_provenance.nii.gz {id}_b0_input_0p5.nii.gz && echo "{id}: 11 of 11 volumes identical to the paper''s"'
+    expect: the 11 volumes of the brain's completion identical to the paper's, voxel for voxel
+    needs: [synthesis-prepare]
+    gpu_gb: 2
+    gpu_model: RTX 6000 Ada
+    gpu_alone: false
+    ram_gb: 4
+    cores: 1
+    disk_gb: 0.07
+    hours: 0.01
+    timed: clone
+    optional: false
+    note: 27 s for MF8 (4 Nov clone); a 20 GB RTX 4000 Ada was not tested
+
+  # ---- blockface-template
+  - name: bf-template-members
+    group: blockface-template
+    title: Blockface template, members (each brain, its mirror, and TPL)
+    inputs: the 21 volumes with their synthesized tissue and the synthesis cache of record ($LINC_PRODUCTS/synthesis); the MRI template's frames,
+      b0, mask and the bridge of record
+    outputs: $LINC_WORK/build_blockface_template/ (frame2prep_0p5, canon_prep, canon, canon_tpl, tpl_costmask.json)
+    run: $PY reproduce/templates/build_blockface_template.py --from prep-frame --to tpl-costmask-0p5
+    check: W=$LINC_WORK/build_blockface_template && $PY tools/compare_mri_build.py run $W/canon $LINC_PRODUCTS/bftemplate/d2/s4/canon --parts MF278
+      MF275 MF282 MF191 MF196 MF204 MR243 MR252 MR256 MR249 MR250 MR251 MR253 MR254 MR257 MR261 MR244 MR247 MR248 MR263 MR273 --min 294 && $PY tools/compare_mri_build.py
+      run $W/canon_tpl $LINC_PRODUCTS/bftemplate/d2b/canon --parts TPL --min 8
+    expect: the 294 member files (21 brains x 14) and TPL's 8 files identical to the paper's
+    needs: [data-folders]
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 4
+    cores: 4
+    disk_gb: 1
+    hours: 0.1
+    timed: clone
+    optional: false
+    note: 'Tested 6 Nov: 5 min 1 s, 1.3 GB RAM, 0.96 GB written; check 294 of 294 and 8 of 8 identical (1 min).'
+
+  # ---- link
+  - name: link
+    group: link
+    title: Register the blockface template of record to the MRI template (symmetric)
+    inputs: the blockface template and the MRI template of record (configs/link.yaml inputs), the frame bridge
+    outputs: $LINC_WORK/build_link/link/sym/, link/maps/ (the two pull maps), link/blockface_in_mri/ (the linc_bf_* files)
+    run: $PY reproduce/templates/build_link.py --from link-prepare --to blockface-in-mri
+    check: M=$LINC_WORK/build_link/link/maps && R=$LINC_PRODUCTS/bftemplate/cv/template2template/d2bs8_s5sym && cmp $M/bftemplate__to__mri-template/full_L.txt
+      $R/bftemplate__to__mri-template/full_L.txt && cmp $M/mri-template__to__bftemplate/full_L.txt $R/mri-template__to__bftemplate/full_L.txt && $PY
+      tools/compare_registration.py warp $M/mri-template__to__bftemplate/full_d.nii.gz $R/mri-template__to__bftemplate/full_d.nii.gz && $PY tools/compare_registration.py
+      warp $M/bftemplate__to__mri-template/full_d.nii.gz $R/bftemplate__to__mri-template/full_d.nii.gz
+    expect: the two maps' linear parts identical, and their displacements within a median of 0.05 mm and a 99th percentile of 0.5 mm of the paper's
+    needs: [data-folders]
+    gpu_gb: 6
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 6
+    cores: 8
+    disk_gb: 2
+    hours: 0.3
+    timed: clone
+    optional: false
+    note: 'Tested 6 Nov on an RTX 6000 Ada (the record ran on an RTX 3090): 13 min 18 s, 3.4 GB RAM; linear parts identical; maps within a
+      median of 0.0044 and 0.0075 mm, 99th percentiles 0.077 and 0.094 mm, largest 0.84 and 0.86 mm.'
+
+  # ---- histology
+  - name: histology
+    group: histology
+    for: [MR252]
+    title: Register the brain's histology to its blockface photographs (TIRL)
+    inputs: the blockface store; the sections (JPEG 2000); the paper's match table; the atlas regions on the blockface
+    outputs: $LINC_DATA/sub-{id}/histology/registration/ (matched/, pieces/, tissue_masks/, moving/, fixed/, tirl/<component>/)
+    run: $PY_TIRL cli/linc-histology all --subject {id} --store $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface.ome.zarr --histology $LINC_RAW/linc_000003/sourcedata/sub-{id}/micr
+      --table $LINC_PRODUCTS/labels/match_tables/num_{id}_plus.txt --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --out $LINC_DATA/sub-{id}/histology/registration
+      --threads 12 --jobs 2
+    check: $PY tools/compare_histology.py $LINC_DATA/sub-{id}/histology/registration/tirl $LINC_PRODUCTS/data_arm_final/sub-{id}/blockface/06_histo2bf/tirl
+    expect: every registered section identical to the paper's, byte for byte (47 of 47)
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 32
+    cores: 24
+    disk_gb: 5
+    hours: 2.2
+    timed: clone
+    optional: false
+    note: 12 threads per component is what makes TIRL reproduce the paper exactly; --jobs 2 needs 24 cores. Written where labels-push reads it. A
+      folder that already holds a registration is resumed, not redone.
+  - name: histology
+    group: histology
+    for: [MF275, MF278]
+    title: Register the brain's histology to its blockface photographs (TIRL)
+    inputs: the blockface store; the sections (JPEG 2000); the paper's match table; the atlas regions on the blockface
+    outputs: $LINC_DATA/sub-{id}/histology/registration/
+    run: $PY_TIRL cli/linc-histology all --subject {id} --store $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface.ome.zarr --histology $LINC_RAW/linc_000003/sourcedata/sub-{id}/micr
+      --table $LINC_PRODUCTS/labels/match_tables/num_{id}_plus.txt --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --out $LINC_DATA/sub-{id}/histology/registration
+      --threads 12 --jobs 2
+    check: $PY tools/compare_histology.py $LINC_DATA/sub-{id}/histology/registration/tirl $LINC_PRODUCTS/data_arm_final/sub-{id}/blockface/06_histo2bf/tirl
+    expect: every registered section identical to the paper's, byte for byte (62 for MF6, 79 for MF5)
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 32
+    cores: 24
+    disk_gb: 7
+    hours: 3
+    timed: estimated
+    optional: false
+    note: 'Never rerun from a clone: this is its first test. Time scaled from MM2 by the number of components.'
+  - name: histology
+    group: histology
+    for: [MR243, MR256]
+    title: Register the brain's histology to its blockface photographs (TIRL)
+    inputs: the blockface store; the sections (JPEG 2000); the hand-made match table; the atlas regions on the blockface
+    outputs: $LINC_DATA/sub-{id}/histology/registration/
+    run: $PY_TIRL cli/linc-histology all --subject {id} --store $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface.ome.zarr --histology $LINC_RAW/linc_000003/sourcedata/sub-{id}/micr
+      --table $LINC_RAW/match_tables_hand/num_{id}.txt --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --out $LINC_DATA/sub-{id}/histology/registration
+      --threads 12 --jobs 2
+    check: $PY tools/compare_histology.py $LINC_DATA/sub-{id}/histology/registration/tirl $LINC_PRODUCTS/data_arm_final/sub-{id}/blockface/06_histo2bf/tirl
+    expect: every registered section identical to the paper's, byte for byte (97 for MM1, 53 for MM3)
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 32
+    cores: 24
+    disk_gb: 8
+    hours: 4
+    timed: estimated
+    optional: false
+    note: 'Never rerun whole from a clone. The tables are the hand-made ones the paper''s run read ($LINC_RAW/match_tables_hand, a line in env/lab.sh):
+      today the first stage (match) of MM3 gave 53 of 53 matched photographs identical to the paper''s, in 62 s. Time scaled from MM2 (MM1 has 97
+      components).'
+  - name: histology
+    group: histology
+    for: [MF191]
+    title: Register the histology to the photographs, with its 600 um regions volume
+    inputs: the blockface store; the sections (JPEG 2000); the match table; the regions volume made at a 600 um section step
+    outputs: $LINC_WORK/histology/{id}/
+    run: $PY_TIRL cli/linc-histology all --subject {id} --store $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface.ome.zarr --histology $LINC_RAW/linc_000003/sourcedata/sub-{id}/micr
+      --table $LINC_PRODUCTS/labels/match_tables/num_{id}.txt --regions $LINC_PRODUCTS/labels/regions_t2_mf191_made_at_vz600/{id}_regions_t2.nii.gz
+      --regions-spacing-um 23.75 600 --out $LINC_WORK/histology/{id} --threads 12 --jobs 2
+    check: $PY tools/compare_histology.py $LINC_WORK/histology/{id}/tirl $LINC_PRODUCTS/data_arm_final/sub-{id}/blockface/06_histo2bf/tirl
+    expect: every registered section identical to the paper's, byte for byte (58 of 58)
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 32
+    cores: 24
+    disk_gb: 5
+    hours: 2.2
+    timed: clone
+    optional: false
+    note: 'From a clone (walkthrough): 58 of 58 identical, about 18 + 5 + 75 + 7 minutes.'
+
+  # ---- labels
+  - name: labels-push
+    group: labels
+    for: [MR252]
+    title: Push the tracer annotations through each registration onto the blockface
+    inputs: the annotations, section map, match table and regions (env/lab.sh links them for MM2); histology's masks and pieces; the registration
+      the paper's labels used (before the tubes' holes were filled)
+    outputs: $LINC_DATA/sub-{id}/labels/blockface/tracer/{id}_*_bfnative_L2.nii.gz
+    run: $PY_TIRL cli/linc-labels push --subject {id} --registrations $LINC_PRODUCTS/data_arm_preinp/sub-{id}/blockface/06_histo2bf/tirl
+    check: $PY tools/compare_nifti.py $LINC_DATA/sub-{id}/labels/blockface/tracer $LINC_PRODUCTS/labels/push_tracer_r058d/{id} $(ls $LINC_PRODUCTS/labels/push_tracer_r058d/{id}
+      | grep -E '^{id}_.*_bfnative_L2\.nii\.gz$')
+    expect: the 6 pushed labels identical to the paper's
+    needs: [histology]
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 8
+    cores: 4
+    disk_gb: 0.5
+    hours: 0.05
+    timed: clone
+    optional: false
+    note: 'From a clone (walkthrough): 6 of 6, about 3 minutes. Only MM2: for MM1, MM3 and MF8 the paper''s labels used re-masked components that
+      the release''s masks step does not make, so their labels start from the paper''s pushed labels (labels-interpolate).'
+  - name: labels-interpolate
+    group: labels
+    for: [MR252]
+    title: Interpolate the labels between sections, from the pushed labels
+    inputs: labels-push's labels; the registered sections of record (their colors drive the demons); the regions
+    outputs: $LINC_DATA/sub-{id}/labels/blockface/tracer/{id}_*_bfnative_L2_demons.nii.gz
+    run: $PY cli/linc-labels interpolate --subject {id} --registrations $LINC_PRODUCTS/data_arm_preinp/sub-{id}/blockface/06_histo2bf/tirl
+    check: $PY tools/compare_nifti.py $LINC_DATA/sub-{id}/labels/blockface/tracer $LINC_PRODUCTS/labels/tracer_v2/{id} $(ls $LINC_PRODUCTS/labels/tracer_v2/{id}
+      | grep -E '^{id}_.*_bfnative_L2_demons\.nii\.gz$')
+    expect: the 7 interpolated labels identical to the paper's
+    needs: [labels-push]
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 16
+    cores: 16
+    disk_gb: 1
+    hours: 0.6
+    timed: clone
+    optional: false
+    note: 'From a clone (walkthrough): 7 of 7, 34 minutes on a shared node.'
+  - name: labels-interpolate
+    group: labels
+    for: [MR243]
+    title: Interpolate the labels between sections, from the paper's pushed labels
+    inputs: the paper's pushed labels (labels/push_tracer_r058d); the registered sections of record; the regions; the match table of the labels
+    outputs: $LINC_WORK/labels/{id}/blockface/{id}_*_bfnative_L2_demons.nii.gz
+    run: $PY cli/linc-labels interpolate --subject {id} --labels $LINC_PRODUCTS/labels/push_tracer_r058d/{id}/{id}_*_bfnative_L2.nii.gz --registrations
+      $LINC_PRODUCTS/data_arm_preinp/sub-{id}/blockface/06_histo2bf/tirl --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --match-table
+      $LINC_PRODUCTS/labels/match_tables/num_{id}_r058c.txt --grid $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface_L2.nii.gz --out $LINC_WORK/labels/{id}/blockface
+    check: $PY tools/compare_nifti.py $LINC_WORK/labels/{id}/blockface $LINC_PRODUCTS/labels/tracer_v2/{id} $(ls $LINC_PRODUCTS/labels/tracer_v2/{id}
+      | grep -E '^{id}_.*_bfnative_L2_demons\.nii\.gz$')
+    expect: every interpolated label identical to the paper's
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 16
+    cores: 16
+    disk_gb: 1
+    hours: 0.15
+    timed: estimated
+    optional: false
+    note: 'Not yet rerun from a clone. The paper''s run: 310 s.'
+  - name: labels-interpolate
+    group: labels
+    for: [MR256]
+    title: Interpolate the labels between sections, from the paper's pushed labels
+    inputs: the paper's pushed labels; the registered sections of record; the regions; the hand-made match table
+    outputs: $LINC_WORK/labels/{id}/blockface/{id}_*_bfnative_L2_demons.nii.gz
+    run: $PY cli/linc-labels interpolate --subject {id} --labels $LINC_PRODUCTS/labels/push_tracer_r058d/{id}/{id}_*_bfnative_L2.nii.gz --registrations
+      $LINC_PRODUCTS/data_arm_preinp/sub-{id}/blockface/06_histo2bf/tirl --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --match-table
+      $LINC_RAW/match_tables_hand/num_{id}.txt --grid $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface_L2.nii.gz --out $LINC_WORK/labels/{id}/blockface
+    check: $PY tools/compare_nifti.py $LINC_WORK/labels/{id}/blockface $LINC_PRODUCTS/labels/tracer_v2/{id} $(ls $LINC_PRODUCTS/labels/tracer_v2/{id}
+      | grep -E '^{id}_.*_bfnative_L2_demons\.nii\.gz$')
+    expect: every interpolated label identical to the paper's
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 16
+    cores: 16
+    disk_gb: 1
+    hours: 0.3
+    timed: estimated
+    optional: false
+    note: 'Not yet rerun from a clone. The paper''s run: 746 s.'
+  - name: labels-interpolate
+    group: labels
+    for: [MF191]
+    title: Interpolate the labels between sections, from the paper's pushed labels
+    inputs: the paper's pushed labels; the registered sections of record; the regions; the match table of the labels
+    outputs: $LINC_WORK/labels/{id}/blockface/{id}_*_bfnative_L2_demons.nii.gz
+    run: $PY cli/linc-labels interpolate --subject {id} --labels $LINC_PRODUCTS/labels/push_tracer_r058d/{id}/{id}_*_bfnative_L2.nii.gz --registrations
+      $LINC_PRODUCTS/data_arm_preinp/sub-{id}/blockface/06_histo2bf/tirl --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --match-table
+      $LINC_PRODUCTS/labels/match_tables/num_{id}_r058.txt --grid $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface_L2.nii.gz --out $LINC_WORK/labels/{id}/blockface
+    check: $PY tools/compare_nifti.py $LINC_WORK/labels/{id}/blockface $LINC_PRODUCTS/labels/tracer_v2/{id} $(ls $LINC_PRODUCTS/labels/tracer_v2/{id}
+      | grep -E '^{id}_.*_bfnative_L2_demons\.nii\.gz$')
+    expect: every interpolated label identical to the paper's
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 16
+    cores: 16
+    disk_gb: 1
+    hours: 0.1
+    timed: estimated
+    optional: false
+    note: 'Not yet rerun from a clone. The paper''s run: 147 s.'
+  - name: labels-carry
+    group: labels
+    for: [MR243]
+    title: Carry the interpolated labels into the MRI template in one resampling
+    inputs: the paper's interpolated labels (labels/tracer_v2); the blockface-to-b0 and b0-to-template registrations of record
+    outputs: $LINC_WORK/labels/{id}/template/{id}_*_mri-template{,_density,_footprint}.nii.gz
+    run: $PY cli/linc-labels carry --subject {id} --labels $LINC_PRODUCTS/labels/tracer_v2/{id}/{id}_*_bfnative_L2_demons.nii.gz --entry $LINC_PRODUCTS/data/sub-{id}/xfm_r1v3/bf-native__to__b0-native
+      --entry $LINC_PRODUCTS/data/sub-{id}/xfm/b0-native__to__mri-template --out $LINC_WORK/labels/{id}/template
+    check: $PY tools/compare_nifti.py $LINC_WORK/labels/{id}/template $LINC_PRODUCTS/labels/tracer_template_v2/{id} $(ls $LINC_PRODUCTS/labels/tracer_template_v2/{id}
+      | grep -E '^{id}_.*_mri-template(_density|_footprint)?\.nii\.gz$')
+    expect: every carried label, density and footprint identical to the paper's (30 of 30)
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 4
+    cores: 4
+    disk_gb: 0.5
+    hours: 0.06
+    timed: clone
+    optional: false
+    note: 'Today from a clone: 30 of 30, 186 s.'
+  - name: labels-carry
+    group: labels
+    for: [MR252, MR256]
+    title: Carry the interpolated labels into the MRI template in one resampling
+    inputs: the paper's interpolated labels (labels/tracer_v2); the blockface-to-b0 and b0-to-template registrations of record
+    outputs: $LINC_WORK/labels/{id}/template/{id}_*_mri-template{,_density,_footprint}.nii.gz
+    run: $PY cli/linc-labels carry --subject {id} --labels $LINC_PRODUCTS/labels/tracer_v2/{id}/{id}_*_bfnative_L2_demons.nii.gz --entry $LINC_PRODUCTS/data/sub-{id}/xfm_r1v3mr/bf-native__to__b0-native
+      --entry $LINC_PRODUCTS/data/sub-{id}/xfm/b0-native__to__mri-template --out $LINC_WORK/labels/{id}/template
+    check: $PY tools/compare_nifti.py $LINC_WORK/labels/{id}/template $LINC_PRODUCTS/labels/tracer_template_v2/{id} $(ls $LINC_PRODUCTS/labels/tracer_template_v2/{id}
+      | grep -E '^{id}_.*_mri-template(_density|_footprint)?\.nii\.gz$')
+    expect: every carried label, density and footprint identical to the paper's (21 for MM2, 27 for MM3)
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 4
+    cores: 4
+    disk_gb: 0.5
+    hours: 0.08
+    timed: clone
+    optional: false
+    note: 'Today from a clone: MM2 21 of 21 (285 s), MM3 27 of 27 (304 s).'
+  - name: labels-carry
+    group: labels
+    for: [MF191]
+    title: Carry the labels into the MRI template through the blockface template
+    inputs: the paper's interpolated labels; MF8's warp from the blockface template's construction and rigid placement; the link of the two templates
+    outputs: $LINC_WORK/labels/{id}/template/{id}_*_mri-template{,_density,_footprint}.nii.gz
+    run: $PY cli/linc-labels carry --subject {id} --labels $LINC_PRODUCTS/labels/tracer_v2/{id}/{id}_*_bfnative_L2_demons.nii.gz --map $LINC_PRODUCTS/template/xfm/bf-template__to__mri-template:full
+      --warp $LINC_PRODUCTS/data/sub-{id}/xfm_member/bf-native__to__bf-template/{id}_d2bs8_warp.nii.gz:fsl_rel:$LINC_PRODUCTS/data/sub-{id}/xfm_member/bf-native__to__bf-template/src_grid.nii.gz
+      --ras-pull $LINC_PRODUCTS/data/sub-{id}/xfm_member/bf-native__to__bf-template/{id}_rigid_pull_ras.txt --out $LINC_WORK/labels/{id}/template
+    check: $PY tools/compare_nifti.py $LINC_WORK/labels/{id}/template $LINC_PRODUCTS/labels/tracer_template_v2/{id} $(ls $LINC_PRODUCTS/labels/tracer_template_v2/{id}
+      | grep -E '^{id}_.*_mri-template(_density|_footprint)?\.nii\.gz$')
+    expect: every carried label, density and footprint identical to the paper's (30 of 30)
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 4
+    cores: 4
+    disk_gb: 0.5
+    hours: 0.08
+    timed: clone
+    optional: false
+    note: 'Today from a clone: 30 of 30, 41 s (the walkthrough''s form, with the records'' paths).'
+  - name: labels-connect
+    group: labels
+    for: labels
+    title: Join the carried bundles into one pathway, marking each join as inferred
+    inputs: labels-carry's densities; the template's brain mask and FA
+    outputs: $LINC_WORK/labels/{id}/template/{id}_Bundles_mri-template_{connected,solid_v2c,bridges}.nii.gz, {id}_connect_v2c.json, the solid2 labels
+    run: $PY cli/linc-labels connect --subject {id} --labels-dir $LINC_WORK/labels/{id}/template
+    check: $PY tools/compare_nifti.py $LINC_WORK/labels/{id}/template $LINC_PRODUCTS/labels/tracer_template_v2c/{id} {id}_Bundles_mri-template_connected.nii.gz
+      {id}_Bundles_mri-template_solid_v2c.nii.gz {id}_Bundles_mri-template_bridges.nii.gz
+    expect: the pathway, its solid label and its joins identical to the paper's (3 of 3)
+    needs: [labels-carry]
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 2
+    cores: 1
+    disk_gb: 0.1
+    hours: 0.03
+    timed: clone
+    optional: false
+    note: 'Today from a clone, all four cases: 3 of 3 identical; 11 to 15 s for MM1 to MM3, 58 s for MF8.'
+  - name: labels-sections
+    group: labels
+    title: Carry each charted section into the template, without interpolation
+    inputs: the paper's pushed and group labels; the registrations of record (read through LINC_DATA=$LINC_PRODUCTS/data)
+    outputs: $LINC_WORK/tracer_sections_v2/<ID>/ and $LINC_WORK/labels/numbers/tracer_sections_v2{,_mf191}.json
+    run: mkdir -p $LINC_WORK/labels/numbers && LINC_DATA=$LINC_PRODUCTS/data LINC_NUMBERS=$LINC_WORK/labels/numbers $PY reproduce/numbers/tracer_sections_v2.py
+    check: $PY reproduce/check_numbers.py --ref reproduce/reference --new $LINC_WORK/labels/numbers tracer_sections_v2 tracer_sections_v2_mf191
+    expect: both records equal to the paper's (reproduce/reference)
+    needs: []
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 16
+    cores: 16
+    disk_gb: 1
+    hours: 0.2
+    timed: clone
+    optional: false
+    note: Not yet rerun from a clone. Writes its own numbers folder, so it can run beside make numbers, which writes the same records into $LINC_NUMBERS.
+
+  # ---- training
+  - name: training-segment-mri-brainmask
+    group: training
+    title: Train the MRI brain-mask segmentation model again (all brains)
+    inputs: configs/segment/mri_brainmask.json and the hand-corrected MRI masks it lists (records)
+    outputs: $LINC_WORK/segment/runs/mri_brainmask/fold_all/model.pt, spec.json, record.json
+    run: $PY_DEEP cli/linc-segment train --task configs/segment/mri_brainmask.json --fold all
+    check: cmp $LINC_WORK/segment/runs/mri_brainmask/fold_all/model.pt $LINC_MODELS/segment/mri_brainmask/model.pt && echo "model.pt byte-identical
+      to the released mri_brainmask model"
+    expect: the trained model.pt byte-identical to the released one
+    needs: []
+    gpu_gb: 10
+    gpu_model: RTX 6000 Ada
+    gpu_alone: false
+    ram_gb: 32
+    cores: 8
+    disk_gb: 5
+    hours: 2
+    timed: docs
+    optional: true
+    note: byte-identical once (4 Nov, on an RTX 6000 Ada); other card models and the other three segmentation models were not retrained
+  - name: training-synthesis
+    group: training
+    title: Train the synthesis network again (the 13 brains with MRI)
+    inputs: the 13 prepared folders of record ($LINC_COMPLETION_PREPARED)
+    outputs: $LINC_WORK/completion/d3_full_retrain/last.pt, train_log.jsonl
+    run: $PY_DEEP cli/linc-complete train --root $LINC_COMPLETION_PREPARED --out $LINC_WORK/completion/d3_full_retrain
+    check: test -s $LINC_WORK/completion/d3_full_retrain/last.pt && tail -n 1 $LINC_WORK/completion/d3_full_retrain/train_log.jsonl
+    expect: trained to the recipe's last epoch (its last log line shown); not compared bit for bit, since the recipe does not give the same bits
+    needs: []
+    gpu_gb: 8
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 32
+    cores: 8
+    disk_gb: 1
+    hours: 1
+    timed: docs
+    optional: true
+    note: 'retrained once (on an RTX 6000 Ada): last-10-epoch loss within 0.06 %, MF5''s synthesized tissue r = 0.95 against the released network (docs/complete.md)'

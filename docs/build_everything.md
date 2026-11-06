@@ -2,6 +2,28 @@
 
 The whole method, from the blockface photographs and the preprocessed MRI to the paper's numbers and figures.
 
+## Run it all
+
+`reproduce/build_everything.py` runs every step of this page in order, on one machine or several, and checks each step's result
+against the paper's file. The steps, their commands and their checks are in `reproduce/build_everything.yaml`.
+
+```bash
+$PY reproduce/build_everything.py --plan       # every step: what it reads and writes, its command, its check, the machine it needs; runs nothing
+mkdir -p outputs && nohup $PY reproduce/build_everything.py --run > outputs/build_everything.log 2>&1 &
+$PY reproduce/build_everything.py --status     # one line per step: passed, differs, failed, running or blocked
+```
+
+- `--run` tests the installation on each machine, then starts every step whose inputs are ready on a machine with room for it
+  (GPU, memory, cores and disk) and runs its check after it. A step that passed is not run again; run `--run` again after a failure.
+- `--hosts "A B"` (or `LINC_HOSTS`) names the machines; each must see the clone at the same path and accept ssh without a password.
+  Without it, everything runs on this machine.
+- `--only NAME ...` runs some steps, a group or one brain, with the steps they need. Optional steps (the 3.5-day construction of
+  the MRI template, the training of the networks) run only when named.
+- `--wait [MINUTES]` returns when a step fails or differs, or when the run is over; `--stop` stops everything.
+- Each step's folder `outputs/build_everything/steps/<step>/` holds the exact commands that ran, `run.log` and `check.log`.
+
+The rest of this page describes the same steps one by one.
+
 **You need** each brain's data and hand-made inputs (`docs/inputs.md`), the environments (`docs/install.md`) and a GPU.
 
 **What it does**, in this order:

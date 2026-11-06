@@ -10,14 +10,14 @@ What it does
   It compares every level of the OME-Zarr stores (the arrays and their scale and translation), the NIfTI products (arrays and
   affines) and <ID>.info. The stores are read one block of sections at a time, so a few GB of memory suffice.
 You get
-  one line per item (whether the arrays are identical and the transforms or affines equal, or which side is missing); exit status 0
-  when all are identical.
+  one line per item (whether the arrays are identical and the transforms or affines equal, or which side is missing), then a last
+  line "<ID>: <n> of <N> items identical"; exit status 0 when all are identical.
 """
 import os
 import sys
 import numpy as np, nibabel as nib, zarr
 S, new, rec = sys.argv[1], sys.argv[2], sys.argv[3]
-bad = 0
+bad = n = 0
 SECTIONS = 32                                            # sections read at a time (the stores' axis 2)
 
 
@@ -37,24 +37,25 @@ def same_array(A, B):
 for st in (f"{S}_blockface.ome.zarr", "02_blockface.ome.zarr", "02_blockface_mask.ome.zarr", f"steps/{S}_03_color.ome.zarr"):
     a, b = os.path.join(new, st), os.path.join(rec, st)
     if not (os.path.exists(a) and os.path.exists(b)):
-        print(f"{st:34s} missing: new {os.path.exists(a)} record {os.path.exists(b)}"); bad += 1; continue
+        print(f"{st:34s} missing: new {os.path.exists(a)} record {os.path.exists(b)}"); bad += 1; n += 1; continue
     (ga, da), (gb, db) = ome(a), ome(b)
     for x, y in zip(da, db):
         same = same_array(ga[x["path"]], gb[y["path"]])
         tr = x.get("coordinateTransformations") == y.get("coordinateTransformations")
-        bad += not (same and tr)
+        bad += not (same and tr); n += 1
         print(f"{st:34s} L{x['path']}: array identical {same} | transforms equal {tr}")
 for f in (f"{S}_mask.nii.gz", f"{S}_holes.nii.gz", f"{S}_blockface_L2.nii.gz"):
     a, b = os.path.join(new, f), os.path.join(rec, f)
     if not (os.path.exists(a) and os.path.exists(b)):
-        print(f"{f:34s} missing: new {os.path.exists(a)} record {os.path.exists(b)}"); bad += 1; continue
+        print(f"{f:34s} missing: new {os.path.exists(a)} record {os.path.exists(b)}"); bad += 1; n += 1; continue
     ia, ib = nib.load(a), nib.load(b)
     A, B = np.asanyarray(ia.dataobj), np.asanyarray(ib.dataobj)
     same, aff = A.shape == B.shape and np.array_equal(A, B), np.allclose(ia.affine, ib.affine, atol=1e-6)
-    bad += not (same and aff)
+    bad += not (same and aff); n += 1
     print(f"{f:34s} array identical {same} | affine equal {aff}")
 a, b = os.path.join(new, f"{S}.info"), os.path.join(rec, f"{S}.info")
 same = os.path.exists(a) and os.path.exists(b) and open(a).read() == open(b).read()
-bad += not same
+bad += not same; n += 1
 print(f"{S}.info identical {same}")
+print(f"{S}: {n - bad} of {n} items identical")
 sys.exit(1 if bad else 0)
