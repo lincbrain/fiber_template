@@ -129,8 +129,8 @@ steps:
     check: '$PY -c "import pathlib, sys; T = sys.argv[1:]; m = [t for t in T if not any(pathlib.Path(''outputs/figures'').glob(t + ''.*''))]; print(f''{len(T)
       - len(m)} of {len(T)} figures written'' + (''; missing: '' + '' ''.join(m) if m else '''')); sys.exit(1 if m or not T else 0)" $(make -s --no-print-directory
       -C reproduce print-figures)'
-    expect: every target of make figures wrote its file (make -C reproduce print-figures, 14 in this release; none skipped); the drawings are not compared bit
-      for bit
+    expect: every target of make figures wrote its file (make -C reproduce print-figures, 14 in this release; none skipped); the drawings are not
+      compared bit for bit
     needs: []
     gpu_gb: 0
     gpu_model: ''
@@ -519,8 +519,10 @@ steps:
     hours: 10
     timed: estimated
     optional: false
-    note: 'Never rerun from a clone: this is their first test. Time, memory and disk from MM2 and MM14 (similar stacks: 884 to 1,427 sections); the
-      camera jumps (configs/subjects/{id}.yaml) take about 15 min each.'
+    note: 'Not rerun from a clone before the lab run of 6-7 Nov, where MM5 came out identical and MF5 and MF6 differed by a grid shift of whole voxels:
+      the hand edits of the four 26 um brains (MF5, MF6, MF7, MM15) carry the calibrated 27 um in-plane spacing, which the reconstruction now scales
+      back before aligning to them. Rebuilt with that code from stack on 7 Nov, MF5 and MF6 were 18 of 18 identical. Time, memory and disk from MM2
+      and MM14 (similar stacks: 884 to 1,427 sections); the camera jumps (configs/subjects/{id}.yaml) take about 15 min each.'
   - name: reconstruct
     group: blockface
     for: [MF191]
@@ -563,8 +565,8 @@ steps:
     hours: 2.5
     timed: estimated
     optional: false
-    note: 'Never rerun from a clone (MM1 was rebuilt with this code in the analysis tree on 22 Oct: identical). 150 to 175 sections; about 15 min
-      per listed camera jump (MM12 has 7, the others 0 to 3).'
+    note: 'Rerun from a clone in the lab run of 6-7 Nov: all six identical (18 of 18 items each). 150 to 175 sections; about 15 min per listed camera
+      jump (MM12 has 7, the others 0 to 3).'
   - name: reconstruct
     group: blockface
     for: [MF204]

@@ -25,7 +25,7 @@ import cv2
 import numpy as np
 import zarr
 
-from linc.blockface import destep, zarrio
+from linc.blockface import destep, spacing, zarrio
 from linc.blockface.prepare import _poly_terms, blockface_bg
 from linc.blockface.subject import params
 
@@ -627,7 +627,9 @@ def reconstruct(cfg, do_holes=True):
     mim = nib.load(cfg.curated_mask)
     cur = (np.asanyarray(mim.dataobj) > 0)                                   # (wm, z_zds, hm) curated L4 grid
     wm, hm = cur.shape[0], cur.shape[2]
-    _, A4, resid = _inplane_offset(A4, mim.affine)                          # align A4 onto the mask grid
+    # align A4 onto the mask grid, by world coordinates at the reconstruction spacing: a hand edit of record carries the calibrated
+    # spacing (its header was rescaled with the products), which in-plane (MF5-MF7, MM15: 26 -> 27 um) would shift the grid
+    _, A4, resid = _inplane_offset(A4, spacing.to_reconstruction_spacing(mim.affine, cfg))
     # resid is the sub-voxel part of the L4 offset (bounded [0,0.5]); the integer rounding absorbs it exactly
     # as the original pipeline did (a benign global <=0.5-L4-voxel world shift, consistent across the volume).
     # Phase B is self-consistent regardless (its A1 grid derives from this A4). Warn only if notably large.

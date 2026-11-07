@@ -12,7 +12,8 @@ What it does
         the translations are in voxels and do not change)
     NIfTIs (<S>_blockface_L2, <S>_mask, <S>_holes, nii/, curated/, steps/): affine <- diag(fx, fz, fx, 1) @ affine
   A file already at the calibrated spacing (e.g. a hand edit of record that already has it) is left as it is. For a new brain the
-  two spacings are equal and nothing changes.
+  two spacings are equal and nothing changes. The other way, to_reconstruction_spacing gives a hand edit's affine at the
+  reconstruction spacing, which the reconstruction aligns its grid to (linc/blockface/reconstruct.py).
 You get
   the headers rewritten in place; respace returns a log of every file (old and new scale, or already calibrated).
 
@@ -58,6 +59,35 @@ def _at_reconstruction_spacing(step_inplane, step_slice, cfg):
     if abs(cfg.vx - cfg.vx_header) > 1e-9:
         checks.append(_nearer(step_inplane * 1000.0, cfg.vx, cfg.vx_header))
     return all(checks) if checks else False
+
+
+def _unscaled32(v, f):
+    """The float32 value x whose rescaling float32(f * x) is the stored value v (the nearest to v / f); v / f when there is none."""
+    x = np.float32(v / f)
+    for c in (x, np.nextafter(x, np.float32(np.inf)), np.nextafter(x, np.float32(-np.inf))):
+        if np.float32(f * float(c)) == np.float32(v):
+            return float(c)
+    return v / f
+
+
+def to_reconstruction_spacing(affine, cfg):
+    """A hand edit's affine at the reconstruction spacing. The paper's hand edits carry the calibrated spacing: respace rescaled
+    their world rows by (fx, fz, fx) and stored them as float32. Such an affine is scaled back exactly, each entry to the float32
+    value that the rescaling turned into the stored one, so the reconstruction aligns its grid to the hand edit as the paper's did.
+    An affine already at the reconstruction spacing (a new brain, or an edit made before `spacing` ran) is returned as it is."""
+    A = np.asarray(affine, float)
+    f = (cfg.vx_header / cfg.vx, cfg.vz_header / cfg.vz, cfg.vx_header / cfg.vx)
+    if f == (1.0, 1.0, 1.0):
+        return A
+    st = np.linalg.norm(A[:3, :3], axis=0)
+    a, _, zax = min([(0, 1, 2), (0, 2, 1), (1, 2, 0)], key=lambda t: abs(st[t[0]] - st[t[1]]))   # in-plane pair, section axis
+    if _at_reconstruction_spacing(st[a], st[zax], cfg):
+        return A
+    B = A.copy()
+    for i in range(3):
+        for j in range(4):
+            B[i, j] = _unscaled32(A[i, j], f[i])
+    return B
 
 
 def respace(cfg, log_path=None):
