@@ -15,10 +15,15 @@ Planes (the sagittal plane of the template figure, x = 2.0 mm):
 - template-space thumbnails (the MRI channels on the template grid) at x = 2.0 mm;
 - the blockface template in its own space, at the point (2.0, 19.5, 15.5) carried by the registration's pull map (as in the blockface template figure);
 - the MRI input brain (MF1) at x = 2.0 mm of its canonical frame (its rigid placement on the template grid);
-- the blockface volume: MM2's completed volume (photographs + synthesized tissue), the construction's input, at x = 2.0 mm of its
-  rigid placement (whose x is the template's x); synthesized voxels as orange-tinted brightness (the network outputs brightness).
-One print scale for every image (the largest that fits the 178 mm width); a 10 mm scale bar. Writes the PNG, a PDF beside it, and
-provenance.json.
+- the blockface volume: MM6's completed volume, the construction's input, at x = 4.5 mm of its rigid placement (blockface_x_mm; nearer
+  the midline the plane cuts the medial occipital cortex at a tangent). Its photographed part is read from the reconstruction's store
+  (level 2: 0.16 mm in plane, every 45 um section) through the brain's registration of record, y -> y + d(y) (warp) -> the linear
+  start -> store, with one linear interpolation, on the record's color scale; its synthesized part is the completed RGB, linear, at
+  its own 0.25 mm. A dashed line marks where the synthesized tissue begins: the synthesized mask's border on the junction plane.
+  Nothing is smoothed, cut or filled.
+- one photograph of the same brain, at MM2's place along its stack; the histology row is MM2's.
+One print scale for every image (the largest that fits the 178 mm width, lowered in 0.01 steps while the figure is taller than
+max_height_mm); a 10 mm scale bar. Writes the PNG, a PDF beside it, and provenance.json.
 """
 import argparse
 import json
@@ -43,17 +48,127 @@ def crop_to(a, thr=0.0, pad=4):
     return a[max(r.min() - pad, 0):r.max() + pad + 1, max(c.min() - pad, 0):c.max() + pad + 1]
 
 
-def soft(img, sigma, round_px=0.0):
-    """Display only: the tissue edge antialiased on black (the RGB extended outward by its nearest tissue pixel, times the
-    support rounded at `round_px` and smoothed with a Gaussian of `sigma` pixels)."""
+def crop_box(a, thr=0.0, pad=2):
+    """(r0, r1, c0, c1): the box of the pixels above `thr`, plus `pad` pixels."""
+    m = (a.sum(-1) if a.ndim == 3 else a) > thr
+    r = np.where(m.any(1))[0]; c = np.where(m.any(0))[0]
+    return max(r[0] - pad, 0), min(r[-1] + pad + 1, a.shape[0]), max(c[0] - pad, 0), min(c[-1] + pad + 1, a.shape[1])
+
+
+def dashed_segments(syn, photo, depth, dr, dc, depth_mm):
+    """The polylines (image mm) of the synthesized mask's border that separate synthesized from photographed voxels and lie on the
+    junction plane (|seam_depth| <= depth_mm on both voxels across it), and a record of what is drawn and what is not."""
+    from matplotlib import pyplot as plt
     from scipy import ndimage as ndi
-    m = img.sum(-1) > 0
-    if not m.any() or m.all():
-        return img
-    idx = ndi.distance_transform_edt(~m, return_distances=False, return_indices=True)
-    if round_px > 0:
-        m = ndi.gaussian_filter(m.astype(np.float32), round_px) > 0.5
-    return img[tuple(idx)] * np.clip(ndi.gaussian_filter(m.astype(np.float32), sigma), 0, 1)[..., None]
+    fig_, ax_ = plt.subplots()
+    x = (np.arange(syn.shape[1]) + 0.5) * dc; y = (np.arange(syn.shape[0]) + 0.5) * dr
+    field = np.where(syn, 1.0, 0.0)
+    field[~(syn | photo)] = np.nan                                  # background: no contour against it
+    cs = ax_.contour(x, y, field, levels=[0.5])
+    segs, n_v, off = [], 0, []
+    for path in cs.get_paths():
+        for piece in path.to_polygons(closed_only=False):
+            cur = []
+            for vx, vy in piece:                                    # a contour vertex lies between two voxel centers: that pair decides
+                rf, cf = vy / dr - 0.5, vx / dc - 0.5
+                if abs(rf - round(rf)) > 1e-6:
+                    pair = ((int(np.floor(rf)), int(round(cf))), (int(np.ceil(rf)), int(round(cf))))
+                else:
+                    pair = ((int(round(rf)), int(np.floor(cf))), (int(round(rf)), int(np.ceil(cf))))
+                both = all(0 <= r_ < syn.shape[0] and 0 <= c_ < syn.shape[1] for r_, c_ in pair)
+                keep = both and {bool(syn[pair[0]]), bool(syn[pair[1]])} == {True, False} and all(photo[q] or syn[q] for q in pair) \
+                    and max(abs(depth[q]) for q in pair) <= depth_mm
+                if keep:
+                    cur.append((vx, vy)); n_v += 1; off.append(float(max(abs(depth[q]) for q in pair)))
+                else:
+                    if len(cur) >= 2:
+                        segs.append(np.asarray(cur))
+                    cur = []
+            if len(cur) >= 2:
+                segs.append(np.asarray(cur))
+    plt.close(fig_)
+    bad = 0                                                         # every kept vertex has both kinds of voxel within one voxel
+    for s_ in segs:
+        for vx, vy in s_:
+            r, c = int(vy / dr - 0.5), int(vx / dc - 0.5)
+            w = (slice(max(r - 1, 0), r + 3), slice(max(c - 1, 0), c + 3))
+            bad += not (syn[w].any() and photo[w].any())
+    syn_rostral = syn & (depth >= 0)
+    th = ndi.distance_transform_edt(syn_rostral) * 0.25
+    rec = dict(vertices=n_v, segments=len(segs), length_mm=round(float(sum(np.hypot(*np.diff(s_, axis=0).T).sum() for s_ in segs)), 1),
+               vertices_without_both_sides=int(bad), seam_depth_abs_at_vertices_mm=[round(float(v), 3) for v in np.percentile(off, [50, 100])],
+               mask_voxels_in_plane=int(syn.sum()), mask_caudal_of_line=int((syn & (depth < 0)).sum()), mask_rostral_of_line=int(syn_rostral.sum()),
+               mask_rostral_share=round(float(syn_rostral.sum() / syn.sum()), 4),
+               mask_rostral_half_thickness_mm=[round(float(v), 2) for v in np.percentile(th[syn_rostral], [50, 99, 100])] if syn_rostral.any() else None,
+               photographed_caudal_of_line=int((photo & (depth < -depth_mm)).sum()))
+    return segs, rec
+
+
+def hires_plane(P, cfg, x):
+    """The blockface volume's sagittal plane at world x, rows superior -> inferior, columns posterior -> anterior, at
+    hires_points_per_voxel display points per voxel: rostral of the junction plane the store's photographs (level
+    blockface_hires_level) pulled through the registration of record (one linear interpolation) on the record's color scale, caudal
+    of it the completed RGB, linearly interpolated. Returns the composite (0-1) and its record."""
+    import nibabel as nib
+    import zarr
+    from scipy import ndimage as ndi
+    SUB, LEVEL = int(cfg["hires_points_per_voxel"]), int(cfg["blockface_hires_level"])
+    im = nib.load(str(P["blockface_completed_rgb"])); A = im.affine
+    assert nib.aff2axcodes(A) == ("R", "A", "S") and np.allclose(A[:3, :3], np.diag(np.diag(A[:3, :3])))
+    i = int(round((x - A[0, 3]) / A[0, 0]))
+    rgb = np.asarray(im.dataobj[i], np.float32)                     # (J, K, 3)
+    dp = np.asarray(nib.load(str(P["blockface_seam_depth"])).dataobj[i], np.float32)
+    tissue = rgb.sum(-1) > 0
+    jt, kt = np.nonzero(tissue)                                     # seam_depth is affine in the plane (it reads 0 off the tissue)
+    Mf = np.c_[jt, kt, np.ones(len(jt))]
+    co, *_ = np.linalg.lstsq(Mf, dp[jt, kt], rcond=None)
+    nj, nk = rgb.shape[:2]
+    off = (np.arange(SUB) + 0.5) / SUB - 0.5
+    jj = (np.arange(nj)[:, None] + off[None]).ravel()
+    kk = (np.arange(nk)[:, None] + off[None]).ravel()[::-1]          # rows run superior -> inferior
+    K, J = np.meshgrid(kk, jj, indexing="ij")
+    W = np.stack([np.full(K.shape, A[0, 3] + A[0, 0] * i, float), A[1, 3] + A[1, 1] * J, A[2, 3] + A[2, 2] * K], -1)
+    # the registration of record: frame point y -> y + d(y) -> the linear start -> blockface-native world
+    D = Path(P["blockface_registration"])
+    meta = json.loads((D / "meta.json").read_text())
+    kinds = [(c["kind"], c["file"], c["convention"]) for c in meta["components"]]
+    assert [k[0] for k in kinds] == ["affine", "warp", "affine"] and kinds[1][2] == "itk_lps_disp", kinds
+    d, da = X.read_fireants_field(str(D / kinds[1][1]))
+    M = X.Map(L=np.loadtxt(D / "placed_to_bf_pull.txt"), d=d.astype(np.float32), d_affine=da, name="placed -> bf-native")
+    pts = M(W.reshape(-1, 3)).reshape(W.shape)
+    # the store, at its level: linear interpolation at those points
+    store = Path(P["blockface_example_store"])
+    z = json.loads((store / "zarr.json").read_text())["attributes"]
+    ms = z["multiscales"] if "multiscales" in z else z["ome"]["multiscales"]
+    ct = {t["type"]: t for t in ms[0]["datasets"][LEVEL]["coordinateTransformations"]}
+    tr, sc = ct["translation"]["translation"], ct["scale"]["scale"]   # [c, rows, slices, cols]
+    scale = np.array([sc[3], sc[2], sc[1]]) / 1000.0; origin = scale * np.array([tr[3], tr[2], tr[1]])
+    vox = (pts - origin) / scale                                      # (cols, slices, rows)
+    arr = zarr.open(str(store), mode="r")[str(LEVEL)]
+    lo = np.floor(vox.reshape(-1, 3).min(0)).astype(int) - 1; hi = np.ceil(vox.reshape(-1, 3).max(0)).astype(int) + 2
+    n = (arr.shape[3], arr.shape[2], arr.shape[1])
+    lo = np.clip(lo, 0, n); hi = np.clip(hi, 0, n)
+    blk = np.asarray(arr[:, lo[2]:hi[2], lo[1]:hi[1], lo[0]:hi[0]]).astype(np.float32)
+    crd = [(vox[..., 2] - lo[2]).ravel(), (vox[..., 1] - lo[1]).ravel(), (vox[..., 0] - lo[0]).ravel()]
+    raw = np.stack([ndi.map_coordinates(blk[c], crd, order=1, mode="constant", cval=0.0).reshape(vox.shape[:2]) for c in range(blk.shape[0])], -1)
+    # the record's color scale: the percentile of the brightest channel of the registered colors over the photographed tissue
+    cr = np.asanyarray(nib.load(str(P["blockface_registered_rgb"])).dataobj).astype(np.float32) / 255.0
+    valid = ndi.binary_fill_holes(np.asanyarray(nib.load(str(P["blockface_registered_grey"])).dataobj).astype(np.float32) > 0)
+    lab, nl = ndi.label(valid)
+    if nl > 1:
+        valid = lab == (1 + int(np.argmax(ndi.sum(np.ones_like(lab), lab, index=range(1, nl + 1)))))
+    rscale = float(np.percentile(cr.max(-1)[valid & (cr.sum(-1) > 0)], float(cfg["record_color_pct"])))
+    del cr, valid, lab
+    # the composite, voxel by voxel as the mask's border runs: caudal of the junction plane the completed RGB, else the photographs
+    gj, gk = np.meshgrid(np.arange(nj), np.arange(nk), indexing="ij")
+    caudal_vox = co[0] * gj + co[1] * gk + co[2] < 0
+    Jn = np.clip(np.rint(J).astype(int), 0, nj - 1); Kn = np.clip(np.rint(K).astype(int), 0, nk - 1)
+    caudal = caudal_vox[Jn, Kn]
+    up = np.stack([ndi.map_coordinates(rgb[..., c], [J.ravel(), K.ravel()], order=1, mode="constant").reshape(J.shape) for c in range(3)], -1)
+    comp = np.where(caudal[..., None], up, np.clip(raw / 255.0 / rscale, 0, 1))
+    rec = dict(store_level=LEVEL, store_scale_mm=scale.tolist(), block_shape=list(blk.shape), display_mm=0.25 / SUB, record_scale=rscale,
+               chain="y -> y + d(y) (warp) -> placed_to_bf_pull -> store, one linear interpolation")
+    return comp, rec
 
 
 def read_level(path, level):
@@ -131,7 +246,6 @@ def main():
     import matplotlib.pyplot as plt
     import nibabel as nib
     import yaml
-    from matplotlib.colors import to_rgb
     from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
     from matplotlib.path import Path as MPath
     from PIL import Image
@@ -143,7 +257,6 @@ def main():
     W_LUM = np.asarray(cfg["luminance_weights"], np.float32)
     N = {"n_bf": count("bf_cohort", "rows"), "n_histo": count("histo_tube_landmarks", "per_subject")}
     FG, GRAY, BFA, MRIA = FS.FG, FS.GRAY, FS.COL["direct"], FS.COL["mri"]
-    SYNC = FS.COL["pred"]                                       # synthesized tissue = orange (house style; the blockface template figure, c)
 
     def sagx(path, x):
         """The sagittal section at world x (mm) of a RAS volume on a diagonal grid: rows superior -> inferior, columns
@@ -191,17 +304,21 @@ def main():
     xb = float(X.load_map(str(P["bft_pull_map"]), "full")(np.array([cfg["section_point_mm"]], float))[0][0])
     rgb, dr, dc, xb_s = sagx(P["bft_rgb"], xb); mr = sagx(P["bft_mask"], xb)[0] > 0
     I["bft"] = (crop_to(np.clip(rgb, 0, 1) * mr[..., None], 0.02), dr, dc, None)
-    # the blockface volume: MM2's completed volume (photographs + synthesized tissue), the construction's input, at x = 2.0 mm of
-    # its rigid placement; synthesized voxels shown as orange-tinted brightness (the network outputs brightness only)
-    rgb, dr, dc, xv_s = sagx(P["blockface_completed_rgb"], XS); sm = sagx(P["blockface_synth_mask"], XS)[0] > 0
-    mv = rgb.sum(-1) > 0
-    lum = rgb @ W_LUM; tint = np.clip(lum / np.percentile(lum[mv], 99.5), 0, 1)[..., None] * np.asarray(to_rgb(SYNC))
-    vol = np.where((sm & mv)[..., None], tint, np.clip(rgb, 0, 1))
-    soft_px = tuple(v * float(cfg["soft_edge_grid_mm"]) / dr for v in cfg["soft_edge_px"])   # the reconstruction figure's edge
-    I["bfvol"] = (crop_to(soft(vol, *soft_px), 0.0, pad=2), dr, dc, None)
-    n_synth_px = int((sm & mv).sum())
-    # one photograph (the reconstruction figure's section), neurological, cropped to its brain box
-    fin2, A2 = read_level(P["blockface_store"], int(cfg["blockface_level"]))
+    # the blockface volume (the docstring): the photographed part from the store through the registration of record, the
+    # synthesized part as stored, and the dashed line where the synthesized tissue begins
+    XB = float(cfg["blockface_x_mm"]); SUB = int(cfg["hires_points_per_voxel"])
+    rgb, dr, dc, xv_s = sagx(P["blockface_completed_rgb"], XB); sm = sagx(P["blockface_synth_mask"], XB)[0] > 0
+    depth = sagx(P["blockface_seam_depth"], XB)[0]
+    tissue = rgb.sum(-1) > 0; syn = sm & tissue; photo_t = tissue & ~sm
+    comp, hires_rec = hires_plane(P, cfg, XB)
+    rh0, rh1, ch0, ch1 = crop_box(comp, pad=2 * SUB)                 # on whole voxels, so the line's mm hold
+    r0, r1, c0, c1 = rh0 // SUB, int(np.ceil(rh1 / SUB)), ch0 // SUB, int(np.ceil(ch1 / SUB))
+    vol = comp[r0 * SUB:r1 * SUB, c0 * SUB:c1 * SUB]
+    segs, line_rec = dashed_segments(syn[r0:r1, c0:c1], photo_t[r0:r1, c0:c1], depth[r0:r1, c0:c1], dr, dc, float(cfg["junction_depth_mm"]))
+    assert line_rec["vertices_without_both_sides"] == 0 and line_rec["segments"] >= 1, line_rec
+    I["bfvol"] = (vol, dr / SUB, dc / SUB, None)
+    # one photograph of the same brain (photo_section), neurological, cropped to its brain box
+    fin2, A2 = read_level(P["blockface_example_store"], int(cfg["blockface_level"]))
     k0 = int(cfg["photo_section"])
     im = np.asarray(Image.open(P["photographs"] / f"SLICE_{k0:04d}_0000.png").convert("RGB"))
     pm = np.asarray(Image.open(P["photo_masks"] / f"SLICE_{k0:04d}.png")) > 0
@@ -221,7 +338,7 @@ def main():
     # one histology section and its blockface photograph (TIRL), neurological
     hi = np.asarray(Image.open(P["histology_piece"] / "moving4_nonlinear_rgb.png").convert("RGB"), np.float32) / 255.0
     sl = np.asarray(Image.open(P["histology_piece"] / "fixed.png").convert("L"), np.float32) / 255.0
-    flip = histo_side(sl, fin2)
+    flip = histo_side(sl, read_level(P["blockface_store"], int(cfg["blockface_level"]))[0])     # the histology example's own stack
     if flip:
         hi, sl = hi[:, ::-1], sl[:, ::-1]
     px = float(cfg["histology_mm_px"])
@@ -244,17 +361,22 @@ def main():
         lw, tw = widths(SC)
         if W - 4.0 - lw - tw >= MIDW:
             break
-    SC = float(round(SC, 2)); lw, tw = widths(SC)
+    SC = float(round(SC, 2)); SC_width = SC
 
-    # ---- layout (mm) --------------------------------------------------------------------------------------------------------
-    HEAD, LAB, G12, G23 = 6.6, 3.4, 9.0, 4.0                  # box header; label line; the registration's gap; rows 2-3
-    LX0, LX1, TX0, TX1 = 2.0, 2.0 + lw, W - 2.0 - tw, W - 2.0
-    h1 = max(ht(k, SC) for k in ("i_t2", "i_dec", "t_t2", "t_dec")); h2 = max(ht(k, SC) for k in ("i_f1", "i_f2", "t_f1", "t_f2"))
-    h3 = max(ht(k, SC) for k in ("photo", "bfvol", "bft")); h4 = max(ht("histo", SC), ht("slice", SC))
-    top = 2.0
-    R1 = top + HEAD + h1 / 2; R2 = R1 + h1 / 2 + LAB + 0.8 + h2 / 2; my1 = R2 + h2 / 2 + LAB + 0.6
-    by0 = my1 + G12; R3 = by0 + HEAD + h3 / 2; by1 = R3 + h3 / 2 + 2 * LAB + 0.6
-    hy0 = by1 + G23; R4 = hy0 + HEAD + h4 / 2; hy1 = R4 + h4 / 2 + LAB + 0.6; H = hy1 + 2.0
+    # ---- layout (mm), lowering the print scale while the figure is taller than max_height_mm -------------------------------
+    HEAD, LAB, G12, G23 = 6.0, 3.4, 6.0, 3.0                  # box header; label line; the registration's gap; rows 2-3
+    while True:
+        lw, tw = widths(SC)
+        LX0, LX1, TX0, TX1 = 2.0, 2.0 + lw, W - 2.0 - tw, W - 2.0
+        h1 = max(ht(k, SC) for k in ("i_t2", "i_dec", "t_t2", "t_dec")); h2 = max(ht(k, SC) for k in ("i_f1", "i_f2", "t_f1", "t_f2"))
+        h3 = max(ht(k, SC) for k in ("photo", "bfvol", "bft")); h4 = max(ht("histo", SC), ht("slice", SC))
+        top = 2.0
+        R1 = top + HEAD + h1 / 2; R2 = R1 + h1 / 2 + LAB + 0.8 + h2 / 2; my1 = R2 + h2 / 2 + LAB + 0.6
+        by0 = my1 + G12; R3 = by0 + HEAD + h3 / 2; by1 = R3 + h3 / 2 + 2 * LAB + 0.6
+        hy0 = by1 + G23; R4 = hy0 + HEAD + h4 / 2; hy1 = R4 + h4 / 2 + LAB + 0.6; H = hy1 + 2.0
+        if H <= float(cfg["max_height_mm"]) or SC <= s_lo:
+            break
+        SC = float(round(SC - 0.01, 2))
     wm = max(wd(k, SC) for k in ("i_t2", "i_dec", "i_f1", "i_f2")); wt = max(wd(k, SC) for k in ("t_t2", "t_dec", "t_f1", "t_f2"))
     C1 = LX0 + (lw - (2 * wm + GAP)) / 2 + wm / 2; C2 = C1 + wm + GAP
     T1c = TX0 + PAD + wt / 2; T2c = T1c + wt + GAP
@@ -264,14 +386,14 @@ def main():
 
     fig = plt.figure(figsize=(W * FS.MM, H * FS.MM))
     ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, W); ax.set_ylim(H, 0); ax.axis("off")
-    B = {}
+    B = {}; AX = {}
 
     def image(k, xc, yc):
         arr, dr_, dc_, cmap = I[k]
         h, w = arr.shape[0] * dr_ * SC, arr.shape[1] * dc_ * SC
         a_ = FS.axes_mm(fig, xc - w / 2, yc - h / 2, w, h)
         a_.imshow(arr, cmap=cmap, aspect="auto", vmin=0, vmax=1, extent=(0, arr.shape[1] * dc_, arr.shape[0] * dr_, 0))
-        a_.axis("off"); B[k] = (xc - w / 2, yc - h / 2, w, h)
+        a_.axis("off"); B[k] = (xc - w / 2, yc - h / 2, w, h); AX[k] = a_
 
     def text(x, y, s, **kw):
         kw.setdefault("fontsize", FS.MIN_PT); kw.setdefault("ha", "center"); kw.setdefault("va", "top"); kw.setdefault("color", FG)
@@ -308,7 +430,14 @@ def main():
                        ("t_f1", T1c, R2, "soma fraction"), ("t_f2", T2c, R2, "neurite fraction"), ("photo", xp, R3, "photographs"),
                        ("bfvol", xv, R3, "blockface volume")):
         image(k, x, y); text(cx(k), bot(k) + 0.5, s)
-    text(cx("bfvol"), bot("bfvol") + 0.5 + LAB, "synthesized tissue", color=SYNC)
+    tl = ax.text(cx("bfvol"), bot("bfvol") + 0.5 + LAB, "dashed: synthesized tissue begins", fontsize=FS.MIN_PT, ha="center", va="top",
+                 color=FG, linespacing=1.15)
+    wl = tl.get_window_extent(fig.canvas.get_renderer()).width / fig.dpi / FS.MM
+    if cx("bfvol") + wl / 2 > LX1 - 1.0:                           # kept inside the box
+        tl.set_x(LX1 - 1.0 - wl / 2)
+    for s_ in segs:                                                 # on the volume, in the mm of its extent
+        AX["bfvol"].plot(s_[:, 0], s_[:, 1], color="k", lw=0.8, ls=(0, (3, 2)), solid_capstyle="butt", dash_capstyle="butt")
+    AX["bfvol"].set_xlim(0, vol.shape[1] * I["bfvol"][2]); AX["bfvol"].set_ylim(vol.shape[0] * I["bfvol"][1], 0)
     image("bft", T1c, R3)
     box(LX0, top, LX1, my1); header(LX0, LX1, top, "Ex vivo MRI", "4 brains + their mirrors")
     box(LX0, by0, LX1, by1); header(LX0, LX1, by0, "Blockface", f"{N['n_bf']} brains + their mirrors")
@@ -334,17 +463,18 @@ def main():
     text((LX1 + T2c) / 2, ym + 0.8, "MRI-based alignment (through its own MRI)", color=MRIA)
 
     inputs = [P[k] for k in ("template_t2", "template_mask", "template_dec", "template_frac1", "template_frac2", "bft_rgb", "bft_mask",
-                             "bft_pull_map", "blockface_completed_rgb", "blockface_synth_mask", "blockface_store", "photographs",
-                             "photo_masks", "histology_piece")]
+                             "bft_pull_map", "blockface_completed_rgb", "blockface_synth_mask", "blockface_seam_depth",
+                             "blockface_registration", "blockface_registered_rgb", "blockface_registered_grey", "blockface_example_store",
+                             "blockface_store", "photographs", "photo_masks", "histology_piece")]
     inputs += list(INP.values()) + [numbers_root() / "bf_cohort.json", numbers_root() / "histo_tube_landmarks.json"]
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(str(Path(a.out).with_suffix(".pdf")), facecolor=fig.get_facecolor(), metadata={"CreationDate": None})
     FS.save(fig, a.out, [str(p_) for p_ in inputs], " ".join(["reproduce/figures/pipeline.py"] + sys.argv[1:]),
-            extra={"print_scale_mm_per_mm": SC, "planes": {"template_x_mm": XS, "blockface_template_x_mm": xb_s,
-                                                            "blockface_volume_x_mm": xv_s, "synthesized_px": n_synth_px},
+            extra={"print_scale_mm_per_mm": SC, "print_scale_for_width": SC_width, "height_mm": round(H, 1),
+                   "planes": {"template_x_mm": XS, "blockface_template_x_mm": xb_s, "blockface_volume_x_mm": xv_s},
                    "blockface": {"coronal_section": k0, "photo_mirrored": bool(mirrored), "photo_mm_px": mm_px,
-                                 "histology_flipped": bool(flip)}})
-    print("wrote", a.out, "scale", SC)
+                                 "histology_flipped": bool(flip)}, "hires": hires_rec, "dashed_line": line_rec})
+    print("wrote", a.out, "scale", SC, "H", round(H, 1), line_rec)
 
 if __name__ == "__main__":
     main()

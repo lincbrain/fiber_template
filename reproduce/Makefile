@@ -63,7 +63,7 @@ FIGURES_LINC := reconstruction bf_template alignment_comparison
 FIGURES_COMPLETION := s_synthesis_depth s_synthesis_gallery lgnstn
 FIGURES := $(FIGURES_MRI) $(FIGURES_LINC) $(FIGURES_COMPLETION) histology s_tracer_fidelity tracer_sections3d
 
-.PHONY: all numbers numbers-gpu numbers-figures check test figures $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_GPU) $(FIGURES)
+.PHONY: all numbers numbers-gpu numbers-figures check test figures print-figures print-figure-records $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_GPU) $(FIGURES)
 
 all: numbers figures check
 
@@ -140,6 +140,15 @@ d3p_vs_d3_pseudo_prod d3_domain_shift_prod:
 
 check:
 	$(PY) check_numbers.py --ref reference --new $(LINC_NUMBERS)
+
+# lists for the checks of the build plan (reproduce/build_everything.yaml), so they follow this file: the figure targets, and the
+# figure records that no numbers target writes (those that numbers-figures writes)
+FIGURE_RECORDS := $(filter-out $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_GPU),\
+  $(patsubst reference/%.json,%,$(wildcard reference/fig_*.json)))
+print-figures:
+	@echo $(FIGURES)
+print-figure-records:
+	@echo $(FIGURE_RECORDS)
 
 # the installation check, no data needed (selftest.sh): the tests, each in its environment, and toy-data smokes of the command lines
 test:

@@ -3,7 +3,7 @@
 
     $PY tools/compare_mri_build.py staged  <your sub-<ID>/mri> <the paper's sub-<ID>> [--min 17]
     $PY tools/compare_mri_build.py nmt     <your sub-<ID>/mri> <the paper's sub-<ID>> [--min-agree 93]
-    $PY tools/compare_mri_build.py field   t2|micro <your sub-<ID>> <the paper's sub-<ID>> [--median 0.05] [--largest 1.0]
+    $PY tools/compare_mri_build.py field   t2|micro <your sub-<ID>> <the paper's sub-<ID>> [--median 0.05] [--p99 0.3] [--largest L]
     $PY tools/compare_mri_build.py frame   <your sub-<ID>/mri> <the paper's sub-<ID>> [--deg 1.0] [--mm 0.5]
     $PY tools/compare_mri_build.py prepare <your prep/<ID>> <the paper's prep folder> [--t2 0.88 --b0 0.87 --frac 0.84 --tensor 0.98 --dice 0.97]
     $PY tools/compare_mri_build.py run     <your run>/out <the paper's run>/out [--parts affine_step1 affine_step2 nln_step_01] [--min 202]
@@ -15,7 +15,8 @@ $LINC_PRODUCTS/mri/tc/rb_final, its link entries $LINC_PRODUCTS/mri/xfm_rb_final
 What it does:
   staged   every staged image (dwi/, t2/, micro/) that the paper also has: voxel values and affine;
   nmt      the share of the brain's voxels (your b0 mask) where your SARM labels equal the paper's;
-  field    the within-brain field (t2 or micro to the b0): distance between your field and the paper's inside your b0 mask;
+  field    the within-brain field (t2 or micro to the b0): distance between your field and the paper's inside your b0 mask, its
+           median and 99th percentile (the largest, a single voxel, is reported and checked only with --largest);
   frame    the canonical frame: the angle between the two rotations and the mean distance between the two maps over the brain;
   prepare  the construction inputs: Pearson r inside both final masks for T2, b0, the two fractions and the tensor, and the masks' Dice;
   run      the MMORF run: every file of the named parts (folders or files) of the paper's run, byte for byte or voxel for voxel
@@ -83,10 +84,11 @@ def field(a):
     x, y = np.squeeze(load(f(mine))).astype(np.float64), np.squeeze(load(f(paper))).astype(np.float64)
     m = load(mine / "mri" / "masks" / "dwi_brain_mask.nii.gz") > 0
     d = np.linalg.norm(x[m] - y[m], axis=-1)
-    med, top = float(np.median(d)), float(d.max())
-    print(f"{a.kind} field against the paper's, inside the b0 mask: median {med:.3f} mm, 99th percentile {np.percentile(d, 99):.3f} mm, largest {top:.3f} mm")
-    finish(med <= a.median and top <= a.largest,
-           f"{a.kind} field: median {med:.3f} mm (at most {a.median:g}), largest {top:.2f} mm (at most {a.largest:g})")
+    med, p99, top = float(np.median(d)), float(np.percentile(d, 99)), float(d.max())
+    print(f"{a.kind} field against the paper's, inside the b0 mask: median {med:.3f} mm, 99th percentile {p99:.3f} mm, largest {top:.3f} mm")
+    ok = med <= a.median and p99 <= a.p99 and (a.largest is None or top <= a.largest)
+    finish(ok, f"{a.kind} field: median {med:.3f} mm (at most {a.median:g}), 99th percentile {p99:.3f} mm (at most {a.p99:g}), largest {top:.2f} mm"
+               + (f" (at most {a.largest:g})" if a.largest is not None else ""))
 
 
 def frame(a):
@@ -168,7 +170,8 @@ def main():
     p = sub.add_parser("staged"); p.add_argument("mine"); p.add_argument("paper"); p.add_argument("--min", type=int, default=17)
     p = sub.add_parser("nmt"); p.add_argument("mine"); p.add_argument("paper"); p.add_argument("--min-agree", type=float, default=93.0)
     p = sub.add_parser("field"); p.add_argument("kind", choices=["t2", "micro"]); p.add_argument("mine"); p.add_argument("paper")
-    p.add_argument("--median", type=float, default=0.05); p.add_argument("--largest", type=float, default=1.0)
+    p.add_argument("--median", type=float, default=0.05); p.add_argument("--p99", type=float, default=0.3)
+    p.add_argument("--largest", type=float, default=None)
     p = sub.add_parser("frame"); p.add_argument("mine"); p.add_argument("paper")
     p.add_argument("--deg", type=float, default=1.0); p.add_argument("--mm", type=float, default=0.5)
     p = sub.add_parser("prepare"); p.add_argument("mine"); p.add_argument("paper")

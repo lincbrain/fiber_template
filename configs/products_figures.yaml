@@ -14,17 +14,22 @@ bft_rgb: bftemplate/d2b/final_s8/d2bs8_rgb.nii.gz
 bft_mask: bftemplate/d2b/final_s8/d2bs8_brainmask.nii.gz
 bft_pull_map: bftemplate/cv/template2template/d2bs8_s5sym/bftemplate__to__mri-template    # maps.json: src = L @ (x + d(x))
 
-# --- one photographed brain's completed volume (MM2 = MR252): photographs + synthesized tissue, the construction's input ---
-blockface_completed_rgb: synthesis/out_d3_full/MR252/MR252_bf_completed_rgb.nii.gz   # the synthesis of record (d3_full), run-113 frame
-blockface_synth_mask: synthesis/out_d3_full/MR252/MR252_synth_mask.nii.gz
+# --- the blockface example (MM6 = MR251): its completed volume, the construction's input, and what the photographed part is pulled from ---
+blockface_completed_rgb: synthesis/out_d3_full/MR251/MR251_bf_completed_rgb.nii.gz   # the synthesis of record (d3_full), run-113 frame
+blockface_synth_mask: synthesis/out_d3_full/MR251/MR251_synth_mask.nii.gz
+blockface_seam_depth: synthesis/out_d3_full/MR251/MR251_seam_depth.nii.gz           # signed distance to the junction plane (mm)
+blockface_registration: data/sub-MR251/xfm_r1v3/bf-native__to__b0-native             # the registration of record (meta.json, warp, placed_to_bf_pull.txt)
+blockface_registered_rgb: data/sub-MR251/mri/nonlinear_r1v3/MR251_bf_nonlin_rgb.nii.gz   # its registered color volume: the record's color scale
+blockface_registered_grey: data/sub-MR251/mri/nonlinear_r1v3/MR251_bf_nonlin.nii.gz
+blockface_example_store: data/sub-MR251/blockface/MR251_blockface.ome.zarr           # the reconstruction (OME-Zarr pyramid)
+photographs: data/sub-MR251/blockface/00_slices                                       # SLICE_<k>_0000.png
+photo_masks: data/sub-MR251/blockface/01_brainmask/01_final                           # SLICE_<k>.png
 
 # --- one MRI input brain (MF1 = MF283), in its canonical frame (its rigid placement on the template grid) ---
 mri_input: mri/data/sub-MF283/canonical                              # t2, brain_mask, tensor (FSL order), frac1, frac2 (.nii.gz)
 
-# --- one photographed brain (MM2 = MR252): its reconstruction, one photograph, one histology section ---
+# --- the histology example (MM2 = MR252): its reconstruction (for the side check) and one histology section ---
 blockface_store: data/sub-MR252/blockface/MR252_blockface.ome.zarr   # the reconstructed volume (OME-Zarr pyramid)
-photographs: data/sub-MR252/blockface/00_slices                      # SLICE_<k>_0000.png
-photo_masks: data/sub-MR252/blockface/01_brainmask/01_final          # SLICE_<k>.png
 histology_piece: data_arm_final/sub-MR252/blockface/06_histo2bf/tirl/mr252FS_c11_s28nDF_0000   # moving4_nonlinear_rgb.png, fixed.png
 
 # --- the tracer labels figure (reproduce/figures/tracer.py) ---

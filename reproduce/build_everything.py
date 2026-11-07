@@ -116,8 +116,8 @@ def load_plan(path=PLAN):
                 s["name"] = f"{e['name']}-{b}"
                 for k in TEXT:
                     s[k] = str(s[k]).replace("{id}", b)
-            for k in TEXT:
-                s[k] = " ".join(str(s[k]).split())
+            for k in TEXT:                # commands keep their spacing (a pattern may need two spaces); prose is tidied
+                s[k] = str(s[k]).strip() if k in ("run", "check") else " ".join(str(s[k]).split())
             bases.setdefault(e["name"], []).append(s["name"])
             steps.append(s)
     by = {}

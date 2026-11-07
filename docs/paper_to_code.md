@@ -72,7 +72,7 @@ draft) numbers six of them differently (in bold in the last column).
 | Figure | Script (`reproduce/figures/`) | Make target | Environment | Incremental version |
 |---|---|---|---|---|
 | 1 The multimodal template | `template.py` | `template` | `env/linc.yml` | 1 |
-| 2 Building the template and aligning histology to it | not drawn by this release yet: `pipeline.py` draws the figure with MM2 as the blockface example, the paper shows MM6 | `pipeline` | `env/linc.yml` | 2 |
+| 2 Building the template and aligning histology to it | `pipeline.py` (the blockface example MM6; needs the LINC participants table: `LINC_PARTICIPANTS`) | `pipeline` | `env/linc.yml` | 2 |
 | 3 Blockface reconstruction of one brain (MM2) | `reconstruction.py` | `reconstruction` | `env/linc.yml` | 3 |
 | 4 Between-brain deviation after alignment to each template | `variability.py` | `variability` | `env/linc.yml` | **9** |
 | 5 The blockface template | `bf_template.py` | `bf_template` | `env/linc.yml` | **4** |

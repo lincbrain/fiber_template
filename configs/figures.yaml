@@ -3,14 +3,19 @@
 pipeline:
   sagittal_x_mm: 2.0                  # the sagittal plane of the template figure (NMT v2 x, mm): every template-space thumbnail
   section_point_mm: [2.0, 19.5, 15.5] # the template figure's three sections; carried into the blockface template by the pull map, as the blockface template figure does
-  blockface_level: 2                  # OME-Zarr level shown (0.16 mm in-plane)
-  photo_section: 718                  # the photograph shown (the reconstruction figure's section)
+  blockface_level: 2                  # OME-Zarr level of the photograph's side check (0.16 mm in-plane)
+  photo_section: 654                  # the photograph shown: the example's section at MM2's place along its stack (MM2's section 718)
   photo_box: 1.04                     # the photograph cropped to its brain box times this
   luminance_weights: [0.299, 0.587, 0.114]   # RGB -> gray (Rec. 601), for the photograph's side check
-  soft_edge_px: [0.8, 1.5]            # the volume's tissue edge on black: Gaussian sigma and rounding (pixels at soft_edge_grid_mm), display only
-  soft_edge_grid_mm: 0.16             # ... the reconstruction figure's pixel, rescaled to the completed volume's grid
+  blockface_x_mm: 4.5                 # the blockface volume's sagittal plane: lateral of the medial occipital cortex, which a plane
+                                      #   near the midline cuts at a tangent
+  blockface_hires_level: 2            # the store's pyramid level of its photographed part (0.16 mm in plane, every 45 um section)
+  hires_points_per_voxel: 3           # display points per 0.25 mm voxel (0.083 mm), placed symmetrically inside each voxel
+  record_color_pct: 99.0              # the record's color scale: this percentile of the brightest channel of the registered colors
+  junction_depth_mm: 0.40             # a border vertex lies on the junction plane if the voxels across it are within this
   histology_mm_px: 0.034              # TIRL block grid (configuration.yml resolution)
   print_scale_range: [0.60, 0.25]     # the largest print scale (mm per tissue mm) in this range that fits the 178 mm width
+  max_height_mm: 138                  # ... lowered in 0.01 steps while the figure is taller (it must fit a page with its caption)
   scale_bar_mm: 10
 
 alignment_comparison:
