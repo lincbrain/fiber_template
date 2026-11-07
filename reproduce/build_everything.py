@@ -20,6 +20,8 @@ What it does
                       (default: $LINC_HOSTS, or this machine alone). A step starts on a machine only when its card, memory, cores
                       and the disk have room beside what already runs there.
   --force             with --run --only: run the named steps again although they passed
+  --redo NAME ...     with --run: run these steps again although they passed or differ (after a fix to their command or check),
+                      and everything else as usual
 You get
   outputs/build_everything/status.json    every step with its command, state, machine, times and the last line of its check
   outputs/build_everything/steps/<step>/  the script that ran, run.log and check.log
@@ -509,6 +511,10 @@ def find_lost(steps, rows, dead):
 # ---------------------------------------------------------------------------------------------------------------- commands
 def cmd_run(a, steps):
     names, named = select(steps, a.only)
+    redo = set()
+    if a.redo:
+        more, redo = select(steps, a.redo)
+        names = [s["name"] for s in steps if s["name"] in set(names) | set(more)]
     by = {s["name"]: s for s in steps}
     missing = unset_variables([by[n] for n in names])
     if missing:
@@ -520,13 +526,13 @@ def cmd_run(a, steps):
     (OUT / "scheduler").write_text(f"{HERE} {os.getpid()}\n")
     signal.signal(signal.SIGTERM, lambda *_: sys.exit(143))
     try:
-        _run(a, steps, names, named, by)
+        _run(a, steps, names, (set(named) if a.force else set()) | redo, by)
     finally:
         (OUT / "scheduler").unlink(missing_ok=True)
         write_status(steps, snapshot(steps))
 
 
-def _run(a, steps, names, named, by):
+def _run(a, steps, names, forced, by):
     write_env()
     hosts = list(dict.fromkeys(HERE if h == "localhost" else h.split(".")[0] for h in (a.hosts or os.environ.get("LINC_HOSTS") or HERE).split()))
     say(f"{clock()} run {run_id()}, commit {commit() or 'unknown'}: {len(names)} steps on {len(hosts)} machine(s)")
@@ -538,7 +544,6 @@ def _run(a, steps, names, named, by):
     good = [h for h in hosts if tests[h]["ok"]]
     if not good:
         die("no machine passed the installation test (bash reproduce/selftest.sh shows why)")
-    forced = set(named) if a.force else set()
     tried, known, notes, dead, last_probe, last_look, last_say = set(), {}, {}, {}, 0, time.time(), 0
     (OUT / "notes.json").write_text("{}")
     while True:
@@ -691,6 +696,7 @@ def main(argv=None):
     ap.add_argument("--only", nargs="+", default=[], metavar="NAME")
     ap.add_argument("--hosts", default="")
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--redo", nargs="+", default=[], metavar="NAME")
     ap.add_argument("--plan-file", default=str(PLAN), help=argparse.SUPPRESS)
     ap.add_argument("--out", default=str(OUT), help="the run's folder (default outputs/build_everything)")
     a = ap.parse_args(argv)
