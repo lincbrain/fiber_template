@@ -555,6 +555,7 @@ def _run(a, steps, names, forced, by):
                 mine.setdefault(r["host"], []).append({**s, **r})
         ready = [by[n] for n in names if n not in tried and (rows[n]["state"] == "ready" or (
             (rows[n]["state"] == "failed" or (n in forced and rows[n]["state"] in RAN)) and all(rows[d]["state"] in RAN for d in by[n]["needs"])))]
+        ready = [s for s in ready if not set(s["needs"]) & (forced - tried)]     # a step waits for the redo of a step it needs
         never = [s for s in ready if len(known) == len(good) and not any(fits(s, m) for m in known.values())]
         for s in never:
             notes[s["name"]] = "no machine in the list can hold it: " + machine(s)
