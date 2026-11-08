@@ -11,6 +11,7 @@ What it does
     finalize_brainmask  00_predict       -> 01_brainmask/01_final (existing files are kept, so a hand correction survives)
     stack_blockface     00_slices        -> _work/blockface_raw.ome.zarr
     stack_masks         01_final         -> _work/brainmask.ome.zarr
+                        (both stacks put slice 0 at the frame count's front end, or at the brain's stack_origin_frames')
     masks_to_png        an edited stack  -> 01_final (a hand-edited stack written back)
 You get
   00_slices/, 01_brainmask/{00_predict, 01_final}/ and the two working stacks under _work/.
@@ -114,6 +115,14 @@ def finalize_brainmask(cfg):
     print(f"accepted {n} brain masks as final -> {dst} (kept existing manual fixes)")
 
 
+def _y_anterior0(cfg):
+    """World y (mm) of a stack's slice 0 when the brain pins the frame count its origin counts (configs/subjects/<ID>.yaml
+    stack_origin_frames: the stack of record held frames that are not this brain's photographs); None = the stack's own count.
+    The same expression as zarrio.write_stack's, so the pinned origin equals the one of record exactly."""
+    n = cfg.stack_origin_frames
+    return None if n is None else cfg.vz * (n - 1 + 0.5) / 1000.0
+
+
 def stack_blockface(cfg):
     """Stack the raw (background-kept) blockface photos into the working OME-Zarr."""
     photos = sorted(glob(os.path.join(cfg.slices, "*_0000.png")))
@@ -123,7 +132,7 @@ def stack_blockface(cfg):
         return zarrio.load_image(photos[s])
 
     zarrio.write_stack(cfg.raw_stack, get_slice, len(photos), rows, cols, 3,
-                       cfg.vx, cfg.vz, cfg.reduce, pad=cfg.stack_pad or zarrio.STACK_PAD)
+                       cfg.vx, cfg.vz, cfg.reduce, pad=cfg.stack_pad or zarrio.STACK_PAD, y_anterior0=_y_anterior0(cfg))
 
 
 def stack_masks(cfg):
@@ -136,7 +145,8 @@ def stack_masks(cfg):
         return zarrio.load_mask(masks[s])                # integer labels (/50)
 
     zarrio.write_stack(cfg.mask_stack, get_slice, len(masks), rows, cols, 1,
-                       cfg.vx, cfg.vz, "stride", pad=cfg.stack_pad or zarrio.STACK_PAD)   # masks: no mean-blur
+                       cfg.vx, cfg.vz, "stride", pad=cfg.stack_pad or zarrio.STACK_PAD,   # masks: no mean-blur
+                       y_anterior0=_y_anterior0(cfg))
 
 
 def masks_to_png(cfg):

@@ -501,7 +501,7 @@ steps:
       10 GB for mask and tubes).'
   - name: reconstruct
     group: blockface
-    for: [MF278, MF275, MF282, MR256, MR250, MR251, MR253, MR254, MR257, MR261, MR273]
+    for: [MF278, MF275, MF282, MR256, MR250, MR251, MR254, MR257, MR261, MR273]
     title: Reconstruct the blockface volume from the photographs
     inputs: the photographs ($LINC_RAW/blockface_curated); the hand inputs ($LINC_REBUILD_DATA/sub-{id}/blockface/curated, 01_brainmask/01_final);
       configs/subjects/{id}.yaml
@@ -521,8 +521,38 @@ steps:
     optional: false
     note: 'Not rerun from a clone before the lab run of 6-7 Nov, where MM5 came out identical and MF5 and MF6 differed by a grid shift of whole voxels:
       the hand edits of the four 26 um brains (MF5, MF6, MF7, MM15) carry the calibrated 27 um in-plane spacing, which the reconstruction now scales
-      back before aligning to them. Rebuilt with that code from stack on 7 Nov, MF5 and MF6 were 18 of 18 identical. Time, memory and disk from MM2
-      and MM14 (similar stacks: 884 to 1,427 sections); the camera jumps (configs/subjects/{id}.yaml) take about 15 min each.'
+      back before aligning to them. Rebuilt with that code from stack on 7-8 Nov, MF5, MF6, MF7 and MM15 were 18 of 18 identical. MM10''s stack of
+      record held 1,587 frames (a block appended after its 1,383 photographs and later cut off), and its world origin and {id}.info count them: configs/subjects/MR261.yaml
+      pins that count (stack_origin_frames), and MM10 rebuilt from stack on 8 Nov was 18 of 18 identical. Time, memory and disk from MM2 and MM14
+      (similar stacks: 884 to 1,427 sections); the camera jumps (configs/subjects/{id}.yaml) take about 15 min each.'
+  - name: reconstruct
+    group: blockface
+    for: [MR253]
+    title: Reconstruct the blockface volume from the photographs
+    inputs: the photographs ($LINC_RAW/blockface_curated); the hand inputs ($LINC_REBUILD_DATA/sub-{id}/blockface/curated, 01_brainmask/01_final);
+      configs/subjects/{id}.yaml
+    outputs: $LINC_REBUILD_DATA/sub-{id}/blockface/ ({id}_blockface.ome.zarr, {id}_mask, {id}_holes, {id}_blockface_L2, {id}.info)
+    run: LINC_DATA=$LINC_REBUILD_DATA $PY_TIRL cli/linc-reconstruct all --subject {id}
+    check: $PY tools/compare_reconstruction.py {id} $LINC_REBUILD_DATA/sub-{id}/blockface $LINC_PRODUCTS/data/sub-{id}/blockface --min-r 0.96 --min-dice
+      0.999 --max-shift-mm 0.025
+    expect: within the tolerance of the paper's volume, mask and tubes, not identical (every level of the four stores and the three NIfTI files have
+      r at least 0.96 or Dice at least 0.999, and an origin shift of at most 0.025 mm; the hand-corrected mask and tubes identical)
+    needs: [data-folders]
+    gpu_gb: 10
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 90
+    cores: 8
+    disk_gb: 35
+    hours: 18
+    timed: clone
+    optional: false
+    note: 'The paper''s reconstruction of MM7 cannot be reproduced exactly from the photographs. Its last rebuild (22 Sep 2026) ran the camera-jump
+      stage a second time on the working stack that an earlier run had already corrected in place (the jumps applied, the sections of the seven unreadable
+      photographs filled), and a single pass from the photographs does not repeat that. Rerun from a clone in the lab run of 6-7 Nov (18 h): the crop
+      is one pixel row off (origin shift 0.020 mm); the volume''s levels have r 0.9976 to 0.9993 and the camera-jump stage''s store 0.961 to 0.992
+      (its full-resolution level is the most sensitive to the row); the masks have Dice 0.99902; the hand-corrected mask and tubes are identical.
+      The tolerance is set just beyond these; {id}.info is listed, not tested.'
   - name: reconstruct
     group: blockface
     for: [MF191]

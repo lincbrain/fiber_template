@@ -716,9 +716,10 @@ def reconstruct(cfg, do_holes=True):
     _export_view_nii(cfg)                                                   # viewable RGB nifti for QC/curation
     print(f"  [wrote blockface pyramid L{LV}..L4 + L{R['view_level']} view nifti {time.time() - t0:.0f}s]", flush=True)
 
-    # provenance + brightness QC + montage
+    # provenance + brightness QC + montage. native_nz: the stack's frame count, or, when the brain pins stack_origin_frames, the frame
+    # count of the stack of record, which the stacks' world origin counts (configs/subjects/<ID>.yaml; the volume itself is unchanged)
     open(cfg.info_file, "w").write(
-        f"subject={s}\nlevel=L{LV}\nrecon_level={LV}\nslice_axis=1\nfactor={f}\nnative_nz={nz_ref}\n"
+        f"subject={s}\nlevel=L{LV}\nrecon_level={LV}\nslice_axis=1\nfactor={f}\nnative_nz={cfg.stack_origin_frames or nz_ref}\n"
         f"z_out={nz}\nnative_z=True\nL4_shape={W4}x{nz}x{H4}\nL{LV}_shape={W4 * US}x{nz}x{H4 * US}\n"
         f"L0_inplane={W4 * 16}x{H4 * 16}\ncrop=i{i0}:{i1}_j{j0}:{j1}\n"
         f"intensity_steps={','.join(map(str, steps))}\nharmonize_sigma_slices={sig:.2f}\n"

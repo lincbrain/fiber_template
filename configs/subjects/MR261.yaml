@@ -88,6 +88,11 @@ cce: 0
 mri: ''
 stack_pad: 0
 jump_mode: affine
+# stack_origin_frames: the stack of record had an occipital block appended after the photographs (frames 1383-1586: 47 sections of
+# an external 0.2 mm series and 157 empty slots between them), later cut off at 1382 (missing [1382, -1]; the block's runs listed
+# after it are inert). The photographs are frames 0-1382, but the stacks' world origin keeps the count of 1587 frames, so the volume
+# sits where every product of record expects it (slice 0 at y = vz * (1587 - 0.5)), and MR261.info's native_nz states that count.
+stack_origin_frames: 1587
 # reconstruction_spacing_um: the pixel size and section step the volume was REBUILT at (its pixels depend on them, e.g. the
 # intensity smoothing width in sections); vx/vz above are the calibrated spacing written into the headers afterwards by a
 # header-only rescaling about the world origin (linc/blockface/spacing.py; pixels unchanged). Equal for a new brain.
