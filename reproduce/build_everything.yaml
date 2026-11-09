@@ -523,8 +523,11 @@ steps:
       the hand edits of the four 26 um brains (MF5, MF6, MF7, MM15) carry the calibrated 27 um in-plane spacing, which the reconstruction now scales
       back before aligning to them. Rebuilt with that code from stack on 7-8 Nov, MF5, MF6, MF7 and MM15 were 18 of 18 identical. MM10''s stack of
       record held 1,587 frames (a block appended after its 1,383 photographs and later cut off), and its world origin and {id}.info count them: configs/subjects/MR261.yaml
-      pins that count (stack_origin_frames), and MM10 rebuilt from stack on 8 Nov was 18 of 18 identical. Time, memory and disk from MM2 and MM14
-      (similar stacks: 884 to 1,427 sections); the camera jumps (configs/subjects/{id}.yaml) take about 15 min each.'
+      pins that count (stack_origin_frames), and MM10 rebuilt from stack on 8 Nov was 18 of 18 identical. MM8''s volume of record was reconstructed
+      with an earlier brain mask, and the mask was then edited by hand without reconstructing again, which only cleared the image where tissue was
+      removed: configs/subjects/MR254.yaml names that earlier mask (reconstruction_mask; tools/make_local_data.sh --rebuild copies it), and MM8 rebuilt
+      from stack on 8 Nov was 18 of 18 identical. Time, memory and disk from MM2 and MM14 (similar stacks: 884 to 1,427 sections); the camera jumps
+      (configs/subjects/{id}.yaml) take about 15 min each.'
   - name: reconstruct
     group: blockface
     for: [MR253]

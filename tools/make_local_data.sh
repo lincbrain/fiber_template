@@ -11,7 +11,8 @@
 #   --rebuild ID          for a brain you will reconstruct yourself: blockface/ gets only the hand inputs, as copies
 #                         (curated/<ID>_mask_edited.nii.gz and _holes_edited.nii.gz, 01_brainmask/01_final/ (MF8 / MF9: the
 #                         masks from before their series alignment), and for MF8 / MF9 the recorded series alignment that
-#                         configs/subjects/<ID>.yaml series_alignment names), and no reconstruction of record
+#                         configs/subjects/<ID>.yaml series_alignment names; for MR254 the earlier mask its reconstruction_mask
+#                         names), and no reconstruction of record
 #   --raw NAME=PATH       <dest>/raw/NAME links to PATH (the photographs, the MRI and histology sources)
 #   --link ID:PATH=TARGET <dest>/data/sub-ID/PATH links to TARGET (an input of record kept outside data/sub-ID, e.g. the label
 #                         steps' histology/annotations, section_map.tsv, match_table.txt)
@@ -98,6 +99,10 @@ for S in "${IDS[@]}"; do
     for k in mask holes; do                # the hand edits the reconstruction reads (curated/<ID>_mask_edited, _holes_edited)
       f="$src/blockface/curated/${S}_${k}_edited.nii.gz"; [ -e "$f" ] && copy "$f" "$dst/blockface/curated/$(basename "$f")"
     done
+    rm0=$(sed -n 's/^reconstruction_mask: *\([^ #]*\).*/\1/p' "$REPO/configs/subjects/$S.yaml" 2>/dev/null | head -1)
+    if [ -n "$rm0" ] && [ -e "$src/blockface/$rm0" ]; then   # the earlier mask the volume of record was reconstructed with
+      copy "$src/blockface/$rm0" "$dst/blockface/$rm0"
+    fi
     al=$(awk '/^series_alignment:/{f=1; next} f && /^[^ #]/{f=0} f && /^ *align:/{print $2; exit}' "$REPO/configs/subjects/$S.yaml" 2>/dev/null)
     m="$src/blockface/01_brainmask/01_final"  # the accepted photograph masks; for MF8 / MF9 those from before the series alignment,
     [ -n "$al" ] && [ -d "$src/blockface/01_final_prealign" ] && m="$src/blockface/01_final_prealign"   # which the rebuild applies

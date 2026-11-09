@@ -516,6 +516,19 @@ def _feather_composite(vol, filled_low, M, brain, US, band):
     return out
 
 
+def _clear_outside(vol, keep4, US):
+    """Zero the L1 image vol (W, nz, H, C) where the L4 mask keep4 (W/US, nz, H/US) is False: the final mask's removals from the
+    mask the pixels were made with. Returns [(z, (i, j), values)] of the cleared pixels, so a caller can put them back."""
+    out = []
+    for z in range(vol.shape[1]):
+        g = ~_upsample_inplane(keep4[:, z:z + 1, :], US)[:, 0, :] & vol[:, z].any(-1)
+        if g.any():
+            ij = np.nonzero(g)
+            out.append((z, ij, vol[ij[0], z, ij[1]].copy()))
+            vol[ij[0], z, ij[1]] = 0
+    return out
+
+
 def _inpaint_holes(vol, holes, dilate=None, margin=None):
     """Fill the drilled punch-hole tubes of a masked brain (D0,nz,H,3) with a MULTISCALE biharmonic fill.
 
@@ -661,6 +674,18 @@ def reconstruct(cfg, do_holes=True):
         hole_native = (np.repeat(hcur[i0:i1, :, j0:j1], f, axis=1)[:, :nz, :] & mbin).astype(np.uint8)
     _save_nii(cfg.final("mask"), mask, A4)                                  # L4 mask final (labels 0/1/2)
     _save_nii(cfg.final("holes"), hole_native, A4)                         # L4 holes final
+    keep4 = None
+    if cfg.reconstruction_mask:          # the volume of record was reconstructed with an earlier mask (configs/subjects/<ID>.yaml): the
+        p = os.path.join(cfg.root, cfg.reconstruction_mask)                # pixels follow it, and the final mask (the finals above)
+        if not os.path.exists(p):                                          # clears the image where it removed tissue
+            raise SystemExit(f"{s}: no {p}, the mask its volume of record was reconstructed with (configs/subjects/{s}.yaml "
+                             "reconstruction_mask; tools/make_local_data.sh --rebuild copies it)")
+        old = np.asanyarray(nib.load(p).dataobj) > 0
+        assert old.shape == cur.shape, (old.shape, cur.shape)
+        keep4 = mbin
+        mask_native = np.repeat(old, f, axis=1)[:, :nz, :][i0:i1, :, j0:j1]
+        if hole_native.any():
+            hole_native = (np.repeat(hcur[i0:i1, :, j0:j1], f, axis=1)[:, :nz, :] & mask_native).astype(np.uint8)
     _lap("grid_L4")
     print(f"  [PhaseA L4 {W4}x{nz}x{H4}  regrid-resid {resid:.3f}  crop i{i0}:{i1}_j{j0}:{j1} "
           f"{time.time() - t0:.0f}s]", flush=True)
@@ -705,13 +730,18 @@ def reconstruct(cfg, do_holes=True):
     total = np.clip(L_ref[:, None] * rho[None, :] / np.maximum(lev, 1e-6), *R['gain_clip'])
     _apply_gain(masked, total); _lap("harmonize")
     print(f"  [harmonize destep steps@{steps} {time.time() - t0:.0f}s]", flush=True)
+    cleared = _clear_outside(masked, keep4, US) if keep4 is not None else []
     _write_pyramid(cfg.color_store, masked, A1, cfg.reduce, DEPTH); _lap("write_03color")   # pre-inpaint anchor
     print(f"  [wrote steps/03_color pyramid L{LV}..L4 {time.time() - t0:.0f}s]", flush=True)
+    for z, ij, v in cleared:                                               # the tube fill sees the pixels as the earlier mask made them
+        masked[ij[0], z, ij[1]] = v
     nholes = 0
     if hole_native.any():
         h1 = _upsample_inplane(hole_native, US) & mbinL1
         masked, nholes = _inpaint_holes(masked, h1)
         _lap("inpaint"); print(f"  [inpaint {nholes} hole voxels {time.time() - t0:.0f}s]", flush=True)
+    if keep4 is not None:
+        _clear_outside(masked, keep4, US)
     _write_pyramid(cfg.final_zarr("blockface"), masked, A1, cfg.reduce, DEPTH); _lap("write_pyramid")
     _export_view_nii(cfg)                                                   # viewable RGB nifti for QC/curation
     print(f"  [wrote blockface pyramid L{LV}..L4 + L{R['view_level']} view nifti {time.time() - t0:.0f}s]", flush=True)

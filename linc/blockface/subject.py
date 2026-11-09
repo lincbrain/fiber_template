@@ -15,6 +15,9 @@ You need
   stack_origin_frames                   optional: the frame count the stacks' world origin and <ID>.info's native_nz count, when the
                                         stack of record held frames that are not this brain's photographs (MR261); unset = the
                                         stack's own count
+  reconstruction_mask                   optional: the earlier brain mask the volume of record was reconstructed with, when later hand
+                                        edits of the mask only cleared the image where they removed tissue (MR254): the pixels follow
+                                        it, the final mask gives the mask and tubes finals and clears the image; unset = the final mask
   curation_f                            native sections per curated section of the hand-edit grid (fixed per brain)
   masks_of_record                       which masks were corrected by hand (they win over the models' outputs)
 What it does
@@ -84,6 +87,7 @@ class Subject:
         self.missing = tuple(tuple(int(v) for v in m) for m in (y.get("missing") or []))
         self.stack_pad = int(y.get("stack_pad") or 0)
         self.stack_origin_frames = int(y["stack_origin_frames"]) if y.get("stack_origin_frames") else None
+        self.reconstruction_mask = y.get("reconstruction_mask") or None
         self.jump_mode = y.get("jump_mode", "affine")
         self.pinned_curation_f = y.get("curation_f")
         self.masks_of_record = y.get("masks_of_record") or {}
