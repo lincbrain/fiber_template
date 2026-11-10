@@ -1,0 +1,94 @@
+# Products of record read by the blockface and registration reproduce scripts (blockface reconstructions, registration of each brain's blockface to its own
+# MRI, the cross-modal alignment, the blockface template, the alignment comparison). Paths are relative to $LINC_PRODUCTS (code/shared/paths.py products());
+# nested maps are relative too. For validation, LINC_PRODUCTS = the analysis project, so these are its own folders; a data release
+# remaps them here only.
+
+# --- records of the analysis that later records read as inputs (dated snapshots, never rewritten) ---
+numbers_of_record: paper/numbers                      # e.g. d3_A_sigma2_pred_flat.json (the synthesis's prediction error, read by the precision rule)
+
+# --- per-brain data: the reconstructions (sub-<ID>/blockface/...) ---
+data: data
+
+# --- registration of each brain's blockface to its own b0 (R1 of record; one variant per brain) ---
+# each folder holds <ID>_mri.nii.gz (the b0 on the registration's 0.25 mm grid) and <ID>_bf_nonlin.nii.gz (the registered blockface)
+r1_products:
+  MF275: data/sub-MF275/mri/nonlinear_r1v3
+  MF278: data/sub-MF278/mri/nonlinear_r1v3mr
+  MF282: data/sub-MF282/mri/nonlinear_r1v3
+  MR243: data/sub-MR243/mri/nonlinear_r1v3
+  MR249: data/sub-MR249/mri/nonlinear_r1v3mr
+  MR250: data/sub-MR250/mri/nonlinear_r1v3
+  MR251: data/sub-MR251/mri/nonlinear_r1v3
+  MR252: data/sub-MR252/mri/nonlinear_r1v3mr
+  MR253: data/sub-MR253/mri/nonlinear_r1v3
+  MR254: data/sub-MR254/mri/nonlinear_r1v3mr
+  MR256: data/sub-MR256/mri/nonlinear_r1v3mr
+  MR257: data/sub-MR257/mri/nonlinear_r1v3m
+  MR261: data/sub-MR261/mri/nonlinear_r1v3mr
+
+# --- the blockface template (design 2b) ---
+bftemplate_step8: bftemplate/d2b/final_s8             # the template of record (step 8, 0.25 mm)
+bftemplate_plan_a: bftemplate/d2b/final               # the same build at step 7 (0.5 mm), reported beside it
+bftemplate_step8_state: bftemplate/d2b/s8             # gate_jac_it03.json (det J per member), precision_d2bs8/tau2.json
+template_link: bftemplate/cv/template2template/d2bs8_s5sym   # the blockface template <-> MRI template link of record
+
+# --- the alignment comparison (design 1c folds) ---
+route_test: bftemplate/cv/route1c                     # <target>/rows.json (evaluation), <target>/link/ (the target's map from the MRI template)
+route_test_folds: bftemplate/d1c                      # pair_<k>/pub/d1cs2_pair_<k>/final_t1/ (the six fold averages, published copies)
+route_test_direct: bftemplate/direct                  # route1c_<target>_A/<ID>/ (the blockface-based alignment: each brain registered directly to its target)
+
+# --- the blockface cohort table (bf_cohort) ---
+mri_src: data/_mri_src                                # <ID>/msme_echo_denoised_debiased_brain.nii.gz: T2 availability
+registration_qc_store: paper/numbers/registration_qc.json   # the registration QC store (production rows per brain)
+folds: bftemplate/cv/folds_v2.json                    # each brain's role in the template builds of the time
+histo_arm_final: data_arm_final                       # the histology -> blockface products of record (components per brain)
+# the histology registration each brain's tracer labels were pushed through (pre-inpaint blockface): the visible arm, except for
+# the three brains whose components the 30 Oct tracer fix re-registered (paper/numbers tracer_fix_masks_r058.json; the author's decision
+# of 30 Oct). `linc-labels push` through these reproduces the pushed sheets of record (MR252 and MR256 checked, 3 Nov 2026)
+# MF8's hidden-arm registration of record (data_arm_final, 25 Sep) partitioned its sections with an earlier regions volume, made
+# at the section step of the time (0.6 mm) before MF8's spacing was corrected; with it (and linc-histology --regions-spacing-um
+# 23.75 600) the release reproduces that registration's blockface components (58 of 58 byte-identical, 3 Nov 2026)
+hidden_arm_regions:
+  MF191: {file: labels/regions_t2_mf191_made_at_vz600/MF191_regions_t2.nii.gz, made_at_spacing_um: {vx: 23.75, vz: 600.0}}
+labels_histology_arm:
+  MR252: data_arm_preinp
+  MR243: data_arm_preinp_r058c    # MM1: s03, s05 _0001 re-masked (the mask's brightness clipped, not wrapped); s03 _0001 re-matched
+  MR256: data_arm_preinp_r058     # MM3: s01, s05 _0001 re-masked
+  MF191: data_arm_preinp_r058     # MF8: s04 split into its two lobes (num_MF191_r058.txt); s05, s08-s11 _0002 re-masked
+
+# --- the cross-modal alignment (S2) of record: <ID>/<ID>_d2s2.json, _linear_world.txt, _warp.nii.gz, _mask_in_template.nii.gz ---
+direct_placement: featurereg/d2_s2/prod_s125
+
+# --- the blockface template's construction (code/template/blockface_*.py, code/template/README.txt) ---
+run113_frame: template/mri_template_0p5.nii.gz        # the run-113 0.5 mm frame; the template's grid is its exact 2x refinement
+frame1c: template/mri_template_0p5_frame1c.nii.gz     # the run-113 grid extended by whole voxels (152x176x120): grown by 8 mm, the prep frame
+bridge: template/bridge_run113_to_canonical/linear.json   # rigid run-113 <-> canonical frame (TPL is transformed through it)
+tpl_b0: template/mri/linc_mri_b0.nii.gz               # TPL: the MRI template's b0, a b0-only member of the build
+tpl_mask: template/mri/linc_mri_brainmask.nii.gz
+completion_canon_d3: isbi2027/data/canon_d3           # <ID>/seam.json: the b0 each MRI brain's synthesis used (path, md5, mhi)
+bf_step8_run: bftemplate/d2b/s8/tc/d2bs8              # the step-8 MMORF run of record (43 inputs incl. TPL): run_spec, out/nln_step_08
+bf_step8_view: bftemplate/d2b/s8/tc/d2bs8_bfview      # the same run without TPL (42 inputs): what the blockface finish averaged
+bf_step8_box_products: bftemplate/d2b/s8/tc/d2bs8/final_d2bs8   # the finish's products on the step-8 box, before the embed
+bf_canon2: bftemplate/d2/s8/canon2                    # the 21 members x 2 mirrors at 0.25 mm (the blockface channel's inputs)
+bf_canon2_tpl: bftemplate/d2b/canon2                  # the same + TPL (the b0 channel's inputs)
+# inputs of code/template/build_blockface_template.py that no other key names (3 Nov 2026)
+completion_cache: synthesis/cache_d3                  # <ID>/deploy/brain.nii.gz, the synthesis's per-brain cache (members' --cache)
+bf_plan_a_affine: bftemplate/d2b/plan_a_affine        # the first stage's affine part, copied from design 2's build (code/template/README.txt section 2)
+bf_precision_rule: bftemplate/d2b/s8/precision_d2bs8/precision_rule_b1.json   # the finish's precision rule (finish --precision-json)
+link_greedy: bftemplate/cv/s5_direct_d2bs8/greedy       # the one-way link of record that `estimate compare` reads (build_link.py)
+bf_canon2_s8w: bftemplate/d2b/canon2_s8w              # the step-8 weights (the 8 without MRI: b0 cost = their blockface cost)
+bf_precision_rule: bftemplate/d2b/s8/precision_d2bs8/precision_rule_b1.json   # tau2, s2_interp, s2_syn(d) of the finish
+
+# --- added 1 Nov 2026 (the records the paper reads since 22 Oct) ---
+nnunet_training_sets: models/nnunet_training_sets     # the earlier networks' training-set records: <Dataset>/dataset.json, imagesTr.txt (s1_segmentation_r057)
+template_mri: template/mri                            # the MRI template's channels and masks (linc_mri_*.nii.gz)
+atlas_nmt: mri/tc/atlas_v2/NMT_v2.0_sym               # the template <-> NMT v2 mapping of record: run/ (H, Hinv, F, G), SARM_level6_in_template
+nmt_label_keys: labels/r058_nmt_tables                # CHARM_key_all.txt: the tables_CHARM/ folder of the public NMT v2.0 sym archive
+                                                      # (https://afni.nimh.nih.gov/pub/dist/atlases/macaque/nmt/NMT_v2.0_sym.tgz); not redistributed
+tracer_template_r058d: labels/tracer_template_r058d   # the final tracer labels in the MRI template (the set of record: Fig. 9, Table S4)
+r060_runs: mri/tc/r060_up                             # the target-comparison runs of record (30 Oct): place/<ID>_P0.txt, start/<tgt>/<ID>/prep.json, {b0,multi}/<tgt>/<ID>/run/
+                                                      # (H.txt, Hinv.txt, F_ras_disp, G_ras_disp, metrics.json); xfm/sub-<ID>/ registry entries.
+                                                      # The runs' mid_A* images and the warped images beside them hold target intensities
+                                                      # (CIVM-R: not redistributable): a data release ships transforms and metrics only
+lgnstn_r060b_carries: labels/r060                     # the superseded r060b carry logs (<S>/carry_<S>.json): lgnstn_targets_r060c keeps their
+                                                      # blockface volumes beside the dense ones (bf_volume_mm3.*.r060b_filled)

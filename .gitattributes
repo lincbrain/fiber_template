@@ -1,5 +1,4 @@
 # Left out of the public repository (git archive, make_baseline.sh): the lab cluster's files, and the tool that made the public
 # copies of the weights, which no user runs
-env/lab.sh export-ignore
-docs/lab.md export-ignore
-models/scrub_completion_weights.py export-ignore
+settings/lab.sh export-ignore
+code/shared/scrub_completion_weights.py export-ignore

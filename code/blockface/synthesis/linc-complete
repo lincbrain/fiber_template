@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+"""Synthesize the blockface tissue a brain's photographs lack, from its b0 image, and join it to the photographs (paper: Methods, "Blockface to
+MRI registration and synthesis of missing sections"; the network: Supplementary S1).
+
+You need
+  the environment settings/env/deep.yml and a GPU with about 2 GB for a whole brain; the brain's prepared folder, named by its Specimen ID (`linc-complete
+  prepare`, below, or the paper's folders, $LINC_COMPLETION_PREPARED and $LINC_COMPLETION_PREPARED_STANDIN); and the network, $LINC_MODELS/completion/
+  <name>/, which comes with the data release (d3_full_A_s0 for a brain with its own b0, d3p_full_A_s0 with --stand-in for a brain without MRI).
+
+What it does
+  1. predicts blockface grey over the whole brain from the b0, in overlapping windows (0.5 mm in, 0.25 mm out)
+  2. fits one monotonic intensity map from the prediction to the photographs, over the first 8 mm rostral of the junction plane, because the
+     network's output and the photographs' grey differ by a brain-specific scale
+  3. cross-fades from the photographs into the mapped prediction over 2 mm at the junction plane, so that no seam shows
+  4. adds color: the photographs' mean chroma, constant over the synthesized tissue
+
+You get  (in <out>/<ID>/, NIfTI on the brain's 0.25 mm grid; a brain's existing products are never written over)
+  <ID>_bf_completed (the whole brain, in the photographs' grey) and <ID>_bf_completed_rgb (in color), <ID>_bf_synth (the mapped prediction),
+  <ID>_bf_real (the photographs used), <ID>_seam_ramp and <ID>_seam_ramp_real (the cross-fade weight), <ID>_seam_depth (mm from the junction
+  plane), <ID>_photo_fraction (the photographed fraction of each voxel), <ID>_provenance (the weight x that fraction), <ID>_synth_mask (the
+  synthesized voxels), <ID>_b0_input_0p5 (the network's input); <ID>_chroma.json and provenance.json; and the brain's row in <out>/summary_<network>.json.
+
+    code/blockface/synthesis/linc-complete prepare --subject <ID> --out $LINC_WORK/prepared                  # the prepared folder, from the brain's products (CPU; prepare -h)
+    code/blockface/synthesis/linc-complete --brain $LINC_WORK/prepared/<ID> --out $LINC_WORK/complete        # a brain with its own b0
+    code/blockface/synthesis/linc-complete --brain $LINC_WORK/prepared/<ID> --stand-in --out $LINC_WORK/complete   # a brain without MRI: its stand-in b0
+    code/blockface/synthesis/linc-complete train --root $LINC_WORK/prepared [--plan]                         # train the network again (train -h)
+"""
+import argparse
+import hashlib
+import json
+import os
+import sys
+import time
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "code"))
+from shared import provenance  # noqa: E402  (standard library only; torch and MONAI are imported after the arguments are read)
+
+
+def main():
+    if len(sys.argv) > 1 and sys.argv[1] == "prepare":                 # the prepared folder of a brain (no torch, no MONAI)
+        from blockface.synthesis import prepare
+        return prepare.main(sys.argv[2:])
+    if len(sys.argv) > 1 and sys.argv[1] == "train":                   # the training recipe of the networks of record (torch, MONAI)
+        from blockface.synthesis import train
+        return train.main(sys.argv[2:])
+    ap = argparse.ArgumentParser(prog="linc-complete", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    g = ap.add_argument_group("what to complete")
+    g.add_argument("--brain", required=True, type=Path, help="the brain's prepared folder (named by its LINC ID)")
+    g.add_argument("--out", required=True, type=Path, help="the output folder (the brain's products go to <out>/<ID>/)")
+    g.add_argument("--stand-in", action="store_true", help="the brain has no MRI: its input is the stand-in b0 (network d3p_full_A_s0)")
+    x = ap.add_argument_group("advanced")
+    x.add_argument("--model", type=Path, default=None, help="a network folder with last.pt (default: $LINC_MODELS/completion/"
+                   "d3_full_A_s0, or d3p_full_A_s0 with --stand-in; settings/models/README.txt)")
+    x.add_argument("--device", default="cuda", help="cuda (default), cuda:N or cpu (slow for a full brain)")
+    x.add_argument("--cache-out", type=Path, default=None, help="also write <DIR>/<ID>/deploy/{brain, real_mask} and <DIR>/seam.json, which the blockface template's construction reads")
+    a = ap.parse_args()
+    if a.model is None:
+        if not os.environ.get("LINC_MODELS"):
+            sys.exit("set --model or LINC_MODELS (settings/models/README.txt)")
+        a.model = Path(os.environ["LINC_MODELS"]) / "completion" / ("d3p_full_A_s0" if a.stand_in else "d3_full_A_s0")
+    ckp = a.model / "last.pt" if a.model.is_dir() else a.model
+    D = a.brain.resolve(); S = D.name
+    if (a.out / S).exists() or (a.cache_out and (a.cache_out / S).exists()):
+        sys.exit(f"{a.out / S} (or its cache) exists: products are never overwritten")
+    from blockface.synthesis import export, network                       # torch, MONAI, nibabel: settings/env/deep.yml
+    t0 = time.time()
+    net, cfg = network.load(ckp, a.device)
+    row, normal = export.export_brain(net, str(D), S, str(a.out), device=a.device,
+                                      cache_out=a.cache_out and str(a.cache_out))
+    ck_md5 = hashlib.md5(open(ckp, "rb").read()).hexdigest()
+    name = ckp.parent.name if ckp.name == "last.pt" else ckp.stem
+    sp = a.out / f"summary_{name}.json"
+    summ = json.loads(sp.read_text()) if sp.exists() else dict(
+        run=name, checkpoint=str(ckp), checkpoint_md5=ck_md5, units="the photographs' grey (fine/bf.nii.gz)",
+        grid="the brain's output grid, 0.25 mm", join="clean cut face z_f, depth along the section normal", members={})
+    assert summ["checkpoint_md5"] == ck_md5, f"{sp} was written with another network"
+    summ["members"][S] = row
+    sp.write_text(json.dumps(summ, indent=1, default=float))
+    if normal:
+        cp = a.cache_out / "seam.json"
+        old = json.loads(cp.read_text()) if cp.exists() else {}
+        old[S] = normal; cp.write_text(json.dumps(old, indent=1))
+    ins = [ckp, D / "seam.json", D / "coarse/in.nii.gz", D / "fine/bf.nii.gz", D / "fine/real_mask.nii.gz",
+           D / "fine/photo_fraction.nii.gz", D / "fine/brain.nii.gz"] + ([D / "fine/bf_rgb.nii.gz"] if (D / "fine/bf_rgb.nii.gz").exists() else [])
+    provenance.write_provenance(a.out / S, inputs=[str(p) for p in ins], wall_s=round(time.time() - t0, 1),
+                                extra=dict(network=name, device=a.device), md5=True)
+    print(f"{S}: synthesized fraction {row['synth_frac']:.3f}, junction plane z_f {row['z_f']} -> {a.out / S} ({row['wall_s']} s)")
+
+
+if __name__ == "__main__":
+    sys.exit(main())

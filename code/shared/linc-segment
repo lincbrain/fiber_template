@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+"""Segment brain masks and marker tubes with the project's four networks, and train those networks again (code/shared/segment;
+settings/models/README.txt describes the networks).
+
+You need
+  the environment settings/env/deep.yml ($PY_DEEP) and a GPU for a whole volume; the trained weights in $LINC_MODELS/segment/<model>/, which come
+  with the data release (check them with tests/verify_weights.py); and the input of the model you run:
+    mri_brainmask   one ex vivo MRI image (a b0 or a T2-weighted image), NIfTI
+    bf_mask2d       one blockface photograph (RGB PNG; --native for a photograph at its native size), or a folder of them (--in)
+    bf_mask3d       the blockface volume with its background: three NIfTI files, one per color channel
+    bf_holes        the masked color volume (three NIfTI files) and its brain mask (--mask, or --masks with --in)
+
+What it does
+  1. brings the image to the model's working resolution (mri_brainmask 0.5 mm; bf_mask3d and bf_holes the median voxel size of their
+     training brains; bf_mask2d a 4 x 4 block mean of a native photograph)
+  2. runs the network over the image in overlapping windows, averaged over mirrored copies of each window
+  3. resamples the class probabilities back to the input's grid and keeps the most probable class
+  4. applies the model's post-processing, the rule stored with its weights (spec.json): bf_mask2d fills enclosed holes; bf_mask3d keeps
+     the largest connected component and fills its holes; bf_holes keeps tubes in the left hemisphere inside the brain mask
+
+You get
+  a mask on the input's grid (uint8; NIfTI or PNG, as the input): the file --out, or <case><ext> in the folder --out with --in
+
+    code/shared/linc-segment predict --model mri_brainmask --out b0_mask.nii.gz b0.nii.gz
+    code/shared/linc-segment predict --model bf_mask2d --native --in photos/ --out masks/      # a folder of <case>_0000.png photographs
+    code/shared/linc-segment predict --model bf_mask3d --out mask.nii.gz vol_0000.nii.gz vol_0001.nii.gz vol_0002.nii.gz
+`code/shared/linc-segment predict -h` lists the options.
+
+To train the networks again (each command's -h says what it needs, does and writes):
+    $PY code/shared/linc-segment stage --task settings/segment/<model>.json --out DIR            # the blockface networks' training cases, from the data tree
+    code/shared/linc-segment train --task <task file> --fold <0-4|all> [--plan]                 # one fold; fold all gives the shipped model
+    code/shared/linc-segment folds --task <task file>                                           # a new task's five folds, grouped by brain
+"""
+import argparse
+import json
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "code"))
+
+
+def predict(argv):
+    ap = argparse.ArgumentParser(prog="linc-segment predict", formatter_class=argparse.RawDescriptionHelpFormatter,
+                                 description="Segment one case (its channel files) or every case of a folder.",
+                                 epilog="examples:\n"
+                                        "  code/shared/linc-segment predict --model mri_brainmask --out b0_mask.nii.gz b0.nii.gz\n"
+                                        "  code/shared/linc-segment predict --model bf_mask2d --native --in photos/ --out masks/\n"
+                                        "  code/shared/linc-segment predict --model bf_holes --mask brain.nii.gz --out tubes.nii.gz vol_0000.nii.gz ...")
+    g = ap.add_argument_group("what to segment")
+    g.add_argument("--model", required=True, help="mri_brainmask, bf_mask2d, bf_mask3d, bf_holes ($LINC_MODELS/segment/<model>), or a model folder")
+    g.add_argument("images", nargs="*", metavar="IMAGE", help="one case: its channel files, in order (<case>_0000, _0001, ...)")
+    g.add_argument("--in", dest="in_dir", type=Path, metavar="DIR", help="instead of IMAGE: every case of a folder of <case>_<cccc><ext> files")
+    g.add_argument("--out", required=True, type=Path, help="the mask file (one case) or the output folder (with --in)")
+    g.add_argument("--native", action="store_true", help="the photographs are at native size (bf_mask2d): reduced 4 x 4 first, masks back at native size")
+    t = ap.add_argument_group("the tube model (bf_holes) only")
+    t.add_argument("--mask", type=Path, help="one case: its brain mask")
+    t.add_argument("--masks", type=Path, metavar="DIR", help="with --in: a folder of brain masks <case><ext>")
+    x = ap.add_argument_group("advanced")
+    x.add_argument("--postprocess", default="spec", choices=("spec", "none", "largest_component", "largest_cc_fill", "fill_holes"),
+                   help="override the model's post-processing (spec: the model's own; default)")
+    x.add_argument("--mirror", default="spec", choices=("spec", "on", "off"),
+                   help="test-time mirroring (spec: on for the four models); off is 4x (2D) / 8x (3D) faster")
+    x.add_argument("--device", default="cuda", help="cuda (default), cuda:N or cpu")
+    a = ap.parse_args(argv)
+    from shared.segment import api, io
+    from shared.segment.predict import load, predict_case
+    mirror = None if a.mirror == "spec" else a.mirror == "on"
+    if a.in_dir:
+        if a.images:
+            ap.error("give --in or IMAGE files, not both")
+        took = api.predict_folder(a.model, a.in_dir, a.out, a.native, a.postprocess, a.masks, a.device, mirror)
+        print(f"{len(took)} cases -> {a.out}")
+        return 0
+    if not a.images:
+        ap.error("give --in DIR or the IMAGE files of one case")
+    net, spec = load(api.model_dir(a.model), a.device)
+    mask, meta, s = predict_case(net, spec, a.images, a.device, mirror, None if a.postprocess == "spec" else a.postprocess,
+                                 a.native, str(a.mask) if a.mask else None)
+    io.write_mask(mask, meta, a.out)
+    print(f"{a.out} ({s:.1f} s)")
+    return 0
+
+
+def stage(argv):
+    ap = argparse.ArgumentParser(prog="linc-segment stage", formatter_class=argparse.RawDescriptionHelpFormatter, description="""Build the training cases of a blockface network from the data tree, so that it can be trained again.
+
+You need
+  the environment settings/env/linc.yml ($PY, not $PY_DEEP: the color store is an OME-Zarr store); a task file, settings/segment/<model>.json
+  (bf_mask2d, bf_mask3d or bf_holes), which names the brains; and each brain's reconstruction, $LINC_DATA/sub-<ID>/blockface
+  (code/blockface/training.py lists the files).
+
+What it does
+  writes each case the way the network of record was trained on it, from the photographs or volumes and the hand-edited masks of record.
+
+You get
+  in --out (a new folder): imagesTr/, labelsTr/ (bf_holes also masksTr/) and <model>.json, the task file pointed at these cases, with
+  the same folds and rules. Train with `code/shared/linc-segment train --task <out>/<model>.json --fold <0-4|all>`.
+
+mri_brainmask needs no staging: its task file reads the images and masks of record where they are.""")
+    ap.add_argument("--task", required=True, type=Path, help="settings/segment/<model>.json")
+    ap.add_argument("--out", required=True, type=Path, help="a new folder for the cases")
+    a = ap.parse_args(argv)
+    if json.load(open(a.task))["task"] == "mri_brainmask":
+        print("mri_brainmask needs no staging: train with its task file as it is"); return 0
+    from blockface.training import stage as run
+    print(run(str(a.task), str(a.out)))
+    return 0
+
+
+def main():
+    cmds = ("predict", "train", "stage", "folds")
+    if len(sys.argv) < 2 or sys.argv[1] not in cmds:
+        print(__doc__); return 0 if len(sys.argv) > 1 and sys.argv[1] in ("-h", "--help") else 2
+    cmd, rest = sys.argv[1], sys.argv[2:]
+    if cmd == "predict":
+        return predict(rest)
+    if cmd == "stage":
+        return stage(rest)
+    import importlib
+    return importlib.import_module(f"shared.segment.{cmd}").main(rest)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

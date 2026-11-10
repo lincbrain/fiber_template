@@ -1,0 +1,72 @@
+# MR250: the per-brain inputs of its blockface reconstruction, as used for the paper (from the analysis project's
+# code/config.py + code/macaque_datasets.xlsx). Hand inputs: spacing (vx, vz um), camera jumps, missing sections and the
+# caudal cutoff (see code/blockface/subject.py). `raw` is relative to $LINC_RAW.
+# registration_to_own_mri: the inputs of record of the registration to the brain's own b0 (R1 v3): the b0 mask (paths relative to
+# mri/), the fixed b0, and the start pose (world, blockface -> b0 on the template grid), recovered from the run's saved init matrix.
+subject: MR250
+raw: blockface_curated/MR250
+raw_glob: '*.JPG'
+raw_regex: Img(\d+)\.JPG
+idx_range: [5842, 7222]
+reduce: mean
+rotate180: true
+vx: 20.0
+vz: 45.0
+jumps:
+- [1025, 1028]
+missing:
+- [0, 2]
+- [2, 5]
+- [7, 9]
+- [68, 70]
+- [70, 73]
+- [666, 668]
+- [674, 676]
+- [875, 877]
+- [912, 915]
+- [916, 918]
+- [965, 967]
+- [968, 970]
+- [1019, 1021]
+- [1021, 1032]
+- [1079, 1081]
+- [1280, 1282]
+- [1375, 1377]
+- [-1, 1]
+- [1375, -1]
+histo_vx: 0.0
+histo_vz: 0.0
+ccs: 0
+cce: 0
+mri: dwi_b0_las_brain_debiased.nii.gz
+stack_pad: 0
+jump_mode: affine
+# reconstruction_spacing_um: the pixel size and section step the volume was REBUILT at (its pixels depend on them, e.g. the
+# intensity smoothing width in sections); vx/vz above are the calibrated spacing written into the headers afterwards by a
+# header-only rescaling about the world origin (code/blockface/spacing.py; pixels unchanged). Equal for a new brain.
+# curation_f: native sections per curated (0.40 mm) slice of the hand-edit grid, pinned at the reconstruction spacing.
+reconstruction_spacing_um: {vx: 20, vz: 50}
+curation_f: 8
+registration_to_own_mri:
+  variant_of_record: r1v3
+  b0_mask: MR250_mri_mask.nii.gz
+  b0_mask_source: the b0 brain mask of record
+  fixed_b0: MR250_mri.nii.gz
+  start_pose_world:
+  - [0.9958095255713467, -0.042228746569424706, -0.08111794958295987, -39.43367705297533]
+  - [0.029563331664914535, 0.9880258747760833, -0.15142945616301395, -28.393773915802264]
+  - [0.08654130922419988, 0.1483967780517194, 0.9851340000536122, -36.01904827054637]
+  - [0.0, 0.0, 0.0, 1.0]
+# masks_of_record: the masks this brain's reconstruction of record used, and which of them were corrected by hand (paths
+# relative to sub-<ID>/blockface/). A hand-edited curated file wins over the 3D models' outputs in linc-reconstruct.
+masks_of_record:
+  photo_masks_2d:
+    folder: 01_brainmask/01_final
+    hand_edited: false
+    note: the 2D model's output, unchanged
+  brain_mask_3d:
+    file: curated/MR250_mask_edited.nii.gz
+    hand_edited: true
+  tubes_3d:
+    file: curated/MR250_holes_edited.nii.gz
+    hand_edited: true

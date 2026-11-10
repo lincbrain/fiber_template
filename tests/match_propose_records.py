@@ -5,7 +5,7 @@
 
 You need
   $LINC_RECORDS (labels/match_tables, labels/regions_t2_final, the brains' stores and masks); the LINC histology dataset (--linc-dataset,
-  default $LINC_RAW/linc_000003); the folder of the five brains' hand-made tables (--hand-tables); env/tirl.yml.
+  default $LINC_RAW/linc_000003); the folder of the five brains' hand-made tables (--hand-tables); settings/env/tirl.yml.
 What it does
   rule      the 12 tables written by the rule of record, recomputed from the record's saved scores: run lines, floor and table writer.
   full      the same 12 tables from the command, on the release's inputs, row by row against the record.
@@ -38,10 +38,10 @@ import numpy as np
 import yaml
 
 REPO = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPO))
+sys.path.insert(0, str(REPO / "code"))
 
-from linc import paths  # noqa: E402
-from linc.histology import match as M, pieces as PC, propose as PR, sections as SC  # noqa: E402
+from shared import paths  # noqa: E402
+from histology import match as M, pieces as PC, propose as PR, sections as SC  # noqa: E402
 
 RULE = {  # series: subject, spacing the record's rule ran at (um, section step); photographs per section = 1200 / that step
     "MF191": ("MF191", 600.0), "MF191_LY": ("MF191", 600.0), "MF196_FS": ("MF196", 870.0), "MF196_LY": ("MF196", 870.0),
@@ -52,7 +52,7 @@ HAND_COLUMN = {"whole": 0, "left": 1, "right": 2, "cere": 3}
 
 
 def subject_cfg(S):
-    return yaml.safe_load((REPO / "configs" / "subjects" / f"{S}.yaml").read_text())
+    return yaml.safe_load((REPO / "settings" / "brains" / f"{S}.yaml").read_text())
 
 
 def regions_of(T, S, vz, rec):
@@ -110,7 +110,7 @@ def run_command(T, S, a, rec, work, a0, vx, reg, made, dataset):
     h = Path(work) / T / "histology"
     h.mkdir(parents=True, exist_ok=True)
     src = source_args(T, S, dataset, rec)
-    cmd = ["/usr/bin/time", "-f", "%e %M", sys.executable, str(REPO / "cli/linc-histology"), "propose", "--subject", S,
+    cmd = ["/usr/bin/time", "-f", "%e %M", sys.executable, str(REPO / "code/histology/linc-histology"), "propose", "--subject", S,
            "--store", f"{rec}/data/sub-{S}/blockface/{S}_blockface.ome.zarr", "--brain-mask", f"{rec}/data/sub-{S}/blockface/{S}_mask.nii.gz",
            "--regions", reg, "--regions-spacing-um", str(made[0]), str(made[1]), "--photos-per-section", repr(a0),
            "--out", str(h / "registration"), "--jobs", str(a.jobs)]
@@ -305,7 +305,7 @@ def part_edited(a, rec, dataset, T="MF191"):
         matched = out / "matched"
         if matched.exists():
             shutil.rmtree(matched)
-        cmd = [sys.executable, str(REPO / "cli/linc-histology"), "match", "--subject", S, "--store", f"{rec}/data/sub-{S}/blockface/{S}_blockface.ome.zarr",
+        cmd = [sys.executable, str(REPO / "code/histology/linc-histology"), "match", "--subject", S, "--store", f"{rec}/data/sub-{S}/blockface/{S}_blockface.ome.zarr",
                "--histology", src["jp2_dir"], "--out", str(out)] + (["--table", str(table)] if table else [])
         r = subprocess.run(cmd, capture_output=True, text=True)
         if r.returncode:

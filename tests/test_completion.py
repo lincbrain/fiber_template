@@ -1,4 +1,4 @@
-"""Smoke tests for linc.completion on a toy prepared brain (CPU, no data, ~1 min):  python -m pytest tests/test_completion.py
+"""Smoke tests for blockface.synthesis on a toy prepared brain (CPU, no data, ~1 min):  python -m pytest tests/test_completion.py
 Network sizes of record, the paired augmentation's shapes, the isotonic map, the join (photographs kept beyond the cross-fade,
 prediction caudal of the cut) and the export's product set."""
 import json
@@ -9,8 +9,8 @@ import nibabel as nib
 import numpy as np
 import torch
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from linc.completion import CFG, augment, deploy, export, losses, network  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "code"))
+from blockface.synthesis import CFG, augment, deploy, export, losses, network  # noqa: E402
 
 
 def test_network_of_record():
@@ -83,7 +83,7 @@ def test_join_and_export(tmp_path):
 
 def test_detect_mri_only():
     """tissue only the MRI shows: a low unphotographed lump is detected, an equal high one (cortex at the cut) is left, photographed tissue never removed"""
-    from linc.completion import prepare as P
+    from blockface.synthesis import prepare as P
     n = 120; k = np.indices((n, n, n)); brain = ((k - 59.5) ** 2).sum(0) < 40 ** 2
     low, high = brain & (k[2] < 35) & (k[1] >= 30) & (k[1] < 70), brain & (k[2] > 84) & (k[1] >= 30) & (k[1] < 70)
     real = brain & (k[1] >= 30) & ~low & ~high

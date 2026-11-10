@@ -1,11 +1,11 @@
-"""tools/subjects_overview.py: one row per brain from the yaml files, and what each brain's folder holds (CPU, no data, seconds).
+"""code/shared/subjects_overview.py: one row per brain from the yaml files, and what each brain's folder holds (CPU, no data, seconds).
 
     python -m pytest tests/test_subjects_overview.py      or      python tests/run.py tests/test_subjects_overview.py
 
 You need
   PyYAML.
 What it does
-  It runs the tool on the repository's configs/subjects/ and on a folder of empty files made on the fly.
+  It runs the tool on the repository's settings/brains/ and on a folder of empty files made on the fly.
 You get
   pytest's pass / fail per test.
 """
@@ -15,7 +15,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-TOOL = Path(__file__).resolve().parents[1] / "tools" / "subjects_overview.py"
+TOOL = Path(__file__).resolve().parents[1] / "code" / "shared" / "subjects_overview.py"
 
 
 def overview(*args):

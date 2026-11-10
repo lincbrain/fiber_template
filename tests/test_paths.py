@@ -1,9 +1,9 @@
-"""Tests of linc.paths.rerooted and the placeholder table (CPU, no data; synthetic prefixes only).
+"""Tests of shared.paths.rerooted and the placeholder table (CPU, no data; synthetic prefixes only).
 
     python -m pytest tests/test_paths.py      or      python tests/test_paths.py
 
 You need
-  env/linc.yml.
+  settings/env/linc.yml.
 What it does
   It checks both recorded forms (a prefix of the machine that made the products, a $LINC_<ROOT> placeholder), the pass-through,
   that the local table is preferred over the committed example, and the clear failure without one.
@@ -16,8 +16,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from linc import paths  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "code"))
+from shared import paths  # noqa: E402
 
 ANALYSIS, RAW = "/example/analysis", "/example/raw"
 TABLE = [(ANALYSIS, "$LINC_PRODUCTS"), (f"{RAW}/blockface_curated", "$LINC_RAW/blockface_curated")]
@@ -42,7 +42,7 @@ def roots(**kw):
 
 @contextlib.contextmanager
 def local_table(lines):
-    """point linc.paths at a temporary local table (None: no local table) for the block"""
+    """point shared.paths at a temporary local table (None: no local table) for the block"""
     old = paths.PLACEHOLDERS_LOCAL
     with tempfile.TemporaryDirectory() as d:
         f = Path(d) / "path_placeholders.local.yaml"

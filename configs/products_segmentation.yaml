@@ -1,6 +1,0 @@
-# Products of record read by the segmentation models' records (reproduce/numbers/segmodels_<model>_2026-11.py, Supplementary S5).
-# Paths are relative to $LINC_PRODUCTS (linc/paths.py products()). For validation, LINC_PRODUCTS = the analysis project.
-segmodels: models_wrapup     # tasks/<model>.json (cases, folds, the earlier network's held-out predictions, card notes; the paths it
-                             # records re-rooted through configs/path_placeholders*.yaml) and runs/<model>/fold_{0..4,all}/:
-                             # record.json, spec.json, model.pt, and val_pred/ + predict_separate/ of the predictor check's fold;
-                             # bf_mask2d also validation_fill/ (scores.json, meta.json) in every fold

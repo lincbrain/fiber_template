@@ -1,0 +1,18 @@
+# Path prefixes of the machine that made the products, each mapped to a placeholder of this machine's roots. Paths recorded inside the
+# products (input lists, per-brain source folders, transform metadata) start with these prefixes. shared.paths.rerooted maps them onto
+# this machine's roots, and tests/check_numbers.py maps both records through them before comparing (the reference records in
+# tests/reference/ carry the placeholders).
+#
+# This committed file is an EXAMPLE: its left-hand sides are generic names that match no path. The real table goes in
+# settings/internal/path_placeholders.local.yaml (same format; not in git), which every reader prefers when it exists (shared.paths.placeholder_table).
+# Copy this file to that name and replace each left-hand side with the absolute prefix on the machine that made the products. The
+# prefixes are the ones the products' own metadata records (for example the "path" of each input in a provenance.json). Without the
+# local table, a recorded absolute path outside every configured root stops with an error that names it.
+- ["<analysis root of the LINC_template tree>", "$LINC_PRODUCTS"]
+- ["<raw blockface photographs (blockface_curated)>", "$LINC_RAW/blockface_curated"]
+- ["<the blockface segmentation folder (blockface_segmentation)>", "$LINC_RAW/blockface_segmentation"]
+- ["<raw macaque MRI, unpacked>", "$LINC_RAW/macaque_mri"]
+- ["<the microstructure fits' source series (Microstructure: dmri.dt2, msme log)>", "$LINC_RAW/microstructure"]
+- ["<raw Bruker MRI of the MM brains>", "$LINC_RAW/mri_mm"]
+- ["<raw Bruker MRI of the MF brains>", "$LINC_RAW/mri_mf"]
+- ["<the LINC dataset 000003 (participants.tsv)>", "$LINC_RAW/linc_000003"]

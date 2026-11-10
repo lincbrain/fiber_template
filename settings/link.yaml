@@ -1,0 +1,140 @@
+# The link (blockface template -> MRI template), its independent construction estimate, and the mappings to published templates.
+# Paper: Methods, "Registration of the blockface template into the MRI template" (label sec:m-link) and "Relation to published
+# templates" (sec:m-atlases); the engine is Methods, "Image registration" (sec:m-registration).
+# Code: code/template/link/register.py, code/template/link/estimate.py, code/template/link/atlas.py, code/template/link/symreg.py (engine), code/template/link/qc.py (scores).
+# Ported from the analysis project's mri/code/s5_b0link.py (--arm sym), s5_export_maps.py, s5_compose.py, s5_compare.py, atlas_v2.py and
+# symreg_upstream.py; the values below are those of the runs of record (link d2bs8, estimate s5_compose_d2bs8_r05_guard, atlas_v2).
+
+# --- inputs of record (paths relative to $LINC_PRODUCTS; a data release remaps them here only) ---
+inputs:
+  bf_b0: bftemplate/d2b/final_s8/d2bs8_b0.nii.gz                 # moving: the dual-channel (blockface) template's b0 channel
+  bf_mask: bftemplate/d2b/final_s8/d2bs8_brainmask.nii.gz
+  bf_carry: {grey: bftemplate/d2b/final_s8/d2bs8_grey.nii.gz}     # extra channels pulled with the same map (carried_<name>_on_fixed)
+  bf_channels:                                                    # the blockface channel released in the MRI template's frame
+    rgb: bftemplate/d2b/final_s8/d2bs8_rgb.nii.gz
+    photographed_fraction: bftemplate/d2b/final_s8/d2bs8_photo_share.nii.gz   # <arm>_photo_share: the photographed fraction
+    synthesized_mask: bftemplate/d2b/final_s8/d2bs8_synth_mask.nii.gz         # compared only: the released mask is the paper's rule
+  mri_b0: template/mri/linc_mri_b0.nii.gz                         # fixed: the MRI template's b0 channel
+  mri_mask: template/mri/linc_mri_brainmask.nii.gz
+  mri_t2: template/mri/linc_mri_T2.nii.gz
+  bridge: template/bridge_run113_to_canonical/linear.json         # rigid run-113 frame -> canonical frame (key rigid_world_run113_to_canonical)
+  member_warps: bftemplate/d2b/final_s8/d2_member_warps.json      # the dual-channel template's construction warps (one per input)
+  s2_entry: data/sub-{S}/xfm_d2s2_prod_s125/bf-native__to__mri-template   # brains without MRI: direct placement on the MRI template
+  s2_linear: data/sub-{S}/mri/s2lin_prod/{S}_s2lin.json                   # ... and its rigid blockface -> run-113 placement (T_world_bf_to_run113)
+  member_src_grid: bftemplate/d2/s4/canon/{S}/t1_grey{flip}.nii.gz         # fallback when a member row carries no src_grid
+  atlas_reference: data/_lcn_src/templates/reference                       # published templates (NOT redistributed; see README.txt)
+  atlas_v1_xfm: template/mri_v1_2026-09-26/xfm                             # INIA19 skull-stripped T1 + brain mask from its labels
+  civmr_direct_link: bftemplate/cv/link_external/anatomix_greedy/CIVMR     # the one-way direct b0 registration to CIVM-R (comparison only)
+  civmr_rigid: template/external_b0_prep/CIVMR/provenance.json            # applied_rigid_world: native CIVM-R -> its placed frame
+
+# --- the link (Methods, sec:m-link): b0 <-> b0, symmetric feature-based registration after an affine start ---
+register:
+  init: bridge                  # start pose = the frame bridge (the dual-channel template lives in the run-113 frame)
+  linear_factor: 2              # linear fits on images downsampled x2 (Powell on NCC, code/blockface/registration/xfmtools.py)
+  affine_anisotropy_max: 1.5    # 7-dof similarity, then a 12-dof affine; the affine is rejected (similarity only) above this anisotropy
+  grid_res_mm: 0.35             # Methods: "on a 0.35 mm grid"
+  grid_margin_mm: 8.0           # working grid = both brains (moving placed by the affine start) + 8 mm of zeros on every side
+  grid_multiple: 16             # working-grid sizes rounded up to a multiple of 16
+  brainstem_cut: true           # moving input zeroed below the fixed brain's lowest axial slice (registration input only; scores uncropped)
+  point_chunk: 2000000          # points per chunk when evaluating maps
+  engine:                       # code/template/link/symreg.py options of the run of record (sym/sym/metrics.json "argv")
+    res: 0.35
+    smooth_warp_sigma: 1.25     # Methods: "warp smoothing sigma = 1.25 voxels"
+    channel_chunk: 4
+    max_gpu_frac: 0.95
+  qc:
+    ncc_fwhm_mm: 0.5            # b0-b0 NCC at a matched 0.5 mm FWHM, inside the 1 mm-eroded intersection of the two masks
+  export_roundtrip_every: 50    # export round trips measured on every 50th brain voxel of each template
+
+# --- the symmetric engine (Methods, sec:m-registration); defaults of code/template/link/symreg.py ---
+symreg:
+  backbone: anatomix-dev-vit    # upstream anatomix (neel-dey/anatomix@4c86aee) + FireANTs fork (neel-dey/FireANTs@21ae072)
+  scales: [8, 4, 2, 1]
+  iterations: [200, 200, 200, 200]
+  cc: [17, 9, 5, 3]             # LNCC kernel per scale
+  stage2: reextract             # second stage at the two finest scales on features re-extracted at the halfway point
+  stage2_scales: [2, 1]
+  stage2_iterations: [200, 200]
+  stage2_cc: [5, 3]
+  lr: 1.0
+  smooth_grad_sigma: 1.5
+  smooth_warp_sigma: 0.5        # overridden to 1.25 by the link and the atlas mappings
+  clip_percentile: 99.0
+  mindssc: [1, 2]               # MIND-SSC radius, dilation (12 channels)
+  sliding_window: [128, 4, 0.8, gaussian, 0.25]
+  tolerance: 1.0e-6             # convergence monitor (10 iterations)
+  integrator_n: 10              # scaling-and-squaring steps
+  seed: 12345
+  mid_grid_pad_mm: 4.0          # halfway grid = both brain boxes + 4 mm
+  channel_chunk: 8
+  max_gpu_frac: 0.70
+  lm_sigma: 0.5                 # landmark term (not used by the runs of record)
+  lm_weight: 1.0
+  input_mask_check: {dist_mm: 2.0, rel: 0.01, tol: 0.001}   # every input must be brain-masked (fail-closed)
+
+# --- the construction estimate (Methods, sec:m-link: "a second, independent estimate") ---
+estimate:
+  res_mm: 0.5                   # estimate evaluated on the MRI template grid resampled to 0.5 mm (run s5_compose_d2bs8_r05_guard)
+  inverse_iters: 40             # fixed-point inversion of each member's construction warp
+  inverse_tol_mm: 1.0e-3
+  guard_mm: 0.1                 # a point is dropped for a member when its round trip > 0.1 mm or its solution leaves the warp's grid (step-8 box)
+  exclude: [TPL]                # the MRI template's own b0 member is not a brain; its link is computed separately (only: [TPL])
+  groups:                       # subsets reported against the rest
+    mri13: [MF275, MF278, MF282, MR243, MR249, MR250, MR251, MR252, MR253, MR254, MR256, MR257, MR261]
+  point_chunk: 500000
+  compare_every: 8              # Methods: "These measures used every eighth voxel of the MRI template's brain mask"
+  compare_direct: [greedy, sym] # direct links compared (folders under the link root, each with link_linear_world.txt + link_warp.nii.gz)
+  compare_extra: {tpl: s5_tpl_d2bs8_r05_guard}   # extra estimate folders (relative to the estimate root) compared too
+
+# --- mappings to published templates (Methods, sec:m-atlases) ---
+atlas:
+  engine: {res: 0.25, smooth_warp_sigma: 1.25, channel_chunk: 8, max_gpu_frac: 0.95}   # symmetric, halfway space, no landmarks
+  ants:                         # affine start: ANTs rigid + affine (MI) fitted both ways, averaged in the log domain
+    version: 2.5.4
+    schedule: {c: "[1000x500x250x100,1e-6,10]", f: 8x4x2x1, s: 3x2x1x0vox}
+    metric: "MI[{fixed},{moving},1,32,Regular,0.25]"
+    winsorize: "[0.005,0.995]"
+    histogram_matching: 1
+    step: 0.1
+  score:
+    detj_every: 200             # Jacobian checked at every 200th brain voxel (step 4 x 50), central differences of +-0.25 mm
+    detj_h_mm: 0.25
+    civmr_every: 20             # CIVM-R vs the direct link: every 20th CIVM-R brain voxel
+  atlases:                      # image / mask relative to inputs.atlas_reference ({ref}) or inputs.atlas_v1_xfm ({v1}); channel of our template
+    NMT_v2.0_sym: {img: "{ref}/NMT_v2.0_sym/NMT_v2.0_sym/NMT_v2.0_sym_SS.nii.gz", msk: "{ref}/NMT_v2.0_sym/NMT_v2.0_sym/NMT_v2.0_sym_brainmask.nii.gz", channel: T2,
+                   sarm: "{ref}/NMT_v2.0_sym/NMT_v2.0_sym/SARM_in_NMT_v2.0_sym.nii.gz", sarm_level: 6}
+    INIA19: {img: "{v1}/atlas-INIA19/INIA19_T1_SS.nii.gz", msk: "{v1}/atlas-INIA19/INIA19_brainmask_from_labels.nii.gz", channel: T2}
+    CIVM-R: {img: "{ref}/CIVM-R_T2_DTI/CIVM-R_b0_brain.nii.gz", msk: "{ref}/CIVM-R_T2_DTI/CIVM-R_brain_mask.nii.gz", channel: b0}
+
+# --- outline check (Methods, "Evaluation of the pathway"; analysis project code/regqc_outline.py) ---
+outline:
+  fail_p99_mm: 3.5
+  fail_max_mm: 5.0
+  warn_p99_mm: 2.5
+
+# --- the MRI route (Methods, sec:m-link: "the b0 image of each brain with MRI was registered to the template's b0 channel by a
+# similarity transform and then the feature-based registration on a 0.35 mm grid (warp smoothing sigma = 1.25 voxels)") ---
+# Code: code/template/link/b0_to_template.py. Ported from the analysis project's mri/code/r5_canon_test.py (arm canon, --lin xag --tag d22, as run
+# by _nightlogs/L2_r5prod_queue.sh with the brains' record masks) with helpers from bftemplate/cv/b0_to_template.py; the registry entry
+# as mri/code/r5_production_register.py (recipe D22). Values are those of the runs of record (data/sub-<ID>/xfm/b0-native__to__mri-template).
+b0_to_template:
+  n4_field_max: 1.5             # input QC: b0 re-debiased (ANTs N4 in the brain mask) when its residual low-frequency field p95/p5 > 1.5
+  n4_field_sigma_vox: 8         # ... the field = the masked b0 smoothed by 8 voxels (Gaussian), normalized by the smoothed mask
+  n4:                           # N4BiasFieldCorrection arguments (ANTs 2.5.4): the N4 b0 feeds the deformable only (the linear fits use the native b0)
+    shrink: 2
+    convergence: "[100x100x100x100,0.0]"
+    spline_mm: 30
+  linear_factor: 2              # similarity and affine fits on images downsampled x2 (Powell on NCC, code/blockface/registration/xfmtools.py)
+  similarity_retry_rad: 0.25    # if any similarity rotation exceeds 0.25 rad: retry from a coarse grid over the three rotations, keep the higher NCC
+  similarity_retry_grid_rad: [-0.15, 0.0, 0.15]
+  linear_mode: xag              # 7-dof similarity, then a 12-dof affine on the similarity-placed b0 ("guarded canon-xa", decision D22)
+  affine_anisotropy_max: 1.5    # the affine is rejected (similarity only) when the singular-value ratio of (A S) exceeds this
+  grid_res_mm: 0.35             # Methods: "on a 0.35 mm grid"
+  grid_margin_mm: 8.0           # working grid centered on (start-placed b0 brain | template brain) + 8 mm of zeros (meta.json config margin_mm)
+  grid_multiple: 16             # working-grid sizes rounded up to a multiple of 16
+  brainstem_cut: true           # D11: moving input zeroed below the template brain's lowest axial slice, placed by the similarity (input only)
+  engine:                       # code/blockface/registration/featurereg.py options (all others at its defaults: 32 anatomix + 12 MIND-SSC channels, two stages)
+    resolution: 0.35
+    smooth_warp_sigma: 1.25     # Methods: "warp smoothing sigma = 1.25 voxels"
+    gpu_per_mvox: 1.41          # GPU memory of this stage, measured: 12.1 GiB for MR252's 208 x 256 x 160 grid (the whole process);
+                                # featurereg stops before the GPU stage when the card has less free (0.10 + 1.41 GiB per million voxels)

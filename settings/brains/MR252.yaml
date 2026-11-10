@@ -1,0 +1,88 @@
+# MR252: the per-brain inputs of its blockface reconstruction, as used for the paper (from the analysis project's
+# code/config.py + code/macaque_datasets.xlsx). Hand inputs: spacing (vx, vz um), camera jumps, missing sections and the
+# caudal cutoff (see code/blockface/subject.py). `raw` is relative to $LINC_RAW.
+# registration_to_own_mri: the inputs of record of the registration to the brain's own b0 (R1 v3): the b0 mask (paths relative to
+# mri/), the fixed b0, and the start pose (world, blockface -> b0 on the template grid), recovered from the run's saved init matrix.
+subject: MR252
+raw: blockface_curated/MR252
+raw_glob: '*.JPG'
+raw_regex: Img(\d+)\.JPG
+idx_range: [8527, 9966]
+reduce: mean
+rotate180: false
+vx: 20.0
+vz: 45.0
+jumps:
+- [494, 495]
+- [799, 800]
+- [910, 911]
+- [1062, 1070]
+- [1126, 1127]
+- [1348, 1349]
+- [1354, 1355]
+- [1410, 1411]
+- [1411, 1412]
+- [1416, 1417]
+- [1417, 1418]
+- [1419, 1420]
+- [1420, 1421]
+missing:
+- [481, 483]
+- [500, 504]
+- [583, 585]
+- [890, 892]
+- [946, 948]
+- [1000, 1002]
+- [1002, 1004]
+- [1010, 1012]
+- [1033, 1035]
+- [1062, 1071]
+- [1101, 1103]
+- [1150, 1152]
+- [1170, 1172]
+- [1238, 1240]
+- [1249, 1251]
+- [1258, 1260]
+- [1274, 1277]
+- [1323, 1329]
+- [1360, 1362]
+- [1389, 1391]
+- [1397, 1399]
+- [1436, -1]
+histo_vx: 0.3125
+histo_vz: 1200.0
+ccs: 13
+cce: 99
+mri: dwi_b0_las_brain_debiased.nii.gz
+stack_pad: 0
+jump_mode: affine
+# reconstruction_spacing_um: the pixel size and section step the volume was REBUILT at (its pixels depend on them, e.g. the
+# intensity smoothing width in sections); vx/vz above are the calibrated spacing written into the headers afterwards by a
+# header-only rescaling about the world origin (code/blockface/spacing.py; pixels unchanged). Equal for a new brain.
+# curation_f: native sections per curated (0.40 mm) slice of the hand-edit grid, pinned at the reconstruction spacing.
+reconstruction_spacing_um: {vx: 20, vz: 50}
+curation_f: 8
+histo_divisor: 24          # native sections per histology bucket (pinned; histology)
+registration_to_own_mri:
+  variant_of_record: r1v3mr
+  b0_mask: MR252_mri_mask_r1pair_reg_2026-10-03.nii.gz
+  b0_mask_source: register-derived pair mask (D31)
+  fixed_b0: MR252_mri.nii.gz
+  start_pose_world:
+  - [0.998660631699788, -0.0005661080983831961, 0.051736082327541795, -44.18432871272543]
+  - [0.00389080807746594, 0.9979304571327395, -0.06418461139047077, -31.696377476974003]
+  - [-0.0515926768590811, 0.06429993972362942, 0.9965960633306019, -28.374620598195456]
+  - [0.0, 0.0, 0.0, 1.0]
+# masks_of_record: the masks this brain's reconstruction of record used, and which of them were corrected by hand (paths
+# relative to sub-<ID>/blockface/). A hand-edited curated file wins over the 3D models' outputs in linc-reconstruct.
+masks_of_record:
+  photo_masks_2d:
+    folder: 01_brainmask/01_final
+    hand_edited: false
+    note: the 2D model's output, unchanged
+  brain_mask_3d:
+    file: curated/MR252_mask_edited.nii.gz
+    hand_edited: true
+  tubes_3d:
+    file: curated/MR252_holes_edited.nii.gz
+    hand_edited: true

@@ -1,0 +1,48 @@
+# Products of record read by the figure scripts (code/figures/pipeline.py, tracer.py).
+# Paths are relative to $LINC_PRODUCTS (code/shared/paths.py products()). For validation, LINC_PRODUCTS = the analysis project, so these are
+# its own folders; a data release remaps them here only.
+
+# --- the template's MRI channels on the template grid, 0.25 mm ---
+template_t2: template/mri/linc_mri_T2.nii.gz
+template_mask: template/mri/linc_mri_brainmask.nii.gz
+template_dec: template/mri/linc_mri_DEC.nii.gz                       # principal direction weighted by FA (RGB, 0-255)
+template_frac1: template/mri/linc_mri_frac1.nii.gz                   # SANDI soma fraction
+template_frac2: template/mri/linc_mri_frac2.nii.gz                   # SANDI neurite fraction
+
+# --- the blockface template in its own space, and the registration's pull map (MRI-template point -> blockface-template point) ---
+bft_rgb: bftemplate/d2b/final_s8/d2bs8_rgb.nii.gz
+bft_mask: bftemplate/d2b/final_s8/d2bs8_brainmask.nii.gz
+bft_pull_map: bftemplate/cv/template2template/d2bs8_s5sym/bftemplate__to__mri-template    # maps.json: src = L @ (x + d(x))
+
+# --- the blockface example (MM6 = MR251): its completed volume, the construction's input, and what the photographed part is pulled from ---
+blockface_completed_rgb: synthesis/out_d3_full/MR251/MR251_bf_completed_rgb.nii.gz   # the synthesis of record (d3_full), run-113 frame
+blockface_synth_mask: synthesis/out_d3_full/MR251/MR251_synth_mask.nii.gz
+blockface_seam_depth: synthesis/out_d3_full/MR251/MR251_seam_depth.nii.gz           # signed distance to the junction plane (mm)
+blockface_registration: data/sub-MR251/xfm_r1v3/bf-native__to__b0-native             # the registration of record (meta.json, warp, placed_to_bf_pull.txt)
+blockface_registered_rgb: data/sub-MR251/mri/nonlinear_r1v3/MR251_bf_nonlin_rgb.nii.gz   # its registered color volume: the record's color scale
+blockface_registered_grey: data/sub-MR251/mri/nonlinear_r1v3/MR251_bf_nonlin.nii.gz
+blockface_example_store: data/sub-MR251/blockface/MR251_blockface.ome.zarr           # the reconstruction (OME-Zarr pyramid)
+photographs: data/sub-MR251/blockface/00_slices                                       # SLICE_<k>_0000.png
+photo_masks: data/sub-MR251/blockface/01_brainmask/01_final                           # SLICE_<k>.png
+
+# --- one MRI input brain (MF1 = MF283), in its canonical frame (its rigid placement on the template grid) ---
+mri_input: mri/data/sub-MF283/canonical                              # t2, brain_mask, tensor (FSL order), frac1, frac2 (.nii.gz)
+
+# --- the histology example (MM2 = MR252): its reconstruction (for the side check) and one histology section ---
+blockface_store: data/sub-MR252/blockface/MR252_blockface.ome.zarr   # the reconstructed volume (OME-Zarr pyramid)
+histology_piece: data_arm_final/sub-MR252/blockface/06_histo2bf/tirl/mr252FS_c11_s28nDF_0000   # moving4_nonlinear_rgb.png, fixed.png
+
+# --- the tracer labels figure (code/figures/tracer.py) ---
+tracer_template: labels/tracer_template_r058d                       # <S>/<S>_<class>_mri-template{,_density}.nii.gz: the final tracer labels
+template_fa: template/mri/linc_mri_FA.nii.gz
+sarm_level6: mri/tc/atlas_v2/NMT_v2.0_sym/SARM_level6_in_template.nii.gz    # SARM level 6 carried from NMT v2 (internal capsule = 50)
+bft_member_warps: bftemplate/d2b/final_s8/d2_member_warps.json      # each member's construction warp (file, convention, src_grid)
+mf8_rigid: data/sub-MF191/mri/s2lin_prod/MF191_s2lin.json           # MF8's rigid placement (T_world_bf_to_run113)
+mf8_interp: data_arm_preinp_r058/sub-MF191/blockface/06_histo2bf/interp/interp.json   # MF8's interpolation table (interpolated pairs)
+mf8_label_grid: labels/push_tracer_r058d/MF191/MF191_Fiber_dense_bundle_bfnative_L2.nii.gz   # MF8's blockface label grid (its header)
+
+# --- the chart-to-template figure (Supplementary S3: code/figures/s_tracer_fidelity.py) ---
+push_sheets: labels/push_tracer_r058d                             # <S>/<S>_<class>_bfnative_L2.nii.gz (one slice per charted section) + push_tracer_<S>.json (the pieces)
+section_maps: labels/section_maps                                 # <S>_<stain>.tsv: the histology stack's index -> section, level-0 extent
+r1_record: paper/numbers/r1_current_2026-10-03.json               # MM1-MM3's blockface -> b0 registry entries of record (with sub-<S>/xfm/b0-native__to__mri-template)
+data: data                                                        # sub-<S>/blockface/<S>_blockface_L2.nii.gz, sub-<S>/xfm/

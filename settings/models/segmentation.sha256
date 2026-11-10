@@ -1,0 +1,10 @@
+# sha256 of the segmentation models' shipped files, relative to $LINC_MODELS/segment (one folder per model).
+# Check a local copy with: python tests/verify_weights.py settings/models/segmentation.sha256 --root $LINC_MODELS/segment
+1d8ed55e38c93e5bc8c25802ef208bf386b7fee238d86dcad27985d0d6a27414  mri_brainmask/model.pt
+dd0409ac6d3712b9a5608f1d3f8434bf0d52d8cd8cd592554ab93cd8e2efa798  mri_brainmask/spec.json
+4dd748aa4c34d355827a9cff297309fa60edb2d14bcc31853972b61abbb104ab  bf_mask2d/model.pt
+8ba5d3ae2127114fdd60e64d538c1d85663b36bc6954013ba485362a12a73967  bf_mask2d/spec.json
+6e474a51ef84dfcaeeb04be1564820c933f0ea1db8a23ac16ae539df73d45145  bf_mask3d/model.pt
+33cc76f5f119eed13fd61bda4693df5013c0f04fb0a39344537a62cb71e33b42  bf_mask3d/spec.json
+face882aaa1b528f6526a6f8a44d3d3a5e4b672871703a6be07af45da0b5ab5a  bf_holes/model.pt
+b3d8bfe30ef34fe6c9fc8796309ef385e13d3637c80108c35ebdb009901f4dea  bf_holes/spec.json

@@ -3,11 +3,11 @@
     python -m pytest tests/test_blockface_rules.py      or      python tests/test_blockface_rules.py
 
 You need
-  env/deep.yml (torch; linc/blockface/mask_rules.py needs only numpy and scipy); $LINC_MODELS for the last check.
+  settings/env/deep.yml (torch; code/blockface/mask_rules.py needs only numpy and scipy); $LINC_MODELS for the last check.
 What it does
-  linc-reconstruct applies the pipeline's rules (linc/blockface/mask_rules.py) once and runs linc-segment with
+  linc-reconstruct applies the pipeline's rules (code/blockface/mask_rules.py) once and runs linc-segment with
   --postprocess none; each linc-segment model's spec.json holds the same rule for use outside the pipeline. The tests check that the
-  two copies agree, that the tube rule's parameters in configs/blockface.yaml are the shipped spec's, and (with $LINC_MODELS set)
+  two copies agree, that the tube rule's parameters in settings/blockface.yaml are the shipped spec's, and (with $LINC_MODELS set)
   that the shipped specs name those rules.
 You get
   pytest's pass / fail per test.
@@ -22,9 +22,9 @@ import yaml
 from scipy import ndimage as ndi
 
 REPO = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPO))
-from linc.blockface import mask_rules  # noqa: E402
-from linc.segment.predict import postprocess_mask  # noqa: E402
+sys.path.insert(0, str(REPO / "code"))
+from blockface import mask_rules  # noqa: E402
+from shared.segment.predict import postprocess_mask  # noqa: E402
 
 try:
     import pytest
@@ -36,7 +36,7 @@ except ImportError:                                                     # plain-
     def skip(why):
         raise Skip(why)
 
-VS = yaml.safe_load((REPO / "configs" / "blockface.yaml").read_text())["volume_segmentation"]
+VS = yaml.safe_load((REPO / "settings" / "blockface.yaml").read_text())["volume_segmentation"]
 TUBES = {"kind": "tubes_left_hemisphere", "left_tol_vox": float(VS["tubes_left_tolerance_vox"]), "min_vox": int(VS["tubes_min_voxels"])}
 
 
@@ -80,7 +80,7 @@ def test_fill_photo_mask_same_rule():
     try:
         b = postprocess_mask(m.astype(np.uint8), {"kind": "fill_holes"}, 2)
     except ValueError:
-        skip("linc.segment has no fill_holes post-processing yet (L4 adds it after the models wrap-up's last launch)")
+        skip("shared.segment has no fill_holes post-processing yet (L4 adds it after the models wrap-up's last launch)")
     assert (a == (b > 0)).all()
 
 
@@ -89,7 +89,7 @@ def test_shipped_specs_name_the_rules():
     root = os.environ.get("LINC_MODELS")
     if not root:
         skip("LINC_MODELS not set")
-    models = yaml.safe_load((REPO / "configs" / "blockface.yaml").read_text())["segmentation"]["models"]
+    models = yaml.safe_load((REPO / "settings" / "blockface.yaml").read_text())["segmentation"]["models"]
     want = {"photos": {"kind": "fill_holes"}, "mask": {"kind": "largest_cc_fill"}, "tubes": TUBES}
     found = 0
     for task, name in models.items():

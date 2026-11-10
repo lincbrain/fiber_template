@@ -1,5 +1,5 @@
-"""cli/linc-mri prep's pieces and the MRI channels build driver, without data (CPU, seconds): staging one volume of a 4-D image under its
-header, the mask checks, the modality table against configs/mri_construction.yaml, and build_mri_channels --plan (every step listed,
+"""code/mri/linc-mri prep's pieces and the MRI channels build driver, without data (CPU, seconds): staging one volume of a 4-D image under its
+header, the mask checks, the modality table against settings/mri_construction.yaml, and build_mri_channels --plan (every step listed,
 nothing run, nothing written).
     python -m pytest tests/test_mri_new_brain.py      or      python tests/test_mri_new_brain.py"""
 import os
@@ -12,9 +12,9 @@ import nibabel as nib
 import numpy as np
 
 REPO = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPO))
-from linc.construction import mri_new_brain as NB  # noqa: E402
-from linc.construction.tools import recipe  # noqa: E402
+sys.path.insert(0, str(REPO / "code"))
+from mri import mri_new_brain as NB  # noqa: E402
+from template.tools import recipe  # noqa: E402
 
 
 def _img(path, shape, affine=None, dtype=np.float32, seed=0):
@@ -71,7 +71,7 @@ def test_build_mri_channels_plan_lists_every_step_and_runs_nothing():
     with tempfile.TemporaryDirectory() as d:
         env = dict(os.environ, LINC_DATA=f"{d}/data", LINC_WORK=f"{d}/work", LINC_PRODUCTS=d, LINC_TEMPLATE=d, PYTHONNOUSERSITE="1")
         env.pop("PY_MRI", None)
-        out = subprocess.run([sys.executable, str(REPO / "reproduce" / "templates" / "build_mri_channels.py"), "--plan"],
+        out = subprocess.run([sys.executable, str(REPO / "code" / "template" / "build_mri_channels.py"), "--plan"],
                              capture_output=True, text=True, env=env, cwd=str(REPO))
         assert out.returncode == 0, out.stderr[-800:]
         ids = recipe()["inputs"]

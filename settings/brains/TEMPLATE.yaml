@@ -1,0 +1,53 @@
+# A new brain's configuration: copy this file to settings/brains/<ID>.yaml, where <ID> is the brain's identifier (its data folder is
+# $LINC_DATA/sub-<ID>/), fill in the REQUIRED fields and delete the optional ones you do not need (their defaults are given). The
+# paper's 21 brains are worked examples (e.g. MR243.yaml: 400 um sections; MR252.yaml: 50 um sections with missing sections).
+# Read by code/blockface/linc-reconstruct (code/blockface/subject.py), code/blockface/registration/linc-register and code/histology/linc-histology. Every input a brain needs, raw and
+# hand-made, is listed in README.txt.
+
+# ---------------------------------------------------------------------------------------------------- the photographs (photos)
+subject: NEWBRAIN          # REQUIRED. The identifier, exactly as in this file's name and in the data folder sub-<ID>.
+raw: lab/NEWBRAIN/photos   # REQUIRED. The folder of the blockface photographs, relative to $LINC_RAW.
+raw_glob: '*.JPG'          # REQUIRED. The photographs' file pattern in that folder.
+raw_regex: 'Img(\d+)\.JPG' # REQUIRED. A regular expression whose first group is the photograph's number (its order in the cutting).
+idx_range: [1, 200]        # optional (default: from the lowest to the highest number found). First and last photograph numbers to use,
+                           #   inclusive. A number missing in the range becomes a black frame, so the order of the sections is kept.
+rotate180: false           # optional (default false). true if the photographs are upside down: the brain must end up dorsal side up.
+reduce: mean               # optional (default mean). How the coarser in-plane pyramid levels are computed (block mean).
+
+# ---------------------------------------------------------------------------------------------------- the spacing
+vx: 20.0                   # REQUIRED. Pixel size of the photographs, in micrometers (e.g. from a ruler or a known length in a photograph).
+vz: 50.0                   # REQUIRED. Section step, the distance between consecutive photographs, in micrometers.
+# The paper's brains also carry `reconstruction_spacing_um` (they were reconstructed at their nominal spacing and then given the
+# spacing calibrated against their own MRI; code/blockface/README.txt, "The spacing") and a pinned `curation_f` (sections per slice of
+# the 0.40 mm hand-edit grid). A new brain leaves both out: they default to vx, vz and to round(400 / vz) (at least 1). One brain
+# (MR263) also sets `shading: poly2+zref`, the illumination correction its record was made with; a new brain leaves it out (poly2).
+
+# ---------------------------------------------------------------------------------------------------- the stack (prepare)
+jumps: []                  # optional (default none). Camera jumps, listed by hand from the stacked photographs: each [before, after]
+                           #   is the last section before the jump and the first after it, as 0-based indices of the renamed series
+                           #   (00_slices/SLICE_<k>_0000.png); usually after = before + 1. Example: [[121, 122]].
+missing: []                # optional (default none). Sections handled by hand, each a pair:
+                           #   [before, after]  the present sections around missing or damaged ones; those between are interpolated;
+                           #   [-1, k]          drop the leading non-brain frames 0 .. k-1 (a name card, a calibration grid);
+                           #   [n, -1]          the caudal cutoff: keep sections 0 .. n.
+                           #   Example: [[-1, 3], [40, 43], [1180, -1]].
+stack_pad: 0               # optional (default 0 = 200 px). Canvas margin of the stacks, in pixels per side; raise it when a large
+                           #   camera jump would push a photograph off the canvas.
+jump_mode: affine          # optional (default affine). How the camera jumps are corrected: TIRL rotation -> rigid -> affine per jump,
+                           #   the only mode released.
+
+# ---------------------------------------------------------------------------------------------------- histology (linc-histology)
+ccs: 0                     # optional (default 0). First histology section where the corpus callosum joins the hemispheres,
+cce: 0                     #   and the last; 0 and 0 when there is no such range or no histology. linc-histology also reads idx_range.
+
+# ---------------------------------------------------------------------------------------------------- registration (linc-register)
+native_end_crop_mm: 0.0    # optional (default 0). Drops the last round(mm / vz) photographed sections before the registered products are
+                           #   resampled, for a brain whose own last sections are darker (the paper: MF7 3.0 mm, MF10 1.62 mm).
+# registration_to_own_mri: the paper's brains only (their b0 mask, fixed b0 and start pose of record). A new brain leaves it out;
+#   `linc-register mri` then uses the b0 registered onto the template grid, and its mask, and estimates the start pose (or pass --new-brain).
+
+# ---------------------------------------------------------------------------------------------------- the paper's brains only
+# masks_of_record (which masks were corrected by hand), series_alignment (MF8 and MF9: their recorded alignment to an external series,
+# replayed by `photos`), and the records histo_vx, histo_vz, histo_divisor and mri, which the release code does not read.
+# Hand corrections of a new brain need no entry: save them as curated/<ID>_mask_edited.nii.gz or curated/<ID>_holes_edited.nii.gz
+# (code/blockface/README.txt, "Hand corrections").

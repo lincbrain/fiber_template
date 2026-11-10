@@ -1,4 +1,4 @@
-"""Smoke tests for linc.segment on toy data (CPU, no data, seconds):  python -m pytest tests/test_segment.py
+"""Smoke tests for shared.segment on toy data (CPU, no data, seconds):  python -m pytest tests/test_segment.py
 The network of record's size, nnU-Net file naming in the folder API, a model folder round trip (state_dict + spec.json -> masks in
 the input's grid, NIfTI and PNG, native-size photographs), and the post-processing rules."""
 import json
@@ -10,9 +10,9 @@ import numpy as np
 import pytest
 import torch
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from linc.segment import api, predict  # noqa: E402
-from linc.segment.net import UNet  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "code"))
+from shared.segment import api, predict  # noqa: E402
+from shared.segment.net import UNet  # noqa: E402
 
 
 def test_network_of_record():
@@ -91,7 +91,7 @@ def test_fill_holes():
 
 def test_augment_keeps_label_on_image():
     """pure crop + mirroring: every sample's label stays its own image's threshold (an earlier version mirrored the channel and batch dims)"""
-    from linc.segment import augment
+    from shared.segment import augment
     for dim, B, ctx, patch in ((3, 2, [24, 20, 28], [16, 12, 20]), (2, 4, [40, 36], [32, 28])):
         y = torch.zeros([B] + ctx, dtype=torch.long)
         for b in range(B):
@@ -107,7 +107,7 @@ def test_augment_keeps_label_on_image():
 
 def test_ds_targets_centered():
     """the coarse deep-supervision targets keep the label's centroid (block-center convention) within 0.05 voxel to 1/8"""
-    from linc.segment import losses
+    from shared.segment import losses
     g = torch.meshgrid(*[torch.arange(128.)] * 3, indexing="ij")              # the 3D patch; an off-grid ellipsoid
     y = ((((g[0] - 61.3) / 30) ** 2 + ((g[1] - 66.8) / 22) ** 2 + ((g[2] - 58.1) / 35) ** 2) < 1).long()[None]
 
@@ -129,7 +129,7 @@ def _com(w):
 def test_lowres_keeps_content_in_place():
     """the low-resolution augmentation (block means down, linear up): mean centroid shift over positions < 0.05 voxel, each < 0.25
     (a mode="nearest" reduction moves the image +0.5-0.85 voxel toward high indices, its label unmoved)"""
-    from linc.segment import augment
+    from shared.segment import augment
     for dim in (3, 2):
         S = [96] + [32] * (dim - 1)
         g = torch.meshgrid(*[torch.arange(s, dtype=torch.float32) for s in S], indexing="ij")
@@ -143,7 +143,7 @@ def test_lowres_keeps_content_in_place():
 def test_label_resample_centered():
     """labels: nearest-exact, block mean >= 0.5 at even integer reductions: the centroid stays put at x 2, near-1 and up-sampling
     factors, and a thin tube keeps its volume when up-sampled"""
-    from linc.segment import io
+    from shared.segment import io
     S = [120, 90, 100]
     g = np.meshgrid(*[np.arange(s, dtype=np.float64) for s in S], indexing="ij")
     lab = ((((g[0] - 57.3) / 30) ** 2 + ((g[1] - 44.8) / 22) ** 2 + ((g[2] - 51.1) / 35) ** 2) < 1).astype(np.uint8)

@@ -1,0 +1,125 @@
+# MR261: the per-brain inputs of its blockface reconstruction, as used for the paper (from the analysis project's
+# code/config.py + code/macaque_datasets.xlsx). Hand inputs: spacing (vx, vz um), camera jumps, missing sections and the
+# caudal cutoff (see code/blockface/subject.py). `raw` is relative to $LINC_RAW.
+# registration_to_own_mri: the inputs of record of the registration to the brain's own b0 (R1 v3): the b0 mask (paths relative to
+# mri/), the fixed b0, and the start pose (world, blockface -> b0 on the template grid), recovered from the run's saved init matrix.
+subject: MR261
+raw: blockface_curated/MR261
+raw_glob: '*.JPG'
+raw_regex: Img(\d+)\.JPG
+idx_range: [30274, 31656]
+reduce: mean
+rotate180: false
+vx: 20
+vz: 45
+jumps:
+- [481, 482]
+- [886, 887]
+- [1030, 1031]
+missing:
+- [43, 45]
+- [158, 161]
+- [654, 656]
+- [810, 812]
+- [820, 822]
+- [861, 863]
+- [886, 888]
+- [922, 924]
+- [963, 966]
+- [976, 978]
+- [1029, 1031]
+- [1070, 1074]
+- [1115, 1117]
+- [1119, 1121]
+- [1186, 1188]
+- [1271, 1288]
+- [1306, 1311]
+- [1382, -1]
+- [1383, 1387]
+- [1387, 1391]
+- [1391, 1395]
+- [1395, 1400]
+- [1400, 1404]
+- [1404, 1408]
+- [1408, 1412]
+- [1412, 1416]
+- [1416, 1420]
+- [1420, 1424]
+- [1424, 1429]
+- [1429, 1433]
+- [1433, 1437]
+- [1437, 1441]
+- [1441, 1445]
+- [1445, 1449]
+- [1449, 1453]
+- [1453, 1458]
+- [1458, 1462]
+- [1462, 1466]
+- [1466, 1470]
+- [1470, 1486]
+- [1486, 1491]
+- [1491, 1495]
+- [1495, 1499]
+- [1499, 1503]
+- [1503, 1507]
+- [1507, 1511]
+- [1511, 1515]
+- [1515, 1520]
+- [1520, 1524]
+- [1524, 1528]
+- [1528, 1532]
+- [1532, 1536]
+- [1536, 1540]
+- [1540, 1544]
+- [1544, 1549]
+- [1549, 1553]
+- [1553, 1557]
+- [1557, 1561]
+- [1561, 1565]
+- [1565, 1569]
+- [1569, 1573]
+- [1573, 1578]
+- [1578, 1582]
+- [1582, 1586]
+histo_vx: 0.0
+histo_vz: 0.0
+ccs: 0
+cce: 0
+mri: ''
+stack_pad: 0
+jump_mode: affine
+# stack_origin_frames: the stack of record had an occipital block appended after the photographs (frames 1383-1586: 47 sections of
+# an external 0.2 mm series and 157 empty slots between them), later cut off at 1382 (missing [1382, -1]; the block's runs listed
+# after it are inert). The photographs are frames 0-1382, but the stacks' world origin keeps the count of 1587 frames, so the volume
+# sits where every product of record expects it (slice 0 at y = vz * (1587 - 0.5)), and MR261.info's native_nz states that count.
+stack_origin_frames: 1587
+# reconstruction_spacing_um: the pixel size and section step the volume was REBUILT at (its pixels depend on them, e.g. the
+# intensity smoothing width in sections); vx/vz above are the calibrated spacing written into the headers afterwards by a
+# header-only rescaling about the world origin (code/blockface/spacing.py; pixels unchanged). Equal for a new brain.
+# curation_f: native sections per curated (0.40 mm) slice of the hand-edit grid, pinned at the reconstruction spacing.
+reconstruction_spacing_um: {vx: 20, vz: 50}
+curation_f: 8
+registration_to_own_mri:
+  variant_of_record: r1v3mr
+  b0_mask: MR261_mri_mask_r1pair_reg_2026-10-03.nii.gz
+  b0_mask_source: register-derived pair mask (D31)
+  fixed_b0: MR261_mri.nii.gz
+  start_pose_world:
+  - [0.9974738884667078, 0.03628993902608691, 0.061064573629792174, -45.74311498946582]
+  - [-0.03375990447738228, 0.9985485048101429, -0.0419660862019173, -40.075084262617715]
+  - [-0.06249888540432893, 0.039798541014861834, 0.997251204790601, -26.700227848673183]
+  - [0.0, 0.0, 0.0, 1.0]
+# masks_of_record: the masks this brain's reconstruction of record used, and which of them were corrected by hand (paths
+# relative to sub-<ID>/blockface/). A hand-edited curated file wins over the 3D models' outputs in linc-reconstruct.
+masks_of_record:
+  photo_masks_2d:
+    folder: 01_brainmask/01_final
+    hand_edited: false
+    note: the 2D model's output for sections 0-1382; sections 1383-1586 (a caudal block added on 19 Sep 2026) have their masks
+      in 01_final only
+  brain_mask_3d:
+    file: curated/MR261_mask_edited.nii.gz
+    hand_edited: true
+  tubes_3d:
+    file: curated/MR261_holes_edited.nii.gz
+    hand_edited: true

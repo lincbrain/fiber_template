@@ -1,9 +1,9 @@
-"""The one order in which every step finds a brain's match table (linc/histology/match.py find_table)."""
+"""The one order in which every step finds a brain's match table (code/histology/match.py find_table)."""
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from linc.histology import match  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "code"))
+from histology import match  # noqa: E402
 
 
 def test_order(tmp_path):

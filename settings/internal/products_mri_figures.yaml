@@ -1,0 +1,5 @@
+# Products read by the figure scripts (code/figures/template.py, link.py, histology.py) that
+# settings/internal/products_mri.yaml does not list. Paths are relative to $LINC_PRODUCTS (code/shared/paths.py products()); the scripts merge this
+# file over products_mri.yaml. For validation, LINC_PRODUCTS = the analysis project.
+
+bftemplate_step8: bftemplate/d2b/final_s8            # the blockface template of record (step 8, 0.25 mm): d2bs8_grey.nii.gz (Fig. 5)
