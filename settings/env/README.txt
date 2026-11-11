@@ -1,7 +1,7 @@
 PYTHON ENVIRONMENTS
 
 The pipeline needs separate environments because their packages conflict. install.sh builds them.
-Each file's header says how to build it by hand. Every step runs in the environment it ran in for the
+Each file's header says how to build it manually. Every step runs in the environment it ran in for the
 paper.
 
     linc.yml       registration, MRI preparation, MRI template, labels, evaluation, numbers, figures

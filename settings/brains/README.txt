@@ -10,5 +10,5 @@ WHAT A PERSON MAKES ONCE PER BRAIN
     camera jumps, missing sections  jumps, missing in this file; by eye, from the stacked photographs
     corrected masks (optional)      see code/blockface/README.txt
     match table                     see code/histology/README.txt
-    section map                     which section each image in the histology stack is; checked by hand
+    section map                     which section each image in the histology stack is; checked manually
     labels                          drawn on the sections by an anatomist

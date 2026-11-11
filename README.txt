@@ -76,7 +76,7 @@ command to see what it needs, what it does and what it writes.
 The cloud version of the data (LINC dataset 000059) has the MRI template and the MRI brain-mask
 network. Cases 3, 5, 6 and 10, the blockface template in case 1 and the photograph network in case 9
 also need data that stay local, with the laboratory. So do the commands of case 1, which read files
-that stay local; with the cloud data alone, apply the parts by hand, as
+that stay local; with the cloud data alone, apply the parts yourself, as
 derivatives/template/xfms/README.txt in the cloud dataset says.
 
 

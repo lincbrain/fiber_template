@@ -3,7 +3,8 @@
 #     export LINC_DATA=<the data tree>
 #     source settings/roots.sh
 #
-# The histology steps also read LINC dataset 000003: have its files in the data tree, or set LINC_000003 to a copy of that dataset.
+# The histology steps also read LINC dataset 000003: the data tree holds the files they read (brains/sub-<ID>/inputs/histology).
+# To read a full copy of the dataset instead, set LINC_000003 to it.
 #
 # It sets
 #   - the environments' interpreters ($PY, $PY_DEEP, $PY_TIRL), from envs/linc_envs.sh, which install.sh writes;

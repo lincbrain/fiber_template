@@ -25,15 +25,15 @@ It takes about 10 hours per brain; prepare is the longest step. The GPU is used 
 A NEW BRAIN
 
 Copy settings/brains/TEMPLATE.yaml to settings/brains/<ID>.yaml and fill it in. Camera jumps and
-missing sections are listed by hand, from the stacked photographs.
+missing sections are listed manually, from the stacked photographs.
 
-HAND CORRECTIONS (optional)
+MANUAL CORRECTIONS (optional)
 
     3D brain mask     after mask: edit curated/<ID>_mask.nii.gz, save as curated/<ID>_mask_edited.nii.gz
     marker tubes      after volume: save curated/<ID>_holes_edited.nii.gz the same way
     photograph masks  before prepare: linc-reconstruct edit-photo-masks export, edit, then import
 
-A hand-corrected mask always wins over a network's.
+A manually corrected mask always wins over a network's.
 
 TWO THINGS ABOUT THE PAPER'S BRAINS
 
