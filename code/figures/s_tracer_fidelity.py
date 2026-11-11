@@ -36,7 +36,7 @@ You get
     $PY_TIRL code/figures/s_tracer_fidelity.py [--out figures/s_tracer_fidelity.png]
 
 Ported from the analysis project's paper/fig_tracer_fidelity_v2_r058.py (--set r058d --layout s3) and the helpers it imported from
-paper/fig_tracer_fidelity_r058.py; drawn in the photograph's plane since R-075 (11 Nov 2026).
+paper/fig_tracer_fidelity_r058.py; drawn in the photograph's plane since 11 Nov 2026.
 """
 import argparse
 import json
