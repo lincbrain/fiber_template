@@ -36,8 +36,8 @@ isbi_numbers: isbi2027_repo/isbi2027/numbers     # {table1,extra,results,data,co
 precision_tau2: bftemplate/d2b/s8/precision_d2bs8/tau2.json   # how the between-brain variance tau^2 was measured (the precision rule)
 
 # --- Supplementary S3 (lgnstn_budget_r059; figure s_lgnstn): the LGN/STN labels in the MRI template, the SARM reference ---
-lgnstn_labels: labels/push_current               # <ID>/<ID>_<struct>_mri-template_mask{,_demons}.nii.gz, <ID>_<struct>_bfnative_L2.nii.gz
-template_mri: template/mri                       # linc_mri_{b0,T2}.nii.gz (the template grid)
+lgnstn_labels: labels/push_current               # <ID>/<ID>_<struct>_mri-template_{mask,mask_demons,prob_demons}.nii.gz, <ID>_<struct>_bfnative_L2.nii.gz
+template_mri: template/mri                       # linc_mri_{b0,T2,FA}.nii.gz (the template grid)
 sarm_in_template: mri/tc/atlas_v2/NMT_v2.0_sym/SARM_level6_in_template.nii.gz   # SARM level 6 carried from NMT v2 (nearest neighbor)
 sarm_key: labels/r058_nmt_tables/SARM_key_all.txt
 lgnstn_slab: labels/r059_L4/slab                 # the SARM nuclei split by hemisphere (SARM_<struct>_mri-template.nii.gz) and the slab

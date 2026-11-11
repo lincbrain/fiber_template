@@ -4,9 +4,9 @@ supplementary figure).
 
     python code/figures/lgnstn.py [--out figures/lgnstn.pdf]
 
-Rows: LGN and STN. Columns, in two groups: the left hemisphere's coronal, axial and sagittal sections of the template's T2, then the
+Rows: LGN and STN. Columns, in two groups: the left hemisphere's coronal, axial and sagittal sections of the template's FA, then the
 right hemisphere's, each through the mean centroid of the labels shown for that nucleus and hemisphere (window +-HALF_MM): the three brains' labels of record (demons; products
-lgnstn_labels/<ID>/<ID>_<struct>_mri-template_mask_demons) outlined in COLORS, and the SARM nucleus (products
+lgnstn_labels/<ID>/<ID>_<struct>_mri-template_mask_demons, outlined by the 0.5 contour of their probability maps) in COLORS, and the SARM nucleus (products
 lgnstn_slab/SARM_<struct>_mri-template.nii.gz, as code/figures/paper_numbers/lgnstn_budget_r059.py writes it) dashed white. A legend
 above names them. Orientation as figstyle.section: coronal and axial, the left of the brain on the left; sagittal, anterior right;
 superior up. Values (centroid distances) go in the caption (lgnstn_budget_r059). Full width, 180 mm.
@@ -15,6 +15,11 @@ Writes the PDF and a PNG beside it. Ported from the analysis project's paper/scr
 three pair columns dropped; MM3 golden yellow instead of figstyle's green, which was hard to tell from MM1's blue; a legend.
 11 Nov 2026 (the author: "change the layout"): horizontal and compact, 2 rows (LGN, STN) x 6 columns grouped by hemisphere, 180 mm
 wide; the same section centers, colors and panels' size.
+11 Nov 2026 (the author, after checks found no registration step that misplaces the labels): the background is the template's FA,
+where both nuclei show as dark bodies between bright fiber tracts (T2 shows them faintly); each brain's outline is the 0.5 contour of
+its carried probability map (lgnstn_labels <ID>_<struct>_mri-template_prob_demons; the mask of record is prob > 0.5), drawn with
+sub-voxel interpolation instead of voxel steps; SARM's binary nucleus is smoothed by the anti-aliasing rule of record (FWHM 0.25 mm)
+before its 0.5 contour. The same layout, section centers, colors and window.
 """
 import argparse
 import json
@@ -55,14 +60,18 @@ def main():
     P = paths.products("products_completion")
     FS.setup()
     lp = REPO / "settings" / "specimen_labels.json"; lab = json.load(open(lp))["labels"]
-    t2p = P["template_mri"] / "linc_mri_T2.nii.gz"
-    t2i = nib.load(t2p); T2 = np.asarray(t2i.dataobj).astype(np.float32); A = t2i.affine
+    bgp = P["template_mri"] / "linc_mri_FA.nii.gz"                      # the background: FA
+    bgi = nib.load(bgp); BG = np.asarray(bgi.dataobj).astype(np.float32); A = bgi.affine
     assert np.allclose(A[:3, :3], np.diag([VOX] * 3)), "template not axis-aligned RAS"
     lps = {(S, st): P["lgnstn_labels"] / S / f"{S}_{st}_mri-template_mask_demons.nii.gz" for S in SUBS for st, _ in ROWS}
+    pps = {(S, st): P["lgnstn_labels"] / S / f"{S}_{st}_mri-template_prob_demons.nii.gz" for S in SUBS for st, _ in ROWS}
     rps = {st: P["lgnstn_slab"] / f"SARM_{st}_mri-template.nii.gz" for st, _ in ROWS}
     L = {k: np.asarray(nib.load(p).dataobj) > 0 for k, p in lps.items()}
     R = {k: np.asarray(nib.load(p).dataobj) > 0 for k, p in rps.items()}
-    ins = [str(t2p)] + [str(p) for p in lps.values()] + [str(p) for p in rps.values()] + [str(lp)]
+    from scipy.ndimage import gaussian_filter
+    PR = {k: np.asarray(nib.load(p).dataobj).astype(np.float32) for k, p in pps.items()}                 # outlines: prob 0.5 (= the masks)
+    RS = {k: gaussian_filter(v.astype(np.float32), 0.25 / 2.3548 / VOX) for k, v in R.items()}            # SARM: FWHM 0.25 mm, then 0.5
+    ins = [str(bgp)] + [str(p) for p in lps.values()] + [str(p) for p in pps.values()] + [str(p) for p in rps.values()] + [str(lp)]
     gap_in, gap_grp, gap_row, left, right, top, bottom = 0.5, 3.0, 2.2, 5.0, 1.0, 13.5, 4.0
     W = FIG_W
     cell = (W - left - right - 4 * gap_in - gap_grp) / 6.0
@@ -83,14 +92,14 @@ def main():
                 k = FS.PLANE_AXIS[plane]
                 box = [slice(max(cen[i] - h, 0), cen[i] + h + 1) for i in range(3)]
                 box[k] = slice(None)
-                img = FS.section(T2[tuple(box)], plane, cen[k])
+                img = FS.section(BG[tuple(box)], plane, cen[k])
                 lo, hi = np.percentile(img, [1, 99.5])
                 ax.imshow(np.clip((img - lo) / max(hi - lo, 1e-6), 0, 1), cmap="gray", vmin=0, vmax=1)
                 for S in SUBS:
-                    m2 = FS.section(L[S, st][tuple(box)].astype(float), plane, cen[k])
+                    m2 = FS.section(PR[S, st][tuple(box)], plane, cen[k])
                     if m2.any():
                         FS.outline(ax, m2, color=COLORS[S], lw=LW)
-                m2 = FS.section(R[st][tuple(box)].astype(float), plane, cen[k])
+                m2 = FS.section(RS[st][tuple(box)], plane, cen[k])
                 if m2.any():
                     FS.outline(ax, m2, color=FS.FG, lw=LW, linestyles="dashed")
                 if r_ == 0:
