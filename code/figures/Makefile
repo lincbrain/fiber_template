@@ -166,9 +166,8 @@ s_tracer_fidelity:
 	@if [ ! -d "$(LINC_RAW)/linc_000003/rawdata" ]; then echo "SKIPPED s_tracer_fidelity: put the LINC histology dataset 000003 at \$$LINC_RAW/linc_000003"; \
 	else $(PY_TIRL) $@.py --out $(OUT)/figures/$@.png; fi
 
-# Fig. 10, the tracer figure: each charted section's labels in 3D (a), the internal capsule slabs (b) and the share in the capsule from
-# back to front (c), with its rotation video; renders headless in settings/env/viz3d.yml (record fig_tracer_sections3d_v5): skipped with a
-# message when PY_VIZ3D is unset
+# Fig. 10, the tracer figure: each charted section's labels in 3D (a) and the internal capsule slabs (b), with its rotation video;
+# renders headless in settings/env/viz3d.yml (record fig_tracer_sections3d_v6): skipped with a message when PY_VIZ3D is unset
 tracer_sections3d:
 	@if [ -z "$(PY_VIZ3D)" ]; then echo "SKIPPED tracer_sections3d: set PY_VIZ3D (settings/env/viz3d.yml; install.sh --with-figures-3d)"; \
 	else $(PY_VIZ3D) $@.py --video --out $(OUT)/figures/$@.png; fi

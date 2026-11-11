@@ -4,15 +4,17 @@ supplementary figure).
 
     python code/figures/lgnstn.py [--out figures/lgnstn.pdf]
 
-Rows: LGN and STN, left and right hemisphere. Columns: coronal, axial and sagittal sections of the template's T2 through the mean
-centroid of the labels shown (window +-HALF_MM): the three brains' labels of record (demons; products
+Rows: LGN and STN. Columns, in two groups: the left hemisphere's coronal, axial and sagittal sections of the template's T2, then the
+right hemisphere's, each through the mean centroid of the labels shown for that nucleus and hemisphere (window +-HALF_MM): the three brains' labels of record (demons; products
 lgnstn_labels/<ID>/<ID>_<struct>_mri-template_mask_demons) outlined in COLORS, and the SARM nucleus (products
 lgnstn_slab/SARM_<struct>_mri-template.nii.gz, as code/figures/paper_numbers/lgnstn_budget_r059.py writes it) dashed white. A legend
 above names them. Orientation as figstyle.section: coronal and axial, the left of the brain on the left; sagittal, anterior right;
-superior up. Values (centroid distances) go in the caption (lgnstn_budget_r059). One column wide (figstyle.COL_W_IN).
+superior up. Values (centroid distances) go in the caption (lgnstn_budget_r059). Full width, 180 mm.
 Writes the PDF and a PNG beside it. Ported from the analysis project's paper/scripts/figS_lgnstn_r059.py.
 10 Nov 2026 (requested at the 10 Nov meeting): only the former last column (all three brains and SARM, the same section centers); the
 three pair columns dropped; MM3 golden yellow instead of figstyle's green, which was hard to tell from MM1's blue; a legend.
+11 Nov 2026 (the author: "change the layout"): horizontal and compact, 2 rows (LGN, STN) x 6 columns grouped by hemisphere, 180 mm
+wide; the same section centers, colors and panels' size.
 """
 import argparse
 import json
@@ -38,6 +40,9 @@ GOLD = "#FFC20A"   # saturated golden yellow: reads against the dashed white SAR
 COLORS = dict(MR243=FS.BRAIN["MR243"], MR252=FS.BRAIN["MR252"], MR256=GOLD)   # MM1 blue, MM2 pink, MM3 golden yellow
 LW = 1.0
 ROWS = [("lhLGN", "LGN, left"), ("rhLGN", "LGN, right"), ("lhSTN", "STN, left"), ("rhSTN", "STN, right")]
+NUCS = ("LGN", "STN")                                          # the figure's rows
+HEMIS = (("lh", "left"), ("rh", "right"))                      # its two groups of columns
+FIG_W = 180.0                                                  # mm
 HALF_MM = {"LGN": 4.5, "STN": 3.5}
 PLANES = ("coronal", "axial", "sagittal")
 VOX = 0.25
@@ -58,46 +63,51 @@ def main():
     L = {k: np.asarray(nib.load(p).dataobj) > 0 for k, p in lps.items()}
     R = {k: np.asarray(nib.load(p).dataobj) > 0 for k, p in rps.items()}
     ins = [str(t2p)] + [str(p) for p in lps.values()] + [str(p) for p in rps.values()] + [str(lp)]
-    gap_in, gap_row, left, right, top, bottom = 0.5, 2.2, 6.0, 1.0, 10.0, 3.0
-    W = FS.COL_W_IN * 25.4
-    cell = (W - left - right - 2 * gap_in) / 3.0
-    H = top + len(ROWS) * cell + (len(ROWS) - 1) * gap_row + bottom
-    fig = plt.figure(figsize=(FS.COL_W_IN, H / 25.4))
+    gap_in, gap_grp, gap_row, left, right, top, bottom = 0.5, 3.0, 2.2, 5.0, 1.0, 13.5, 4.0
+    W = FIG_W
+    cell = (W - left - right - 4 * gap_in - gap_grp) / 6.0
+    H = top + len(NUCS) * cell + (len(NUCS) - 1) * gap_row + bottom
+    fig = plt.figure(figsize=(W / 25.4, H / 25.4))
     centers = {}
-    for r_, (st, rname) in enumerate(ROWS):
-        nuc = st[2:]; h = int(round(HALF_MM[nuc] / VOX))
+    for r_, nuc in enumerate(NUCS):
+        h = int(round(HALF_MM[nuc] / VOX))
         y0 = top + r_ * (cell + gap_row)
-        ms = [L[S, st] for S in SUBS] + [R[st]]   # the labels shown: the three brains and SARM
-        cen = np.rint(np.mean([np.argwhere(m).mean(0) for m in ms], axis=0)).astype(int)
-        centers[st] = (cen * VOX + A[:3, 3]).round(2).tolist()
-        for p_, plane in enumerate(PLANES):
-            x0 = left + p_ * (cell + gap_in)
-            ax = FS.axes_mm(fig, x0, y0, cell, cell); ax.axis("off")
-            k = FS.PLANE_AXIS[plane]
-            box = [slice(max(cen[i] - h, 0), cen[i] + h + 1) for i in range(3)]
-            box[k] = slice(None)
-            img = FS.section(T2[tuple(box)], plane, cen[k])
-            lo, hi = np.percentile(img, [1, 99.5])
-            ax.imshow(np.clip((img - lo) / max(hi - lo, 1e-6), 0, 1), cmap="gray", vmin=0, vmax=1)
-            for S in SUBS:
-                m2 = FS.section(L[S, st][tuple(box)].astype(float), plane, cen[k])
+        for g_, (hemi, hname) in enumerate(HEMIS):
+            st = hemi + nuc
+            ms = [L[S, st] for S in SUBS] + [R[st]]   # the labels shown: the three brains and SARM
+            cen = np.rint(np.mean([np.argwhere(m).mean(0) for m in ms], axis=0)).astype(int)
+            centers[st] = (cen * VOX + A[:3, 3]).round(2).tolist()
+            for p_, plane in enumerate(PLANES):
+                x0 = left + g_ * (3 * cell + 2 * gap_in + gap_grp) + p_ * (cell + gap_in)
+                ax = FS.axes_mm(fig, x0, y0, cell, cell); ax.axis("off")
+                k = FS.PLANE_AXIS[plane]
+                box = [slice(max(cen[i] - h, 0), cen[i] + h + 1) for i in range(3)]
+                box[k] = slice(None)
+                img = FS.section(T2[tuple(box)], plane, cen[k])
+                lo, hi = np.percentile(img, [1, 99.5])
+                ax.imshow(np.clip((img - lo) / max(hi - lo, 1e-6), 0, 1), cmap="gray", vmin=0, vmax=1)
+                for S in SUBS:
+                    m2 = FS.section(L[S, st][tuple(box)].astype(float), plane, cen[k])
+                    if m2.any():
+                        FS.outline(ax, m2, color=COLORS[S], lw=LW)
+                m2 = FS.section(R[st][tuple(box)].astype(float), plane, cen[k])
                 if m2.any():
-                    FS.outline(ax, m2, color=COLORS[S], lw=LW)
-            m2 = FS.section(R[st][tuple(box)].astype(float), plane, cen[k])
-            if m2.any():
-                FS.outline(ax, m2, color=FS.FG, lw=LW, linestyles="dashed")
-            if r_ == 0:
-                ax.annotate(plane, xy=(0.5, 1), xycoords="axes fraction", xytext=(0, 2), textcoords="offset points",
-                            ha="center", va="bottom", fontsize=FS.MIN_PT, color=FS.GRAY, annotation_clip=False)
-            if p_ == 0:
-                ax.annotate(rname, xy=(0, 0.5), xycoords="axes fraction", xytext=(-3, 0), textcoords="offset points",
-                            rotation=90, ha="right", va="center", fontsize=FS.MIN_PT, color=FS.FG, annotation_clip=False)
-            if r_ == len(ROWS) - 1 and p_ == 2:
-                FS.scalebar(ax, 1 / VOX, 2.0, y_frac=0.06)
+                    FS.outline(ax, m2, color=FS.FG, lw=LW, linestyles="dashed")
+                if r_ == 0:
+                    ax.annotate(plane, xy=(0.5, 1), xycoords="axes fraction", xytext=(0, 2), textcoords="offset points",
+                                ha="center", va="bottom", fontsize=FS.MIN_PT, color=FS.GRAY, annotation_clip=False)
+                    if p_ == 1:                                       # the group's header, above its view labels
+                        ax.annotate(hname, xy=(0.5, 1), xycoords="axes fraction", xytext=(0, 12), textcoords="offset points",
+                                    ha="center", va="bottom", fontsize=FS.MIN_PT, color=FS.FG, annotation_clip=False)
+                if g_ == 0 and p_ == 0:
+                    ax.annotate(nuc, xy=(0, 0.5), xycoords="axes fraction", xytext=(-3, 0), textcoords="offset points",
+                                rotation=90, ha="right", va="center", fontsize=FS.MIN_PT, color=FS.FG, annotation_clip=False)
+                if r_ == len(NUCS) - 1 and g_ == len(HEMIS) - 1 and p_ == 2:
+                    FS.scalebar(ax, 1 / VOX, 2.0, y_frac=0.06)
     hl = [Line2D([], [], color=COLORS[S], lw=LW) for S in SUBS] + [Line2D([], [], color=FS.FG, lw=LW, linestyle="--")]
     fig.legend(hl, [lab[S] for S in SUBS] + ["SARM"], loc="upper center", ncol=4, frameon=False, fontsize=FS.MIN_PT,
                handlelength=2.6, columnspacing=1.6, borderaxespad=0, bbox_transform=fig.transFigure,
-               bbox_to_anchor=((left + 1.5 * cell + gap_in) / W, 1 - 1.0 / H))
+               bbox_to_anchor=(0.5, 1 - 0.8 / H))
     cmd = " ".join(["code/figures/lgnstn.py"] + sys.argv[1:])
     FS.save(fig, a.out, ins, cmd, extra=dict(half_window_mm=HALF_MM, section_centers_world_mm=centers,
                                             colors=dict({lab[S]: COLORS[S] for S in SUBS}, SARM=f"{FS.FG}, dashed"),

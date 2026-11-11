@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-"""Fig. 10, the tracer figure: three injections in the template, each charted section's labels where it lands (a), the bundles at the
-right internal capsule (b) and, from back to front, the share of each case's bundles that lies in the capsule (c), with a rotation
-video of (a) for the supplement.
+"""Fig. 10, the tracer figure: three injections in the template, each charted section's labels where it lands (a) and the bundles at
+the right internal capsule (b), with a rotation video of (a) for the supplement.
 
 You need (settings/internal/products_mri.yaml, settings/internal/products_figures.yaml)
   tracer_sections_v2: each charted section's labels carried into the template without interpolation (footprints of the bundles and
@@ -25,18 +24,14 @@ What it does
       template voxel, in layers MF8 < MM1 < MM2 with each case's outline on top. The sections are oblique to the coronal planes, so
       each one crosses a slab in a band. Dotted, the internal capsule of the SARM atlas (level 6, label 50) on the slab's middle
       plane. The panels' box (x 1.5-12.5, z 13.5-24.5 mm) holds the whole right capsule at each slab.
-  (c) for 0.5 mm coronal slabs (two template planes each) from y = 8 to 28 mm, the share of each case's charted bundle voxels in (b)'s
-      box (MF8 mirrored, as in a and b) that lie in (b)'s capsule (each voxel against the capsule on its own plane), above the number
-      of charted voxels in the slab; slabs with fewer than 10 voxels are left blank. Back on the left and front on the right, as in (a)
-      and (b); thin gray lines mark (b)'s three slabs.
 
 You get
   <out>.png (180 mm wide) + <out>.provenance.json and <out stem>.pdf, <out stem>_scene.png (the 3D still), with --video
-  <out stem>_rotation.mp4 (one turn, 12 s, 30 fps, the outline drawn per frame), and $LINC_NUMBERS/fig_tracer_sections3d_v5.json:
+  <out stem>_rotation.mp4 (one turn, 12 s, 30 fps, the outline drawn per frame), and $LINC_NUMBERS/fig_tracer_sections3d_v6.json:
   points and sections per case, the points outside the brain mask, the share of each case hidden by the planes and by the other
   cases, the planes, the projection, the mirror, and per slab and case the charted voxels of (b), how many lie in the capsule (each
   against the capsule on its own plane) and the sections they come from; check_*: how much of the interpolated label (density over
-  the slab > 0.5) lies outside the capsule and how much of that the charted labels cover; the profile of (c) and each case's peak in it.
+  the slab > 0.5) lies outside the capsule and how much of that the charted labels cover.
 
     $PY_VIZ3D code/figures/tracer_sections3d.py [--out figures/tracer_sections3d.png] [--video] [--by-depth] [--alic-y 16 18 20]
 """
@@ -57,7 +52,7 @@ sys.path.insert(0, str(HERE)); sys.path.insert(0, str(HERE.parents[1] / "code"))
 import figstyle as FS  # noqa: E402
 from shared import paths, provenance  # noqa: E402
 
-NAME = "fig_tracer_sections3d_v5"
+NAME = "fig_tracer_sections3d_v6"
 P_MRI, P_FIG = paths.products("products_mri"), paths.products("products_figures")
 SEC, V2 = Path(P_MRI["tracer_sections_v2"]), Path(P_MRI["tracer_template_v2"])
 T2_F, MASK_F, FA_F, SARM = (Path(P_FIG[k]) for k in ("template_t2", "template_mask", "template_fa", "sarm_level6"))
@@ -71,7 +66,6 @@ LO_PCT, HI_PCT, PLANE_DIM = 5.0, 99.0, 0.55                          # the plane
 ALIC_Y = [16.0, 18.0, 20.0]
 ALIC_X, ALIC_Z = (1.5, 12.5), (13.5, 24.5)                           # mm, the capsule panels' box (as the present panel e)
 FA_DIM = 0.6
-PROF_Y, PROF_SLAB, PROF_MIN = (8.0, 28.0), 0.5, 10                   # (c): y range and slab, mm; slabs with fewer voxels left blank
 WIN = (4200, 2800)                                                   # the still's render window, px
 POINT = 7.0                                                          # px at WIN; injection points x INJ
 INJ = 1.7
@@ -255,22 +249,14 @@ def capsule(sd):
                         check_charted_pixels_outside_capsule=int((lab[S] & ~ic).sum()))
         rec[f"{y:.1f}"] = dict(cases=r, capsule_voxels_three_planes=int(icb.sum()), capsule_pixels_middle_plane=int(ic.sum()))
         out.append(dict(y=y, fa=crop2(slab(FA, j)), ic=ic, lab=lab))
-    prof = {}                                                                       # (c): the share in the capsule per 0.5 mm slab
-    for S in CASES:
-        Fb = F[S] & xr[:, None, None] & zr[None, None, :]; nF = Fb.sum((0, 2)); nC = (Fb & ic3).sum((0, 2)); rows = []
-        for y0 in np.arange(PROF_Y[0], PROF_Y[1], PROF_SLAB):
-            js = np.nonzero((yw >= y0 - 1e-6) & (yw < y0 + PROF_SLAB - 1e-6))[0]; assert len(js) == round(PROF_SLAB / vox)
-            n, c = int(nF[js].sum()), int(nC[js].sum())
-            rows.append(dict(y_mm=round(float(y0 + PROF_SLAB / 2), 2), voxels=n, in_capsule=c, share=round(c / n, 3) if n >= PROF_MIN else None))
-        prof[S] = rows
     ins = [FA_F, SARM] + [SEC / S / f"{S}_{k}" for S in CASES for k in
                                                 ("Bundles_mri-template_sections_footprint.nii.gz", "section_index_mri-template.nii.gz")] \
         + [V2 / S / f"{S}_Bundles_mri-template_density.nii.gz" for S in CASES]
-    return out, rec, ins, prof
+    return out, rec, ins
 
 
 # --------------------------------------------------------------------------- the figure
-def compose(sd, still, sil, cap, prof, rec, args):
+def compose(sd, still, sil, cap, rec, args):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -287,8 +273,7 @@ def compose(sd, still, sil, cap, prof, rec, args):
     TOPA = 10.0
     nb = len(cap); gapb = 3.0; wb = 32.0; hb = wb * (ALIC_Z[1] - ALIC_Z[0]) / (ALIC_X[1] - ALIC_X[0])
     TOPB = TOPA + ha + 14.0
-    TOPC = TOPB + hb + 14.0; hc1, hc2, gapc = 24.0, 11.0, 2.5                       # (c): the share above the voxel counts
-    FH = TOPC + hc1 + gapc + hc2 + 10.0
+    FH = TOPB + hb + 9.0
     fig = plt.figure(figsize=(FW / 25.4, FH / 25.4))
     ax = FS.axes_mm(fig, LM, TOPA, wa, ha)
     ax.imshow(crop, interpolation="lanczos"); ax.set_axis_off()
@@ -351,30 +336,9 @@ def compose(sd, still, sil, cap, prof, rec, args):
         axk.scatter([0.03], [yk], s=14, color=COLOR[S], clip_on=False); axk.text(0.08, yk, t, va="center", fontsize=FS.MIN_PT); yk -= 0.13
     axk.scatter([0.03], [yk], s=30, facecolor="none", edgecolor=FS.FG, lw=0.6); axk.text(0.08, yk, "injection site, white edge (a)", va="center", fontsize=FS.MIN_PT); yk -= 0.13
     axk.plot([0.0, 0.06], [yk, yk], color=FS.GRAY, lw=0.6); axk.text(0.08, yk, "outline of the whole brain (a)", va="center", fontsize=FS.MIN_PT); yk -= 0.13
-    axk.plot([0.0, 0.06], [yk, yk], color=FS.FG, lw=0.7, ls=(0, (1, 1.2))); axk.text(0.08, yk, "internal capsule, SARM atlas (b, c)", va="center", fontsize=FS.MIN_PT); yk -= 0.13
+    axk.plot([0.0, 0.06], [yk, yk], color=FS.FG, lw=0.7, ls=(0, (1, 1.2))); axk.text(0.08, yk, "internal capsule, SARM atlas (b)", va="center", fontsize=FS.MIN_PT); yk -= 0.13
     axk.text(0.08, yk, "(b) one square per charted voxel", va="center", fontsize=FS.MIN_PT, color=FS.GRAY)
-    # panel c, as wide as (a)
-    pc1 = FS.axes_mm(fig, LM, TOPC, wa, hc1); pc2 = FS.axes_mm(fig, LM, TOPC + hc1 + gapc, wa, hc2)
-    for S in LAYERS:
-        y = np.array([r["y_mm"] for r in prof[S]]); sh = np.array([np.nan if r["share"] is None else 100 * r["share"] for r in prof[S]])
-        pc1.plot(y, sh, color=COLOR[S], lw=1.0, marker="o", ms=2.0, clip_on=False)
-        pc2.plot(y, [r["voxels"] for r in prof[S]], color=COLOR[S], lw=0.8, clip_on=False)
-    for cx in (pc1, pc2):
-        cx.set_xlim(*PROF_Y)
-        for yb in ALIC_Y:
-            cx.axvline(yb, color=FS.DGRAY, lw=0.5, zorder=0)
-        for sp in ("top", "right"):
-            cx.spines[sp].set_visible(False)
-    pc1.set_ylim(0, 100); pc1.set_yticks([0, 50, 100]); pc1.set_ylabel("in the capsule, %"); pc1.tick_params(labelbottom=False)
-    pc2.set_ylim(bottom=0); pc2.set_ylabel("voxels"); pc2.set_xlabel("y, mm")
-    for cx in (pc1, pc2):
-        cx.set_xticks(np.arange(PROF_Y[0], PROF_Y[1] + 1e-6, 2.0)); cx.xaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter("%g"))
-    pc1.text(ALIC_Y[-1] + 0.3, 100, "the slabs of (b)", color=FS.GRAY, fontsize=FS.MIN_PT, ha="left", va="top")
-    FS.dirs(pc2, "sagittal", y=-0.55)
-    FS.letter(pc1, "c", dx=-LM * 72 / 25.4 + 2, dy=4.0)
-    FS.header(pc1, "the share of each case's charted bundles in the internal capsule, slab by slab", dx=-LM * 72 / 25.4 + 13, dy=4.0)
     rec["layout_mm"] = dict(width=FW, height=round(FH, 1), a=[LM, TOPA, round(wa, 2), round(ha, 2)], b_panel=[wb, round(hb, 2)],
-                            c=[LM, round(TOPC, 2), round(wa, 2), round(hc1 + gapc + hc2, 2)],
                             a_print_mm_per_tissue_mm=round(wa / crop.shape[1] * k, 4), b_print_mm_per_tissue_mm=round(wb / (ALIC_X[1] - ALIC_X[0]), 4),
                             crop_px=dict(rows=[int(r0), int(r1)], cols=[int(c0), int(c1)]))
     return fig
@@ -434,24 +398,18 @@ def main(argv=None):
         hid[S]["points_projected_outside_brain_outline"] = int((~sil[iu[:, 1], iu[:, 0]]).sum())
     rec["still_visibility_pixels"] = hid
     print(json.dumps(hid), flush=True)
-    cap, crec, cins, prof = capsule(sd); rec["capsule"] = crec; rec["alic_y_mm"] = ALIC_Y; rec["alic_slab_mm"] = 0.5
+    cap, crec, cins = capsule(sd); rec["capsule"] = crec; rec["alic_y_mm"] = ALIC_Y; rec["alic_slab_mm"] = 0.5
     tot = lambda S, k: sum(crec[y]["cases"][S][k] for y in crec)                    # noqa: E731
     rec["capsule_totals"] = {S: {k: tot(S, k) for k in ("charted_voxels", "charted_voxels_in_capsule", "charted_voxels_within_0p5mm_of_capsule",
                                                       "check_interpolated_pixels_outside_capsule", "check_of_those_covered_by_charted",
                                                       "check_charted_pixels_outside_capsule")} for S in CASES}
     rec["capsule_box_mm"] = dict(x=list(ALIC_X), z=list(ALIC_Z), slab_mm=0.5); rec["capsule_rule"] = ("charted bundle footprints (carried fraction >= 0.1, all grades) on the three 0.25 mm planes overlapping the 0.5 mm slab, drawn as their union; in the capsule = on the SARM label 50 of the voxel's own plane; counts within the panel's box x 1.5-12.5, z 13.5-24.5 mm, which holds the whole right capsule at each slab; check_* = the earlier panel (interpolated density over the slab > 0.5) against the capsule of the middle plane")
     print(json.dumps(crec), flush=True)
-    rec["profile"] = prof; rec["profile_slab_mm"] = PROF_SLAB; rec["profile_y_range_mm"] = list(PROF_Y); rec["profile_min_voxels"] = PROF_MIN
     rec["footprint_min_carried_fraction"] = 0.1                                     # the footprints' rule (the carrier of record, FOOT), for the caption
-    rec["profile_rule"] = (f"(c): 0.5 mm coronal slabs (two template planes) from y {PROF_Y[0]:g} to {PROF_Y[1]:g} mm; per case the charted bundle "
-                           "voxels in (b)'s box (MF8 mirrored) and how many lie on SARM label 50 of their own plane; share left blank (null) "
-                           f"below {PROF_MIN} voxels")
-    rec["profile_peak"] = {S: max((r for r in prof[S] if r["share"] is not None), key=lambda r: (r["share"], r["voxels"])) for S in CASES}
-    print(json.dumps(rec["profile_peak"]), flush=True)
     out = Path(a.out); stem = out.with_suffix(""); out.parent.mkdir(parents=True, exist_ok=True)
     from PIL import Image
     Image.fromarray(still).save(f"{stem}_scene.png")
-    fig = compose(sd, still, sil, cap, prof, rec, a)
+    fig = compose(sd, still, sil, cap, rec, a)
     ins = [str(x) for x in sd["inputs"] + cins]
     FS.save(fig, str(out), ins, cmd=" ".join(sys.argv))
     fig.savefig(f"{stem}.pdf", dpi=FS.DPI, facecolor=fig.get_facecolor())          # the same figure as a PDF (the still embedded at 600 ppi)
