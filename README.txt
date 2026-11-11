@@ -5,7 +5,8 @@ in preparation). It builds the template from blockface photographs and preproces
 brains into it, and rewrites the paper's numbers and figures.
 
 If you only want the template, you do not need this code: open template/outputs/ in the data folder.
-The MRI template is also in LINC dataset 000059, under derivatives/template/.
+The template is also in LINC dataset 000059, under derivatives/template/ (its blockface channel in
+micr/).
 
 
 THE DATA
@@ -35,9 +36,13 @@ yet public: ask its authors for the sources.
     export LINC_TIRL_SRC=<folder with the TIRL sources>
     bash install.sh                          # about 25 minutes and 23 GB
 
-The cloud data are LINC dataset 000059 (the MRI template, each brain's MRI results and the MRI
-brain-mask network) and LINC dataset 000003 (the histology). Blockface data and anything computed
-from them stay local. In every new shell, point the code at your copy:
+The cloud data are LINC dataset 000059 (the MRI template with its blockface channel, its mappings to
+the published templates and the MRI brain-mask network) and LINC dataset 000003 (the histology).
+The data of each brain, MRI and blockface, and anything computed from them stay local. A brain's MRI
+results do not go to 000059: if they are shared at all, they go to that brain's own LINC dataset,
+following LINC's rule of adding to an existing dataset of the same brains.
+
+In every new shell, point the code at your copy:
 
     export LINC_DATA=<your copy of the data>
     source settings/roots.sh
@@ -73,11 +78,12 @@ Before cases 2 to 10, install the code (above).
 <ID> is your brain's name, used in every folder and file (for example MR252). Add --help to any
 command to see what it needs, what it does and what it writes.
 
-The cloud version of the data (LINC dataset 000059) has the MRI template and the MRI brain-mask
-network. Cases 3, 5, 6 and 10, the blockface template in case 1 and the photograph network in case 9
-also need data that stay local, with the laboratory. So do the commands of case 1, which read files
-that stay local; with the cloud data alone, apply the parts yourself, as
-derivatives/template/xfms/README.txt in the cloud dataset says.
+The cloud version of the data (LINC dataset 000059) has the MRI template with its blockface channel,
+its mappings to the published templates and the MRI brain-mask network, and no data of single
+brains. Cases 3, 5, 6 and 10, the blockface template in its own space (case 1) and the photograph
+network in case 9 also need data that stay local, with the laboratory.
+So do the commands of case 1, which read files that stay local; with the cloud data alone, apply the
+parts yourself, as derivatives/template/xfms/README.txt in the cloud dataset says.
 
 
 1. ONLY THE TEMPLATE
