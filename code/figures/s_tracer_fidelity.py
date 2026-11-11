@@ -1,37 +1,42 @@
 #!/usr/bin/env python3
 """The paper's supplementary figure "From the chart to the template, one section per case": does the chain keep the tracer labels
-where the anatomist charted them?
+where the anatomist charted them? The histology, the blockface and the MRI template are shown in one space: the plane of the
+blockface photograph each section was registered to.
 
 You need
-  the LINC histology dataset (--linc-root, default $LINC_RAW/linc_000003: rawdata/sub-<ID>/micr/, the darkfield stacks and the
-  annotators' masks/), and the products of record under $LINC_PRODUCTS (settings/internal/products_figures.yaml): the pushed tracer sheets
-  (push_sheets), the tracer labels in the template (tracer_template), the section maps (section_maps), the template's T2 and brain
-  mask, the histology registration each brain's labels went through (settings/internal/products_blockface.yaml labels_histology_arm), the
-  blockface volumes and the transforms of record (MM1-MM3: blockface -> b0 -> template; MF8: through the blockface template).
-  settings/env/tirl.yml ($PY_TIRL), the environment the paper's figure was made in.
+  the products of record under $LINC_PRODUCTS (settings/internal/products_figures.yaml): the pushed tracer sheets (push_sheets), the
+  tracer labels in the template (tracer_template), the template's T2 and brain mask, the histology registration each brain's labels
+  went through (settings/internal/products_blockface.yaml labels_histology_arm), the blockface volumes and the transforms of record
+  (MM1-MM3: blockface -> b0 -> template; MF8: through the blockface template). settings/env/tirl.yml ($PY_TIRL), the environment the
+  paper's figure was made in.
 
 What it does
   One row per case, at its injection level (the section with the most injection-site pixels; MM3, without an annotated site, the
-  section with the most label), three panels at one scale, each centered on its own tissue and drawn in the anatomical convention
-  (the subject's left on the left, dorsal up; no case mirrored):
-    (i)   the chart (level 6 of the annotators' masks) on its darkfield section, the slide image flipped left-right; dashed gray: the
-          chart's own outline; dotted: the pieces that were registered;
-    (ii)  the blockface photograph of the slice the section was matched to, with the section's tissue outline after its full
-          registration (cyan) and the labels transformed with it; MF8's two frontal lobes were matched to adjacent photographs
-          (0.75 mm apart) and are drawn together;
-    (iii) the labels of that section after the transform into the MRI template (each template voxel pulled through the chain of
-          record into the section's sheet), projected along y onto the template's T2 at the section's median y.
+  section with the most label). The three panels of a row are one plane, the blockface photograph the section was registered to,
+  at one scale and in one field of view (the registered section plus 1 mm). Every panel draws the same outline (cyan: the section's
+  tissue after the full registration); only the image beneath changes:
+    (i)   the section's darkfield image after the full registration (the registration's own output), with its chart transformed
+          with it;
+    (ii)  the blockface photograph, with the same chart;
+    (iii) the MRI template's T2 on the photograph's plane, with the labels the template carries for this section (the template
+          voxels whose pull through the chain of record lands in the section's sheet), at the template's 0.25 mm. Each pixel is
+          mapped to the template by inverting the chain of record: Newton steps on its pull, from the nearest pulled template voxel;
+          the residual is in the provenance.
+  A section is cut obliquely to the template's coronal plane, so (iii) is not one coronal slice of the template; the template y the
+  registered section spans is in the provenance. MF8's two frontal lobes were matched to adjacent photographs (0.75 mm apart): each
+  pixel is drawn on the photograph of the nearest lobe. Anatomical convention (the subject's left on the left, dorsal up; no case
+  mirrored). Row labels: the case, the section's number in its labeled series, the photograph(s).
   Classes: bundles (dense and moderate, and MM2's single bundle class), light bundles, terminal fields (all three density classes),
   injection site; single-fiber strokes are not drawn.
 
 You get
-  --out (default figures/s_tracer_fidelity.png) and its provenance.json (the rows: case, section, why, blockface slices, template y,
-  window, registration folder).
+  --out (default figures/s_tracer_fidelity.png) and its provenance.json (the rows: case, section, why, blockface slices, window,
+  registration folder, the template y of the registered section, the inverse's residual).
 
-    $PY_TIRL code/figures/s_tracer_fidelity.py [--linc-root <LINC dataset 000003>] [--out figures/s_tracer_fidelity.png]
+    $PY_TIRL code/figures/s_tracer_fidelity.py [--out figures/s_tracer_fidelity.png]
 
 Ported from the analysis project's paper/fig_tracer_fidelity_v2_r058.py (--set r058d --layout s3) and the helpers it imported from
-paper/fig_tracer_fidelity_r058.py.
+paper/fig_tracer_fidelity_r058.py; drawn in the photograph's plane since R-075 (11 Nov 2026).
 """
 import argparse
 import json
@@ -46,16 +51,17 @@ import nibabel as nib  # noqa: E402
 import numpy as np  # noqa: E402
 from PIL import Image  # noqa: E402
 from scipy import ndimage as ndi  # noqa: E402
+from scipy.spatial import cKDTree  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE)); sys.path.insert(0, str(HERE.parents[1] / "code"))
 import figstyle as FS                                           # noqa: E402
 from shared import paths, xfm                                     # noqa: E402
-from histology import sections as io                       # noqa: E402
 
 Image.MAX_IMAGE_PIXELS = None
 CASES = ["MR243", "MR252", "MR256", "MF191"]
 TV = 0.25
+OUTLINE = "#00e5ff"
 GROUPS = [("bundles", ("Fiber_dense_bundle", "Fiber_moderate_bundle", "Bundle"), "#D55E00", 0.9),
           ("light bundles", ("Fiber_light_bundle",), "#E69F00", 0.5),
           ("terminal fields", ("Terminal_dense", "Terminal_moderate", "Terminal_light"), "#56B4E9", 0.5),
@@ -126,6 +132,25 @@ def choose(car):
     return yinfo
 
 
+def to_template(pull, X, At, shape, step=4, iters=12, h=0.1, tol=1e-4):
+    """Blockface world points X -> template world points T with pull(T) = X: Newton steps (forward-difference Jacobian, h mm) from
+    the template voxel (every step-th) whose pull lands nearest; returns T and the residual |pull(T) - X| (mm)."""
+    g = np.stack(np.meshgrid(*[np.arange(0, n, step) for n in shape], indexing="ij"), -1).reshape(-1, 3)
+    gw = nib.affines.apply_affine(At, g)
+    gp = np.concatenate([np.asarray(pull(gw[k0:k0 + 500000])) for k0 in range(0, len(gw), 500000)])
+    ok = np.isfinite(gp).all(1)
+    T = gw[ok][cKDTree(gp[ok]).query(X)[1]]
+    E = np.eye(3) * h
+    for _ in range(iters):
+        F = np.asarray(pull(T)); R = X - F
+        J = np.stack([(np.asarray(pull(T + E[k])) - F) / h for k in range(3)], axis=2)
+        dT = np.linalg.solve(J, R[..., None])[..., 0]
+        T = T + dT
+        if np.abs(dT).max() < tol:
+            break
+    return T, np.linalg.norm(np.asarray(pull(T)) - X, axis=1)
+
+
 def world_y(At, jy):
     return At[1, 3] + At[1, 1] * jy
 
@@ -152,17 +177,15 @@ def contour(ax, m, px_mm, color, lw, ls="-"):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--linc-root", default=None, help="the LINC histology dataset 000003 (default $LINC_RAW/linc_000003)")
     ap.add_argument("--out", default="figures/s_tracer_fidelity.png")
     a = ap.parse_args(argv)
     P = paths.products("products_figures")
     arms = paths.products("products_blockface")["labels_histology_arm"]
-    linc = Path(a.linc_root) if a.linc_root else paths.raw_root() / "linc_000003"
     FS.setup()
     import matplotlib.pyplot as plt
-    ref = nib.load(str(P["template_t2"])); At = ref.affine; T2 = load(P["template_t2"]).astype(float)
+    ref = nib.load(str(P["template_t2"])); At = ref.affine; iAt = np.linalg.inv(At); T2 = load(P["template_t2"]).astype(float)
     brain = load(P["template_mask"]) > 0.5
-    rows_out, cache, inputs = [], {}, []
+    rows_out, cache, inputs = [], {}, [Path(P["template_t2"]), Path(P["template_mask"])]
     for S in CASES:
         car, files, classes, A = carried(S, P)
         pj = json.load(open(P["push_sheets"] / S / f"push_tracer_{S}.json"))
@@ -187,106 +210,107 @@ def main(argv=None):
         pick = max(carS, key=lambda s_: (inj[s_], tot[s_] if not any(inj.values()) else 0))
         has_site = any(v.get("px_L2", 0) > 0 for p_ in pj["pieces"] for c_, v in p_["classes"].items() if c_ == "Injection_site")
         why = "injection level" if inj[pick] else ("most labeled\n(site on a shared\nphotograph)" if has_site else "most labeled\n(no site annotated)")
-        cache[S] = (car, carS, files, classes, A, pj, sec_sl, yinfo)
+        cache[S] = (carS, files, classes, A, pj, sec_sl)
         rows_out.append((S, pick, why))
-    W = FS.FULL_W_IN * 25.4; LEFT, GAP, TOP = 27.0, 3.0, 9.0
+    W = FS.FULL_W_IN * 25.4; LEFT, GAP, TOP = 30.0, 3.0, 12.0
     pw = (W - LEFT - 2 * GAP - 2.0) / 3
-    disp = lambda v: np.flipud(np.swapaxes(v, 0, 1))  # noqa: E731
+    disp = lambda v: np.flipud(np.swapaxes(v, 0, 1))  # noqa: E731      volume (x, z) -> display (rows dorsal up, columns x)
     rows, prepped = [], []
     for S, sid, why in rows_out:
-        car, carS, files, classes, A, pj, sec_sl, yinfo = cache[S]
+        carS, files, classes, A, pj, sec_sl = cache[S]
         root = paths.products_root() / arms[S]                                 # the histology registration the labels went through
         bf_root = root / f"sub-{S}" / "blockface"
-        zp = io.image_stacks(str(linc / "rawdata" / f"sub-{S}" / "micr"), S)[0]
-        srows = {r["section"]: r for r in io.load_map(str(P["section_maps"] / f"{S}_{io.stain_of(zp)}.tsv"))}
-        mdir = linc / "rawdata" / f"sub-{S}" / "micr" / "masks"
-        pieces = sorted([p for p in pj["pieces"] if p["section"] == sid], key=lambda p: -sum(v["px_L2"] for v in p["classes"].values()))
-        j = pieces[0]["bf_idx"]; sls = sorted(sec_sl[sid]); r = srows[sid]
-        # (i) darkfield, level 6
-        img = io.Section(zp, r["z"], r["h0"], r["w0"]).level(6)[:, ::-1]
-        px_i = 0.4397 * 64 / 1000
-        ms = {}
-        for g, cls, col, lw in GROUPS:
-            m = np.zeros(img.shape[:2], bool)
-            for c in cls:
-                p_ = mdir / f"{c}.ome.zarr"
-                if p_.exists():
-                    x = io.Section(str(p_), r["z"], r["h0"], r["w0"]).level(6); m |= ((x[..., 0] if x.ndim == 3 else x) > 0)[:, ::-1]
-            ms[g] = m
-        ol = io.Section(str(mdir / "Outline.ome.zarr"), r["z"], r["h0"], r["w0"]).level(6); ol = ((ol[..., 0] if ol.ndim == 3 else ol) > 0)[:, ::-1]
-        pm = np.zeros(img.shape[:2], bool)
-        for pp in sorted(glob(str(bf_root / "_work" / "histo_masks" / (sid + "_*.png")))):
-            x = np.asarray(Image.open(pp)) > 0; h, w_ = min(x.shape[0], pm.shape[0]), min(x.shape[1], pm.shape[1]); pm[:h, :w_] |= x[:h, :w_]
-        pm = pm[:, ::-1]
-        ti = img.max(-1) > 3
-        # (ii) photograph + the section's registered tissue outline (full registration) + labels
-        rgb = load(P["data"] / f"sub-{S}" / "blockface" / f"{S}_blockface_L2.nii.gz")
-        px_b = float(abs(A[0, 0]))
-        ph = disp(rgb[:, j, :, :]).astype(float); tb = ph.max(-1) > 8
-        reg = np.zeros(ph.shape[:2], bool)
+        pieces = [p for p in pj["pieces"] if p["section"] == sid]
+        sls = sorted(sec_sl[sid])
+        bfp = P["data"] / f"sub-{S}" / "blockface" / f"{S}_blockface_L2.nii.gz"
+        bf = nib.load(str(bfp)); assert np.allclose(bf.affine, A), "blockface and tracer sheets on different grids"
+        nx, nz = bf.shape[0], bf.shape[2]; px_b = float(abs(A[0, 0]))
+        # the registered pieces: their tissue after the full registration (the L2 grid) and their registered darkfield (TIRL's canvas,
+        # level 0 = half the L2 pixel)
+        reg = np.zeros((nz, nx), bool); by_sl = {}; his0 = np.zeros((2 * nz, 2 * nx))
         for p in pieces:
-            H_ = np.asarray(Image.open(bf_root / "06_histo2bf" / "tirl" / p["piece"] / "moving4_nonlinear.png")); H_ = H_.max(-1) if H_.ndim == 3 else H_
-            fm = ((H_ > 0) & (H_ < 254.5))[::-1, ::-1]                          # slide -> store orientation (level 0)
-            K = 2                                                                  # store level 0 (the TIRL canvas) -> level 1 = the L2 grid
-            hh, ww = fm.shape[0] // K * K, fm.shape[1] // K * K
-            fl = fm[:hh, :ww].reshape(hh // K, K, ww // K, K).max((1, 3))
-            reg_full = np.zeros(ph.shape[:2], bool)
-            rr, cc = min(fl.shape[0], ph.shape[0]), min(fl.shape[1], ph.shape[1])
-            reg_full[:rr, :cc] = fl[:rr, :cc]
-            reg |= np.flipud(reg_full)                                             # store rows -> display (dorsal up)
-        # (iii) template
-        jy = int(round(yinfo[sid])); sl3 = disp(T2[:, jy, :]); bm = disp(brain[:, jy, :])
-        ci, ei = tissue_extent_mm(ti, px_i); cb, eb = tissue_extent_mm(tb, px_b); ct, et = tissue_extent_mm(bm, TV)
-        half = (float(max(ei[0], eb[0], et[0])) / 2 + 1.0, float(max(ei[1], eb[1], et[1])) / 2 + 1.0)   # (rows, cols) half extents, mm
-        prepped.append(dict(S=S, sid=sid, why=why, img=img, px_i=px_i, ms=ms, ol=ol, pm=pm, ti=ti, ph=ph, tb=tb, px_b=px_b, reg=reg, sl3=sl3, bm=bm,
-                            ci=ci, cb=cb, ct=ct, half=half, sls=sls, classes=classes, files=files, carS=carS, yinfo=yinfo, root=root))
-    tot_h = TOP + sum(pw * d["half"][0] / d["half"][1] + 9.0 for d in prepped) + 14
-    fig = plt.figure(figsize=(FS.FULL_W_IN, tot_h / 25.4)); ycur = TOP
-    for r_i, d in enumerate(prepped):
-        S, sid, why, half, sls, classes, files, carS, yinfo = (d[k] for k in ("S", "sid", "why", "half", "sls", "classes", "files", "carS", "yinfo"))
-        ph_mm = pw * half[0] / half[1]
-        y0 = ycur; ycur += ph_mm + 9.0
-        ax = FS.axes_mm(fig, LEFT, y0, pw, ph_mm)
-        show(ax, np.clip(d["img"] / max(np.percentile(d["img"][d["ti"]], 99.5), 1), 0, 1), d["px_i"], d["ci"], half)
-        contour(ax, d["ol"], d["px_i"], FS.GRAY, 0.4, "--"); contour(ax, d["pm"], d["px_i"], FS.FG, 0.3, ":")
+            f = bf_root / "06_histo2bf" / "tirl" / p["piece"] / "moving4_nonlinear.png"; inputs.append(f)
+            H_ = np.asarray(Image.open(f)); H_ = (H_.max(-1) if H_.ndim == 3 else H_)[::-1, ::-1]   # slide -> store orientation
+            m0 = (H_ > 0) & (H_ < 254.5)
+            h, w_ = min(H_.shape[0], 2 * nz), min(H_.shape[1], 2 * nx)
+            c0 = np.zeros((2 * nz, 2 * nx), bool); c0[:h, :w_] = m0[:h, :w_]
+            his0[c0] = H_[:h, :w_][m0[:h, :w_]]
+            r1 = np.flipud(c0.reshape(nz, 2, nx, 2).max((1, 3)))              # level 1 = the L2 grid; store rows -> display (dorsal up)
+            reg |= r1; by_sl[p["bf_idx"]] = by_sl.get(p["bf_idx"], False) | r1
+        his = np.flipud(his0)
+        sl_ = sorted(by_sl)                                                    # each pixel on the photograph of the nearest registered piece
+        jmap = (np.full((nz, nx), sl_[0]) if len(sl_) == 1 else
+                np.asarray(sl_)[np.argmin([ndi.distance_transform_edt(~by_sl[s]) for s in sl_], axis=0)])
+        ph = np.zeros((nz, nx, 3)); lab = {g: np.zeros((nz, nx), bool) for g, *_ in GROUPS}
+        for s in np.unique(jmap):
+            on = jmap == s
+            ph[on] = disp(np.asarray(bf.dataobj[:, s, :, :]))[on]
+            for g, cls, col, lw in GROUPS:
+                for c in cls:
+                    if c in classes:
+                        lab[g] |= on & disp(np.asarray(nib.load(files[classes.index(c)]).dataobj[:, s, :]) > 0)
+        inputs.append(bfp)
+        # one field of view for the row: the registered section plus 1 mm
+        cb, eb = tissue_extent_mm(reg, px_b); half = (float(eb[0]) / 2 + 1.0, float(eb[1]) / 2 + 1.0)
+        r0, r1_ = max(int((cb[0] - half[0]) / px_b), 0), min(int(np.ceil((cb[0] + half[0]) / px_b)) + 1, nz)
+        k0, k1 = max(int((cb[1] - half[1]) / px_b), 0), min(int(np.ceil((cb[1] + half[1]) / px_b)) + 1, nx)
+        dd, cc = np.mgrid[r0:r1_, k0:k1]
+        Xb = nib.affines.apply_affine(A, np.stack([cc.ravel(), jmap[dd, cc].ravel(), (nz - 1 - dd).ravel()], 1).astype(float))
+        Tw, res = to_template(chain_pull(S, P), Xb, At, T2.shape)
+        tv = nib.affines.apply_affine(iAt, Tw)
+        win = (slice(r0, r1_), slice(k0, k1)); wsh = dd.shape
+        t2 = np.full((nz, nx), np.nan); t2[win] = ndi.map_coordinates(T2, tv.T, order=1, cval=0.0).reshape(wsh)
+        bad = (res > 0.01).reshape(wsh); t2[win][bad] = np.nan; bad_in = int((bad & reg[win]).sum())
+        q = np.rint(tv).astype(int); okq = np.all((q >= 0) & (q < np.array(T2.shape)), 1); q[~okq] = 0
+        bm = np.zeros((nz, nx), bool); bm[win] = (brain[q[:, 0], q[:, 1], q[:, 2]] & okq).reshape(wsh)
+        lab3 = {}
         for g, cls, col, lw in GROUPS:
-            contour(ax, d["ms"][g], d["px_i"], col, lw)
-        FS.scalebar(ax, 1.0, 5)
-        ax.annotate(f"{FS.label(S)} {sid.split('_')[-1][:3]}\n{why}\nslice{'s' if len(sls) > 1 else ''} {', '.join(map(str, sls))}"
-                    f"\ny = {world_y(At, yinfo[sid]):.1f} mm", xy=(0, 0.5), xycoords="axes fraction", xytext=(-3, 0), textcoords="offset points",
-                    ha="right", va="center", color=FS.FG, fontsize=FS.MIN_PT, annotation_clip=False)
-        if r_i == 0:
-            FS.header(ax, "(i) chart on its darkfield section", dx=0, dy=2)
-        ax = FS.axes_mm(fig, LEFT + pw + GAP, y0, pw, ph_mm)
-        show(ax, np.clip(d["ph"] / max(np.percentile(d["ph"][d["tb"]], 99.5), 1), 0, 1), d["px_b"], d["cb"], half)
-        contour(ax, d["reg"], d["px_b"], "#00e5ff", 0.6)
-        for g, cls, col, lw in GROUPS:
-            m = np.zeros(d["ph"].shape[:2], bool)
-            for c in cls:
-                if c in classes:
-                    for jj in sls:
-                        m |= disp(load(files[classes.index(c)])[:, jj, :] > 0)
-            contour(ax, m, d["px_b"], col, lw)
-        FS.scalebar(ax, 1.0, 5)
-        if r_i == 0:
-            FS.header(ax, "(ii) blockface photograph, section registered", dx=0, dy=2)
-        ax = FS.axes_mm(fig, LEFT + 2 * (pw + GAP), y0, pw, ph_mm)
-        show(ax, d["sl3"], TV, d["ct"], half, cmap="gray", vmin=0, vmax=np.percentile(d["sl3"][d["bm"]], 99))
-        for g, cls, col, lw in GROUPS:
-            m = np.zeros(T2.shape[::2], bool)
+            G = np.zeros(T2.shape, bool)
             for c in cls:
                 v = carS[sid].get(c)
                 if v is not None and len(v):
-                    m[v[:, 0], v[:, 2]] = True
-            contour(ax, disp(m), TV, col, lw)
-        FS.scalebar(ax, 1.0, 5)
-        if r_i == 0:
-            FS.header(ax, "(iii) template T2, after the carry", dx=0, dy=2)
-        rows.append(dict(case=FS.label(S), section=sid, why=why, slices=sls, template_y_mm=round(world_y(At, yinfo[sid]), 2),
-                         window_mm=[round(2 * half[0], 1), round(2 * half[1], 1)], arm=d["root"].name))
+                    G[v[:, 0], v[:, 1], v[:, 2]] = True
+            lab3[g] = np.zeros((nz, nx), bool); lab3[g][win] = (G[q[:, 0], q[:, 1], q[:, 2]] & okq).reshape(wsh)
+        on_reg = reg[win].ravel()
+        ty = (float(Tw[on_reg, 1].min()), float(Tw[on_reg, 1].max()))
+        print(f"{S} {sid}: window {wsh}, inverse residual median {np.median(res):.2e} max {res.max():.2e} mm, {int(bad.sum())} px > 0.01 mm; "
+              f"({bad_in} in the section); registered section at template y {ty[0]:.2f}..{ty[1]:.2f} mm", flush=True)
+        prepped.append(dict(S=S, sid=sid, why=why, his=his, ph=ph, tb=ph.max(-1) > 8, t2=t2, bm=bm, reg=reg, lab=lab, lab3=lab3, px_b=px_b,
+                            cb=cb, half=half, sls=sls, root=root, ty=ty, res=res, bad=int(bad.sum()), bad_in=bad_in))
+    tot_h = TOP + sum(pw * d["half"][0] / d["half"][1] + 9.0 for d in prepped) + 14
+    fig = plt.figure(figsize=(FS.FULL_W_IN, tot_h / 25.4)); ycur = TOP
+    for r_i, d in enumerate(prepped):
+        S, sid, why, half, sls, px_b, cb = (d[k] for k in ("S", "sid", "why", "half", "sls", "px_b", "cb"))
+        ph_mm = pw * half[0] / half[1]
+        y0 = ycur; ycur += ph_mm + 9.0
+        titles = ["(i) the section (darkfield),\nregistered to its photograph", "(ii) the blockface photograph",
+                  "(iii) the MRI template (T2)\non the photograph's plane"]
+        for c_i in range(3):
+            ax = FS.axes_mm(fig, LEFT + c_i * (pw + GAP), y0, pw, ph_mm)
+            if c_i == 0:
+                show(ax, np.clip(d["his"] / max(np.percentile(d["his"][d["his"] > 0], 99.5), 1), 0, 1), px_b / 2, cb, half, cmap="gray",
+                     vmin=0, vmax=1)
+            elif c_i == 1:
+                show(ax, np.clip(d["ph"] / max(np.percentile(d["ph"][d["tb"]], 99.5), 1), 0, 1), px_b, cb, half)
+            else:
+                show(ax, d["t2"], px_b, cb, half, cmap="gray", vmin=0, vmax=np.nanpercentile(d["t2"][d["bm"]], 99))
+            for g, cls, col, lw in GROUPS:
+                contour(ax, (d["lab3"] if c_i == 2 else d["lab"])[g], px_b, col, lw)
+            contour(ax, d["reg"], px_b, OUTLINE, 0.6)
+            FS.scalebar(ax, 1.0, 5)
+            if r_i == 0:
+                FS.header(ax, titles[c_i], dx=0, dy=2)
+            if c_i == 0:
+                nsec = int(sid.split("_")[-1][1:3])
+                photo = f"photograph {sls[0]}" if len(sls) == 1 else "photographs " + ", ".join(map(str, sls[:-1])) + f" and {sls[-1]}"
+                ax.annotate(f"{FS.label(S)}, section {nsec}\n{photo}", xy=(0, 0.5), xycoords="axes fraction", xytext=(-3, 0),
+                            textcoords="offset points", ha="right", va="center", color=FS.FG, fontsize=FS.MIN_PT, annotation_clip=False)
+        rows.append(dict(case=FS.label(S), section=sid, why=why, slices=sls, window_mm=[round(2 * half[0], 1), round(2 * half[1], 1)],
+                         arm=d["root"].name, section_template_y_mm=[round(v, 2) for v in d["ty"]],
+                         inverse_residual_mm=dict(median=float(f"{np.median(d['res']):.2e}"), max=float(f"{d['res'].max():.2e}"),
+                                                  pixels_over_0p01=d["bad"], of_them_in_the_section=d["bad_in"])))
     lax = FS.axes_mm(fig, 4, ycur + 1, W - 8, 8); lax.axis("off"); lax.set_xlim(0, 100); lax.set_ylim(0, 1)
-    items = [(g, col, lw, "-") for g, cls, col, lw in GROUPS] + [("registered section", "#00e5ff", 0.6, "-"), ("chart outline", FS.GRAY, 0.4, "--"),
-                                                                    ("registered pieces", FS.FG, 0.3, ":")]
+    items = [(g, col, lw, "-") for g, cls, col, lw in GROUPS] + [("the registered section's outline", OUTLINE, 0.6, "-")]
     rnd = fig.canvas.get_renderer(); inv = lax.transData.inverted()
     x, yrow = 1.0, 0.5
     for g, col, lw, ls in items:                                           # each entry placed after the measured end of the previous label

@@ -14,9 +14,12 @@ ISBI) Fig. 3, re-rendered in this paper's house style with this paper's names.
       and synthesis, sagittal (through the left hemisphere) and coronal (middle of the slab) sections on the brain's section-aligned
       grid, one physical scale; photographed voxels in their own color, synthesized voxels colored with the brain's luminance -> color
       lookup (code/blockface/synthesis/views.py); dashed line: the simulated junction plane; ticks: the other section's plane.
+      Both rows on one grid (11 Nov 2026, the author): each cell as large as the largest image of its column, the junction planes in
+      one column line, the images centered. The two brains are also what this rule gives, written before looking at the images: of the
+      two brains nearest the median SSIM and the three lowest, the pair whose slabs differ least in depth (MM5 6.50 mm, MM7 5.25 mm).
 Reads $LINC_NUMBERS/r057_s1_synthesis.json (code/figures/paper_numbers/r057_s1_synthesis.py) and the products of settings/internal/products_completion.yaml
 (completion_inputs canon_d3, completion_eval). Writes the PDF and a PNG beside it.
-Ported from the analysis project's paper/scripts/figS_synthesis_depth.py (the figure unchanged).
+Ported from the analysis project's paper/scripts/figS_synthesis_depth.py; panel (b)'s grid changed 11 Nov 2026.
 """
 import argparse
 import json
@@ -137,21 +140,26 @@ def main():
     W = FS.FULL_W_IN * 25.4
     fig = plt.figure(figsize=(FS.FULL_W_IN, H_MM / 25.4))
     # ---- (b): two rows (brains) x [sagittal photo, coronal photo | sagittal synthesis, coronal synthesis], one scale
+    # one grid for both rows (voxels of the flat grid, one physical scale): every cell as large as the largest image of its column, the
+    # junction planes of the sagittal sections in one column line, the coronal sections centered, each image centered vertically
     top, rgap, bot, lab_w, g_in, g_mid = 6.5, 1.5, 4.0, 5.0, 0.6, 3.0
-    s = (H_MM - top - rgap * (len(BRAINS) - 1) - bot) / sum(views[S]["cor"]["photo"].shape[0] for S in BRAINS)   # mm / voxel
-    wsum = max(2 * views[S]["sag"]["photo"].shape[1] + 2 * views[S]["cor"]["photo"].shape[1] for S in BRAINS)
-    right_w = lab_w + 2 * g_in + g_mid + s * wsum
+    hrow = max(views[S]["cor"]["photo"].shape[0] for S in BRAINS)
+    cut_max = max(views[S]["sag"]["cut_col"] for S in BRAINS)
+    wcol = dict(sag=cut_max + max(views[S]["sag"]["photo"].shape[1] - views[S]["sag"]["cut_col"] for S in BRAINS),
+                cor=max(views[S]["cor"]["photo"].shape[1] for S in BRAINS))
+    s = (H_MM - top - rgap * (len(BRAINS) - 1) - bot) / (len(BRAINS) * hrow)   # mm / voxel
+    right_w = lab_w + 2 * g_in + g_mid + s * 2 * (wcol["sag"] + wcol["cor"])
     xb = W - right_w
     y = top
     last_ax = None
     for r, S in enumerate(BRAINS):
-        v = views[S]; rh = v["cor"]["photo"].shape[0] * s
+        v = views[S]; rh = hrow * s
         cx = xb + lab_w
         for key in ("photo", "comp"):
-            gx = cx
             for view in ("sag", "cor"):
                 im = v[view][key]; h_, w_ = im.shape[0] * s, im.shape[1] * s
-                ax = FS.axes_mm(fig, cx, y + (rh - h_), w_, h_)
+                dx = (cut_max - v["sag"]["cut_col"]) * s if view == "sag" else (wcol["cor"] * s - w_) / 2
+                ax = FS.axes_mm(fig, cx + dx, y + (rh - h_) / 2, w_, h_)
                 ax.imshow(im, interpolation="antialiased"); ax.axis("off")
                 hh, ww = im.shape[:2]
                 if view == "sag":
@@ -165,16 +173,17 @@ def main():
                     for yy_ in ((-0.5, 3.0), (hh - 4.0, hh - 0.5)):
                         ax.plot([a_, a_], yy_, color=FS.GRAY, lw=0.6, solid_capstyle="butt")
                 ax.set_xlim(-0.5, ww - 0.5); ax.set_ylim(hh - 0.5, -0.5)
+                dpt = dx * 72 / 25.4                                       # labels stay at the cell's edge, not the image's
                 if view == "sag" and key == "photo":
-                    ax.annotate(lab[S], xy=(0, 0.5), xycoords="axes fraction", xytext=(-6, 0), textcoords="offset points",
+                    ax.annotate(lab[S], xy=(0, 0.5), xycoords="axes fraction", xytext=(-6 - dpt, 0), textcoords="offset points",
                                 rotation=90, ha="center", va="center", fontsize=FS.MIN_PT, fontweight="bold", color=FS.FG,
                                 annotation_clip=False)
                 if r == 0 and view == "sag":
-                    FS.header(ax, "Photographs" if key == "photo" else "Synthesis", dx=0, fontweight="bold")
+                    FS.header(ax, "Photographs" if key == "photo" else "Synthesis", dx=-dpt, fontweight="bold")
                 if r == 0 and view == "sag" and key == "photo":
-                    FS.letter(ax, "b", dx=-14, dy=3)
+                    FS.letter(ax, "b", dx=-14 - dpt, dy=3)
                 last_ax = (ax, ww)
-                cx += w_ + g_in
+                cx += wcol[view] * s + g_in
             cx += g_mid - g_in
         y += rh + rgap
     ax, ww = last_ax                                                      # 5 mm scale bar under the last image
