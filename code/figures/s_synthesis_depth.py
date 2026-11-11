@@ -5,10 +5,10 @@ ISBI) Fig. 3, re-rendered in this paper's house style with this paper's names.
     python code/figures/s_synthesis_depth.py [--out figures/s_synthesis_depth.pdf]
 
   (a) SSIM per 1 mm past the simulated junction plane, mean over the brains whose slab reaches that deep (bins with >= 4 brains; n per
-      bin above the plot): the synthesis by networks that never saw the brain (six-fold cross-validation), the same network trained on
-      the slab itself (a reference for how well the photographs can be reproduced), pix2pix, the multi-atlas synthesis, the b0
-      brightness lookup and the best simple fill ($LINC_NUMBERS/r057_s1_synthesis.json isbi.extra.per_mm). The house hues are reserved
-      for brains and provenance: the alternatives are grays with dash patterns and direct labels.
+      bin above the plot): the synthesis by networks that never saw the brain (six-fold cross-validation, solid) and the same network
+      trained on the slab itself (dashed: a reference for how well the photographs can be reproduced), with direct labels
+      ($LINC_NUMBERS/r057_s1_synthesis.json isbi.extra.per_mm). The other synthesis methods' curves are not drawn (the lean
+      Supplement, 6 Nov 2026).
   (b) the withheld slab of the brain at the median SSIM and of the brain with the lowest (the cross-validation evaluations,
       completion_eval/d3_cv<k>_A_s0.json, and their saved predictions in completion_eval/pred/), never seen by its network: photographs
       and synthesis, sagittal (through the left hemisphere) and coronal (middle of the slab) sections on the brain's section-aligned
@@ -44,11 +44,7 @@ from blockface.synthesis.views import Flat, brain_colors, on_black  # noqa: E402
 RETAINED_MM = 12.0
 H_MM = 52.0
 SERIES = [("in_sample", "trained on the slab", FS.FG, (0, (2.2, 1.4)), 0.9),
-          ("completion", "synthesis", FS.FG, "-", 1.5),
-          ("pix2pix", "pix2pix", FS.GRAY, "-", 1.0),
-          ("multi_atlas_allphoto", "multi-atlas", FS.GRAY, (0, (3.0, 1.2)), 1.0),
-          ("lookup", "b0 lookup", FS.WITHOUT, (0, (1.0, 1.0)), 1.0),
-          ("best_fill", "best simple fill", FS.WITHOUT, (0, (4.0, 1.2, 1.0, 1.2)), 1.0)]
+          ("completion", "synthesis", FS.FG, "-", 1.5)]
 
 
 def load(f):
