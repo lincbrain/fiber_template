@@ -4,9 +4,10 @@
     python code/figures/pipeline.py [--out figures/pipeline.png]
 
 Three stages, read top to bottom. (1) Two constructions of one style: ex vivo MRI -> the MRI template; blockface -> the blockface
-template. (2) Their registration (vertical arrow). (3) Histology: a section registered to its blockface photograph, then transformed
-to the template by the blockface-based alignment (cyan, through the blockface template) or the MRI-based alignment (brown, through
-its own MRI). The blockface template's box starts at the MRI template's left edge.
+template. (2) Their registration (vertical arrow). (3) Histology: a section registered to its blockface photograph (the pair equally
+spaced between the block's L and R), then transformed to the template by the blockface-based alignment (cyan, through the blockface template) or the
+MRI-based alignment (brown, through its own MRI), both starting right after the histology block. The blockface template's box starts
+at the MRI template's left edge; its image is centered in it below the header.
 
 Inputs: the products listed in settings/internal/products_figures.yaml (under $LINC_PRODUCTS) and two counts from the numbers records
 ($LINC_NUMBERS: bf_cohort, histo_tube_landmarks). Display parameters: settings/figures.yaml (pipeline).
@@ -24,9 +25,14 @@ Planes (the sagittal plane of the template figure, x = 2.0 mm):
 - one photograph of the same brain, at MM2's place along its stack; the histology row is MM2's: its section, registered (TIRL), and
   the photograph it was registered to, in color from the store (histology_photo_slice; its gray is TIRL's fixed image, checked),
   on the fixed image's pixels and crop.
-Orientation letters, once per block or row where one convention holds, at the bottom corners of its first image (on the label
-line): L and R on the coronal views (neurological), P and A on the sagittal views (anterior right). The blockface stores
-are +x = right: the tubes, which mark the left hemisphere, lie at lower x (checked on MM6 and MM2, 11 Nov 2026).
+Orientation letters: L and R on the coronal views (neurological), P and A on the sagittal views (anterior right). One pair per block
+where one convention holds (Ex vivo MRI, MRI template, Blockface template, Histology): the first letter left of the block's leftmost
+image column, the second right of its rightmost, 2 pt off the images (as figstyle.dirs) and at least 0.5 mm inside the box, at
+mid-height of the block's images; a block whose images leave less room than that gets that much side margin (the two templates).
+Histology's L and R sit 0.5 mm inside its box's sides, as in the templates, with its two images equally spaced between them.
+The Blockface block (photograph and volume, two views) has its letters per view, at the bottom corners of each image, on its label
+line. The blockface stores are +x = right: the tubes, which mark the left hemisphere, lie at lower x (checked on MM6 and MM2,
+11 Nov 2026).
 One print scale for every image (the largest that fits the 178 mm width, lowered in 0.01 steps while the figure is taller than
 max_height_mm); one 10 mm scale bar, outside every block (the bottom-right corner). Writes the PNG, a PDF beside it, and
 provenance.json.
@@ -366,12 +372,19 @@ def main():
     W, PAD, GAP, MIDW, AGAP = 178.0, 1.8, 2.6, 22.0, 8.0      # box padding, image gap, middle column, arrow gap in a box (mm)
     wd = lambda k, s: I[k][0].shape[1] * I[k][2] * s
     ht = lambda k, s: I[k][0].shape[0] * I[k][1] * s
+    LPAD, LCLR = 2.0 / 72 * 25.4, 0.5                          # a side letter's distance from the images (2 pt) and from the box (mm)
+    f_ = plt.figure(); r_ = f_.canvas.get_renderer()
+    wlet = {s: f_.text(0, 0, s, fontsize=FS.MIN_PT).get_window_extent(r_).width / f_.dpi / FS.MM
+            for s in FS.DIRS["sagittal"][:2] + FS.DIRS["coronal"][:2]}   # the letters' widths (mm)
+    plt.close(f_)
+    room = {s: LPAD + LCLR + w_ for s, w_ in wlet.items()}         # the side room a letter needs (mm)
+    SIDE = max(PAD, *(room[s] for s in FS.DIRS["sagittal"][:2]))   # the sagittal blocks' side margin
 
     def widths(s):
-        mri = 2 * max(wd(k, s) for k in ("i_t2", "i_dec", "i_f1", "i_f2")) + GAP + 2 * PAD
+        mri = 2 * max(wd(k, s) for k in ("i_t2", "i_dec", "i_f1", "i_f2")) + GAP + 2 * SIDE
         bf = wd("photo", s) + AGAP + wd("bfvol", s) + 2 * PAD
-        hist = wd("histo", s) + AGAP + wd("slice", s) + 2 * PAD
-        tpl = 2 * max(wd(k, s) for k in ("t_t2", "t_dec", "t_f1", "t_f2")) + GAP + 2 * PAD
+        hist = wd("histo", s) + AGAP + wd("slice", s) + room["L"] + room["R"]
+        tpl = 2 * max(wd(k, s) for k in ("t_t2", "t_dec", "t_f1", "t_f2")) + GAP + 2 * SIDE
         return max(mri, bf, hist), tpl
     s_hi, s_lo = cfg["print_scale_range"]
     for SC in np.arange(s_hi, s_lo, -0.01):
@@ -396,9 +409,13 @@ def main():
         SC = float(round(SC - 0.01, 2))
     wm = max(wd(k, SC) for k in ("i_t2", "i_dec", "i_f1", "i_f2")); wt = max(wd(k, SC) for k in ("t_t2", "t_dec", "t_f1", "t_f2"))
     C1 = LX0 + (lw - (2 * wm + GAP)) / 2 + wm / 2; C2 = C1 + wm + GAP
-    T1c = TX0 + PAD + wt / 2; T2c = T1c + wt + GAP
+    T1c = TX0 + SIDE + wt / 2; T2c = T1c + wt + GAP
     xp = LX0 + PAD + wd("photo", SC) / 2; xv = LX1 - PAD - wd("bfvol", SC) / 2
-    bx0, bx1 = TX0, TX0 + wd("bft", SC) + 2 * PAD               # the blockface template's box, from the MRI template's left edge
+    hl0, hl1 = LX0 + LCLR + wlet["L"], LX1 - LCLR - wlet["R"]      # histology: its letters at the box's sides, and between them
+    hg = (hl1 - hl0 - wd("histo", SC) - wd("slice", SC)) / 3       # the section and its photograph equally spaced
+    xh = hl0 + hg + wd("histo", SC) / 2; xs = xh + wd("histo", SC) / 2 + hg + wd("slice", SC) / 2
+    assert hg >= AGAP - 1.0, f"histology: {hg:.2f} mm between the images leaves too short an arrow"
+    bx0, bx1 = TX0, TX0 + wd("bft", SC) + 2 * SIDE              # the blockface template's box, from the MRI template's left edge
     xbt = (bx0 + bx1) / 2                                         # its image, the registration and the blockface-based arrowhead
     assert bx1 < T2c - 4.0, "the MRI-based alignment's arrow must pass right of the blockface template"
 
@@ -458,6 +475,25 @@ def main():
                 (a0, a1), (b0, b1) = ext(t), ext(LBL[k])
                 assert a1 < b0 - 0.5 or b1 < a0 - 0.5, f"direction letter {s} touches the label of {k}"
 
+    def side_letters(keys, plane, x0, x1, at_box=False):
+        """The plane's two direction letters for a block of one convention (its images `keys`, its box x0..x1): the first left of
+        the leftmost image column, the second right of the rightmost, LPAD off them (at_box: LCLR inside the box's sides), at
+        mid-height of the images; asserts they lie inside the box and clear of every image and label."""
+        r_ = fig.canvas.get_renderer()
+        yc = (min(B[k][1] for k in keys) + max(bot(k) for k in keys)) / 2
+
+        def box_mm(t):                                              # (x0, x1, y0, y1), figure mm, y down
+            e = t.get_window_extent(r_); f = lambda v: v / fig.dpi / FS.MM  # noqa: E731
+            return f(e.x0), f(e.x1), H - f(e.y1), H - f(e.y0)
+        pos = (((x0 + LCLR, "left"), (x1 - LCLR, "right")) if at_box else
+               ((min(left(k) for k in keys) - LPAD, "right"), (max(rgt(k) for k in keys) + LPAD, "left")))
+        for s, (x, ha) in zip(FS.DIRS[plane][:2], pos):
+            a0, a1, a2, a3 = box_mm(ax.text(x, yc, s, fontsize=FS.MIN_PT, ha=ha, va="center", color=FG))
+            assert a0 >= x0 + LCLR - 0.01 and a1 <= x1 - LCLR + 0.01, f"direction letter {s} of {keys[0]}'s block leaves its box"
+            others = [(B[k][0], B[k][0] + B[k][2], B[k][1], B[k][1] + B[k][3]) for k in B] + [box_mm(t) for t in LBL.values()]
+            for b0, b1, b2, b3 in others:
+                assert a1 <= b0 or b1 <= a0 or a3 <= b2 or b3 <= a2, f"direction letter {s} of {keys[0]}'s block touches an image or a label"
+
     # (1) two constructions of one style
     for k, x, y, s in (("i_t2", C1, R1, "T2-weighted"), ("i_dec", C2, R1, "tensor"), ("i_f1", C1, R2, "soma fraction"),
                        ("i_f2", C2, R2, "neurite fraction"), ("t_t2", T1c, R1, "T2-weighted"), ("t_dec", T2c, R1, "tensor"),
@@ -472,7 +508,7 @@ def main():
     for s_ in segs:                                                 # on the volume, in the mm of its extent
         AX["bfvol"].plot(s_[:, 0], s_[:, 1], color="k", lw=0.8, ls=(0, (3, 2)), solid_capstyle="butt", dash_capstyle="butt")
     AX["bfvol"].set_xlim(0, vol.shape[1] * I["bfvol"][2]); AX["bfvol"].set_ylim(vol.shape[0] * I["bfvol"][1], 0)
-    image("bft", xbt, R3)
+    image("bft", xbt, (by0 + HEAD + by1) / 2)                       # centered below its header (it has no label line)
     box(LX0, top, LX1, my1); header(LX0, LX1, top, "Ex vivo MRI", "4 brains + their L-R mirrors")
     box(LX0, by0, LX1, by1); header(LX0, LX1, by0, "Blockface", f"{N['n_bf']} brains + their L-R mirrors")
     box(TX0, top, TX1, my1, ec=FG, lw_=0.9); header(TX0, TX1, top, "MRI template")
@@ -484,11 +520,11 @@ def main():
     # (2) their registration
     arrow((xbt, by0 - 0.4), (xbt, my1 + 0.4)); text(xbt + 1.5, (my1 + by0) / 2, "registration", ha="left", va="center")
     # (3) histology: a section, its blockface photograph, and the two alignments to the template
-    image("histo", xp, R4); image("slice", xv, R4)
+    image("histo", xh, R4); image("slice", xs, R4)
     label("histo", "histology section"); label("slice", "blockface photograph")
     arrow((rgt("histo") + 1.2, R4), (left("slice") - 1.2, R4), lw_=0.8)
     box(LX0, hy0, LX1, hy1); header(LX0, LX1, hy0, "Histology", f"{N['n_histo']} brains")
-    x0a, yb, ym = rgt("slice") + 1.2, R4 - 2.2, R4 + 2.2
+    x0a, yb, ym = LX1 + 1.5, R4 - 2.2, R4 + 2.2                    # the two alignments start right after the block
     elbow((x0a, yb), (xbt, yb), (xbt, by1 + 0.4), BFA)
     text((LX1 + T1c) / 2, yb - 0.8, "blockface-based alignment", color=BFA, va="bottom")
     elbow((x0a, ym), (T2c, ym), (T2c, my1 + 0.4), MRIA)
@@ -503,9 +539,12 @@ def main():
     assert sby > by1 + 3.0 and sby > ym + 3.0, "the scale bar must sit below the blockface template and the MRI-based line"
     assert sb0 > lab_x1 + 3.0 or sby > lab_y1 + 2.0, "the scale bar must keep clear of the MRI-based alignment's label"
     assert sb0 > LX1 + 3.0 and sby > my1 + 3.0, "the scale bar must lie outside the histology and MRI template blocks"
-    # orientation letters, once per block or row of one convention, on its first image
-    for k, plane in (("i_t2", "sagittal"), ("t_t2", "sagittal"), ("photo", "coronal"), ("bfvol", "sagittal"), ("bft", "sagittal"),
-                     ("histo", "coronal")):
+    # orientation letters: one pair per block of one convention, at its sides; the Blockface block's per view
+    side_letters(("i_t2", "i_dec", "i_f1", "i_f2"), "sagittal", LX0, LX1)
+    side_letters(("t_t2", "t_dec", "t_f1", "t_f2"), "sagittal", TX0, TX1)
+    side_letters(("bft",), "sagittal", bx0, bx1)
+    side_letters(("histo", "slice"), "coronal", LX0, LX1, at_box=True)
+    for k, plane in (("photo", "coronal"), ("bfvol", "sagittal")):
         letters(k, plane)
 
     inputs = [P[k] for k in ("template_t2", "template_mask", "template_dec", "template_frac1", "template_frac2", "bft_rgb", "bft_mask",
