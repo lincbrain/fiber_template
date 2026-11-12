@@ -67,7 +67,7 @@ CASES = ["MR243", "MR252", "MR256", "MF191"]
 TV = 0.25
 OUTLINE = "#00e5ff"
 SB_MM = 5                                                # one bar per row, on its label's line, at the right
-TITLE_GAP_PT = 4.0                                       # the column titles this far above the first row's label (pt): apart from it
+TITLE_GAP_PT = 1.5 / 25.4 * 72 + 0.3                     # the column titles above the first row's label line (pt): 1.5 mm off its bar
 GROUPS = [("bundles", ("Fiber_dense_bundle", "Fiber_moderate_bundle", "Bundle"), "#D55E00", 0.9),
           ("light bundles", ("Fiber_light_bundle",), "#E69F00", 0.5),
           ("terminal fields", ("Terminal_dense", "Terminal_moderate", "Terminal_light"), "#56B4E9", 0.5),
@@ -235,7 +235,8 @@ def main(argv=None):
     t_h, ct_h = T("MM1, section 6")[1], max(T(t)[1] for t in titles)
     DPAD = 1.0                                                             # pt: the L and R beside the first row
     LEFT, RIGHT = MG + T("L")[0] + DPAD * pt, T("R")[0] + DPAD * pt + MG
-    HEAD = t_h + 2.0 * pt                                                  # a row's label line, 2 pt above its panels
+    HEAD = 2.0 * pt + max(t_h, (2.0 + 1.2) * pt + T(f"{SB_MM} mm")[1])     # a row's label line, 2 pt above its panels, with its bar's length
+                                                                           # (scalebar_title: 2 pt over a 1.2 pt bar on the label's baseline)
     TOP = MG + ct_h + TITLE_GAP_PT * pt + HEAD                              # the column titles above the first row's label
     pw = (W - LEFT - 2 * GAP - RIGHT) / 3
     disp = lambda v: np.flipud(np.swapaxes(v, 0, 1))  # noqa: E731      volume (x, z) -> display (rows dorsal up, columns x)

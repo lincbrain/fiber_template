@@ -555,10 +555,15 @@ def main():
         one-image cell's sub-label under them, the two-image cells' sub-labels above their own images)."""
         fig, cell, rows = render(K, tops, Hf)
         ext = {s_: span(fig, v) for s_, v in cell.items()}
+        Wf = fig.get_size_inches()[0] * 25.4
+        extra = (ext["e"][1] - ext["e"][0]) - (ext["b"][1] - ext["b"][0])  # (b) exactly as wide as (e), the space between its two
+        if extra > 0:                                                    # reslices grown (the author, 12 Nov 2026): centered in one
+            p_ = cell["b"][1].get_position()                             # column, their right edges and title-level bars line up
+            cell["b"][1].set_position([p_.x0 + extra / Wf, p_.y0, p_.width, p_.height])
+            ext["b"] = span(fig, cell["b"])
         Wc = [max(ext[s_][1] - ext[s_][0] for s_ in col_) for col_ in COLS]
         G = (PAGE - 2 * MARGIN - sum(Wc)) / 2
         Xc = [MARGIN, MARGIN + Wc[0] + G, MARGIN + Wc[0] + G + Wc[1] + G]
-        Wf = fig.get_size_inches()[0] * 25.4
         for i, col_ in enumerate(COLS):
             for s_ in col_:
                 dx = Xc[i] + Wc[i] / 2 - (ext[s_][0] + ext[s_][1]) / 2         # the cell's content centered in its rectangle

@@ -13,8 +13,9 @@ What it does
   (a) one point per template voxel of each section's footprint (carried fraction >= 0.1): fiber bundles (all grades; the "Fibers"
       class left out) and, as larger points with one white edge, injection sites, named outside the image. Nothing is interpolated,
       joined, smoothed, thinned or cut. MF8's case is in the left hemisphere and is mirrored onto the right (x -> -x; the grid is
-      centered on x = 0). Parallel projection from the right and front (turned 30 degrees toward the front and 15 up, so the
-      coronal plane shows its face; the author, 12 Nov 2026); a turned view has no single scale, so (a) has no scale bar. The T2 on the midline plane and on one coronal plane (right half, y = 18 mm, the middle slab of b), brain cells only,
+      centered on x = 0). Parallel projection from the right and front (turned 15 degrees toward the front and 15 up, so the
+      coronal plane shows its face without hiding MM2's labels behind it: at 30 degrees it hid 77 % of them, at 15 46 %, in
+      the old view, 8 and 10, 18 %; the author, 12 Nov 2026); a turned view has no single scale, so (a) has no scale bar. The T2 on the midline plane and on one coronal plane (right half, y = 18 mm, the middle slab of b), brain cells only,
       on a dimmed linear window; the planes hide what lies behind them. The cases are drawn in layers, MM2 over MM1 over MF8 (each
       case rendered alone with the planes, then stacked), so the smaller cases are not hidden by MF8; within a case, nearer points
       hide farther ones (--by-depth draws all three by depth instead). A thin gray line is the outline of the whole brain as the
@@ -34,6 +35,11 @@ You get
   the slab > 0.5) lies outside the capsule and how much of that the charted labels cover.
 
     $PY_VIZ3D code/figures/tracer_sections3d.py [--out figures/tracer_sections3d.png] [--video] [--by-depth] [--alic-y 16 18 20]
+        [--cases MR243 MF191 MR252]
+The cases drawn: settings/figures.yaml tracer_sections3d.cases (or --cases), by default MM1, MF8 and MM2. MM3 (MR256; the author,
+12 Nov 2026: Jingjing's three cases are MM1, MM2 and MM3) can be drawn too, in the fourth tracer color (figstyle TRACER); it has no
+annotated injection site, so no marker and no tag, and its key says so. The layers go from the largest case to the smallest
+(LAYER_ORDER).
 """
 import argparse
 import csv
@@ -57,8 +63,9 @@ P_MRI, P_FIG = paths.products("products_mri"), paths.products("products_figures"
 SEC, V2 = Path(P_MRI["tracer_sections_v2"]), Path(P_MRI["tracer_template_v2"])
 T2_F, MASK_F, FA_F, SARM = (Path(P_FIG[k]) for k in ("template_t2", "template_mask", "template_fa", "sarm_level6"))
 IC_LABEL = 50
-CASES = ["MR243", "MF191", "MR252"]                                  # MM1, MF8, MM2 (key order)
+CASES = ["MR243", "MF191", "MR252"]                                  # MM1, MF8, MM2 (key order); settings/figures.yaml or --cases
 AREA = {"MR243": "area 10", "MF191": "area 13m", "MR252": "SMA"}
+KEY_NOTE = {"MR256": "injection site not annotated"}               # a case without an annotated injection site: its key's note
 COLOR = {S: FS.TRACER[S] for S in CASES}
 MIRROR = {"MF191"}
 X_SAG, Y_COR = 0.0, 18.0                                             # mm: the midline plane; the coronal plane (right half) through (b)'s middle slab
@@ -71,14 +78,16 @@ POINT = 7.0                                                          # px at WIN
 INJ = 1.7
 VIEW_FOC, VIEW_UP = (6.0, 10.0, 14.0), (0.0, 0.0, 1.0)
 VIDEO_POS = (150.0, 30.0, 40.0)                                      # the rotation video's start (the still's camera before 12 Nov 2026)
-VIEW_AZ_EL = (30.0, 15.0)                                            # the still: from the right, turned toward the front and up (degrees)
+VIEW_AZ_EL = (15.0, 15.0)                                            # the still: from the right, turned toward the front and up (degrees)
 _R = float(np.linalg.norm(np.subtract(VIDEO_POS, VIEW_FOC))); _a, _e = np.radians(VIEW_AZ_EL)
 VIEW_POS = tuple(round(float(f_ + _R * d), 3) for f_, d in zip(VIEW_FOC, (np.cos(_e) * np.cos(_a), np.cos(_e) * np.sin(_a), np.sin(_e))))
 PSCALE = 26.0                                                        # mm, half the window's height (parallel projection)
 FILL_A = 0.8
 EDGE_UP = 8                                                           # (b) outlines traced on an 8x finer copy of the voxel grid
-LAYERS = ["MF191", "MR243", "MR252"]                                 # --layered: bottom to top (the smaller cases over MF8)
-PAL = {"MR243": (255, 0, 0), "MF191": (0, 255, 0), "MR252": (0, 0, 255)}
+LAYER_ORDER = ["MF191", "MR243", "MR256", "MR252"]                  # --layered: bottom to top, the largest case first (bundle voxels
+                                                                     #   25936, 8621, 5087, 2145): the smaller cases over the larger
+LAYERS = [S for S in LAYER_ORDER if S in CASES]
+PAL = {"MR243": (255, 0, 0), "MF191": (0, 255, 0), "MR252": (0, 0, 255), "MR256": (255, 0, 255)}
 pv.OFF_SCREEN = True
 
 
@@ -99,8 +108,12 @@ def scene_data():
     for S in CASES:
         pts[S] = {}
         for g in ("Bundles", "Injection_site"):
-            f = SEC / S / f"{S}_{g}_mri-template_sections_footprint.nii.gz"; a, Aa = load(f); assert np.allclose(Aa, A), f; ins.append(f)
-            ijk = np.argwhere(a > 0)
+            f = SEC / S / f"{S}_{g}_mri-template_sections_footprint.nii.gz"
+            if g == "Injection_site" and not f.exists() and S in KEY_NOTE:          # none annotated (MM3)
+                ijk = np.zeros((0, 3), int)
+            else:
+                a, Aa = load(f); assert np.allclose(Aa, A), f; ins.append(f)
+                ijk = np.argwhere(a > 0)
             xyz = nib.affines.apply_affine(A, ijk.astype(float))
             inb = brain[tuple(ijk.T)]
             if S in MIRROR:
@@ -163,7 +176,7 @@ def build(p, sd, mode, size, ps, only=None, planes=True, alpha=(1.0, 1.0)):
                 acts[k] = p.add_mesh(m, scalars="rgb", rgb=True, lighting=False, opacity=alpha[0 if k == "sag" else 1])
             else:
                 acts[k] = p.add_mesh(m, color="black", lighting=False)
-    ids = {"MR243": "#ff0000", "MF191": "#00ff00", "MR252": "#0000ff"}
+    ids = {S: "#%02x%02x%02x" % PAL[S] for S in PAL}
     for S in CASES:
         if only is not None and S not in only:
             continue
@@ -292,17 +305,18 @@ def compose(sd, still, sil, cap, rec, args):
     FW, GUT, MG = 180.0, FS.GUTTER_MM, FS.MARGIN_MM
     T = text_mm(plt)
     pad = 2.0 / 72 * 25.4                                                           # figstyle.dirs's pad
-    tag_w = max(T(TAG[S])[0] for S in CASES if LAB_SIDE[S] == "right"); tag_h = T("SMA")[1]
+    tag_w = max([T(TAG[S])[0] for S in CASES if LAB_SIDE.get(S) == "right"] or [0.0]); tag_h = T("SMA")[1]
     let_h = T("ab", FS.LETTER_PT, fontweight="bold")[1]
     LM = MG + T("P")[0] + pad                                                       # (a): the P left of it, the tags right of it
     wa = (FW - LM - MG - tag_w) / (1 + TAG_X); ha = wa * crop.shape[0] / crop.shape[1]
     TOPA = MG + max(let_h + 4.0 / 72 * 25.4, TAG_Y * ha + tag_h)                       # the panel letter or the top tag, whichever is higher
-    keys_k = [f"{FS.label(S)}, {AREA[S]}" + (" (mirrored from the left)" if S in MIRROR else "") for S in CASES] + KEY_TEXTS
+    keys_k = [f"{FS.label(S)}, {AREA.get(S) or KEY_NOTE[S]}" + (" (mirrored from the left)" if S in MIRROR else "") for S in CASES] + KEY_TEXTS
     KW = max(T(t)[0] for t in keys_k) / (1 - KEY_X)                                  # the key: its texts start at KEY_X of its width
     nb = len(cap); gapb = GUT; LB = MG + T("L")[0] + pad
     wb = (FW - LB - (nb - 1) * GUT - (T("R")[0] + pad) - GUT - KW - MG) / nb       # (b)'s tiles fill the row beside the key
     hb = wb * (ALIC_Z[1] - ALIC_Z[0]) / (ALIC_X[1] - ALIC_X[0])
-    TOPB = TOPA + ha + GUT + 12.0 / 72 * 25.4 + let_h                                # (b)'s title line 12 pt above its tiles
+    TOPB = TOPA + ha + GUT + 12.0 / 72 * 25.4 + max(let_h, (2.0 + 1.2) / 72 * 25.4 + T("2 mm")[1])   # (b)'s title line 12 pt above its
+                                                                                    # tiles, or its bar's length above it (scalebar_title)
     FH = TOPB + hb + MG
     fig = plt.figure(figsize=(FW / 25.4, FH / 25.4))
     ax = FS.axes_mm(fig, LM, TOPA, wa, ha)
@@ -375,14 +389,20 @@ def compose(sd, still, sil, cap, rec, args):
 
 
 def main(argv=None):
-    global ALIC_Y, Y_COR
+    global ALIC_Y, Y_COR, CASES, COLOR, LAYERS
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", default="figures/tracer_sections3d.png", help="the figure; the still and the video are named after its stem")
     ap.add_argument("--video", action="store_true")
     ap.add_argument("--by-depth", action="store_true", help="draw the cases by depth instead of in layers (MF8 < MM1 < MM2)")
     ap.add_argument("--no-numbers", action="store_true", help="draft: do not write paper/numbers/<name>.json")
     ap.add_argument("--alic-y", type=float, nargs=3, default=ALIC_Y, help="(b)'s three slabs, mm; (a)'s coronal plane goes through the middle one")
+    ap.add_argument("--cases", nargs="+", help="the cases drawn (default: settings/figures.yaml tracer_sections3d.cases, else MM1, MF8, MM2)")
     a = ap.parse_args(argv); t0 = time.time(); a.layered = not a.by_depth
+    import yaml
+    cfg = (yaml.safe_load((HERE.parents[1] / "settings" / "figures.yaml").read_text()) or {}).get("tracer_sections3d") or {}
+    CASES = list(a.cases or cfg.get("cases") or CASES)
+    assert set(CASES) <= set(FS.TRACER) and all(S in AREA or S in KEY_NOTE for S in CASES), f"cases {CASES}: no tracer color or key"
+    COLOR = {S: FS.TRACER[S] for S in CASES}; LAYERS = [S for S in LAYER_ORDER if S in CASES]
     ALIC_Y, Y_COR = list(a.alic_y), a.alic_y[1]
     sd = scene_data(); A, brain = sd["A"], sd["brain"]
     bx = brain.any((1, 2)).nonzero()[0]; by = brain.any((0, 2)).nonzero()[0]; bz = brain.any((0, 1)).nonzero()[0]

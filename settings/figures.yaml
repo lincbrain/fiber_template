@@ -60,6 +60,10 @@ networks:
                                       #   the back (the author, 12 Nov 2026; MF8's looked flat there): paper/status/s4_row_f_candidates_2026-11-12
   max_height_mm: 203                  # the figure's height at most: its page with its caption
 
+tracer_sections3d:
+  cases: [MR243, MF191, MR252]             # Fig. 9's cases (MM1, MF8, MM2), the paper's; the options the author is comparing (12 Nov
+                                           #   2026): [MR243, MR252, MR256], Jingjing's three, and [MR243, MF191, MR252, MR256], all four
+                                           #   (MM3 needs its sections in the data tree: tracer_sections_v2 MR256)
 histology:
   panels: [a, b]                           # the panels drawn (the author, 12 Nov 2026: (c) and (d) left out; the text gives their numbers);
                                            #   empty: all four

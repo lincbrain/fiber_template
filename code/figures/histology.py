@@ -14,7 +14,8 @@ Layout (the author, 12 Nov 2026): two rows and four columns, the first wider; th
      the slice, its hole-only center, recomputed and checked as in b). Another tube's mask can end on the slice obliquely, over a
      streak and not a hole (MM3 s18: a 4-voxel tail at the end of a tube that stops 6 slices later); it is not marked.
      Flipped left-right into the neurological convention (the photographs show the subject's left on the image right); dorsal up;
-     loose blockface fragments without histology removed. The 5 mm bar at the blockface's own pixel (TIRL's fixed frame = half its
+     loose blockface fragments without histology removed. The 5 mm bar on (a)'s title line, top right of its column, as (b)'s (the
+     author, 12 Nov 2026), at the blockface's own pixel (TIRL's fixed frame = half its
      L2 voxel, from the volume's header; TIRL's resolution_mm is a nominal size given to both images).
   b  (columns 2-4) marker tubes, three fixed quantiles (25th, 50th, 90th) of the pooled offsets: for each, the found piece whose
      offset is closest to that quantile, or the one settings/figures.yaml histology panel_b_pieces names (within PIN_RANKS ranks of
@@ -70,7 +71,6 @@ PIN_RANKS = 3                                                  # (b): a named pi
 WIN_MM = 3.0                                                   # (b): window side
 ECDF_XMAX = 1.0                                                # (c): to the 1 mm search radius (the curve reaches 1)
 SCALEBARS_MM = (5, 0.5)                                        # (a), (b)
-A_BAR_CORNER = "top right"                                     # (a)'s 5 mm bar: in this empty corner of the photograph's panel (clear of its sub-label)
 L1_PT, L2_PT = 12.0, 2.0                                       # the header lines above a row: the title's, the sub-labels'
 
 
@@ -298,9 +298,8 @@ def main():
             dx_px = (rad + ARROW_GAP_MM / scale_a + ARROW_PT / 2 * pt / scale_a) / fmm_a
             ax.plot([c_ - dx_px], [r_], marker=">", ms=ARROW_PT, mew=0, ls="none", color=S.COL["pred"], zorder=5)
         if k == 0:
-            S.letter(ax, "a", dx=(MG - xa) / pt, dy=L1_PT); S.header(ax, heads[0], dx=(MG - xa) / pt + 11, dy=L1_PT)
+            S.letter(ax, "a", dx=(MG - xa) / pt, dy=L1_PT); ta = S.header(ax, heads[0], dx=(MG - xa) / pt + 11, dy=L1_PT); ax_a = ax
             S.header(ax, heads[1], dx=0, dy=L2_PT)                # on (b)'s two lines: its title's, its sub-labels'
-            S.scalebar_in(ax, 1 / fmm_a, SCALEBARS_MM[0], corner=A_BAR_CORNER)   # a whole section: in an empty corner
             for s_, x_, dx_, ha_ in (("L", 0, -2, "right"), ("R", 1, 2, "left")):
                 ax.annotate(s_, xy=(x_, 0.5), xycoords="axes fraction", xytext=(dx_, 0), textcoords="offset points", ha=ha_,
                             va="center", color=S.FRAME, annotation_clip=False)
@@ -340,6 +339,7 @@ def main():
         ax.add_patch(Circle((wd - 1 - (hx - c0) / f, (hy - r0) / f), rad, fill=False, ec=S.ON_IMG, lw=1.1, path_effects=halo))
         ax.set_xticks([]); ax.set_yticks([]); [s_.set_visible(False) for s_ in ax.spines.values()]
         S.header(ax, f"Offset {r['error_mm']:.2f} mm", dx=0, dy=L2_PT)
+    S.scalebar_title(ax_a, 1 / fmm_a, SCALEBARS_MM[0], ta)         # (a)'s bar as (b)'s, on its title line, top right of its column
     ps = TJ["per_subject"]
     if cd:
         draw_cd(fig, S, e_inp, ps, MG, Y2 + ph + 12.0, W - 2 * MG, CH)

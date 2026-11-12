@@ -523,6 +523,235 @@ def two_rows(panels, heads):
     return fig, axs
 
 
+BF = "MR252"                                  # the blockface tutorial's example brain (MM2)
+BF_PHOTO_REDUCE = 8                           # photographs read at 1/8 (20 um -> 0.16 mm per pixel)
+
+
+def bf_photo(tr, k, reduce=BF_PHOTO_REDUCE):
+    """Photograph k (cutting order: inputs/photographs/<ID>_slice<k>.jpg) and its mask (manual_annotations/photograph_masks, PNG x50),
+    reduced `reduce` times by block mean / any; (RGB [0, 1], mask bool, pixel mm)."""
+    from PIL import Image
+    ph = Image.open(tr(f"brains/sub-{BF}/inputs/photographs/{BF}_slice{k:04d}.jpg")).convert("RGB")
+    W, H = ph.size
+    a = rgb01(np.asarray(ph.reduce(reduce)))
+    m = np.asarray(Image.open(tr(f"brains/sub-{BF}/inputs/manual_annotations/photograph_masks/{BF}_slice{k:04d}.png"))) > 0
+    m = m[:H // reduce * reduce, :W // reduce * reduce].reshape(H // reduce, reduce, W // reduce, reduce).any((1, 3))
+    return a[:m.shape[0], :m.shape[1]], m, 0.020 * reduce
+
+
+def bf_vx_mm():
+    import yaml
+    c = yaml.safe_load((REPO / "settings" / "brains" / f"{BF}.yaml").read_text())
+    return float((c.get("reconstruction_spacing_um") or {}).get("vx", c["vx"])) / 1000.0
+
+
+def plane_world(img, plane, index):
+    """World coordinates (canonical RAS) of the voxel centers of one plane, in figstyle.section's display order: (rows, cols, 3)."""
+    sh = img.shape[:3]; k = FS.PLANE_AXIS[plane]
+    ax = [a for a in range(3) if a != k]
+    g = np.meshgrid(np.arange(sh[ax[0]]), np.arange(sh[ax[1]]), indexing="ij")
+    ijk = np.zeros(g[0].shape + (3,)); ijk[..., ax[0]], ijk[..., ax[1]], ijk[..., k] = g[0], g[1], index
+    w = ijk @ img.affine[:3, :3].T + img.affine[:3, 3]
+    return np.stack([np.flipud(w[..., c].T) for c in range(3)], -1)
+
+
+def sample_world(vol, aff, world, order=0):
+    """vol (canonical RAS) sampled at world points (..., 3): nearest (order 0) or linear."""
+    from scipy import ndimage as ndi
+    v = (world.reshape(-1, 3) - aff[:3, 3]) @ np.linalg.inv(aff[:3, :3]).T
+    return ndi.map_coordinates(vol, v.T, order=order, cval=0).reshape(world.shape[:-1])
+
+
+def square_px(img, px_r, px_c):
+    """A plane with pixels px_r x px_c mm resampled (linear) to square pixels of the smaller size; (img, px)."""
+    from scipy import ndimage as ndi
+    p = min(px_r, px_c)
+    z = (px_r / p, px_c / p) + ((1,) if img.ndim == 3 else ())
+    return ndi.zoom(img, z, order=1), p
+
+
+def bf_volume_planes(tr):
+    """MR252's L2 volume (RGB), brain mask and tubes (L4 grid, sampled nearest on the L2 voxels), canonical RAS, and planes through
+    the tube voxel nearest the brain's center."""
+    import nibabel as nib
+    v = nib.as_closest_canonical(tr.img(f"brains/sub-{BF}/outputs/{BF}_blockface_L2.nii.gz"))
+    mk = nib.as_closest_canonical(tr.img(f"brains/sub-{BF}/outputs/{BF}_brain_mask.nii.gz"))
+    tb = nib.as_closest_canonical(tr.img(f"brains/sub-{BF}/outputs/{BF}_tubes.nii.gz"))
+    M = np.asanyarray(mk.dataobj) > 0; Tb = np.asanyarray(tb.dataobj) > 0
+    c = np.argwhere(M).mean(0); t = np.argwhere(Tb); t0 = t[np.argmin(((t - c) ** 2).sum(1))]
+    w0 = mk.affine[:3, :3] @ t0 + mk.affine[:3, 3]                       # the tube voxel's world point -> the L2 planes through it
+    i0 = np.round(np.linalg.inv(v.affine[:3, :3]) @ (w0 - v.affine[:3, 3])).astype(int)
+    return v, mk, tb, M, Tb, dict(sagittal=int(i0[0]), coronal=int(i0[1]), axial=int(i0[2]))
+
+
+def bf_plane(v, mk, tb, M, Tb, plane, index):
+    """One plane of the L2 volume (RGB), its mask and tubes on the same pixels, at square pixels; (rgb, mask, tubes, px)."""
+    k = FS.PLANE_AXIS[plane]
+    arr = np.take(np.asanyarray(v.dataobj), index, axis=k)                # (a, b, 3)
+    disp = np.stack([np.flipud(arr[..., c].T) for c in range(3)], -1)
+    w = plane_world(v, plane, index)
+    m2 = sample_world(M.astype(np.uint8), mk.affine, w) > 0; t2 = sample_world(Tb.astype(np.uint8), tb.affine, w) > 0
+    z = np.abs(np.diag(v.affine)[:3]); ax = [a for a in range(3) if a != k]
+    px_r, px_c = z[ax[1]], z[ax[0]]                                      # display rows run along the second in-plane axis
+    img, p = square_px(rgb01(disp), px_r, px_c)
+    m3 = square_px(m2.astype(np.float32), px_r, px_c)[0] > 0.5; t3 = square_px(t2.astype(np.float32), px_r, px_c)[0] > 0.5
+    return img, m3, t3, p
+
+
+@figure
+def blockface_01_flow(tr):
+    """The blockface part with MR252: a photograph, the reconstructed volume, the volume registered onto its own b0, and the completed
+    volume (sagittal); the commands between them."""
+    import nibabel as nib
+    k = 700
+    ph, pm, ppx = bf_photo(tr, k); bx = bbox(pm, int(2 / ppx))
+    v, mk, tb, M, Tb, pl = bf_volume_planes(tr)
+    vimg, vm, _, vpx = bf_plane(v, mk, tb, M, Tb, "sagittal", pl["sagittal"])
+    vb = bbox(vm, int(2 / vpx))
+    nl = nib.as_closest_canonical(tr.img(f"paper/brains/sub-{BF}/mri/nonlinear_r1v3mr/{BF}_bf_nonlin_rgb.nii.gz"))
+    b0 = nib.as_closest_canonical(tr.img(f"paper/brains/sub-{BF}/mri/r1v3mr/{BF}_b0_masked.nii.gz"))
+    co = nib.as_closest_canonical(tr.img(f"brains/sub-{BF}/outputs/{BF}_completed.nii.gz"))
+    xw = float((b0.affine[:3, :3] @ np.argwhere(np.asanyarray(b0.dataobj) > 0).mean(0) + b0.affine[:3, 3])[0]) - 4.5   # 4.5 mm left of center
+    def sag(img_n, x_mm, rgb=False):
+        i = int(round((x_mm - img_n.affine[0, 3]) / img_n.affine[0, 0]))
+        a = np.take(np.asanyarray(img_n.dataobj), i, axis=0)
+        return (np.stack([np.flipud(a[..., c].T) for c in range(3)], -1) if rgb else np.flipud(a.T)), i
+    nl2, i_nl = sag(nl, xw, rgb=True); nl2 = rgb01(nl2)
+    from scipy import ndimage as ndi
+    bm = sample_world(ndi.binary_fill_holes(np.asanyarray(b0.dataobj) > 0).astype(np.uint8), b0.affine, plane_world(nl, "sagittal", i_nl)) > 0
+    nbx = bbox(bm, int(2 / 0.25))
+    co2, _ = sag(co, xw); cm = co2 > 0; cbx = bbox(cm, int(2 / 0.25))
+    P = [(crop(ph * pm[..., None], bx), ppx), (crop(vimg * vm[..., None], vb), vpx), (crop(nl2 * bm[..., None], nbx), 0.25),
+         (crop(window(co2, cm, 0.5, 99.5) * cm, cbx), 0.25)]
+    g = 12.0
+    dims = [(p[0].shape[0] * p[1], p[0].shape[1] * p[1]) for p in P]
+    sc = fit_scale([w for h, w in dims], gutter=g, letters=False)
+    hrow = max(h for h, w in dims) * sc
+    band = 4 * 3.4                                                         # four lines of commands under the row
+    fig = new_fig(TOP_MM + HEAD_MM + hrow + 2.0 + band + BAR_MM)
+    axs = row(fig, dims, TOP_MM + HEAD_MM, sc, gutter=g, letters=False)
+    for i, (ax, (img, px)) in enumerate(zip(axs, P)):
+        show(ax, img, px)
+        head(ax, "abcd"[i], ("A photograph", "The volume, sagittal", "On its own b0", "Completed")[i])
+    FS.outline(axs[2], crop(bm, nbx), lw=0.5)
+    for a0, a1 in zip(axs[:-1], axs[1:]):
+        arrow_between(fig, a0, a1)
+    y0 = TOP_MM + HEAD_MM + hrow + 2.0
+    cmds = (("linc-reconstruct all", "photos stack prepare mask", "volume tubes spacing"),
+            ("linc-register mri", "linc-register mri-template", "", "or linc-register blockface-template"),
+            ("linc-complete prepare", "linc-complete", ""))
+    for a0, a1, lines in zip(axs[:-1], axs[1:], cmds):
+        x = (box_mm(fig, a0)[2] + box_mm(fig, a1)[0]) / 2
+        for n, s in enumerate(lines):
+            if s:
+                code_text(fig, x, y0 + n * 3.4, s, va="top")
+    bar_below(axs[0], 1 / ppx, 10, y_frac=0.08)                            # one print scale: one bar, under (a), left of the commands
+    print(f"  photograph {k}, the volume's sagittal index {pl['sagittal']}, x = {xw:.2f} mm in the b0 frame")
+    return fig
+
+
+@figure
+def blockface_02_input(tr):
+    """The input: one photograph of MR252 (inputs/photographs) beside its brain mask (inputs/manual_annotations/photograph_masks)."""
+    k = 700
+    ph, pm, ppx = bf_photo(tr, k); bx = bbox(pm, int(3 / ppx))
+    P = [(crop(ph, bx), ppx), (crop(pm.astype(np.float32), bx), ppx)]
+    fig, axs, _ = one_row(P, gutter=FS.GUTTER_MM, letters=False)
+    head(axs[0], "a", f"Photograph {k}, {BF}"); head(axs[1], "b", "Its brain mask")
+    FS.outline(axs[0], crop(pm, bx), lw=0.5)
+    bar_below(axs[0], 1 / ppx, 10, y_frac=0.08)
+    return fig
+
+
+@figure
+def blockface_03_jumps(tr):
+    """One camera jump of MR252 (settings/brains/MR252.yaml jumps), the photograph after it with the outline of the one before it:
+    as photographed (left) and after prepare (intermediate/prepare/02_blockface, the jump corrected; right)."""
+    import yaml, zarr
+    c = yaml.safe_load((REPO / "settings" / "brains" / f"{BF}.yaml").read_text())
+    from scipy import ndimage as ndi
+    best = None
+    for a_, b_ in c["jumps"]:
+        if b_ != a_ + 1:
+            continue
+        try:
+            _, m0, _ = bf_photo(tr, a_, 16); _, m1, _ = bf_photo(tr, b_, 16)
+        except FileNotFoundError:
+            continue
+        d = float(np.hypot(*np.subtract(ndi.center_of_mass(m0), ndi.center_of_mass(m1)))) * 0.32
+        if best is None or d > best[0]:
+            best = (d, a_, b_)
+    d, a_, b_ = best
+    ph0, m0, px = bf_photo(tr, a_); ph1, m1, _ = bf_photo(tr, b_)
+    st = zarr.open_group(str(tr(f"brains/sub-{BF}/intermediate/prepare/02_blockface.ome.zarr")), mode="r")["0"]
+    sm = zarr.open_group(str(tr(f"brains/sub-{BF}/intermediate/prepare/02_blockface_mask.ome.zarr")), mode="r")["0"]
+    r = BF_PHOTO_REDUCE
+    def prep(k):                                                           # the stack is stored reversed: [::-1, ::-1] is upright
+        a = np.asarray(st[:, ::r, k, ::r]).transpose(1, 2, 0)[::-1, ::-1]; m = np.asarray(sm[0, ::r, k, ::r])[::-1, ::-1] > 0
+        return rgb01(a), m
+    q1, n1 = prep(b_); _, n0 = prep(a_)
+    bx = bbox(m1 | m0, int(3 / px)); bq = bbox(n1 | n0, int(3 / px))
+    P = [(crop(ph1, bx), px), (crop(q1, bq), px)]
+    fig, axs, _ = one_row(P, gutter=FS.GUTTER_MM, letters=False)
+    head(axs[0], "a", f"Photograph {b_}, outlined, and {a_} (orange)"); head(axs[1], "b", "The same two after prepare")
+    for ax, mb, ma in ((axs[0], crop(m0, bx), crop(m1, bx)), (axs[1], crop(n0, bq), crop(n1, bq))):
+        FS.outline(ax, ma, lw=0.5)                                         # the photograph after the jump: white
+        FS.outline(ax, mb, lw=0.8, color=FS.COL["pred"])                  # the one before it: orange
+    bar_below(axs[0], 1 / px, 10, y_frac=0.08)
+    print(f"  jump [{a_}, {b_}]: its masks' centers {d:.2f} mm apart before prepare")
+    return fig
+
+
+@figure
+def blockface_04_volume(tr):
+    """MR252's volume (outputs/MR252_blockface_L2) in three planes through one marker tube, the brain mask's outline (white) and the
+    marker tubes (outputs/MR252_tubes, orange; filled in the volume)."""
+    v, mk, tb, M, Tb, pl = bf_volume_planes(tr)
+    P, O = [], []
+    for name in ("coronal", "sagittal", "axial"):
+        img, m3, t3, p = bf_plane(v, mk, tb, M, Tb, name, pl[name])
+        bx = bbox(m3, int(2 / p)); P.append((crop(img, bx), p)); O.append((crop(m3, bx), crop(t3, bx), name))
+    fig, axs, _ = one_row(P, gutter=2 * LET_MM + 1.0)
+    for i, (ax, (m3, t3, name)) in enumerate(zip(axs, O)):
+        head(ax, "abc"[i], ("Coronal", "Sagittal", "Axial")[i]); FS.dirs(ax, name, pad=1.5)
+        FS.outline(ax, m3, lw=0.5); FS.outline(ax, t3, lw=0.8, color=FS.COL["pred"])
+    bar_below(axs[0], 1 / P[0][1], 10, y_frac=0.08)
+    print(f"  planes through a tube: {pl}")
+    return fig
+
+
+@figure
+def blockface_05_on_b0(tr):
+    """MR252's blockface registered onto its own b0 (the paper's products: mri/nonlinear_r1v3mr/MR252_bf_nonlin_rgb, on the b0's 0.25 mm
+    grid) beside the b0 (mri/r1v3mr/MR252_b0_masked), sagittal 4.5 mm left of the b0 brain's center and coronal through the
+    photographed slab; the b0 brain's outline on both."""
+    import nibabel as nib
+    nl = nib.as_closest_canonical(tr.img(f"paper/brains/sub-{BF}/mri/nonlinear_r1v3mr/{BF}_bf_nonlin_rgb.nii.gz"))
+    b0 = nib.as_closest_canonical(tr.img(f"paper/brains/sub-{BF}/mri/r1v3mr/{BF}_b0_masked.nii.gz"))
+    from scipy import ndimage as ndi
+    B0 = np.asanyarray(b0.dataobj).astype(np.float32); bm = ndi.binary_fill_holes(B0 > 0).astype(np.uint8)   # the brain (dark CSF is 0)
+    N = rgb01(np.asanyarray(nl.dataobj)); photo = N.max(-1) > 0
+    cw = b0.affine[:3, :3] @ np.argwhere(bm > 0).mean(0) + b0.affine[:3, 3]
+    yw = float((nl.affine[:3, :3] @ np.argwhere(photo).mean(0) + nl.affine[:3, 3])[1])
+    out = []
+    for name, wpt in (("sagittal", cw[0] - 4.5), ("coronal", yw)):
+        k = FS.PLANE_AXIS[name]
+        i_b = int(round((wpt - b0.affine[k, 3]) / b0.affine[k, k])); i_n = int(round((wpt - nl.affine[k, 3]) / nl.affine[k, k]))
+        wn = plane_world(nl, name, i_n)
+        b0_on = sample_world(B0, b0.affine, wn, order=1); m_on = sample_world(bm, b0.affine, wn) > 0
+        rgb = np.stack([np.flipud(np.take(N, i_n, axis=k)[..., c].T) for c in range(3)], -1)
+        bx = bbox(m_on, int(2 / 0.25))
+        out += [(crop(window(b0_on, m_on) * m_on, bx), crop(m_on, bx), name), (crop(rgb, bx), crop(m_on, bx), name)]
+    P = [(o[0], 0.25) for o in out]
+    fig, axs, _ = one_row(P, gutter=2 * LET_MM + 1.0)                       # room for the pairs' direction letters
+    heads = ("b0, sagittal", "The blockface registered onto it", "b0, coronal", "Registered onto it")
+    for i, (ax, (img, m, name)) in enumerate(zip(axs, out)):
+        head(ax, "abcd"[i], heads[i]); FS.outline(ax, m, lw=0.5)
+    FS.dirs_row(axs[0], axs[1], "sagittal", pad=1.5); FS.dirs_row(axs[2], axs[3], "coronal", pad=1.5)
+    bar_below(axs[0], 4, 10, y_frac=0.08)
+    return fig
+
+
 @figure
 def blockface_06_completed(tr):
     """MR252's completed volume (outputs/MR252_completed) in a sagittal and a coronal plane (top), and the same planes in the paper's

@@ -86803,7 +86803,10 @@ paper/analysis/labels/tracer_v2_h9/sections_template/MR252/MR252_Injection_site_
 paper/analysis/labels/tracer_v2_h9/sections_template/MR252/MR252_section_index_mri-template.nii.gz	labels/tracer_v2_h9/sections_template/MR252/MR252_section_index_mri-template.nii.gz	derivative	local	input	353443
 paper/analysis/labels/tracer_v2_h9/sections_template/MR252/MR252_sections_points.csv	labels/tracer_v2_h9/sections_template/MR252/MR252_sections_points.csv	derivative	local	input	194024
 paper/analysis/labels/tracer_v2_h9/sections_template/MR256/MR256_Bundles_mri-template_sections_density.nii.gz	labels/tracer_v2_h9/sections_template/MR256/MR256_Bundles_mri-template_sections_density.nii.gz	derivative	local	input	409487
+paper/analysis/labels/tracer_v2_h9/sections_template/MR256/MR256_Bundles_mri-template_sections_footprint.nii.gz	labels/tracer_v2_h9/sections_template/MR256/MR256_Bundles_mri-template_sections_footprint.nii.gz	derivative	local	input	73851
 paper/analysis/labels/tracer_v2_h9/sections_template/MR256/MR256_Terminals_mri-template_sections_density.nii.gz	labels/tracer_v2_h9/sections_template/MR256/MR256_Terminals_mri-template_sections_density.nii.gz	derivative	local	input	399086
+paper/analysis/labels/tracer_v2_h9/sections_template/MR256/MR256_section_index_mri-template.nii.gz	labels/tracer_v2_h9/sections_template/MR256/MR256_section_index_mri-template.nii.gz	derivative	local	input	331392
+paper/analysis/labels/tracer_v2_h9/sections_template/MR256/MR256_sections_points.csv	labels/tracer_v2_h9/sections_template/MR256/MR256_sections_points.csv	derivative	local	input	458851
 paper/analysis/labels/tube_landmarks_h9/h9hole_MF191_native.json	labels/tube_landmarks_h9/h9hole_MF191_native.json	derivative	local	input	36171
 paper/analysis/labels/tube_landmarks_h9/h9hole_MF275_native.json	labels/tube_landmarks_h9/h9hole_MF275_native.json	derivative	local	input	37405
 paper/analysis/labels/tube_landmarks_h9/h9hole_MF278_native.json	labels/tube_landmarks_h9/h9hole_MF278_native.json	derivative	local	input	50987

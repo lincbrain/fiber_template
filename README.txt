@@ -15,6 +15,8 @@ The data folder has brains/ (one folder per brain), template/, models/ and paper
 template each have inputs/ (what an instrument or a person made), outputs/ (the finished files: open
 these) and intermediate/ (everything else; nobody needs to open it). brains.tsv lists the brains.
 
+The tutorials, step by step, with figures, are in the data folder: docs/tutorials/00_start_here.md.
+
 
 WHAT IS HERE
 
