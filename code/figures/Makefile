@@ -177,7 +177,7 @@ s_tracer_fidelity:
 # Fig. 10, the tracer figure: each charted section's labels in 3D (a) and the internal capsule slabs (b), with its rotation video;
 # renders headless in settings/env/viz3d.yml (record fig_tracer_sections3d_v6_h9_c, the cases of settings/figures.yaml tracer_sections3d): skipped with a message when PY_VIZ3D is unset
 # the README's animation, docs/media/tracers_rotation.gif: Fig. 9a's two views (MM1, MM2, MM3 and MF8) turning together, +-45 degrees
-# about the vertical axis (72 frames, 12 fps, 900 px); settings/env/viz3d.yml, about 1.5 min and 1.6 GB of RAM
+# about the vertical axis (72 frames, 12 fps, 960 px, as the template's); settings/env/viz3d.yml, about 1.5 min and 1.6 GB of RAM
 tracers-animation:
 	@if [ -z "$(PY_VIZ3D)" ]; then echo "SKIPPED tracers-animation: set PY_VIZ3D (settings/env/viz3d.yml; install.sh --with-figures-3d)"; \
 	else $(PY_VIZ3D) tracer_sections3d.py --animation ../../docs/media/tracers_rotation.gif; fi
@@ -209,9 +209,9 @@ lgnstn:
 s_bf2mri_steps:
 	$(PY) $@.py --out $(OUT)/figures/$@.pdf
 
-# the README's animation, docs/media/template_coronal.gif: the template's five channels (T2-weighted, tensor, soma and neurite
-# fractions, blockface), coronal planes 0.5 mm apart from front to back (126 frames, 10 fps, 960 px wide); reads
-# $LINC_DATA_TREE/template/outputs, about 4 min and 1.1 GB of RAM on a CPU
+# the README's animation, docs/media/template_coronal.gif: the template's six channels in a 2 x 3 grid (T2-weighted, b0, tensor;
+# soma and neurite fractions, blockface), coronal planes 0.75 mm apart from front to back (84 frames, 10 fps, 960 px wide); reads
+# $LINC_DATA_TREE/template/outputs, about 2 min and 1.1 GB of RAM on a CPU
 .PHONY: template-animation
 template-animation:
 	@if [ -z "$(LINC_DATA_TREE)" ]; then echo "SKIPPED template-animation: set LINC_DATA_TREE (settings/roots.sh)"; \

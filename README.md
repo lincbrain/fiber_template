@@ -1,8 +1,8 @@
 # fiber_template
 
-![The template's five channels (T2-weighted, tensor, soma fraction, neurite fraction, blockface) in coronal planes sweeping front to back](docs/media/template_coronal.gif)
+![The template's six channels (T2-weighted, b0, tensor, soma fraction, neurite fraction, blockface) in coronal planes sweeping front to back](docs/media/template_coronal.gif)
 
-*The template's five channels, T2-weighted, tensor, soma fraction, neurite fraction and blockface, in coronal planes from front to back.*
+*The template's six channels, T2-weighted, b0, tensor, soma fraction, neurite fraction and blockface, in coronal planes from front to back.*
 
 ![MM1, MM2 and MM3's charted tracer labels (left) and MF8's (right) in the template, turning together](docs/media/tracers_rotation.gif)
 

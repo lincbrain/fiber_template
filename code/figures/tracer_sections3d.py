@@ -581,7 +581,7 @@ def video(sd, f, size=(1600, 1072), n=360, layered=False):
                 turn="one full turn about the vertical axis through the view's focal point")
 
 
-def animation(sd, views, f, n=72, fps=12, width=900, swing=45.0, render=(1100, 733), point_gain=1.6, colors=128, extras=None):
+def animation(sd, views, f, n=72, fps=12, width=960, swing=45.0, render=(1100, 733), point_gain=1.6, colors=128, extras=None):
     """(a)'s views side by side, turning together (the README's animation): the still's camera swung +-swing degrees about the vertical
     axis through the focal point (a smooth back-and-forth, n frames at fps), each view's cases layered over the planes as in the still,
     a plane the camera is behind at 0.3 opacity, the brain's outline per frame, no tags; one legend line under the views. Written as a
