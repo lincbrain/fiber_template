@@ -7,8 +7,10 @@ explained there.
 WHAT A PERSON MAKES ONCE PER BRAIN
 
     pixel size and section step     vx, vz in this file; from a ruler and the microtome
-    camera jumps, missing sections  jumps, missing in this file; by eye, from the stacked photographs
+    camera jumps, missing sections  jumps, missing in this file; by eye, from the stacked
+                                    photographs
     corrected masks (optional)      see code/blockface/README.txt
     match table                     see code/histology/README.txt
-    section map                     which section each image in the histology stack is; checked manually
+    section map                     which section each image in the histology stack is; checked
+                                    manually
     labels                          drawn on the sections by an anatomist

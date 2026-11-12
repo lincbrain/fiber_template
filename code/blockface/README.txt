@@ -29,7 +29,8 @@ missing sections are listed manually, from the stacked photographs.
 
 MANUAL CORRECTIONS (optional)
 
-    3D brain mask     after mask: edit curated/<ID>_mask.nii.gz, save as curated/<ID>_mask_edited.nii.gz
+    3D brain mask     after mask: edit curated/<ID>_mask.nii.gz, save as
+                      curated/<ID>_mask_edited.nii.gz
     marker tubes      after volume: save curated/<ID>_holes_edited.nii.gz the same way
     photograph masks  before prepare: linc-reconstruct edit-photo-masks export, edit, then import
 

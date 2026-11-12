@@ -36,10 +36,13 @@ You get
 
     $PY_VIZ3D code/figures/tracer_sections3d.py [--out figures/tracer_sections3d.png] [--video] [--by-depth] [--alic-y 16 18 20]
         [--cases MR243 MF191 MR252]
-The cases drawn: settings/figures.yaml tracer_sections3d.cases (or --cases), by default MM1, MF8 and MM2. MM3 (MR256; the author,
+The cases drawn: settings/figures.yaml tracer_sections3d.cases (or --cases), MM1, MM2 and MM3 since 12 Nov 2026 (record
+fig_tracer_sections3d_v6_h9_a3; until then MM1, MF8 and MM2, record fig_tracer_sections3d_v6_h9). MM3 (MR256; the author,
 12 Nov 2026: Jingjing's three cases are MM1, MM2 and MM3) can be drawn too, in the fourth tracer color (figstyle TRACER); it has no
 annotated injection site, so no marker and no tag, and its key says so. The layers go from the largest case to the smallest
-(LAYER_ORDER).
+(LAYER_ORDER). (a) can show the cases in groups, one view per group at the same camera, crop and scale
+(tracer_sections3d.views, e.g. [[MR243, MR252, MR256], [MF191]], arrange: side or stack; the author's option C, 12 Nov 2026: the
+dense MF8 apart); (b) and the key always hold every case. One group (the default) is the single view above.
 """
 import argparse
 import csv
@@ -58,7 +61,8 @@ sys.path.insert(0, str(HERE)); sys.path.insert(0, str(HERE.parents[1] / "code"))
 import figstyle as FS  # noqa: E402
 from shared import paths, provenance  # noqa: E402
 
-NAME = "fig_tracer_sections3d_v6_h9"
+NAME = "fig_tracer_sections3d_v6_h9"                                 # the record of the three-case figure MM1, MF8, MM2 (the paper's until
+                                                                     #   12 Nov 2026); another case set writes the record its setting names
 P_MRI, P_FIG = paths.products("products_mri"), paths.products("products_figures")
 SEC, V2 = Path(P_MRI["tracer_sections_v2"]), Path(P_MRI["tracer_template_v2"])
 T2_F, MASK_F, FA_F, SARM = (Path(P_FIG[k]) for k in ("template_t2", "template_mask", "template_fa", "sarm_level6"))
@@ -83,6 +87,8 @@ _R = float(np.linalg.norm(np.subtract(VIDEO_POS, VIEW_FOC))); _a, _e = np.radian
 VIEW_POS = tuple(round(float(f_ + _R * d), 3) for f_, d in zip(VIEW_FOC, (np.cos(_e) * np.cos(_a), np.cos(_e) * np.sin(_a), np.sin(_e))))
 PSCALE = 26.0                                                        # mm, half the window's height (parallel projection)
 FILL_A = 0.8
+A_HEAD = "Every charted section's labels in the template, seen from the right and front"   # (a)'s title
+MAX_H_MM = 205.0                                                     # stacked views: the figure at most this tall
 EDGE_UP = 8                                                           # (b) outlines traced on an 8x finer copy of the voxel grid
 LAYER_ORDER = ["MF191", "MR243", "MR256", "MR252"]                  # --layered: bottom to top, the largest case first (bundle voxels
                                                                      #   25936, 8621, 5087, 2145): the smaller cases over the larger
@@ -214,11 +220,12 @@ def id_counts(img):
     return {S: int(id_mask(img, S).sum()) for S in PAL}
 
 
-def layer(imgs, planes_img):
+def layer(imgs, planes_img, order=None):
     """--layered: each case rendered alone with the planes (so the planes hide what lies behind them), the cases then stacked
     MF8, MM1, MM2 from the bottom; returns the image and each upper case's drawn pixels."""
-    out = imgs[LAYERS[0]].copy(); drawn = {}
-    for S in LAYERS[1:]:
+    order = order or LAYERS
+    out = imgs[order[0]].copy(); drawn = {}
+    for S in order[1:]:
         m = np.abs(imgs[S].astype(int) - planes_img.astype(int)).max(-1) > 8
         out[m] = imgs[S][m]; drawn[S] = m
     return out, drawn
@@ -282,16 +289,22 @@ KEY_TEXTS = ["Injection site, white edge (a)", "Outline of the whole brain (a)",
 
 
 def text_mm(plt):
-    """a function (text, size, **font) -> (width, height) mm as figstyle draws it"""
+    """a function (text, size, **font) -> (width, height) mm as figstyle draws it; T.ink(text, size, **font): the ink's top above
+    the text's box bottom (mm)"""
     fig = plt.figure(figsize=(7, 2), dpi=FS.DPI); r = fig.canvas.get_renderer()   # figstyle's DPI: at 100, hinting widens a text
     def T(s, fs=FS.MIN_PT, **kw):
         t = fig.text(0, 0, s, fontsize=fs, **kw); e = t.get_window_extent(r); t.remove()
         return e.width / fig.dpi * 25.4, e.height / fig.dpi * 25.4
+    def ink(s, fs=FS.MIN_PT, **kw):
+        g = plt.figure(figsize=(9, 1), dpi=FS.DPI, facecolor="k"); t = g.text(0.01, 0.1, s, fontsize=fs, color="w", va="bottom", **kw)
+        g.canvas.draw(); a_ = np.asarray(g.canvas.buffer_rgba())[..., 0]; y0 = t.get_window_extent().y0; plt.close(g)
+        return (a_.shape[0] - np.where((a_ > 60).any(1))[0].min() - y0) / FS.DPI * 25.4
+    T.ink = ink
     return T
 
 
 # --------------------------------------------------------------------------- the figure
-def compose(sd, still, sil, cap, rec, args):
+def compose(sd, stills, views, sil, cap, rec, args, arrange="side"):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -300,54 +313,83 @@ def compose(sd, still, sil, cap, rec, args):
     H, W = sil.shape
     rows, cols = np.nonzero(sil); m = int(CROP_PAD * W)
     r0, r1, c0, c1 = max(0, rows.min() - m), min(H, rows.max() + m + 1), max(0, cols.min() - m), min(W, cols.max() + m + 1)
-    crop, silc = still[r0:r1, c0:c1], sil[r0:r1, c0:c1]
+    crops, silc = [st[r0:r1, c0:c1] for st in stills], sil[r0:r1, c0:c1]
     k = H / (2.0 * PSCALE)                                                          # px per mm in the image plane
     FW, GUT, MG = 180.0, FS.GUTTER_MM, FS.MARGIN_MM
-    T = text_mm(plt)
+    T = text_mm(plt); pt = 25.4 / 72
     pad = 2.0 / 72 * 25.4                                                           # figstyle.dirs's pad
-    tag_w = max([T(TAG[S])[0] for S in CASES if LAB_SIDE.get(S) == "right"] or [0.0]); tag_h = T("SMA")[1]
+    nv = len(views); ratio = crops[0].shape[0] / crops[0].shape[1]
+    tag_ws = [max([T(TAG[S])[0] for S in g if LAB_SIDE.get(S) == "right"] or [0.0]) for g in views]; tag_h = T("SMA")[1]
     let_h = T("ab", FS.LETTER_PT, fontweight="bold")[1]
+    subs = [", ".join(FS.label(S) for S in g) for g in views] if nv > 1 else None   # the views' sub-labels
+    sub_h = T("MM1")[1] + 2.0 * pt if subs else 0.0                                   # their line, 4 pt above each view
     LM = MG + T("P")[0] + pad                                                       # (a): the P left of it, the tags right of it
-    wa = (FW - LM - MG - tag_w) / (1 + TAG_X); ha = wa * crop.shape[0] / crop.shape[1]
-    TOPA = MG + max(let_h + 4.0 / 72 * 25.4, TAG_Y * ha + tag_h)                       # the panel letter or the top tag, whichever is higher
     keys_k = [f"{FS.label(S)}, {AREA.get(S) or KEY_NOTE[S]}" + (" (mirrored from the left)" if S in MIRROR else "") for S in CASES] + KEY_TEXTS
     KW = max(T(t)[0] for t in keys_k) / (1 - KEY_X)                                  # the key: its texts start at KEY_X of its width
     nb = len(cap); gapb = GUT; LB = MG + T("L")[0] + pad
     wb = (FW - LB - (nb - 1) * GUT - (T("R")[0] + pad) - GUT - KW - MG) / nb       # (b)'s tiles fill the row beside the key
     hb = wb * (ALIC_Z[1] - ALIC_Z[0]) / (ALIC_X[1] - ALIC_X[0])
-    TOPB = TOPA + ha + GUT + 12.0 / 72 * 25.4 + max(let_h, (2.0 + 1.2) / 72 * 25.4 + T("2 mm")[1])   # (b)'s title line 12 pt above its
-                                                                                    # tiles, or its bar's length above it (scalebar_title)
+    head_b = 12.0 / 72 * 25.4 + max(let_h, (2.0 + 1.2) / 72 * 25.4 + T("2 mm")[1])   # (b)'s title line 12 pt above its tiles, or its bar
+    title_h = let_h if not subs else max(T.ink("a", FS.LETTER_PT, fontweight="bold"), T.ink(A_HEAD))   # several views: the title line's ink
+    top_a = lambda ha_: max(title_h + 4.0 / 72 * 25.4 + sub_h, TAG_Y * ha_ + tag_h)  # noqa: E731  a view's band: letter (+ sub-label) or top tag
+    if arrange == "side" or nv == 1:                                                # the views in one row, each with its tags at its right
+        wa = (FW - LM - MG - sum(tag_ws) - (nv - 1) * GUT) / (nv * (1 + TAG_X)); ha = wa * ratio
+        TOPA = MG + top_a(ha)
+        boxes, x = [], LM
+        for tw in tag_ws:
+            boxes.append((x, TOPA)); x += wa * (1 + TAG_X) + tw + GUT
+        bottom_a = TOPA + ha
+    else:                                                                           # stacked, the same scale, as wide as fits MAX_H_MM
+        wa = (FW - LM - MG - max(tag_ws)) / (1 + TAG_X); ha = wa * ratio
+        fixed = MG + nv * top_a(ha) + (nv - 1) * GUT + GUT + head_b + hb + MG
+        if fixed + nv * ha > MAX_H_MM:
+            ha = (MAX_H_MM - fixed) / nv; wa = ha / ratio
+        boxes, y = [], MG
+        for _ in views:
+            y += top_a(ha); boxes.append((LM, y)); y += ha + GUT
+        TOPA = boxes[0][1]; bottom_a = boxes[-1][1] + ha
+    TOPB = bottom_a + GUT + 12.0 / 72 * 25.4 + max(let_h, (2.0 + 1.2) / 72 * 25.4 + T("2 mm")[1])   # = + head_b, summed in this order
     FH = TOPB + hb + MG
     fig = plt.figure(figsize=(FW / 25.4, FH / 25.4))
-    ax = FS.axes_mm(fig, LM, TOPA, wa, ha)
-    ax.imshow(crop, interpolation="lanczos"); ax.set_axis_off()
-    ax.contour(silc.astype(float), [0.5], colors=[FS.GRAY], linewidths=0.5)
-    for S in CASES:                                                                 # a thin white edge around each visible injection site
-        M = sd["inj_px"][S][r0:r1, c0:c1]
-        if M.any():
-            rr = int(round(POINT * INJ)); yy, xx = np.mgrid[-rr:rr + 1, -rr:rr + 1]
-            M = ndi.binary_fill_holes(ndi.binary_closing(np.pad(M, rr), (xx ** 2 + yy ** 2) <= rr * rr))[rr:-rr, rr:-rr]   # one edge around the site's points
-            ax.contour(M.astype(float), [0.5], colors=[FS.FG], linewidths=0.4)
-    ax.set_xlim(-0.5, crop.shape[1] - 0.5); ax.set_ylim(crop.shape[0] - 0.5, -0.5)
-    FS.letter(ax, "a", dx=(MG - LM) * 72 / 25.4, dy=4.0); FS.header(ax, "Every charted section's labels in the template, seen from the right and front", dx=(MG - LM) * 72 / 25.4 + 11, dy=4.0)
-    FS.dirs(ax, "sagittal", y=0.25)                                                 # P and A only (no dorsal-ventral letters), low: the area tags
-                                                                                    # sit at the sites' heights on the right
-    # injection sites: the label outside the image, a thin line to the site's center (its points' mean, projected)
     rec["injection_label_anchor_px"] = {}
-    for S in CASES:
-        xyz = sd["pts"][S]["Injection_site"]
-        if not len(xyz):
-            continue
-        uv, _ = project(xyz.mean(0)[None], (W, H)); u, v = uv[0][0] - c0, uv[0][1] - r0
-        rec["injection_label_anchor_px"][S] = [round(float(u), 1), round(float(v), 1)]
-        fu, fv = u / crop.shape[1], 1 - v / crop.shape[0]
-        if LAB_SIDE[S] == "right":
-            yl = min(max(fv, 0.05), 0.95); xl, xt, ha_, va_ = (1 + TAG_X / 2, yl), (1 + TAG_X, yl), "left", "center"
-        else:
-            xl0 = min(max(fu, 0.05), 0.95); xl, xt, ha_, va_ = (xl0, 1 + TAG_Y * 2 / 3), (xl0, 1 + TAG_Y), "center", "bottom"
-        ax.annotate("", xy=(u, v), xycoords="data", xytext=xl, textcoords="axes fraction", annotation_clip=False,
-                    arrowprops=dict(arrowstyle="-", lw=0.5, color=FS.FG, shrinkA=0, shrinkB=3))   # the leader line, no text
-        ax.text(*xt, TAG[S], transform=ax.transAxes, fontsize=FS.MIN_PT, color=FS.FG, ha=ha_, va=va_, clip_on=False)
+    axa = []
+    for vi, (g, crop, (xa, ya)) in enumerate(zip(views, crops, boxes)):
+        ax = FS.axes_mm(fig, xa, ya, wa, ha); axa.append(ax)
+        ax.imshow(crop, interpolation="lanczos"); ax.set_axis_off()
+        ax.contour(silc.astype(float), [0.5], colors=[FS.GRAY], linewidths=0.5)
+        for S in g:                                                                 # a thin white edge around each visible injection site
+            M = sd["inj_px"][S][r0:r1, c0:c1]
+            if M.any():
+                rr = int(round(POINT * INJ)); yy, xx = np.mgrid[-rr:rr + 1, -rr:rr + 1]
+                M = ndi.binary_fill_holes(ndi.binary_closing(np.pad(M, rr), (xx ** 2 + yy ** 2) <= rr * rr))[rr:-rr, rr:-rr]   # one edge around the site's points
+                ax.contour(M.astype(float), [0.5], colors=[FS.FG], linewidths=0.4)
+        ax.set_xlim(-0.5, crop.shape[1] - 0.5); ax.set_ylim(crop.shape[0] - 0.5, -0.5)
+        if vi == 0:
+            dy_t = 4.0 + sub_h / pt
+            FS.letter(ax, "a", dx=(MG - LM) * 72 / 25.4, dy=dy_t)
+            FS.header(ax, A_HEAD, dx=(MG - LM) * 72 / 25.4 + 11, dy=dy_t)
+        if subs:
+            FS.header(ax, subs[vi], dx=0, dy=4.0, color=FS.GRAY)
+        if nv == 1 or arrange != "side":
+            FS.dirs(ax, "sagittal", y=0.25)                                         # P and A only (no dorsal-ventral letters), low: the area tags
+        # injection sites: the label outside the image, a thin line to the site's center (its points' mean, projected)
+        for S in g:
+            xyz = sd["pts"][S]["Injection_site"]
+            if not len(xyz):
+                continue
+            uv, _ = project(xyz.mean(0)[None], (W, H)); u, v = uv[0][0] - c0, uv[0][1] - r0
+            rec["injection_label_anchor_px"][S] = [round(float(u), 1), round(float(v), 1)]
+            fu, fv = u / crop.shape[1], 1 - v / crop.shape[0]
+            if LAB_SIDE[S] == "right":
+                yl = min(max(fv, 0.05), 0.95); xl, xt, ha_, va_ = (1 + TAG_X / 2, yl), (1 + TAG_X, yl), "left", "center"
+            else:
+                xl0 = min(max(fu, 0.05), 0.95); xl, xt, ha_, va_ = (xl0, 1 + TAG_Y * 2 / 3), (xl0, 1 + TAG_Y), "center", "bottom"
+            ax.annotate("", xy=(u, v), xycoords="data", xytext=xl, textcoords="axes fraction", annotation_clip=False,
+                        arrowprops=dict(arrowstyle="-", lw=0.5, color=FS.FG, shrinkA=0, shrinkB=3))   # the leader line, no text
+            ax.text(*xt, TAG[S], transform=ax.transAxes, fontsize=FS.MIN_PT, color=FS.FG, ha=ha_, va=va_, clip_on=False)
+    if nv > 1 and arrange == "side":
+        FS.dirs_row(axa[0], axa[-1], "sagittal", y=0.25)                            # once for the row: P left, A right
+    crop = crops[0]
     # panel b
     axs = []
     for q, c in enumerate(cap):
@@ -375,14 +417,15 @@ def compose(sd, still, sil, cap, rec, args):
     kx = FW - MG - KW
     axk = FS.axes_mm(fig, kx, TOPB, KW, hb); axk.set_xlim(0, 1); axk.set_ylim(0, 1); axk.set_axis_off()
     rows_k = list(zip(CASES, keys_k))
-    yk = 0.92
+    yk = 0.92; dk = min(0.13, (0.92 - 0.1) / (len(rows_k) + len(KEY_TEXTS) - 1))   # the rows' step: 0.13 while they fit
     for S, t in rows_k:
-        axk.scatter([0.03], [yk], s=14, color=COLOR[S], clip_on=False); axk.text(KEY_X, yk, t, va="center", fontsize=FS.MIN_PT); yk -= 0.13
-    axk.scatter([0.03], [yk], s=30, facecolor="none", edgecolor=FS.FG, lw=0.6); axk.text(KEY_X, yk, KEY_TEXTS[0], va="center", fontsize=FS.MIN_PT); yk -= 0.13
-    axk.plot([0.0, 0.06], [yk, yk], color=FS.GRAY, lw=0.6); axk.text(KEY_X, yk, KEY_TEXTS[1], va="center", fontsize=FS.MIN_PT); yk -= 0.13
-    axk.plot([0.0, 0.06], [yk, yk], color=FS.FG, lw=0.7, ls=(0, (1, 1.2))); axk.text(KEY_X, yk, KEY_TEXTS[2], va="center", fontsize=FS.MIN_PT); yk -= 0.13
+        axk.scatter([0.03], [yk], s=14, color=COLOR[S], clip_on=False); axk.text(KEY_X, yk, t, va="center", fontsize=FS.MIN_PT); yk -= dk
+    axk.scatter([0.03], [yk], s=30, facecolor="none", edgecolor=FS.FG, lw=0.6); axk.text(KEY_X, yk, KEY_TEXTS[0], va="center", fontsize=FS.MIN_PT); yk -= dk
+    axk.plot([0.0, 0.06], [yk, yk], color=FS.GRAY, lw=0.6); axk.text(KEY_X, yk, KEY_TEXTS[1], va="center", fontsize=FS.MIN_PT); yk -= dk
+    axk.plot([0.0, 0.06], [yk, yk], color=FS.FG, lw=0.7, ls=(0, (1, 1.2))); axk.text(KEY_X, yk, KEY_TEXTS[2], va="center", fontsize=FS.MIN_PT); yk -= dk
     axk.text(KEY_X, yk, KEY_TEXTS[3], va="center", fontsize=FS.MIN_PT, color=FS.GRAY)
     rec["layout_mm"] = dict(width=FW, height=round(FH, 1), a=[round(LM, 2), round(TOPA, 2), round(wa, 2), round(ha, 2)], b_panel=[round(wb, 2), round(hb, 2)],
+                            **({"a_views": [[round(x_, 2), round(y_, 2)] for x_, y_ in boxes], "arrange": arrange} if nv > 1 else {}),
                             a_print_mm_per_tissue_mm=round(wa / crop.shape[1] * k, 4), b_print_mm_per_tissue_mm=round(wb / (ALIC_X[1] - ALIC_X[0]), 4),
                             crop_px=dict(rows=[int(r0), int(r1)], cols=[int(c0), int(c1)]))
     return fig
@@ -397,12 +440,27 @@ def main(argv=None):
     ap.add_argument("--no-numbers", action="store_true", help="draft: do not write paper/numbers/<name>.json")
     ap.add_argument("--alic-y", type=float, nargs=3, default=ALIC_Y, help="(b)'s three slabs, mm; (a)'s coronal plane goes through the middle one")
     ap.add_argument("--cases", nargs="+", help="the cases drawn (default: settings/figures.yaml tracer_sections3d.cases, else MM1, MF8, MM2)")
+    ap.add_argument("--views", nargs="+", help="(a)'s case groups, one view each, as comma lists (default: settings tracer_sections3d.views, "
+                    "else one view of every case)")
+    ap.add_argument("--arrange", choices=["side", "stack"], help="several views: side by side (default) or stacked")
+    ap.add_argument("--record", help="the numbers record's name (default: settings/figures.yaml tracer_sections3d.record with its cases, "
+                    "else fig_tracer_sections3d_v6_h9 for MM1, MF8, MM2 and <that>_<case labels> for another set)")
     a = ap.parse_args(argv); t0 = time.time(); a.layered = not a.by_depth
     import yaml
     cfg = (yaml.safe_load((HERE.parents[1] / "settings" / "figures.yaml").read_text()) or {}).get("tracer_sections3d") or {}
     CASES = list(a.cases or cfg.get("cases") or CASES)
     assert set(CASES) <= set(FS.TRACER) and all(S in AREA or S in KEY_NOTE for S in CASES), f"cases {CASES}: no tracer color or key"
     COLOR = {S: FS.TRACER[S] for S in CASES}; LAYERS = [S for S in LAYER_ORDER if S in CASES]
+    if a.record:
+        rec_name = a.record
+    elif not a.cases and cfg.get("record"):
+        rec_name = cfg["record"]
+    else:                                                                           # the old three: the old name; another set: its own
+        rec_name = NAME if sorted(CASES) == sorted(["MR243", "MF191", "MR252"]) else NAME + "_" + "_".join(FS.label(S).lower() for S in CASES)
+    views = [v.split(",") for v in a.views] if a.views else ([list(v) for v in cfg.get("views")] if (cfg.get("views") and not a.cases) else [list(CASES)])
+    arrange = a.arrange or (cfg.get("arrange") if not a.cases else None) or "side"
+    assert sorted(S for v in views for S in v) == sorted(CASES), f"views {views}: each case in one view, every case of {CASES}"
+    assert len(views) == 1 or a.layered, "several views: layered drawing only"
     ALIC_Y, Y_COR = list(a.alic_y), a.alic_y[1]
     sd = scene_data(); A, brain = sd["A"], sd["brain"]
     bx = brain.any((1, 2)).nonzero()[0]; by = brain.any((0, 2)).nonzero()[0]; bz = brain.any((0, 1)).nonzero()[0]
@@ -416,23 +474,30 @@ def main(argv=None):
     inj1 = {S: id_mask(shot(sd, "inj", only=[S]), S) for S in CASES}
     hid = {}
     if a.layered:
-        still, drawn = layer({S: shot(sd, "color", only=[S]) for S in CASES}, shot(sd, "color", only=[]))
-        cover = {}
-        for q, S in enumerate(LAYERS):
-            above = np.zeros(sil.shape, bool)
-            for T in LAYERS[q + 1:]:
-                above |= drawn[T]
-            cover[S] = above
-        sd["inj_px"] = {S: inj1[S] & ~cover[S] for S in CASES}
-        vis = {S: int((id_mask(alone[S], S) & ~cover[S]).sum()) for S in CASES}
+        planes_img = shot(sd, "color", only=[]); stills, sd["inj_px"], vis = [], {}, {}
+        for g in views:                                                             # each view: its cases stacked over the planes
+            order = [S for S in LAYER_ORDER if S in g]
+            still_g, drawn = layer({S: shot(sd, "color", only=[S]) for S in g}, planes_img, order)
+            cover = {}
+            for q, S in enumerate(order):
+                above = np.zeros(sil.shape, bool)
+                for T in order[q + 1:]:
+                    above |= drawn[T]
+                cover[S] = above
+            sd["inj_px"].update({S: inj1[S] & ~cover[S] for S in g})
+            vis.update({S: int((id_mask(alone[S], S) & ~cover[S]).sum()) for S in g})
+            stills.append(still_g)
+        still = stills[0]
     else:
-        still = shot(sd, "color"); full = shot(sd, "id")
+        still = shot(sd, "color"); full = shot(sd, "id"); stills = [still]
         sd["inj_px"] = {S: id_mask(shot(sd, "inj"), S) for S in CASES}
         vis = id_counts(full)
     print(f"rendered ({time.time() - t0:.0f} s)", flush=True)
     rec = dict(protocol=__doc__.split("\n\n")[0], cases=sd["rec"], mirrored=sorted(MIRROR), mirror="x -> -x (grid centered on x = 0)",
                projection="parallel", view=dict(position_mm=VIEW_POS, focal_point_mm=VIEW_FOC, up=VIEW_UP, half_height_mm=PSCALE),
-               drawing=("layered: each case hidden only by the planes, the cases stacked MF8 < MM1 < MM2" if a.layered else "by depth: nearer points hide farther ones"),
+               drawing=(("layered: each case hidden only by the planes, the cases stacked " + " < ".join(FS.label(S) for S in LAYERS) if len(views) == 1 else
+                         f"layered, {len(views)} views ({arrange}): " + "; ".join(" < ".join(FS.label(S) for S in LAYER_ORDER if S in g) for g in views))
+                        if a.layered else "by depth: nearer points hide farther ones"),
                planes=dict(midline_x_mm=X_SAG, coronal_y_mm=Y_COR, coronal_half="right (x >= 0)", channel="template T2, brain cells only",
                            window=f"linear, brain percentiles {LO_PCT:g}-{HI_PCT:g} ({sd['window'][0]:.0f}-{sd['window'][1]:.0f}), times {PLANE_DIM}"),
                point_px_at_window=POINT, injection_point_factor=INJ, window_px=list(WIN))
@@ -459,7 +524,11 @@ def main(argv=None):
     out = Path(a.out); stem = out.with_suffix(""); out.parent.mkdir(parents=True, exist_ok=True)
     from PIL import Image
     Image.fromarray(still).save(f"{stem}_scene.png")
-    fig = compose(sd, still, sil, cap, rec, a)
+    for vi, st in enumerate(stills[1:], 2):
+        Image.fromarray(st).save(f"{stem}_scene_{vi}.png")
+    if len(views) > 1:
+        rec["views"] = [[FS.label(S) for S in g] for g in views]; rec["arrange"] = arrange
+    fig = compose(sd, stills, views, sil, cap, rec, a, arrange)
     ins = [str(x) for x in sd["inputs"] + cins]
     FS.save(fig, str(out), ins, cmd=" ".join(sys.argv))
     fig.savefig(f"{stem}.pdf", dpi=FS.DPI, facecolor=fig.get_facecolor())          # the same figure as a PDF (the still embedded at 600 ppi)
@@ -467,7 +536,7 @@ def main(argv=None):
     if a.video:
         rec["video"] = video(sd, Path(f"{stem}_rotation.mp4"), layered=a.layered)
     if not a.no_numbers:
-        print(provenance.write_numbers(NAME, rec, inputs=ins, md5=False, cmd=" ".join(sys.argv)))
+        print(provenance.write_numbers(rec_name, rec, inputs=ins, md5=False, cmd=" ".join(sys.argv)))
     print(json.dumps(rec["cases"], indent=1))
 
 

@@ -1,0 +1,525 @@
+{
+ "data": {
+  "protocol": "Fig. 10, the tracer figure: three injections in the template, each charted section's labels where it lands (a) and the bundles at\nthe right internal capsule (b), with a rotation video of (a) for the supplement.",
+  "cases": {
+   "MR243": {
+    "Bundles": {
+     "points": 8621,
+     "outside_brain_mask": 0,
+     "share_outside_brain_mask": 0.0,
+     "share_left_of_midline_as_drawn": 0.0131,
+     "sections": 34,
+     "points_in_csv": 8712
+    },
+    "Injection_site": {
+     "points": 152,
+     "outside_brain_mask": 0,
+     "share_outside_brain_mask": 0.0,
+     "share_left_of_midline_as_drawn": 0.0,
+     "sections": 1,
+     "points_in_csv": 152
+    },
+    "sections_with_bundles_or_injection": 34
+   },
+   "MR252": {
+    "Bundles": {
+     "points": 2145,
+     "outside_brain_mask": 0,
+     "share_outside_brain_mask": 0.0,
+     "share_left_of_midline_as_drawn": 0.0,
+     "sections": 26,
+     "points_in_csv": 4225
+    },
+    "Injection_site": {
+     "points": 51,
+     "outside_brain_mask": 0,
+     "share_outside_brain_mask": 0.0,
+     "share_left_of_midline_as_drawn": 0.0,
+     "sections": 2,
+     "points_in_csv": 51
+    },
+    "sections_with_bundles_or_injection": 27
+   },
+   "MR256": {
+    "Bundles": {
+     "points": 5087,
+     "outside_brain_mask": 1,
+     "share_outside_brain_mask": 0.0002,
+     "share_left_of_midline_as_drawn": 0.0499,
+     "sections": 31,
+     "points_in_csv": 5105
+    },
+    "Injection_site": {
+     "points": 0,
+     "outside_brain_mask": 0,
+     "share_outside_brain_mask": null,
+     "share_left_of_midline_as_drawn": null,
+     "sections": 0,
+     "points_in_csv": 0
+    },
+    "sections_with_bundles_or_injection": 31
+   },
+   "MF191": {
+    "Bundles": {
+     "points": 25936,
+     "outside_brain_mask": 67,
+     "share_outside_brain_mask": 0.00258,
+     "share_left_of_midline_as_drawn": 0.1357,
+     "sections": 28,
+     "points_in_csv": 26522
+    },
+    "Injection_site": {
+     "points": 634,
+     "outside_brain_mask": 0,
+     "share_outside_brain_mask": 0.0,
+     "share_left_of_midline_as_drawn": 0.0,
+     "sections": 3,
+     "points_in_csv": 634
+    },
+    "sections_with_bundles_or_injection": 28
+   }
+  },
+  "mirrored": [
+   "MF191"
+  ],
+  "mirror": "x -> -x (grid centered on x = 0)",
+  "projection": "parallel",
+  "view": {
+   "position_mm": [
+    143.796,
+    46.922,
+    52.225
+   ],
+   "focal_point_mm": [
+    6.0,
+    10.0,
+    14.0
+   ],
+   "up": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "half_height_mm": 26.0
+  },
+  "drawing": "layered, 2 views (side): MM1 < MM3 < MM2; MF8",
+  "planes": {
+   "midline_x_mm": 0.0,
+   "coronal_y_mm": 18.0,
+   "coronal_half": "right (x >= 0)",
+   "channel": "template T2, brain cells only",
+   "window": "linear, brain percentiles 5-99 (465-1517), times 0.55"
+  },
+  "point_px_at_window": 7.0,
+  "injection_point_factor": 1.7,
+  "window_px": [
+   4200,
+   2800
+  ],
+  "still_visibility_pixels": {
+   "MR243": {
+    "pixels_alone_no_planes": 228583,
+    "pixels_alone_with_planes": 209983,
+    "pixels_as_drawn": 137171,
+    "share_hidden_by_planes": 0.0814,
+    "share_hidden_by_other_cases": 0.3468,
+    "injection_pixels_alone": 6309,
+    "injection_pixels_as_drawn": 6218,
+    "points_projected_outside_brain_outline": 0
+   },
+   "MR252": {
+    "pixels_alone_no_planes": 64247,
+    "pixels_alone_with_planes": 34684,
+    "pixels_as_drawn": 34684,
+    "share_hidden_by_planes": 0.4601,
+    "share_hidden_by_other_cases": 0.0,
+    "injection_pixels_alone": 3931,
+    "injection_pixels_as_drawn": 3931,
+    "points_projected_outside_brain_outline": 0
+   },
+   "MR256": {
+    "pixels_alone_no_planes": 127391,
+    "pixels_alone_with_planes": 112707,
+    "pixels_as_drawn": 111618,
+    "share_hidden_by_planes": 0.1153,
+    "share_hidden_by_other_cases": 0.0097,
+    "injection_pixels_alone": 0,
+    "injection_pixels_as_drawn": 0,
+    "points_projected_outside_brain_outline": 0
+   },
+   "MF191": {
+    "pixels_alone_no_planes": 447303,
+    "pixels_alone_with_planes": 380327,
+    "pixels_as_drawn": 380327,
+    "share_hidden_by_planes": 0.1497,
+    "share_hidden_by_other_cases": 0.0,
+    "injection_pixels_alone": 19970,
+    "injection_pixels_as_drawn": 19970,
+    "points_projected_outside_brain_outline": 0
+   }
+  },
+  "capsule": {
+   "16.0": {
+    "cases": {
+     "MR243": {
+      "charted_voxels": 44,
+      "charted_voxels_in_capsule": 0,
+      "charted_voxels_within_0p5mm_of_capsule": 0,
+      "charted_voxels_whole_slab": 163,
+      "charted_voxels_whole_slab_in_capsule": 0,
+      "sections": [
+       26,
+       29,
+       30,
+       31,
+       32
+      ],
+      "pixels_drawn": 31,
+      "check_interpolated_pixels": 8,
+      "check_interpolated_pixels_outside_capsule": 8,
+      "check_of_those_covered_by_charted": 8,
+      "check_charted_pixels_outside_capsule": 31
+     },
+     "MR252": {
+      "charted_voxels": 226,
+      "charted_voxels_in_capsule": 200,
+      "charted_voxels_within_0p5mm_of_capsule": 223,
+      "charted_voxels_whole_slab": 263,
+      "charted_voxels_whole_slab_in_capsule": 200,
+      "sections": [
+       26,
+       28,
+       29,
+       30,
+       31,
+       32
+      ],
+      "pixels_drawn": 142,
+      "check_interpolated_pixels": 102,
+      "check_interpolated_pixels_outside_capsule": 15,
+      "check_of_those_covered_by_charted": 12,
+      "check_charted_pixels_outside_capsule": 21
+     },
+     "MR256": {
+      "charted_voxels": 65,
+      "charted_voxels_in_capsule": 0,
+      "charted_voxels_within_0p5mm_of_capsule": 0,
+      "charted_voxels_whole_slab": 127,
+      "charted_voxels_whole_slab_in_capsule": 0,
+      "sections": [
+       28,
+       30,
+       31
+      ],
+      "pixels_drawn": 35,
+      "check_interpolated_pixels": 18,
+      "check_interpolated_pixels_outside_capsule": 18,
+      "check_of_those_covered_by_charted": 18,
+      "check_charted_pixels_outside_capsule": 35
+     },
+     "MF191": {
+      "charted_voxels": 148,
+      "charted_voxels_in_capsule": 0,
+      "charted_voxels_within_0p5mm_of_capsule": 0,
+      "charted_voxels_whole_slab": 439,
+      "charted_voxels_whole_slab_in_capsule": 0,
+      "sections": [
+       18,
+       20,
+       22,
+       23,
+       25
+      ],
+      "pixels_drawn": 75,
+      "check_interpolated_pixels": 12,
+      "check_interpolated_pixels_outside_capsule": 12,
+      "check_of_those_covered_by_charted": 12,
+      "check_charted_pixels_outside_capsule": 75
+     }
+    },
+    "capsule_voxels_three_planes": 882,
+    "capsule_pixels_middle_plane": 291
+   },
+   "18.0": {
+    "cases": {
+     "MR243": {
+      "charted_voxels": 85,
+      "charted_voxels_in_capsule": 76,
+      "charted_voxels_within_0p5mm_of_capsule": 84,
+      "charted_voxels_whole_slab": 144,
+      "charted_voxels_whole_slab_in_capsule": 76,
+      "sections": [
+       27,
+       28,
+       29,
+       30
+      ],
+      "pixels_drawn": 55,
+      "check_interpolated_pixels": 30,
+      "check_interpolated_pixels_outside_capsule": 0,
+      "check_of_those_covered_by_charted": 0,
+      "check_charted_pixels_outside_capsule": 6
+     },
+     "MR252": {
+      "charted_voxels": 58,
+      "charted_voxels_in_capsule": 27,
+      "charted_voxels_within_0p5mm_of_capsule": 46,
+      "charted_voxels_whole_slab": 58,
+      "charted_voxels_whole_slab_in_capsule": 27,
+      "sections": [
+       24
+      ],
+      "pixels_drawn": 40,
+      "check_interpolated_pixels": 8,
+      "check_interpolated_pixels_outside_capsule": 7,
+      "check_of_those_covered_by_charted": 7,
+      "check_charted_pixels_outside_capsule": 21
+     },
+     "MR256": {
+      "charted_voxels": 31,
+      "charted_voxels_in_capsule": 29,
+      "charted_voxels_within_0p5mm_of_capsule": 31,
+      "charted_voxels_whole_slab": 103,
+      "charted_voxels_whole_slab_in_capsule": 29,
+      "sections": [
+       26,
+       27,
+       28,
+       29
+      ],
+      "pixels_drawn": 24,
+      "check_interpolated_pixels": 18,
+      "check_interpolated_pixels_outside_capsule": 0,
+      "check_of_those_covered_by_charted": 0,
+      "check_charted_pixels_outside_capsule": 2
+     },
+     "MF191": {
+      "charted_voxels": 224,
+      "charted_voxels_in_capsule": 162,
+      "charted_voxels_within_0p5mm_of_capsule": 199,
+      "charted_voxels_whole_slab": 410,
+      "charted_voxels_whole_slab_in_capsule": 162,
+      "sections": [
+       17,
+       18,
+       19,
+       20,
+       22,
+       23
+      ],
+      "pixels_drawn": 93,
+      "check_interpolated_pixels": 36,
+      "check_interpolated_pixels_outside_capsule": 6,
+      "check_of_those_covered_by_charted": 6,
+      "check_charted_pixels_outside_capsule": 28
+     }
+    },
+    "capsule_voxels_three_planes": 979,
+    "capsule_pixels_middle_plane": 329
+   },
+   "20.0": {
+    "cases": {
+     "MR243": {
+      "charted_voxels": 80,
+      "charted_voxels_in_capsule": 24,
+      "charted_voxels_within_0p5mm_of_capsule": 52,
+      "charted_voxels_whole_slab": 220,
+      "charted_voxels_whole_slab_in_capsule": 24,
+      "sections": [
+       22,
+       25,
+       26,
+       27,
+       28,
+       29
+      ],
+      "pixels_drawn": 54,
+      "check_interpolated_pixels": 21,
+      "check_interpolated_pixels_outside_capsule": 17,
+      "check_of_those_covered_by_charted": 17,
+      "check_charted_pixels_outside_capsule": 39
+     },
+     "MR252": {
+      "charted_voxels": 59,
+      "charted_voxels_in_capsule": 0,
+      "charted_voxels_within_0p5mm_of_capsule": 7,
+      "charted_voxels_whole_slab": 66,
+      "charted_voxels_whole_slab_in_capsule": 0,
+      "sections": [
+       22,
+       23,
+       25
+      ],
+      "pixels_drawn": 36,
+      "check_interpolated_pixels": 31,
+      "check_interpolated_pixels_outside_capsule": 31,
+      "check_of_those_covered_by_charted": 27,
+      "check_charted_pixels_outside_capsule": 36
+     },
+     "MR256": {
+      "charted_voxels": 35,
+      "charted_voxels_in_capsule": 6,
+      "charted_voxels_within_0p5mm_of_capsule": 22,
+      "charted_voxels_whole_slab": 197,
+      "charted_voxels_whole_slab_in_capsule": 6,
+      "sections": [
+       26,
+       27
+      ],
+      "pixels_drawn": 33,
+      "check_interpolated_pixels": 20,
+      "check_interpolated_pixels_outside_capsule": 17,
+      "check_of_those_covered_by_charted": 17,
+      "check_charted_pixels_outside_capsule": 27
+     },
+     "MF191": {
+      "charted_voxels": 194,
+      "charted_voxels_in_capsule": 68,
+      "charted_voxels_within_0p5mm_of_capsule": 124,
+      "charted_voxels_whole_slab": 447,
+      "charted_voxels_whole_slab_in_capsule": 68,
+      "sections": [
+       16,
+       17,
+       18,
+       19,
+       20
+      ],
+      "pixels_drawn": 95,
+      "check_interpolated_pixels": 32,
+      "check_interpolated_pixels_outside_capsule": 15,
+      "check_of_those_covered_by_charted": 15,
+      "check_charted_pixels_outside_capsule": 56
+     }
+    },
+    "capsule_voxels_three_planes": 604,
+    "capsule_pixels_middle_plane": 202
+   }
+  },
+  "alic_y_mm": [
+   16.0,
+   18.0,
+   20.0
+  ],
+  "alic_slab_mm": 0.5,
+  "capsule_totals": {
+   "MR243": {
+    "charted_voxels": 209,
+    "charted_voxels_in_capsule": 100,
+    "charted_voxels_within_0p5mm_of_capsule": 136,
+    "check_interpolated_pixels_outside_capsule": 25,
+    "check_of_those_covered_by_charted": 25,
+    "check_charted_pixels_outside_capsule": 76
+   },
+   "MR252": {
+    "charted_voxels": 343,
+    "charted_voxels_in_capsule": 227,
+    "charted_voxels_within_0p5mm_of_capsule": 276,
+    "check_interpolated_pixels_outside_capsule": 53,
+    "check_of_those_covered_by_charted": 46,
+    "check_charted_pixels_outside_capsule": 78
+   },
+   "MR256": {
+    "charted_voxels": 131,
+    "charted_voxels_in_capsule": 35,
+    "charted_voxels_within_0p5mm_of_capsule": 53,
+    "check_interpolated_pixels_outside_capsule": 35,
+    "check_of_those_covered_by_charted": 35,
+    "check_charted_pixels_outside_capsule": 64
+   },
+   "MF191": {
+    "charted_voxels": 566,
+    "charted_voxels_in_capsule": 230,
+    "charted_voxels_within_0p5mm_of_capsule": 323,
+    "check_interpolated_pixels_outside_capsule": 33,
+    "check_of_those_covered_by_charted": 33,
+    "check_charted_pixels_outside_capsule": 159
+   }
+  },
+  "capsule_box_mm": {
+   "x": [
+    1.5,
+    12.5
+   ],
+   "z": [
+    13.5,
+    24.5
+   ],
+   "slab_mm": 0.5
+  },
+  "capsule_rule": "charted bundle footprints (carried fraction >= 0.1, all grades) on the three 0.25 mm planes overlapping the 0.5 mm slab, drawn as their union; in the capsule = on the SARM label 50 of the voxel's own plane; counts within the panel's box x 1.5-12.5, z 13.5-24.5 mm, which holds the whole right capsule at each slab; check_* = the earlier panel (interpolated density over the slab > 0.5) against the capsule of the middle plane",
+  "footprint_min_carried_fraction": 0.1,
+  "views": [
+   [
+    "MM1",
+    "MM2",
+    "MM3"
+   ],
+   [
+    "MF8"
+   ]
+  ],
+  "arrange": "side",
+  "injection_label_anchor_px": {
+   "MR243": [
+    3310.5,
+    769.4
+   ],
+   "MR252": [
+    2391.8,
+    423.4
+   ],
+   "MF191": [
+    2698.1,
+    919.4
+   ]
+  },
+  "layout_mm": {
+   "width": 180.0,
+   "height": 103.9,
+   "a": [
+    4.36,
+    8.85,
+    74.63,
+    43.24
+   ],
+   "b_panel": [
+    39.15,
+    39.15
+   ],
+   "a_views": [
+    [
+     4.36,
+     8.85
+    ],
+    [
+     91.66,
+     8.85
+    ]
+   ],
+   "arrange": "side",
+   "a_print_mm_per_tissue_mm": 1.1754,
+   "b_print_mm_per_tissue_mm": 3.5592,
+   "crop_px": {
+    "rows": [
+     207,
+     2188
+    ],
+    "cols": [
+     448,
+     3867
+    ]
+   }
+  },
+  "video": {
+   "frames": 360,
+   "fps": 30,
+   "size_px": [
+    1600,
+    1072
+   ],
+   "drawing": "layered",
+   "turn": "one full turn about the vertical axis through the view's focal point"
+  }
+ }
+}

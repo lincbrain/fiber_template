@@ -5,7 +5,7 @@ parameter's start point to its bounds before calling nlopt. When a parameter end
 level's normalized start can fall a hair outside [-1, 1] by round-off, and nlopt's BOBYQA refuses it: the registration stops. The one
 change clips the normalized start into [-1, 1]. It changes no result otherwise: no registration of the paper's settings reached the
 bound (the clipped TIRL reproduced the registrations of record byte for byte), and every histology registration of the paper's numbers
-ran with it (analysis: labels/tirl_h9/tirl_patched).
+ran with it.
 
 tirl-3.6.3_optnl_clip.edits.json holds our lines only (TIRL is Apache-2.0; the edit file follows code/template/patches/ for a uniform
 form): the range of optnl.py's lines it replaces, their sha256, our new lines, and the md5 of the clean and of the edited file.

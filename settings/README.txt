@@ -5,8 +5,8 @@ these files and does not repeat their values.
 
     roots.sh               set LINC_DATA, then source this file in every new shell
     brains/                one file per brain
-    <stage>.yaml           one file per stage (blockface, registration, completion, histology, labels,
-                           link, mri_construction, blockface_template, targets, figures)
+    <stage>.yaml           one file per stage (blockface, registration, completion, histology,
+                           labels, link, mri_construction, blockface_template, targets, figures)
     files.tsv              every file of the data tree: where it is, what it is, what makes it
     specimen_labels.json   each brain's Specimen ID and its name in the paper
     photograph_counts.json the number of photographs of each brain, for Table S1

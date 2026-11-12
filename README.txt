@@ -15,7 +15,8 @@ The data folder has brains/ (one folder per brain), template/, models/ and paper
 template each have inputs/ (what an instrument or a person made), outputs/ (the finished files: open
 these) and intermediate/ (everything else; nobody needs to open it). brains.tsv lists the brains.
 
-The tutorials, step by step, with figures, are in the data folder: docs/tutorials/00_start_here.md.
+The tutorials, step by step, with figures, are in docs/tutorials/: start with
+docs/tutorials/00_start_here.md.
 
 
 WHAT IS HERE
@@ -26,6 +27,7 @@ WHAT IS HERE
     code/         the pipeline, one folder per stage
     settings/     one file per brain and one per stage
     tests/        checks of the installation and of the results
+    docs/         the tutorials, step by step, with figures
 
 Every folder has a README.txt saying what is in it.
 

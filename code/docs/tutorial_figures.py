@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""The figures of the step-by-step tutorials (docs/tutorials/ of the data tree), one function per figure, in the paper's figure style
+"""The figures of the step-by-step tutorials (docs/tutorials/ of this repository), one function per figure, in the paper's figure style
 (code/figures/figstyle.py: black background, letters, headers and scale bars outside the images, sentence case; command names, set in
 the figures as code, are the one exception to sentence case).
 
-Every figure reads only files of the data tree (and the release's settings/histology.yaml, for the sections' pixel size) and is written
-only to the tree's docs/tutorials/figures/, as <name>.png (200 dpi, 178 mm wide) with <name>.provenance.json beside it. The example
+Every figure reads only files of the data tree (and the release's settings/histology.yaml, for the sections' pixel size). It is written
+to the repository's docs/tutorials/figures/<name>.png (200 dpi, 178 mm wide, no text chunks), and its provenance, which holds this
+machine's paths, to outputs/docs/figures_provenance/<name>.provenance.json (outputs/ is not tracked). The example
 brain is MR243 (MM1 in the paper); the MRI template's figures use MF283 (MF1), one of its four brains. The histology figures read the
 JPEG 2000 sections, so they need glymur, which $PY_TIRL has. Each figure takes seconds, the histology ones up to a minute.
 
@@ -12,7 +13,7 @@ JPEG 2000 sections, so they need glymur, which $PY_TIRL has. Each figure takes s
     $PY_TIRL code/docs/tutorial_figures.py --tree $LINC_DATA_TREE --only mri_05_b0_in_template
     $PY_TIRL code/docs/tutorial_figures.py --list                                 # the figures, in order
 
---tree defaults to $LINC_DATA_TREE (settings/roots.sh sets it). --out defaults to <tree>/docs/tutorials/figures.
+--tree defaults to $LINC_DATA_TREE (settings/roots.sh sets it). --out (a trial render elsewhere) writes the provenance beside the PNGs.
 """
 import argparse
 import os
@@ -27,7 +28,9 @@ sys.path.insert(0, str(REPO / "code"))
 sys.path.insert(0, str(REPO / "code" / "figures"))
 import figstyle as FS  # noqa: E402
 
-DPI = 200                                     # the tutorials' figures (FS.DPI is the paper's 600)
+FIG_OUT = REPO / "docs" / "tutorials" / "figures"                   # the PNGs, tracked with the tutorials
+PROV_OUT = REPO / "outputs" / "docs" / "figures_provenance"         # their provenance: machine paths, so local only
+DPI = 200                                    # the tutorials' figures (FS.DPI is the paper's 600)
 W_MM = 178.0                                  # full page width
 LET_MM = 3.0                                  # room for a direction letter beside a panel
 S = "MR243"                                   # the example brain (MM1)
@@ -254,20 +257,23 @@ def new_fig(h_mm):
     return plt.figure(figsize=(W_MM * FS.MM, h_mm * FS.MM))
 
 
-def save(fig, out, tree, name):
-    """figstyle's checks (all but sentence case for the command names), then the PNG at 200 dpi and its provenance."""
+def save(fig, out, prov_out, tree, name):
+    """figstyle's checks (all but sentence case for the command names), then the PNG at 200 dpi, with no text chunks (no paths or
+    host names in a public file), and its provenance in prov_out."""
+    import json
     import matplotlib.pyplot as plt
     from shared import provenance
     FS.tiles(fig)
     bad = [b for b in FS.check(fig) if not (b.startswith("not in sentence case") and any(repr(c[:40]) in b for c in CODE_TEXT))]
     if bad:
         raise ValueError(f"{name}: house rules broken:\n  " + "\n  ".join(bad))
-    out.mkdir(parents=True, exist_ok=True)
+    out.mkdir(parents=True, exist_ok=True); prov_out.mkdir(parents=True, exist_ok=True)
     png = out / f"{name}.png"
-    fig.savefig(str(png), dpi=DPI, facecolor=fig.get_facecolor())
-    provenance.write_provenance(str(png), inputs=sorted(set(tree.read)) + [os.path.abspath(__file__), os.path.abspath(FS.__file__)],
-                                cmd=" ".join(sys.argv), md5=False,
-                                extra=dict(figure=name, dpi=DPI, width_mm=round(fig.get_size_inches()[0] * 25.4, 1), house_rules="ok"))
+    fig.savefig(str(png), dpi=DPI, facecolor=fig.get_facecolor(), metadata={"Software": None})
+    d = provenance.provenance_dict(str(png), inputs=sorted(set(tree.read)) + [os.path.abspath(__file__), os.path.abspath(FS.__file__)],
+                                   cmd=" ".join(sys.argv), md5=False,
+                                   extra=dict(figure=name, dpi=DPI, width_mm=round(fig.get_size_inches()[0] * 25.4, 1), house_rules="ok"))
+    (prov_out / f"{name}.provenance.json").write_text(json.dumps(d, indent=1, default=str))
     plt.close(fig)
 
 
@@ -1152,7 +1158,8 @@ def overview_01_chain(tr):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--tree", default=os.environ.get("LINC_DATA_TREE"), help="the data tree (default $LINC_DATA_TREE)")
-    ap.add_argument("--out", help="where the figures go (default <tree>/docs/tutorials/figures)")
+    ap.add_argument("--out", help="a trial render elsewhere, provenance beside the PNGs (default: the repository's "
+                                  "docs/tutorials/figures, provenance in outputs/docs/figures_provenance)")
     ap.add_argument("--only", nargs="+", metavar="NAME", help="these figures only (--list names them)")
     ap.add_argument("--list", action="store_true", help="list the figures and exit")
     a = ap.parse_args()
@@ -1166,12 +1173,12 @@ def main():
     bad = [n for n in names if n not in FIGS]
     if bad:
         sys.exit(f"unknown figure(s) {bad}: --list names them")
-    out = Path(a.out or Path(a.tree) / "docs" / "tutorials" / "figures")
+    out, prov_out = (Path(a.out), Path(a.out)) if a.out else (FIG_OUT, PROV_OUT)
     FS.setup()
     for n in names:
         t0 = time.time(); tr = Tree(a.tree)
         fig = FIGS[n](tr)
-        save(fig, out, tr, n)
+        save(fig, out, prov_out, tr, n)
         print(f"{n}: {out / (n + '.png')} ({time.time() - t0:.0f} s)")
 
 

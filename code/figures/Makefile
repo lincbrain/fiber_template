@@ -175,7 +175,7 @@ s_tracer_fidelity:
 	else $(PY_TIRL) $@.py --out $(OUT)/figures/$@.png; fi
 
 # Fig. 10, the tracer figure: each charted section's labels in 3D (a) and the internal capsule slabs (b), with its rotation video;
-# renders headless in settings/env/viz3d.yml (record fig_tracer_sections3d_v6): skipped with a message when PY_VIZ3D is unset
+# renders headless in settings/env/viz3d.yml (record fig_tracer_sections3d_v6_h9_c, the cases of settings/figures.yaml tracer_sections3d): skipped with a message when PY_VIZ3D is unset
 tracer_sections3d:
 	@if [ -z "$(PY_VIZ3D)" ]; then echo "SKIPPED tracer_sections3d: set PY_VIZ3D (settings/env/viz3d.yml; install.sh --with-figures-3d)"; \
 	else $(PY_VIZ3D) $@.py --video --out $(OUT)/figures/$@.png; fi

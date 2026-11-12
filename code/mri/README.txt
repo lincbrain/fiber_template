@@ -12,7 +12,8 @@ One b0 or T2-weighted image becomes a brain mask and a bias-corrected image, rea
     --mask <file>              use your own brain mask
     --volume N                 take volume N of a 4-D series (default 0)
     --modality t2 --volume 4   a T2-weighted image: the fifth echo of a multi-echo series
-    --denoise                  denoise first (off by default: the paper's images were denoised before)
+    --denoise                  denoise first (off by default: the paper's images were denoised
+                               before)
 
 It makes the mask with the MRI brain-mask network, corrects the bias field with N4 inside the mask,
 and rescales the masked image. It takes under a minute. It writes under sub-<ID>/mri/: dwi/

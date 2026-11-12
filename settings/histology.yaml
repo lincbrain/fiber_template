@@ -110,7 +110,7 @@ tirl:
                                   #   pixel is half the brain's L2 voxel (0.040 mm at 20 um photographs, 0.054 at 27 um)
   threads: 12                     # OMP/MKL/OpenBLAS/NumExpr threads per piece in the run of record
   done_file: fixed4_nonlinear.timg   # a piece with this file is complete (resume rule)
-  # Per-component stiffness of the nonlinear stage (adopted 12 Nov 2026; analysis: data_tirl_h9/README.txt, record tirl_h9). A component
+  # Per-component stiffness of the nonlinear stage (adopted 12 Nov 2026; record tirl_h9). A component
   # whose tissue Dice after the affine stage is at least affine_dice_min takes regweight; the others keep config's 0.3. The affine stage
   # does not depend on the nonlinear weight, so each component runs at regweight and is rerun at 0.3 when its affine Dice is below the
   # gate. The Dice is the registration QC's: both images block-averaged dice_block_px x dice_block_px, tissue = above 0 (the grey
