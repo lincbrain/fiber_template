@@ -442,7 +442,7 @@ def main():
         ax.add_patch(FancyArrowPatch(path=MPath([p, corner, q], [MPath.MOVETO, MPath.LINETO, MPath.LINETO]), arrowstyle="-|>",
                                      mutation_scale=6, lw=lw_, color=col, shrinkA=0, shrinkB=0, joinstyle="miter"))
 
-    def box(x0, y0, x1, y1, ec=GRAY, lw_=0.6):
+    def box(x0, y0, x1, y1, ec=FS.FRAME, lw_=0.6):
         ax.add_patch(FancyBboxPatch((x0, y0), x1 - x0, y1 - y0, boxstyle="round,pad=0,rounding_size=1.5", fc="none", ec=ec, lw=lw_))
 
     def header(x0, x1, y, title, sub=None):
@@ -526,9 +526,9 @@ def main():
     box(LX0, hy0, LX1, hy1); header(LX0, LX1, hy0, "Histology", f"{N['n_histo']} brains")
     x0a, yb, ym = LX1 + 1.5, R4 - 2.2, R4 + 2.2                    # the two alignments start right after the block
     elbow((x0a, yb), (xbt, yb), (xbt, by1 + 0.4), BFA)
-    text((LX1 + T1c) / 2, yb - 0.8, "blockface-based alignment", color=BFA, va="bottom")
+    text((LX1 + T1c) / 2, yb - 0.8, "blockface-based alignment", color=FS.COL["direct_text"], va="bottom")
     elbow((x0a, ym), (T2c, ym), (T2c, my1 + 0.4), MRIA)
-    t_mri = text((LX1 + T2c) / 2, ym + 0.8, "MRI-based alignment", color=MRIA)
+    t_mri = text((LX1 + T2c) / 2, ym + 0.8, "MRI-based alignment", color=FS.COL["mri_text"])
     # one scale bar, outside every block: the figure's bottom-right corner, right of the MRI-based alignment's vertical leg and below
     # the blockface template; its length centered above it, 2 pt over the bar (as figstyle.scalebar), the two ending at the margin
     bar = float(cfg["scale_bar_mm"]); blen, sby = bar * SC, hy1 - 1.6
@@ -558,6 +558,7 @@ def main():
                              "blockface_store", "photographs", "photo_masks", "histology_piece")]
     inputs += list(INP.values()) + [numbers_root() / "bf_cohort.json", numbers_root() / "histo_tube_landmarks.json"]
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
+    FS.tiles(fig)                                                   # the image panels on black, in the PDF too
     fig.savefig(str(Path(a.out).with_suffix(".pdf")), facecolor=fig.get_facecolor(), metadata={"CreationDate": None})
     FS.save(fig, a.out, [str(p_) for p_ in inputs], " ".join(["code/figures/pipeline.py"] + sys.argv[1:]),
             extra={"print_scale_mm_per_mm": SC, "print_scale_for_width": SC_width, "height_mm": round(H, 1),

@@ -7,7 +7,7 @@ registration of each brain to its own MRI), for one brain in one sagittal plane,
      the 9-dof matrix (nonlinear_<variant>/<ID>_bf_rigid, 0.25 mm), with the b0's outline
   c  step 2, the cut: the b0 image cut to the photographed slab, between the two end faces mapped by the 9-dof result
      (<variant>/<ID>_mri_fixed_<variant>); orange, the cut planes (the border between the kept and the removed part of the brain);
-     dashed, the whole brain's outline, so the part removed by the cut is the empty part
+     dashed (figstyle's ON_IMG2, secondary ink on images), the whole brain's outline, so the part removed by the cut is the empty part
   d  step 3, the deformable registration (anatomix + MIND-SSC features, FireANTs): the blockface volume after it
      (nonlinear_<variant>/<ID>_bf_nonlin), with the outline of the cut b0 (nonlinear_<variant>/<ID>_mri, 0.25 mm)
 Gray scales are linear, 0 to the 99.5th percentile inside each image's own tissue; nothing is smoothed, cut or filled for display.
@@ -105,7 +105,7 @@ def main():
     fig = plt.figure(figsize=(W * FS.MM, H * FS.MM))
     panels = [("a", "b0 image", b0, e_b0, []),
               ("b", "1  FLIRT (7, then 9 dof)", rg, e_rg, [(b0, e_b0, dict(colors=[LINE], linewidths=0.6))]),
-              ("c", "2  cut to the photographed slab", fx, e_fx, [(b0, e_b0, dict(colors=[FS.GRAY], linewidths=0.4, linestyles="dashed"))]),
+              ("c", "2  cut to the photographed slab", fx, e_fx, [(b0, e_b0, dict(colors=[FS.ON_IMG2], linewidths=0.4, linestyles="dashed"))]),
               ("d", "3  deformable registration", nl, e_nl, [(f25, e_f25, dict(colors=[LINE], linewidths=0.6))])]
     axs = []
     for k, (letter, title, img, ext, outs) in enumerate(panels):

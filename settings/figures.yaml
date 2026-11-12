@@ -55,6 +55,8 @@ synthesis_gallery:
   plane: record                       # the axial options only (--frame flat): record | fewest_gaps
 
 histology:
+  panels: [a, b]                           # the panels drawn (the author, 12 Nov 2026: (c) and (d) left out; the text gives their numbers);
+                                           #   empty: all four
   panel_a_piece: mr256LY_c02_s18nDF_0000   # panel (a)'s section (MM3): an intact one, as shown until 12 Nov 2026 (the author: the piece the
                                            #   median rule picks on the registrations with the per-component stiffness, s28, has a torn cortex);
                                            #   empty: the MM3 piece whose nonlinear tissue Dice is closest to MM3's median

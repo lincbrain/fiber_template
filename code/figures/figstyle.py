@@ -1,7 +1,9 @@
 """House style for the template paper's figures, v2 (30 Sep 2026): the author's ISBI treatment
 (manuscript/docs/revision_brief_2026-09-30.md, Figures; docs/reviews/template_figure_review_2026-09-30.md).
 
-- Black background for the WHOLE figure, as in the ISBI paper (isbi2027/code/fig*.py); off-white text, gray secondary text.
+- Black background for the WHOLE figure, as in the ISBI paper (isbi2027/code/fig*.py); off-white text, gray secondary text
+  (THEME = "black", the paper's: the author, 12 Nov 2026). THEME = "white" is an unused option: a white page with black ink off
+  the images, every image panel a tile on black (tiles()), ink on images in its own colors (ON_IMG), series colors >= 3:1.
 - Liberation Sans (Arial-metric), designed at print size: 178 mm full width (86 mm one column), text >= 7 pt, bold lower-case
   9 pt panel letters outside the images, short headers above the panels, American spelling, 600 ppi.
 - NOTHING printed over images: headers above, direction letters and scale bars outside the frame, values in the caption but
@@ -44,25 +46,42 @@ MIN_PT = 7
 LETTER_PT = 9
 FONT = "Liberation Sans"
 
+# ---- the theme (the author, 12 Nov 2026: white figures; every image panel stays a tile on black) -------------------------
+THEME = "black"                              # the paper's figures (the author, 12 Nov 2026: black kept); "white": an option, unused
+TILE = "black"                               # every image panel's face, so masked-out areas stay black (tiles(), run by save())
+ON_IMG = "#f2f2f2"                           # ink drawn ON images (outlines, overlays, markers): the same in both themes
+ON_IMG2 = "#b5b5b5"                          # secondary ink ON images (dashed or de-emphasized outlines): the same in both themes
+_THEMES = dict(                              # PAPER: the page and the plots' faces; INK: every text and line off the images;
+    black=dict(PAPER="black", INK="#f2f2f2", INK2="#b5b5b5", FRAME="#b5b5b5", FAINT="#5a5a5a",    # INK2: secondary text;
+               direct="#1fb5c4", mri="#b08458", pred="#E69F00", uncorrected="#8c9cff", route_text=None),   # FRAME: ticks, frames,
+    white=dict(PAPER="white", INK="black", INK2="#666666", FRAME="black", FAINT="#c8c8c8",       # box edges, direction letters;
+               # the series colors snapped to the nearest darker step of their own hue with >= 3:1 on white (OKLCH hue kept;
+               # dataviz validate_palette, light mode): direct #1fb5c4 -> #01a4b2, mri #b08458 -> #b88148 (chroma to the 0.10
+               # floor), pred #E69F00 -> #c68906, uncorrected #8c9cff -> #7e8def; the route labels are text, so text ink
+               direct="#01a4b2", mri="#b88148", pred="#c68906", uncorrected="#7e8def", route_text="black"))    # FAINT: grids
+_T = _THEMES[THEME]
+PAPER, INK, INK2, FRAME, FAINT = (_T[k] for k in ("PAPER", "INK", "INK2", "FRAME", "FAINT"))
+
 # ---- the one color lookup ------------------------------------------------------------------------------------------------
-BG = "black"
-FG = "#f2f2f2"                               # text, outlines, annotations, "with" (the ISBI figures' white)
-GRAY = "#b5b5b5"                             # secondary text, ticks, direction letters
-DGRAY = "#5a5a5a"                            # faint axes, grids, reference lines
+BG = TILE                                    # v2 name: the images' background (set_bad, panel faces)
+FG = INK                                     # text, lines and annotations off the images, "with"
+GRAY = INK2                                  # secondary text
+DGRAY = FAINT                                # faint axes, grids, reference lines
 WITHOUT = "#8c8c8c"                          # "without" (vs "with" = FG)
 OKABE = dict(orange="#E69F00", sky="#56B4E9", green="#009E73", yellow="#F0E442", blue="#0072B2", vermilion="#D55E00",
-             purple="#CC79A7")
-COL = dict(direct="#1fb5c4",                 # direct route, cyan-teal (v2: #2fa89a, too close to MR256's bluish green)
-           mri="#b08458",                    # MRI route, tan-brown (v2: ocher #c9a25c, too close to orange and yellow)
-           photo="#a6a6a6",                  # photographed tissue: uncolored, neutral gray (v2: blue #3f8fe0)
-           pred=OKABE["orange"],             # tissue not photographed: predicted, interpolated or filled, orange
-           outline=FG, annot=FG, without=WITHOUT, with_=FG)
+             purple="#CC79A7")               # the raw Okabe-Ito set (drawn on images as it is)
+COL = dict(direct=_T["direct"],              # direct route, cyan-teal (v2: #2fa89a, too close to MR256's bluish green)
+           mri=_T["mri"],                    # MRI route, tan-brown (v2: ocher #c9a25c, too close to orange and yellow)
+           photo="#a6a6a6",                  # photographed tissue: uncolored, neutral gray (v2: blue #3f8fe0); images only
+           pred=_T["pred"],                  # tissue not photographed: predicted, interpolated or filled, orange
+           outline=ON_IMG, annot=FG, without=WITHOUT, with_=FG,
+           direct_text=_T["route_text"] or _T["direct"], mri_text=_T["route_text"] or _T["mri"])
 BRAIN = dict(MR243=OKABE["sky"], MR252=OKABE["purple"], MR256=OKABE["green"], MF191=OKABE["yellow"],
              MF282=OKABE["vermilion"])       # fixed per brain, every figure; extend only with unused hues
 TRACER = dict(MR243=OKABE["vermilion"], MR252=OKABE["green"], MF191=OKABE["yellow"], MR256=OKABE["blue"])   # the tracer cases' colors in
                                              # every tracer figure (Fig. 10 and its 3D scene, Fig. S4): MM1, MM2, MF8, MM3
 COL.update(A=COL["direct"], B=COL["mri"], band=FG, b1=BRAIN["MR243"], b2=BRAIN["MR252"])    # v1 names
-COL.update(uncorrected="#8c9cff", corrected=FG)   # v2.2 (2 Oct, the reconstruction figure's (e) at the author's request): photographs before
+COL.update(uncorrected=_T["uncorrected"], corrected=FG)   # v2.2 (2 Oct, the reconstruction figure's (e) at the author's request): photographs before
                                                 # intensity correction, a light blue-violet distinct from every brain hue, the
                                                 # routes and predicted orange; after correction = FG ("with")
 LABELS_JSON = os.path.join(REPO, "settings", "specimen_labels.json")   # the paper's brain names (one mapping file)
@@ -103,11 +122,11 @@ def setup():
         "axes.linewidth": 0.5, "xtick.major.width": 0.5, "ytick.major.width": 0.5, "xtick.major.size": 2.5,
         "ytick.major.size": 2.5, "lines.linewidth": 0.8, "pdf.fonttype": 42, "ps.fonttype": 42,
         "savefig.dpi": DPI, "figure.dpi": 100,
-        "figure.facecolor": BG, "axes.facecolor": BG, "savefig.facecolor": BG, "savefig.edgecolor": BG,
-        "text.color": FG, "axes.labelcolor": FG, "axes.edgecolor": GRAY, "xtick.color": GRAY, "ytick.color": GRAY,
-        "xtick.labelcolor": FG, "ytick.labelcolor": FG, "axes.titlecolor": FG, "grid.color": DGRAY, "grid.linewidth": 0.4,
-        "legend.frameon": False, "legend.labelcolor": FG, "patch.edgecolor": FG, "hatch.color": DGRAY,
-        "axes.prop_cycle": cycler(color=[FG, GRAY, WITHOUT, DGRAY]),
+        "figure.facecolor": PAPER, "axes.facecolor": PAPER, "savefig.facecolor": PAPER, "savefig.edgecolor": PAPER,
+        "text.color": INK, "axes.labelcolor": INK, "axes.edgecolor": FRAME, "xtick.color": FRAME, "ytick.color": FRAME,
+        "xtick.labelcolor": INK, "ytick.labelcolor": INK, "axes.titlecolor": INK, "grid.color": FAINT, "grid.linewidth": 0.4,
+        "legend.frameon": False, "legend.labelcolor": INK, "patch.edgecolor": INK, "hatch.color": FAINT,
+        "axes.prop_cycle": cycler(color=[INK, INK2, WITHOUT, FAINT]),
         "image.interpolation": "bilinear", "image.resample": True, "image.cmap": "gray"})
     assert FONT in {f.name for f in font_manager.fontManager.ttflist}, f"{FONT} not registered (install the Liberation fonts)"
 
@@ -140,7 +159,7 @@ def header(ax, s, dx=11.0, dy=3.0, **kw):
 DIRS = dict(coronal=("L", "R", "S", "I"), sagittal=("P", "A", "S", "I"), axial=("L", "R", "A", "P"))
 
 
-def dirs(ax, plane, vertical=False, pad=2.0, color=GRAY, fs=MIN_PT, y=0.5):
+def dirs(ax, plane, vertical=False, pad=2.0, color=FRAME, fs=MIN_PT, y=0.5):
     """Direction letters OUTSIDE the frame, regular weight (first panel of a row): left/right of the frame at height y
     (axes fraction, default mid-height); with vertical=True also above/below it. Planes follow section()'s convention."""
     lft, rgt, top, bot = DIRS[plane]
@@ -151,7 +170,7 @@ def dirs(ax, plane, vertical=False, pad=2.0, color=GRAY, fs=MIN_PT, y=0.5):
         put(top, (0.5, 1), (0, pad), "center", "bottom"); put(bot, (0.5, 0), (0, -pad), "center", "top")
 
 
-def dirs_row(ax_first, ax_last, plane, pad=2.0, color=GRAY, fs=MIN_PT, y=0.5):
+def dirs_row(ax_first, ax_last, plane, pad=2.0, color=FRAME, fs=MIN_PT, y=0.5):
     """A row of panels in one orientation: the left letter outside the first panel, the right letter outside the last
     (at height y, axes fraction)."""
     lft, rgt = DIRS[plane][:2]
@@ -160,7 +179,7 @@ def dirs_row(ax_first, ax_last, plane, pad=2.0, color=GRAY, fs=MIN_PT, y=0.5):
                     fontsize=fs, color=color, annotation_clip=False)
 
 
-def lr(ax, left, right, fs=MIN_PT, color=GRAY):
+def lr(ax, left, right, fs=MIN_PT, color=FRAME):
     """v1 name: the two horizontal direction letters, now outside the frame."""
     for xy, off, t, ha in (((0, 0.5), (-2, 0), left, "right"), ((1, 0.5), (2, 0), right, "left")):
         ax.annotate(t, xy=xy, xycoords="axes fraction", xytext=off, textcoords="offset points", ha=ha, va="center",
@@ -308,11 +327,44 @@ def check(fig):
         for u in others:
             if u is not t and over(e, u.get_window_extent(r)):
                 bad.append(f"scale bar length {t.get_text()!r} over the text {u.get_text()[:40]!r}")
+    # every text against what lies under its center, an image panel's black tile or the page: at least 3:1 (no black on a tile,
+    # no white on white)
+    for t in others:
+        e = t.get_window_extent(r); cx, cy = (e.x0 + e.x1) / 2, (e.y0 + e.y1) / 2
+        under = TILE if any(b.x0 <= cx <= b.x1 and b.y0 <= cy <= b.y1 for b in boxes) else PAPER
+        if contrast(t.get_color(), under) < 3.0:
+            bad.append(f"text {t.get_text()[:40]!r} in {t.get_color()} on {under} ({contrast(t.get_color(), under):.2f}:1)")
     return bad
+
+
+def contrast(c1, c2):
+    """WCAG contrast ratio of two matplotlib colors."""
+    from matplotlib.colors import to_rgb
+    lum = lambda c: float(np.dot([0.2126, 0.7152, 0.0722], [v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4
+                                                                for v in to_rgb(c)]))   # noqa: E731
+    hi, lo = sorted((lum(c1), lum(c2)), reverse=True)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+TILE_GID = "image_tile"
+
+
+def tiles(fig):
+    """Every image panel a tile on black: a TILE rectangle behind each axes that shows an image (its whole frame), so what the
+    image leaves transparent or uncovered stays black on the white page. Idempotent; save() runs it (call it before any other
+    savefig, e.g. a PDF written beside)."""
+    from matplotlib.patches import Rectangle
+    if TILE == PAPER:                                            # the black page: nothing to add, the files stay as they were
+        return
+    for ax in fig.axes:
+        if ax.images and not any(p.get_gid() == TILE_GID for p in ax.patches):
+            ax.add_patch(Rectangle((0, 0), 1, 1, transform=ax.transAxes, facecolor=TILE, edgecolor="none", zorder=-1e3,
+                                   clip_on=False, gid=TILE_GID))
 
 
 def save(fig, out, provenance_inputs, cmd, extra=None, md5=True, strict=True):
     from shared import provenance as timing
+    tiles(fig)
     bad = check(fig)
     if bad and strict:
         raise ValueError("figstyle.save: house rules broken:\n  " + "\n  ".join(bad))

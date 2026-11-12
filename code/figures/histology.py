@@ -18,6 +18,8 @@ Needs glymur (the raw histology is JPEG 2000). --jp2-root is the LINC source-dat
      tube center from the hole only); the median as a thin vertical line, checked against $LINC_NUMBERS/tube_offsets_h9.json
      (variant hole_hidden; code/figures/paper_numbers/histology_h9.py).
   d  per-brain medians (the same record).
+settings/figures.yaml histology panels: the panels drawn, [a, b] or all four (empty: all four); the checks against tube_offsets_h9
+(the distribution's size and median) run either way.
 Reads (settings/internal/products_mri.yaml): tube_landmarks_h9/{h9preinp,h9hole}_<ID>_native.json, products_blockface labels_histology_arm (panel
 a's TIRL piece, in MM3's own arm), numbers_of_record/registration_qc_histo2bf_h9.json, $LINC_NUMBERS/tube_offsets_h9.json, the JP2s. The registrations are
 those with the per-component nonlinear stiffness (settings/histology.yaml tirl.stiff_nonlinear, 12 Nov 2026). Writes the PNG and its provenance.json.
@@ -56,6 +58,7 @@ WIN_MM = 3.0                                                   # (b): window sid
 ECDF_XMAX = 1.0                                                # (c): to the 1 mm search radius (the curve reaches 1)
 SCALEBARS_MM = (5, 0.5)                                        # (a), (b)
 BAR_BELOW_MM = 3.5                                             # each bar this far under its panel: its length fits between
+END_AB_MM = BAR_BELOW_MM + 2.5                                 # without (c) and (d): the figure ends this far under (b), its bar inside
 LEFT, RIGHT, GAP, TOP = 7.0, 7.0, 3.0, 6.0                     # mm
 
 
@@ -67,6 +70,28 @@ def stretch(rgb, m, top=99.5):
 def largest(m):
     lab, n = ndi.label(m)
     return lab == (np.argmax(np.bincount(lab.ravel())[1:]) + 1) if n else m
+
+
+def draw_cd(fig, S, e_inp, ps, x0, yc, wrow, CH):
+    """(c) the ECDF of the offsets and (d) the per-brain medians, side by side under (b)"""
+    wc = wrow * 0.54                                                  # (c) wide enough for (d)'s horizontal brain labels
+    ax = S.axes_mm(fig, x0 + 12.0, yc, wc - 12.0, CH)
+    s = np.sort(e_inp); ax.step(s, np.arange(1, len(s) + 1) / len(s), where="post", color=S.FG, lw=1.1, ls="-", label="tubes hidden")
+    ax.axvline(np.median(e_inp), color=S.FG, lw=0.6, ls=":")
+    ax.annotate(f"{np.median(e_inp):.2f}", xy=(np.median(e_inp), 1), xycoords=("data", "axes fraction"), xytext=(0, 2),
+                textcoords="offset points", ha="center", va="bottom", color=S.FG, annotation_clip=False)
+    ax.set_xlabel("tube offset (mm)"); ax.set_ylabel("fraction of components")
+    ax.set_xlim(0, ECDF_XMAX); ax.set_ylim(0, 1.02); ax.spines[["top", "right"]].set_visible(False)
+    S.letter(ax, "c", dx=-16 - 12.0 / 25.4 * 72, dy=2)                 # aligned with a / b
+    # (d) per-brain medians
+    axd = S.axes_mm(fig, x0 + wc + 16.0, yc, wrow - wc - 16.0, CH)
+    xs_ = np.arange(len(MAIN))
+    hid = [ps[S_][TUBE_VARIANT]["median_mm"] for S_ in MAIN]
+    axd.plot(xs_, hid, "o", color=S.FG, ms=3.8, mec="none", zorder=3)
+    axd.set_xticks(xs_); axd.set_xticklabels([S.label(S_) for S_ in MAIN])
+    axd.set_ylabel("median offset (mm)"); axd.set_ylim(0, 1.15 * max(hid)); axd.set_xlim(-0.6, len(MAIN) - 0.4)
+    axd.spines[["top", "right"]].set_visible(False)
+    S.letter(axd, "d", dx=-28, dy=2)
 
 
 def main():
@@ -136,8 +161,11 @@ def main():
     pw = (W - LEFT - RIGHT - 2 * GAP) / 3                         # (a)/(b) fill the page width (true scale in the provenance)
     scale_a = pw / (w_px * FIX_MM); ph = h_px * FIX_MM * scale_a
     bw = bh = pw                                                  # square windows, same width as (a)'s panels
+    PANELS = CFG.get("panels") or ["a", "b", "c", "d"]
+    assert PANELS in (["a", "b"], ["a", "b", "c", "d"]), f"histology panels {PANELS}: [a, b] or all four"
+    cd = "c" in PANELS
     CH = 30.0
-    H = TOP + ph + 16.0 + bh + 12.0 + CH + 12.0
+    H = TOP + ph + 16.0 + bh + (12.0 + CH + 12.0 if cd else END_AB_MM)
     fig = plt.figure(figsize=(S.FULL_W_IN, H / 25.4))
     x0 = (W - (3 * pw + 2 * GAP)) / 2
     xa = (W - (2 * pw + GAP)) / 2                                 # (a): two panels, centered
@@ -153,10 +181,10 @@ def main():
         if k == 0:
             S.letter(ax, "a", dx=-16, dy=2); S.scalebar(ax, 1 / FIX_MM, SCALEBARS_MM[0], y_frac=BAR_BELOW_MM / ph)
             ax.annotate("L", xy=(0, 0.5), xycoords="axes fraction", xytext=(-2, 0), textcoords="offset points", ha="right",
-                        va="center", color=S.GRAY, annotation_clip=False)
+                        va="center", color=S.FRAME, annotation_clip=False)
         if k == len(pa) - 1:
             ax.annotate("R", xy=(1, 0.5), xycoords="axes fraction", xytext=(2, 0), textcoords="offset points", ha="left",
-                        va="center", color=S.GRAY, annotation_clip=False)
+                        va="center", color=S.FRAME, annotation_clip=False)
     half = int(WIN_MM / 2 / PX_MM); yb = TOP + ph + 16.0; f = JP2_LEVEL
     for k, ((S_, r), q, qq) in enumerate(zip(ex, qv, QUANT)):
         jp = Path(a.jp2_root) / JP2.format(S=S_, sid=r["sid"])
@@ -168,40 +196,24 @@ def main():
         ax = S.axes_mm(fig, x0 + k * (pw + GAP), yb, bw, bh)
         ax.imshow((stretch(w, m) if m.any() else w / 255)[:, ::-1])          # same left-right flip as (a)
         wd = w.shape[1]
-        ax.plot(wd - 1 - (x0_ - c0) / f, (y0 - r0) / f, "+", color=S.FG, ms=10, mew=1.4, path_effects=halo)
+        ax.plot(wd - 1 - (x0_ - c0) / f, (y0 - r0) / f, "+", color=S.ON_IMG, ms=10, mew=1.4, path_effects=halo)
         rad = np.sqrt(max(r.get("hole_area_mm2", 0.0), 1e-6) / np.pi) / (PX_MM * f)     # the detected hole: its recorded area
-        ax.add_patch(Circle((wd - 1 - (hx - c0) / f, (hy - r0) / f), rad, fill=False, ec=S.FG, lw=1.1, path_effects=halo))
+        ax.add_patch(Circle((wd - 1 - (hx - c0) / f, (hy - r0) / f), rad, fill=False, ec=S.ON_IMG, lw=1.1, path_effects=halo))
         ax.set_xticks([]); ax.set_yticks([]); [s_.set_visible(False) for s_ in ax.spines.values()]
         S.header(ax, f"{S.label(S_)}, {qq}th percentile: {r['error_mm']:.2f} mm", dx=0, dy=2)
         if k == 0:
             S.letter(ax, "b", dx=-16, dy=12); S.scalebar(ax, 1 / (PX_MM * f), SCALEBARS_MM[1], y_frac=BAR_BELOW_MM / bh)
             S.header(ax, "tubes hidden from the registration", dx=0, dy=12)
-    yc = yb + bh + 12.0; wc = (3 * pw + 2 * GAP) * 0.54                  # (c) wide enough for (d)'s horizontal brain labels
-    ax = S.axes_mm(fig, x0 + 12.0, yc, wc - 12.0, CH)
-    s = np.sort(e_inp); ax.step(s, np.arange(1, len(s) + 1) / len(s), where="post", color=S.FG, lw=1.1, ls="-", label="tubes hidden")
-    ax.axvline(np.median(e_inp), color=S.FG, lw=0.6, ls=":")
-    ax.annotate(f"{np.median(e_inp):.2f}", xy=(np.median(e_inp), 1), xycoords=("data", "axes fraction"), xytext=(0, 2),
-                textcoords="offset points", ha="center", va="bottom", color=S.FG, annotation_clip=False)
-    ax.set_xlabel("tube offset (mm)"); ax.set_ylabel("fraction of components")
-    ax.set_xlim(0, ECDF_XMAX); ax.set_ylim(0, 1.02); ax.spines[["top", "right"]].set_visible(False)
-    S.letter(ax, "c", dx=-16 - 12.0 / 25.4 * 72, dy=2)                 # aligned with a / b
-    # (d) per-brain medians
     ps = TJ["per_subject"]
-    axd = S.axes_mm(fig, x0 + wc + 16.0, yc, (3 * pw + 2 * GAP) - wc - 16.0, CH)
-    xs_ = np.arange(len(MAIN))
-    hid = [ps[S_][TUBE_VARIANT]["median_mm"] for S_ in MAIN]
-    axd.plot(xs_, hid, "o", color=S.FG, ms=3.8, mec="none", zorder=3)
-    axd.set_xticks(xs_); axd.set_xticklabels([S.label(S_) for S_ in MAIN])
-    axd.set_ylabel("median offset (mm)"); axd.set_ylim(0, 1.15 * max(hid)); axd.set_xlim(-0.6, len(MAIN) - 0.4)
-    axd.spines[["top", "right"]].set_visible(False)
-    S.letter(axd, "d", dx=-28, dy=2)
+    if cd:
+        draw_cd(fig, S, e_inp, ps, x0, yb + bh + 12.0, 3 * pw + 2 * GAP, CH)
     S.save(fig, str(a.out), ins + [TJP], cmd=" ".join(["python"] + sys.argv),
            extra=dict(panel_a_piece=ra["tag"], panel_a_dice=ra["metrics"]["dice_nonlinear"], panel_a_subject_median_dice=med,
                       panel_b=[dict(subject=S_, piece=r["piece"], quantile=qq, quantile_mm=round(float(q), 3), offset_mm=r["error_mm"],
                                     rank_from_quantile=round(float(rank[i] - qq / 100 * (n - 1)), 1), named=bool(pins.get(qq)))
                                for (S_, r), i, q, qq in zip(ex, pick, qv, QUANT)],
                       per_brain_median_mm={S_: ps[S_][TUBE_VARIANT]["median_mm"] for S_ in MAIN},
-                      median_tubes_hidden_mm=m_inp, n_pieces=len(e_inp), scale_a=round(scale_a, 3), scalebars_mm=list(SCALEBARS_MM)))
+                      panels=PANELS, median_tubes_hidden_mm=m_inp, n_pieces=len(e_inp), scale_a=round(scale_a, 3), scalebars_mm=list(SCALEBARS_MM)))
     plt.close(fig)
     print("->", a.out, "a:", ra["tag"], "b:", [(S_, r["piece"], r["error_mm"]) for S_, r in ex])
 

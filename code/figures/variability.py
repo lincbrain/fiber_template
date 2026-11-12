@@ -95,16 +95,16 @@ def main():
                     S.letter(ax, "a", dx=-12, dy=2)
             if j == 0 and i == 0:
                 ax.annotate("L", xy=(0, 0.5), xycoords="axes fraction", xytext=(-2, 0), textcoords="offset points", ha="right",
-                            va="center", color=S.GRAY, annotation_clip=False)
+                            va="center", color=S.FRAME, annotation_clip=False)
             if j == 0:
                 ax.annotate(LABEL[arm].replace("T2 + SANDI + tensor", "T2 + SANDI\n+ tensor"), xy=(0, 0.5), xycoords="axes fraction",
                             xytext=(-16, 0), textcoords="offset points", ha="right", va="center", color=S.FG, annotation_clip=False)
             if j == nm - 1 and i == 0:
                 ax.annotate("R", xy=(1, 0.5), xycoords="axes fraction", xytext=(2, 0), textcoords="offset points", ha="left",
-                            va="center", color=S.GRAY, annotation_clip=False)
+                            va="center", color=S.FRAME, annotation_clip=False)
         ycb = TOP + len(show) * ph + (len(show) - 1) * GAPR + CBG
         cax = S.axes_mm(fig, x + 0.1 * pw, ycb, 0.8 * pw, CBH)
-        cb = fig.colorbar(im, cax=cax, orientation="horizontal"); cb.outline.set_edgecolor(S.GRAY); cb.ax.tick_params(length=2, pad=1)
+        cb = fig.colorbar(im, cax=cax, orientation="horizontal"); cb.outline.set_edgecolor(S.FRAME); cb.ax.tick_params(length=2, pad=1)
         cb.ax.xaxis.set_major_formatter("{x:.1f}" if k == "T2" else "{x:.0f}")
         ax = S.axes_mm(fig, x + 2.0, ycb + CBH + 6.0 + BG_, pw - 4.0, BH)            # (b): core mean of every variant
         ys = np.arange(len(arms))[::-1]
