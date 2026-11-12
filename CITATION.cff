@@ -12,24 +12,18 @@ authors:
     affiliation: "Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Harvard Medical School"
   - given-names: Ermias
     family-names: Habte
-  - given-names: Jingjing
-    family-names: Wu
   - given-names: Ting
     family-names: Gong
+  - given-names: Istvan N.
+    family-names: Huszar
+  - given-names: Neel
+    family-names: Dey
+  - given-names: Jingjing
+    family-names: Wu
   - given-names: Chiara
     family-names: Maffei
   - given-names: Marina R.
     family-names: Celestine
-  - given-names: Neel
-    family-names: Dey
-  - given-names: Istvan N.
-    family-names: Huszar
-  - given-names: Guillem
-    family-names: París
-  - given-names: Jasmine
-    family-names: Shao
-  - given-names: Elissa
-    family-names: Bell
   - given-names: Julia F.
     family-names: Lehman
   - given-names: Suzanne N.
@@ -55,24 +49,18 @@ preferred-citation:
       family-names: Gonzales
     - given-names: Ermias
       family-names: Habte
-    - given-names: Jingjing
-      family-names: Wu
     - given-names: Ting
       family-names: Gong
+    - given-names: Istvan N.
+      family-names: Huszar
+    - given-names: Neel
+      family-names: Dey
+    - given-names: Jingjing
+      family-names: Wu
     - given-names: Chiara
       family-names: Maffei
     - given-names: Marina R.
       family-names: Celestine
-    - given-names: Neel
-      family-names: Dey
-    - given-names: Istvan N.
-      family-names: Huszar
-    - given-names: Guillem
-      family-names: París
-    - given-names: Jasmine
-      family-names: Shao
-    - given-names: Elissa
-      family-names: Bell
     - given-names: Julia F.
       family-names: Lehman
     - given-names: Suzanne N.

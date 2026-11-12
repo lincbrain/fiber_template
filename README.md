@@ -90,8 +90,8 @@ Then start with the tutorials: [docs/tutorials/00_start_here.md](docs/tutorials/
 
 If you use this code or the template, cite the paper ([CITATION.cff](CITATION.cff)):
 
-> Gonzales RA, Habte E, Wu J, Gong T, Maffei C, Celestine MR, Dey N, Huszar IN, París G, Shao J,
-> Bell E, Lehman JF, Haber SN, Balbastre Y, Yendiki A. A multimodal macaque template for aligning
+> Gonzales RA, Habte E, Gong T, Huszar IN, Dey N, Wu J, Maffei C, Celestine MR, Lehman JF, Haber SN,
+> Balbastre Y, Yendiki A. A multimodal macaque template for aligning
 > ex vivo MRI and microscopy. In preparation.
 
 The code is under the Apache License 2.0 ([LICENSE](LICENSE), [NOTICE](NOTICE)). The data are under
