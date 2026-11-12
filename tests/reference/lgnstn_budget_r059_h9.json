@@ -1,0 +1,4155 @@
+{
+ "data": {
+  "request": "requested in the manuscript's revision (items 1, 2 and 5 of its analysis list)",
+  "brains": {
+   "MR243": "MM1",
+   "MR252": "MM2",
+   "MR256": "MM3"
+  },
+  "structures": [
+   "lhLGN",
+   "lhSTN",
+   "rhLGN",
+   "rhSTN"
+  ],
+  "chain": {
+   "MR243": {
+    "r1": "$LINC_PRODUCTS/data/sub-MR243/xfm_r1v3/bf-native__to__b0-native",
+    "r1_variant": "r1v3",
+    "r5": "data/sub-MR243/xfm/b0-native__to__mri-template"
+   },
+   "MR252": {
+    "r1": "$LINC_PRODUCTS/data/sub-MR252/xfm_r1v3mr/bf-native__to__b0-native",
+    "r1_variant": "r1v3mr",
+    "r5": "data/sub-MR252/xfm/b0-native__to__mri-template"
+   },
+   "MR256": {
+    "r1": "$LINC_PRODUCTS/data/sub-MR256/xfm_r1v3mr/bf-native__to__b0-native",
+    "r1_variant": "r1v3mr",
+    "r5": "data/sub-MR256/xfm/b0-native__to__mri-template"
+   }
+  },
+  "nominal_section_step_mm": 1.2,
+  "definitions": {
+   "axes": "template RAS at 0.25 mm: x left->right, y posterior->anterior (the section axis), z inferior->superior",
+   "variants": "demons = labels of record; sdf = signed-distance interpolation, same chain; slab = un-interpolated: each labeled section stands for its slab half-way to its neighbors (outer sections: half the adjacent gap), labeled where the pulled template point lies in the slab and inside the section's outline (nearest in-plane sample)",
+   "offsets": "centroid(b) - centroid(a), world mm (pairs); brain label - SARM (item 5); left - mirrored right (item 2)",
+   "metrics": "Dice; ASSD and HD95 over the pooled symmetric surface distances (surface = m & ~erosion), as lgnstn_geometry.py",
+   "abs_dy_over_nominal_step": "|dy| / 1.2 mm (the sections' nominal spacing)",
+   "abs_dy_over_section_spacing": "|dy| / the median calibrated spacing of the two brains' labeled sections (blockface frame)",
+   "interpolation_shift": "centroid(demons) - centroid(slab): what the interpolation between sections moves",
+   "mirror": "left label vs right label mirrored x -> -x on the symmetric grid",
+   "sarm": "SARM level 6 in our template (nearest-neighbor carry through the NMT v2 mapping of record), DLG for the LGN, STh for the STN, split at x = 0"
+  },
+  "reproduction": {
+   "note": "all 12 demons pair rows of lgnstn_geometry_current (Dice, ASSD, centroid, per-axis offsets) recomputed from the same files and asserted equal to 1e-3",
+   "checks": [
+    {
+     "row": "lhLGN MR243-MR252",
+     "recorded": 0.343,
+     "recomputed": 0.343
+    },
+    {
+     "row": "lhLGN MR243-MR256",
+     "recorded": 1.039,
+     "recomputed": 1.039
+    },
+    {
+     "row": "lhLGN MR252-MR256",
+     "recorded": 0.699,
+     "recomputed": 0.699
+    },
+    {
+     "row": "lhSTN MR243-MR252",
+     "recorded": 0.453,
+     "recomputed": 0.453
+    },
+    {
+     "row": "lhSTN MR243-MR256",
+     "recorded": 0.886,
+     "recomputed": 0.886
+    },
+    {
+     "row": "lhSTN MR252-MR256",
+     "recorded": 0.753,
+     "recomputed": 0.753
+    },
+    {
+     "row": "rhLGN MR243-MR252",
+     "recorded": 0.509,
+     "recomputed": 0.509
+    },
+    {
+     "row": "rhLGN MR243-MR256",
+     "recorded": 0.479,
+     "recomputed": 0.479
+    },
+    {
+     "row": "rhLGN MR252-MR256",
+     "recorded": 0.437,
+     "recomputed": 0.437
+    },
+    {
+     "row": "rhSTN MR243-MR252",
+     "recorded": 0.516,
+     "recomputed": 0.516
+    },
+    {
+     "row": "rhSTN MR243-MR256",
+     "recorded": 0.414,
+     "recomputed": 0.414
+    },
+    {
+     "row": "rhSTN MR252-MR256",
+     "recorded": 0.29,
+     "recomputed": 0.29
+    }
+   ]
+  },
+  "summary": {
+   "LGN": {
+    "between_brains": {
+     "demons": {
+      "n": 6,
+      "centroid_mm": {
+       "n": 6,
+       "median": 0.494,
+       "iqr": [
+        0.4475,
+        0.6515
+       ],
+       "mean": 0.5843,
+       "min": 0.343,
+       "max": 1.039
+      },
+      "abs_offset_mm": {
+       "x": {
+        "n": 6,
+        "median": 0.23,
+        "iqr": [
+         0.2205,
+         0.343
+        ],
+        "mean": 0.2797,
+        "min": 0.016,
+        "max": 0.604
+       },
+       "y": {
+        "n": 6,
+        "median": 0.35,
+        "iqr": [
+         0.1888,
+         0.4213
+        ],
+        "mean": 0.314,
+        "min": 0.103,
+        "max": 0.501
+       },
+       "z": {
+        "n": 6,
+        "median": 0.34,
+        "iqr": [
+         0.2325,
+         0.4483
+        ],
+        "mean": 0.3617,
+        "min": 0.128,
+        "max": 0.681
+       }
+      },
+      "abs_dy_over_nominal_step": {
+       "n": 6,
+       "median": 0.292,
+       "iqr": [
+        0.1575,
+        0.3508
+       ],
+       "mean": 0.2618,
+       "min": 0.086,
+       "max": 0.418
+      },
+      "dice": {
+       "n": 6,
+       "median": 0.7302,
+       "iqr": [
+        0.7015,
+        0.7638
+       ],
+       "mean": 0.7296,
+       "min": 0.668,
+       "max": 0.7824
+      },
+      "assd_mm": {
+       "n": 6,
+       "median": 0.2905,
+       "iqr": [
+        0.2475,
+        0.302
+       ],
+       "mean": 0.2853,
+       "min": 0.219,
+       "max": 0.373
+      },
+      "hd95_mm": {
+       "n": 6,
+       "median": 0.681,
+       "iqr": [
+        0.612,
+        0.8633
+       ],
+       "mean": 0.7442,
+       "min": 0.559,
+       "max": 1.031
+      }
+     },
+     "sdf": {
+      "n": 6,
+      "centroid_mm": {
+       "n": 6,
+       "median": 0.458,
+       "iqr": [
+        0.3407,
+        0.6907
+       ],
+       "mean": 0.542,
+       "min": 0.198,
+       "max": 1.068
+      },
+      "abs_offset_mm": {
+       "x": {
+        "n": 6,
+        "median": 0.2105,
+        "iqr": [
+         0.1525,
+         0.3847
+        ],
+        "mean": 0.2875,
+        "min": 0.073,
+        "max": 0.655
+       },
+       "y": {
+        "n": 6,
+        "median": 0.3185,
+        "iqr": [
+         0.1697,
+         0.3915
+        ],
+        "mean": 0.3057,
+        "min": 0.137,
+        "max": 0.524
+       },
+       "z": {
+        "n": 6,
+        "median": 0.261,
+        "iqr": [
+         0.1872,
+         0.439
+        ],
+        "mean": 0.3267,
+        "min": 0.116,
+        "max": 0.661
+       }
+      },
+      "abs_dy_over_nominal_step": {
+       "n": 6,
+       "median": 0.2655,
+       "iqr": [
+        0.1412,
+        0.3267
+       ],
+       "mean": 0.2548,
+       "min": 0.114,
+       "max": 0.437
+      },
+      "dice": {
+       "n": 6,
+       "median": 0.7286,
+       "iqr": [
+        0.6877,
+        0.7452
+       ],
+       "mean": 0.72,
+       "min": 0.6462,
+       "max": 0.7921
+      },
+      "assd_mm": {
+       "n": 6,
+       "median": 0.303,
+       "iqr": [
+        0.2873,
+        0.3382
+       ],
+       "mean": 0.3143,
+       "min": 0.229,
+       "max": 0.419
+      },
+      "hd95_mm": {
+       "n": 6,
+       "median": 0.918,
+       "iqr": [
+        0.7877,
+        0.935
+       ],
+       "mean": 0.8883,
+       "min": 0.559,
+       "max": 1.25
+      }
+     },
+     "slab": {
+      "n": 6,
+      "centroid_mm": {
+       "n": 6,
+       "median": 0.432,
+       "iqr": [
+        0.4267,
+        0.597
+       ],
+       "mean": 0.5475,
+       "min": 0.267,
+       "max": 1.077
+      },
+      "abs_offset_mm": {
+       "x": {
+        "n": 6,
+        "median": 0.232,
+        "iqr": [
+         0.1893,
+         0.3505
+        ],
+        "mean": 0.2828,
+        "min": 0.033,
+        "max": 0.635
+       },
+       "y": {
+        "n": 6,
+        "median": 0.2635,
+        "iqr": [
+         0.2048,
+         0.32
+        ],
+        "mean": 0.2833,
+        "min": 0.122,
+        "max": 0.527
+       },
+       "z": {
+        "n": 6,
+        "median": 0.319,
+        "iqr": [
+         0.2142,
+         0.4103
+        ],
+        "mean": 0.3537,
+        "min": 0.172,
+        "max": 0.692
+       }
+      },
+      "abs_dy_over_nominal_step": {
+       "n": 6,
+       "median": 0.2195,
+       "iqr": [
+        0.171,
+        0.2665
+       ],
+       "mean": 0.2362,
+       "min": 0.102,
+       "max": 0.439
+      },
+      "dice": {
+       "n": 6,
+       "median": 0.6948,
+       "iqr": [
+        0.6547,
+        0.7017
+       ],
+       "mean": 0.679,
+       "min": 0.6132,
+       "max": 0.7255
+      },
+      "assd_mm": {
+       "n": 6,
+       "median": 0.26,
+       "iqr": [
+        0.2555,
+        0.299
+       ],
+       "mean": 0.2805,
+       "min": 0.236,
+       "max": 0.361
+      },
+      "hd95_mm": {
+       "n": 6,
+       "median": 0.75,
+       "iqr": [
+        0.6465,
+        0.792
+       ],
+       "mean": 0.7513,
+       "min": 0.559,
+       "max": 1.031
+      }
+     }
+    },
+    "within_brain_mirror": {
+     "demons": {
+      "n": 3,
+      "centroid_mm": {
+       "n": 3,
+       "median": 0.246,
+       "iqr": [
+        0.237,
+        0.442
+       ],
+       "mean": 0.3707,
+       "min": 0.228,
+       "max": 0.638
+      },
+      "abs_offset_mm": {
+       "x": {
+        "n": 3,
+        "median": 0.127,
+        "iqr": [
+         0.124,
+         0.1845
+        ],
+        "mean": 0.1633,
+        "min": 0.121,
+        "max": 0.242
+       },
+       "y": {
+        "n": 3,
+        "median": 0.047,
+        "iqr": [
+         0.0345,
+         0.3025
+        ],
+        "mean": 0.209,
+        "min": 0.022,
+        "max": 0.558
+       },
+       "z": {
+        "n": 3,
+        "median": 0.193,
+        "iqr": [
+         0.099,
+         0.238
+        ],
+        "mean": 0.1603,
+        "min": 0.005,
+        "max": 0.283
+       }
+      },
+      "dice": {
+       "n": 3,
+       "median": 0.7964,
+       "iqr": [
+        0.7782,
+        0.8061
+       ],
+       "mean": 0.7907,
+       "min": 0.7599,
+       "max": 0.8158
+      }
+     },
+     "sdf": {
+      "n": 3,
+      "centroid_mm": {
+       "n": 3,
+       "median": 0.44,
+       "iqr": [
+        0.3645,
+        0.6285
+       ],
+       "mean": 0.5153,
+       "min": 0.289,
+       "max": 0.817
+      },
+      "abs_offset_mm": {
+       "x": {
+        "n": 3,
+        "median": 0.241,
+        "iqr": [
+         0.238,
+         0.2605
+        ],
+        "mean": 0.252,
+        "min": 0.235,
+        "max": 0.28
+       },
+       "y": {
+        "n": 3,
+        "median": 0.192,
+        "iqr": [
+         0.1225,
+         0.457
+        ],
+        "mean": 0.3223,
+        "min": 0.053,
+        "max": 0.722
+       },
+       "z": {
+        "n": 3,
+        "median": 0.297,
+        "iqr": [
+         0.171,
+         0.3075
+        ],
+        "mean": 0.22,
+        "min": 0.045,
+        "max": 0.318
+       }
+      },
+      "dice": {
+       "n": 3,
+       "median": 0.7731,
+       "iqr": [
+        0.7632,
+        0.778
+       ],
+       "mean": 0.7698,
+       "min": 0.7534,
+       "max": 0.7828
+      }
+     },
+     "slab": {
+      "n": 3,
+      "centroid_mm": {
+       "n": 3,
+       "median": 0.314,
+       "iqr": [
+        0.279,
+        0.5305
+       ],
+       "mean": 0.435,
+       "min": 0.244,
+       "max": 0.747
+      },
+      "abs_offset_mm": {
+       "x": {
+        "n": 3,
+        "median": 0.21,
+        "iqr": [
+         0.1915,
+         0.227
+        ],
+        "mean": 0.209,
+        "min": 0.173,
+        "max": 0.244
+       },
+       "y": {
+        "n": 3,
+        "median": 0.106,
+        "iqr": [
+         0.055,
+         0.376
+        ],
+        "mean": 0.252,
+        "min": 0.004,
+        "max": 0.646
+       },
+       "z": {
+        "n": 3,
+        "median": 0.239,
+        "iqr": [
+         0.1255,
+         0.2755
+        ],
+        "mean": 0.1877,
+        "min": 0.012,
+        "max": 0.312
+       }
+      },
+      "dice": {
+       "n": 3,
+       "median": 0.7149,
+       "iqr": [
+        0.7016,
+        0.726
+       ],
+       "mean": 0.7135,
+       "min": 0.6884,
+       "max": 0.7371
+      }
+     }
+    },
+    "to_sarm": {
+     "demons": {
+      "n": 6,
+      "centroid_mm": {
+       "n": 6,
+       "median": 0.6505,
+       "iqr": [
+        0.5262,
+        0.7365
+       ],
+       "mean": 0.6407,
+       "min": 0.484,
+       "max": 0.809
+      },
+      "abs_offset_mm": {
+       "x": {
+        "n": 6,
+        "median": 0.425,
+        "iqr": [
+         0.2823,
+         0.48
+        ],
+        "mean": 0.4168,
+        "min": 0.157,
+        "max": 0.761
+       },
+       "y": {
+        "n": 6,
+        "median": 0.201,
+        "iqr": [
+         0.067,
+         0.3342
+        ],
+        "mean": 0.2088,
+        "min": 0.006,
+        "max": 0.444
+       },
+       "z": {
+        "n": 6,
+        "median": 0.343,
+        "iqr": [
+         0.087,
+         0.4317
+        ],
+        "mean": 0.3017,
+        "min": 0.003,
+        "max": 0.658
+       }
+      },
+      "signed_offset_mm": {
+       "x": {
+        "n": 6,
+        "median": 0.046,
+        "iqr": [
+         -0.3257,
+         0.4133
+        ],
+        "mean": -0.0165,
+        "min": -0.761,
+        "max": 0.484
+       },
+       "y": {
+        "n": 6,
+        "median": 0.1555,
+        "iqr": [
+         -0.0413,
+         0.3342
+        ],
+        "mean": 0.1575,
+        "min": -0.097,
+        "max": 0.444
+       },
+       "z": {
+        "n": 6,
+        "median": -0.343,
+        "iqr": [
+         -0.4317,
+         -0.072
+        ],
+        "mean": -0.294,
+        "min": -0.658,
+        "max": 0.023
+       }
+      },
+      "assd_mm": {
+       "n": 6,
+       "median": 0.4055,
+       "iqr": [
+        0.3985,
+        0.4215
+       ],
+       "mean": 0.4112,
+       "min": 0.332,
+       "max": 0.501
+      },
+      "dice": {
+       "n": 6,
+       "median": 0.6314,
+       "iqr": [
+        0.6266,
+        0.643
+       ],
+       "mean": 0.6382,
+       "min": 0.5812,
+       "max": 0.7134
+      }
+     },
+     "slab": {
+      "n": 6,
+      "centroid_mm": {
+       "n": 6,
+       "median": 0.5735,
+       "iqr": [
+        0.5155,
+        0.7117
+       ],
+       "mean": 0.6145,
+       "min": 0.473,
+       "max": 0.813
+      },
+      "abs_offset_mm": {
+       "x": {
+        "n": 6,
+        "median": 0.4185,
+        "iqr": [
+         0.309,
+         0.4958
+        ],
+        "mean": 0.416,
+        "min": 0.115,
+        "max": 0.75
+       },
+       "y": {
+        "n": 6,
+        "median": 0.162,
+        "iqr": [
+         0.0855,
+         0.2288
+        ],
+        "mean": 0.1902,
+        "min": 0.039,
+        "max": 0.467
+       },
+       "z": {
+        "n": 6,
+        "median": 0.277,
+        "iqr": [
+         0.0725,
+         0.384
+        ],
+        "mean": 0.2735,
+        "min": 0.007,
+        "max": 0.656
+       }
+      },
+      "signed_offset_mm": {
+       "x": {
+        "n": 6,
+        "median": 0.0875,
+        "iqr": [
+         -0.3033,
+         0.4257
+        ],
+        "mean": 0.0057,
+        "min": -0.75,
+        "max": 0.504
+       },
+       "y": {
+        "n": 6,
+        "median": 0.0615,
+        "iqr": [
+         -0.0548,
+         0.2288
+        ],
+        "mean": 0.1032,
+        "min": -0.162,
+        "max": 0.467
+       },
+       "z": {
+        "n": 6,
+        "median": -0.277,
+        "iqr": [
+         -0.384,
+         -0.05
+        ],
+        "mean": -0.2612,
+        "min": -0.656,
+        "max": 0.037
+       }
+      },
+      "assd_mm": {
+       "n": 6,
+       "median": 0.356,
+       "iqr": [
+        0.3485,
+        0.3658
+       ],
+       "mean": 0.3537,
+       "min": 0.304,
+       "max": 0.391
+      },
+      "dice": {
+       "n": 6,
+       "median": 0.6601,
+       "iqr": [
+        0.6472,
+        0.671
+       ],
+       "mean": 0.6646,
+       "min": 0.6347,
+       "max": 0.7149
+      }
+     }
+    },
+    "interpolation_shift_norm_mm": {
+     "n": 6,
+     "median": 0.063,
+     "iqr": [
+      0.048,
+      0.0818
+     ],
+     "mean": 0.0808,
+     "min": 0.017,
+     "max": 0.211
+    },
+    "interpolation_shift_abs_mm": {
+     "x": {
+      "n": 6,
+      "median": 0.0265,
+      "iqr": [
+       0.014,
+       0.0398
+      ],
+      "mean": 0.0267,
+      "min": 0.011,
+      "max": 0.042
+     },
+     "y": {
+      "n": 6,
+      "median": 0.05,
+      "iqr": [
+       0.0287,
+       0.0622
+      ],
+      "mean": 0.0623,
+      "min": 0.003,
+      "max": 0.183
+     },
+     "z": {
+      "n": 6,
+      "median": 0.022,
+      "iqr": [
+       0.0063,
+       0.0475
+      ],
+      "mean": 0.0338,
+      "min": 0.002,
+      "max": 0.1
+     }
+    },
+    "sections": {
+     "n_sections": {
+      "n": 6,
+      "median": 4.5,
+      "iqr": [
+       4.0,
+       5.0
+      ],
+      "mean": 4.5,
+      "min": 4.0,
+      "max": 5.0
+     },
+     "spacing_median_mm": {
+      "n": 6,
+      "median": 1.08,
+      "iqr": [
+       1.08,
+       1.0935
+      ],
+      "mean": 1.086,
+      "min": 1.08,
+      "max": 1.098
+     },
+     "y_extent_demons_mm": {
+      "n": 6,
+      "median": 4.875,
+      "iqr": [
+       4.5,
+       5.625
+      ],
+      "mean": 5.0833,
+      "min": 4.25,
+      "max": 6.25
+     }
+    }
+   },
+   "STN": {
+    "between_brains": {
+     "demons": {
+      "n": 6,
+      "centroid_mm": {
+       "n": 6,
+       "median": 0.4845,
+       "iqr": [
+        0.4237,
+        0.6937
+       ],
+       "mean": 0.552,
+       "min": 0.29,
+       "max": 0.886
+      },
+      "abs_offset_mm": {
+       "x": {
+        "n": 6,
+        "median": 0.0865,
+        "iqr": [
+         0.031,
+         0.5215
+        ],
+        "mean": 0.2738,
+        "min": 0.003,
+        "max": 0.788
+       },
+       "y": {
+        "n": 6,
+        "median": 0.3025,
+        "iqr": [
+         0.2325,
+         0.353
+        ],
+        "mean": 0.291,
+        "min": 0.056,
+        "max": 0.506
+       },
+       "z": {
+        "n": 6,
+        "median": 0.244,
+        "iqr": [
+         0.1268,
+         0.2967
+        ],
+        "mean": 0.2307,
+        "min": 0.092,
+        "max": 0.402
+       }
+      },
+      "abs_dy_over_nominal_step": {
+       "n": 6,
+       "median": 0.252,
+       "iqr": [
+        0.194,
+        0.2943
+       ],
+       "mean": 0.2427,
+       "min": 0.047,
+       "max": 0.422
+      },
+      "dice": {
+       "n": 6,
+       "median": 0.5599,
+       "iqr": [
+        0.5494,
+        0.5885
+       ],
+       "mean": 0.5604,
+       "min": 0.4668,
+       "max": 0.632
+      },
+      "assd_mm": {
+       "n": 6,
+       "median": 0.277,
+       "iqr": [
+        0.255,
+        0.287
+       ],
+       "mean": 0.2815,
+       "min": 0.246,
+       "max": 0.351
+      },
+      "hd95_mm": {
+       "n": 6,
+       "median": 0.762,
+       "iqr": [
+        0.7177,
+        0.8693
+       ],
+       "mean": 0.8113,
+       "min": 0.646,
+       "max": 1.09
+      }
+     },
+     "sdf": {
+      "n": 6,
+      "centroid_mm": {
+       "n": 6,
+       "median": 0.5645,
+       "iqr": [
+        0.3893,
+        0.6715
+       ],
+       "mean": 0.5367,
+       "min": 0.339,
+       "max": 0.714
+      },
+      "abs_offset_mm": {
+       "x": {
+        "n": 6,
+        "median": 0.094,
+        "iqr": [
+         0.061,
+         0.4398
+        ],
+        "mean": 0.242,
+        "min": 0.057,
+        "max": 0.602
+       },
+       "y": {
+        "n": 6,
+        "median": 0.394,
+        "iqr": [
+         0.1995,
+         0.4775
+        ],
+        "mean": 0.3237,
+        "min": 0.026,
+        "max": 0.488
+       },
+       "z": {
+        "n": 6,
+        "median": 0.2435,
+        "iqr": [
+         0.104,
+         0.326
+        ],
+        "mean": 0.2087,
+        "min": 0.006,
+        "max": 0.348
+       }
+      },
+      "abs_dy_over_nominal_step": {
+       "n": 6,
+       "median": 0.3285,
+       "iqr": [
+        0.1665,
+        0.3982
+       ],
+       "mean": 0.27,
+       "min": 0.022,
+       "max": 0.407
+      },
+      "dice": {
+       "n": 6,
+       "median": 0.5409,
+       "iqr": [
+        0.5192,
+        0.5624
+       ],
+       "mean": 0.5481,
+       "min": 0.5119,
+       "max": 0.6132
+      },
+      "assd_mm": {
+       "n": 6,
+       "median": 0.292,
+       "iqr": [
+        0.2725,
+        0.304
+       ],
+       "mean": 0.2885,
+       "min": 0.265,
+       "max": 0.308
+      },
+      "hd95_mm": {
+       "n": 6,
+       "median": 0.81,
+       "iqr": [
+        0.791,
+        0.829
+       ],
+       "mean": 0.8152,
+       "min": 0.75,
+       "max": 0.901
+      }
+     },
+     "slab": {
+      "n": 6,
+      "centroid_mm": {
+       "n": 6,
+       "median": 0.5,
+       "iqr": [
+        0.3967,
+        0.7608
+       ],
+       "mean": 0.568,
+       "min": 0.323,
+       "max": 0.875
+      },
+      "abs_offset_mm": {
+       "x": {
+        "n": 6,
+        "median": 0.1045,
+        "iqr": [
+         0.0935,
+         0.5295
+        ],
+        "mean": 0.2887,
+        "min": 0.001,
+        "max": 0.761
+       },
+       "y": {
+        "n": 6,
+        "median": 0.374,
+        "iqr": [
+         0.1893,
+         0.4567
+        ],
+        "mean": 0.318,
+        "min": 0.061,
+        "max": 0.487
+       },
+       "z": {
+        "n": 6,
+        "median": 0.209,
+        "iqr": [
+         0.1457,
+         0.2768
+        ],
+        "mean": 0.2323,
+        "min": 0.125,
+        "max": 0.427
+       }
+      },
+      "abs_dy_over_nominal_step": {
+       "n": 6,
+       "median": 0.3115,
+       "iqr": [
+        0.1578,
+        0.3805
+       ],
+       "mean": 0.265,
+       "min": 0.051,
+       "max": 0.406
+      },
+      "dice": {
+       "n": 6,
+       "median": 0.5254,
+       "iqr": [
+        0.4864,
+        0.5633
+       ],
+       "mean": 0.5264,
+       "min": 0.4777,
+       "max": 0.5804
+      },
+      "assd_mm": {
+       "n": 6,
+       "median": 0.274,
+       "iqr": [
+        0.2355,
+        0.284
+       ],
+       "mean": 0.2668,
+       "min": 0.226,
+       "max": 0.317
+      },
+      "hd95_mm": {
+       "n": 6,
+       "median": 0.7705,
+       "iqr": [
+        0.7177,
+        0.899
+       ],
+       "mean": 0.7955,
+       "min": 0.559,
+       "max": 1.031
+      }
+     }
+    },
+    "within_brain_mirror": {
+     "demons": {
+      "n": 3,
+      "centroid_mm": {
+       "n": 3,
+       "median": 0.389,
+       "iqr": [
+        0.3005,
+        0.4665
+       ],
+       "mean": 0.3817,
+       "min": 0.212,
+       "max": 0.544
+      },
+      "abs_offset_mm": {
+       "x": {
+        "n": 3,
+        "median": 0.346,
+        "iqr": [
+         0.26,
+         0.409
+        ],
+        "mean": 0.3307,
+        "min": 0.174,
+        "max": 0.472
+       },
+       "y": {
+        "n": 3,
+        "median": 0.111,
+        "iqr": [
+         0.098,
+         0.1885
+        ],
+        "mean": 0.154,
+        "min": 0.085,
+        "max": 0.266
+       },
+       "z": {
+        "n": 3,
+        "median": 0.051,
+        "iqr": [
+         0.0475,
+         0.1035
+        ],
+        "mean": 0.0837,
+        "min": 0.044,
+        "max": 0.156
+       }
+      },
+      "dice": {
+       "n": 3,
+       "median": 0.6908,
+       "iqr": [
+        0.6839,
+        0.7355
+       ],
+       "mean": 0.716,
+       "min": 0.677,
+       "max": 0.7803
+      }
+     },
+     "sdf": {
+      "n": 3,
+      "centroid_mm": {
+       "n": 3,
+       "median": 0.292,
+       "iqr": [
+        0.2775,
+        0.3
+       ],
+       "mean": 0.2877,
+       "min": 0.263,
+       "max": 0.308
+      },
+      "abs_offset_mm": {
+       "x": {
+        "n": 3,
+        "median": 0.251,
+        "iqr": [
+         0.239,
+         0.2545
+        ],
+        "mean": 0.2453,
+        "min": 0.227,
+        "max": 0.258
+       },
+       "y": {
+        "n": 3,
+        "median": 0.02,
+        "iqr": [
+         0.0175,
+         0.085
+        ],
+        "mean": 0.0617,
+        "min": 0.015,
+        "max": 0.15
+       },
+       "z": {
+        "n": 3,
+        "median": 0.107,
+        "iqr": [
+         0.0755,
+         0.142
+        ],
+        "mean": 0.1093,
+        "min": 0.044,
+        "max": 0.177
+       }
+      },
+      "dice": {
+       "n": 3,
+       "median": 0.6811,
+       "iqr": [
+        0.6747,
+        0.7069
+       ],
+       "mean": 0.6941,
+       "min": 0.6684,
+       "max": 0.7327
+      }
+     },
+     "slab": {
+      "n": 3,
+      "centroid_mm": {
+       "n": 3,
+       "median": 0.378,
+       "iqr": [
+        0.3105,
+        0.382
+       ],
+       "mean": 0.3357,
+       "min": 0.243,
+       "max": 0.386
+      },
+      "abs_offset_mm": {
+       "x": {
+        "n": 3,
+        "median": 0.328,
+        "iqr": [
+         0.283,
+         0.329
+        ],
+        "mean": 0.2987,
+        "min": 0.238,
+        "max": 0.33
+       },
+       "y": {
+        "n": 3,
+        "median": 0.036,
+        "iqr": [
+         0.0205,
+         0.1185
+        ],
+        "mean": 0.0807,
+        "min": 0.005,
+        "max": 0.201
+       },
+       "z": {
+        "n": 3,
+        "median": 0.03,
+        "iqr": [
+         0.029,
+         0.107
+        ],
+        "mean": 0.0807,
+        "min": 0.028,
+        "max": 0.184
+       }
+      },
+      "dice": {
+       "n": 3,
+       "median": 0.6677,
+       "iqr": [
+        0.6282,
+        0.6822
+       ],
+       "mean": 0.651,
+       "min": 0.5887,
+       "max": 0.6967
+      }
+     }
+    },
+    "to_sarm": {
+     "demons": {
+      "n": 6,
+      "centroid_mm": {
+       "n": 6,
+       "median": 0.434,
+       "iqr": [
+        0.3772,
+        0.5268
+       ],
+       "mean": 0.455,
+       "min": 0.269,
+       "max": 0.677
+      },
+      "abs_offset_mm": {
+       "x": {
+        "n": 6,
+        "median": 0.32,
+        "iqr": [
+         0.2955,
+         0.3977
+        ],
+        "mean": 0.3565,
+        "min": 0.226,
+        "max": 0.562
+       },
+       "y": {
+        "n": 6,
+        "median": 0.1725,
+        "iqr": [
+         0.1037,
+         0.2195
+        ],
+        "mean": 0.1937,
+        "min": 0.086,
+        "max": 0.415
+       },
+       "z": {
+        "n": 6,
+        "median": 0.0995,
+        "iqr": [
+         0.0683,
+         0.199
+        ],
+        "mean": 0.1483,
+        "min": 0.033,
+        "max": 0.368
+       }
+      },
+      "signed_offset_mm": {
+       "x": {
+        "n": 6,
+        "median": -0.257,
+        "iqr": [
+         -0.3105,
+         0.2607
+        ],
+        "mean": -0.0282,
+        "min": -0.322,
+        "max": 0.562
+       },
+       "y": {
+        "n": 6,
+        "median": 0.0585,
+        "iqr": [
+         -0.0897,
+         0.2195
+        ],
+        "mean": 0.0873,
+        "min": -0.142,
+        "max": 0.415
+       },
+       "z": {
+        "n": 6,
+        "median": -0.0995,
+        "iqr": [
+         -0.199,
+         0.0075
+        ],
+        "mean": -0.1147,
+        "min": -0.368,
+        "max": 0.068
+       }
+      },
+      "assd_mm": {
+       "n": 6,
+       "median": 0.375,
+       "iqr": [
+        0.3242,
+        0.3898
+       ],
+       "mean": 0.3643,
+       "min": 0.296,
+       "max": 0.438
+      },
+      "dice": {
+       "n": 6,
+       "median": 0.5017,
+       "iqr": [
+        0.4851,
+        0.5461
+       ],
+       "mean": 0.5194,
+       "min": 0.4659,
+       "max": 0.6069
+      }
+     },
+     "slab": {
+      "n": 6,
+      "centroid_mm": {
+       "n": 6,
+       "median": 0.436,
+       "iqr": [
+        0.3045,
+        0.5458
+       ],
+       "mean": 0.4335,
+       "min": 0.214,
+       "max": 0.672
+      },
+      "abs_offset_mm": {
+       "x": {
+        "n": 6,
+        "median": 0.2815,
+        "iqr": [
+         0.2375,
+         0.4065
+        ],
+        "mean": 0.3248,
+        "min": 0.177,
+        "max": 0.538
+       },
+       "y": {
+        "n": 6,
+        "median": 0.1465,
+        "iqr": [
+         0.107,
+         0.2767
+        ],
+        "mean": 0.1957,
+        "min": 0.041,
+        "max": 0.426
+       },
+       "z": {
+        "n": 6,
+        "median": 0.097,
+        "iqr": [
+         0.066,
+         0.185
+        ],
+        "mean": 0.1483,
+        "min": 0.041,
+        "max": 0.385
+       }
+      },
+      "signed_offset_mm": {
+       "x": {
+        "n": 6,
+        "median": -0.2,
+        "iqr": [
+         -0.2665,
+         0.2918
+        ],
+        "mean": 0.0038,
+        "min": -0.282,
+        "max": 0.538
+       },
+       "y": {
+        "n": 6,
+        "median": 0.0315,
+        "iqr": [
+         -0.0973,
+         0.2585
+        ],
+        "mean": 0.0843,
+        "min": -0.177,
+        "max": 0.426
+       },
+       "z": {
+        "n": 6,
+        "median": -0.097,
+        "iqr": [
+         -0.185,
+         0.009
+        ],
+        "mean": -0.115,
+        "min": -0.385,
+        "max": 0.059
+       }
+      },
+      "assd_mm": {
+       "n": 6,
+       "median": 0.3125,
+       "iqr": [
+        0.2945,
+        0.329
+       ],
+       "mean": 0.3122,
+       "min": 0.287,
+       "max": 0.338
+      },
+      "dice": {
+       "n": 6,
+       "median": 0.5478,
+       "iqr": [
+        0.521,
+        0.5742
+       ],
+       "mean": 0.548,
+       "min": 0.4983,
+       "max": 0.5988
+      }
+     }
+    },
+    "interpolation_shift_norm_mm": {
+     "n": 6,
+     "median": 0.056,
+     "iqr": [
+      0.0445,
+      0.087
+     ],
+     "mean": 0.0765,
+     "min": 0.036,
+     "max": 0.173
+    },
+    "interpolation_shift_abs_mm": {
+     "x": {
+      "n": 6,
+      "median": 0.0245,
+      "iqr": [
+       0.0112,
+       0.0355
+      ],
+      "mean": 0.0398,
+      "min": 0.003,
+      "max": 0.141
+     },
+     "y": {
+      "n": 6,
+      "median": 0.0425,
+      "iqr": [
+       0.0312,
+       0.0763
+      ],
+      "mean": 0.0517,
+      "min": 0.011,
+      "max": 0.099
+     },
+     "z": {
+      "n": 6,
+      "median": 0.014,
+      "iqr": [
+       0.0095,
+       0.0328
+      ],
+      "mean": 0.0212,
+      "min": 0.008,
+      "max": 0.044
+     }
+    },
+    "sections": {
+     "n_sections": {
+      "n": 6,
+      "median": 4.0,
+      "iqr": [
+       3.25,
+       4.0
+      ],
+      "mean": 3.6667,
+      "min": 3.0,
+      "max": 4.0
+     },
+     "spacing_median_mm": {
+      "n": 6,
+      "median": 1.08,
+      "iqr": [
+       0.945,
+       1.0935
+      ],
+      "mean": 1.026,
+      "min": 0.9,
+      "max": 1.098
+     },
+     "y_extent_demons_mm": {
+      "n": 6,
+      "median": 3.25,
+      "iqr": [
+       2.5,
+       3.4375
+      ],
+      "mean": 2.9583,
+      "min": 2.0,
+      "max": 3.5
+     }
+    }
+   }
+  },
+  "pairs": [
+   {
+    "struct": "lhLGN",
+    "nucleus": "LGN",
+    "hemisphere": "lh",
+    "a": "MR243",
+    "b": "MR252",
+    "a_name": "MM1",
+    "b_name": "MM2",
+    "demons": {
+     "dice": 0.7824,
+     "assd_mm": 0.219,
+     "hd95_mm": 0.612,
+     "centroid_mm": 0.343,
+     "centroid_offset_mm_signed": {
+      "x": -0.225,
+      "y": -0.139,
+      "z": 0.218
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.225,
+      "y": 0.139,
+      "z": 0.218
+     },
+     "vox_a": 2254,
+     "vox_b": 2030,
+     "abs_dy_over_nominal_step": 0.116,
+     "abs_dy_over_section_spacing": 0.128
+    },
+    "sdf": {
+     "dice": 0.7472,
+     "assd_mm": 0.282,
+     "hd95_mm": 0.935,
+     "centroid_mm": 0.312,
+     "centroid_offset_mm_signed": {
+      "x": -0.213,
+      "y": -0.137,
+      "z": 0.182
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.213,
+      "y": 0.137,
+      "z": 0.182
+     },
+     "vox_a": 3098,
+     "vox_b": 2285,
+     "abs_dy_over_nominal_step": 0.114,
+     "abs_dy_over_section_spacing": 0.126
+    },
+    "slab": {
+     "dice": 0.703,
+     "assd_mm": 0.255,
+     "hd95_mm": 0.75,
+     "centroid_mm": 0.426,
+     "centroid_offset_mm_signed": {
+      "x": -0.25,
+      "y": -0.216,
+      "z": 0.269
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.25,
+      "y": 0.216,
+      "z": 0.269
+     },
+     "vox_a": 2772,
+     "vox_b": 2497,
+     "abs_dy_over_nominal_step": 0.18,
+     "abs_dy_over_section_spacing": 0.198
+    }
+   },
+   {
+    "struct": "lhLGN",
+    "nucleus": "LGN",
+    "hemisphere": "lh",
+    "a": "MR243",
+    "b": "MR256",
+    "a_name": "MM1",
+    "b_name": "MM3",
+    "demons": {
+     "dice": 0.668,
+     "assd_mm": 0.373,
+     "hd95_mm": 1.031,
+     "centroid_mm": 1.039,
+     "centroid_offset_mm_signed": {
+      "x": -0.604,
+      "y": -0.501,
+      "z": 0.681
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.604,
+      "y": 0.501,
+      "z": 0.681
+     },
+     "vox_a": 2254,
+     "vox_b": 1890,
+     "abs_dy_over_nominal_step": 0.418,
+     "abs_dy_over_section_spacing": 0.46
+    },
+    "sdf": {
+     "dice": 0.6462,
+     "assd_mm": 0.419,
+     "hd95_mm": 1.25,
+     "centroid_mm": 1.068,
+     "centroid_offset_mm_signed": {
+      "x": -0.655,
+      "y": -0.524,
+      "z": 0.661
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.655,
+      "y": 0.524,
+      "z": 0.661
+     },
+     "vox_a": 3098,
+     "vox_b": 2216,
+     "abs_dy_over_nominal_step": 0.437,
+     "abs_dy_over_section_spacing": 0.481
+    },
+    "slab": {
+     "dice": 0.6132,
+     "assd_mm": 0.361,
+     "hd95_mm": 1.031,
+     "centroid_mm": 1.077,
+     "centroid_offset_mm_signed": {
+      "x": -0.635,
+      "y": -0.527,
+      "z": 0.692
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.635,
+      "y": 0.527,
+      "z": 0.692
+     },
+     "vox_a": 2772,
+     "vox_b": 2323,
+     "abs_dy_over_nominal_step": 0.439,
+     "abs_dy_over_section_spacing": 0.484
+    }
+   },
+   {
+    "struct": "lhLGN",
+    "nucleus": "LGN",
+    "hemisphere": "lh",
+    "a": "MR252",
+    "b": "MR256",
+    "a_name": "MM2",
+    "b_name": "MM3",
+    "demons": {
+     "dice": 0.725,
+     "assd_mm": 0.302,
+     "hd95_mm": 0.901,
+     "centroid_mm": 0.699,
+     "centroid_offset_mm_signed": {
+      "x": -0.379,
+      "y": -0.362,
+      "z": 0.463
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.379,
+      "y": 0.362,
+      "z": 0.463
+     },
+     "vox_a": 2030,
+     "vox_b": 1890,
+     "abs_dy_over_nominal_step": 0.302,
+     "abs_dy_over_section_spacing": 0.335
+    },
+    "sdf": {
+     "dice": 0.6776,
+     "assd_mm": 0.35,
+     "hd95_mm": 0.935,
+     "centroid_mm": 0.758,
+     "centroid_offset_mm_signed": {
+      "x": -0.442,
+      "y": -0.387,
+      "z": 0.479
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.442,
+      "y": 0.387,
+      "z": 0.479
+     },
+     "vox_a": 2285,
+     "vox_b": 2216,
+     "abs_dy_over_nominal_step": 0.323,
+     "abs_dy_over_section_spacing": 0.358
+    },
+    "slab": {
+     "dice": 0.6423,
+     "assd_mm": 0.311,
+     "hd95_mm": 0.806,
+     "centroid_mm": 0.651,
+     "centroid_offset_mm_signed": {
+      "x": -0.384,
+      "y": -0.311,
+      "z": 0.424
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.384,
+      "y": 0.311,
+      "z": 0.424
+     },
+     "vox_a": 2497,
+     "vox_b": 2323,
+     "abs_dy_over_nominal_step": 0.259,
+     "abs_dy_over_section_spacing": 0.288
+    }
+   },
+   {
+    "struct": "lhSTN",
+    "nucleus": "STN",
+    "hemisphere": "lh",
+    "a": "MR243",
+    "b": "MR252",
+    "a_name": "MM1",
+    "b_name": "MM2",
+    "demons": {
+     "dice": 0.5966,
+     "assd_mm": 0.248,
+     "hd95_mm": 0.646,
+     "centroid_mm": 0.453,
+     "centroid_offset_mm_signed": {
+      "x": -0.139,
+      "y": 0.311,
+      "z": 0.299
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.139,
+      "y": 0.311,
+      "z": 0.299
+     },
+     "vox_a": 394,
+     "vox_b": 481,
+     "abs_dy_over_nominal_step": 0.259,
+     "abs_dy_over_section_spacing": 0.311
+    },
+    "sdf": {
+     "dice": 0.569,
+     "assd_mm": 0.268,
+     "hd95_mm": 0.75,
+     "centroid_mm": 0.598,
+     "centroid_offset_mm_signed": {
+      "x": -0.057,
+      "y": 0.488,
+      "z": 0.342
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.057,
+      "y": 0.488,
+      "z": 0.342
+     },
+     "vox_a": 453,
+     "vox_b": 591,
+     "abs_dy_over_nominal_step": 0.407,
+     "abs_dy_over_section_spacing": 0.488
+    },
+    "slab": {
+     "dice": 0.5714,
+     "assd_mm": 0.226,
+     "hd95_mm": 0.559,
+     "centroid_mm": 0.517,
+     "centroid_offset_mm_signed": {
+      "x": -0.09,
+      "y": 0.426,
+      "z": 0.279
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.09,
+      "y": 0.426,
+      "z": 0.279
+     },
+     "vox_a": 512,
+     "vox_b": 643,
+     "abs_dy_over_nominal_step": 0.355,
+     "abs_dy_over_section_spacing": 0.426
+    }
+   },
+   {
+    "struct": "lhSTN",
+    "nucleus": "STN",
+    "hemisphere": "lh",
+    "a": "MR243",
+    "b": "MR256",
+    "a_name": "MM1",
+    "b_name": "MM3",
+    "demons": {
+     "dice": 0.5557,
+     "assd_mm": 0.276,
+     "hd95_mm": 0.75,
+     "centroid_mm": 0.886,
+     "centroid_offset_mm_signed": {
+      "x": -0.788,
+      "y": -0.056,
+      "z": 0.402
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.788,
+      "y": 0.056,
+      "z": 0.402
+     },
+     "vox_a": 394,
+     "vox_b": 333,
+     "abs_dy_over_nominal_step": 0.047,
+     "abs_dy_over_section_spacing": 0.051
+    },
+    "sdf": {
+     "dice": 0.5426,
+     "assd_mm": 0.286,
+     "hd95_mm": 0.791,
+     "centroid_mm": 0.696,
+     "centroid_offset_mm_signed": {
+      "x": -0.602,
+      "y": 0.026,
+      "z": 0.348
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.602,
+      "y": 0.026,
+      "z": 0.348
+     },
+     "vox_a": 453,
+     "vox_b": 439,
+     "abs_dy_over_nominal_step": 0.022,
+     "abs_dy_over_section_spacing": 0.024
+    },
+    "slab": {
+     "dice": 0.5119,
+     "assd_mm": 0.264,
+     "hd95_mm": 0.75,
+     "centroid_mm": 0.875,
+     "centroid_offset_mm_signed": {
+      "x": -0.761,
+      "y": -0.061,
+      "z": 0.427
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.761,
+      "y": 0.061,
+      "z": 0.427
+     },
+     "vox_a": 512,
+     "vox_b": 500,
+     "abs_dy_over_nominal_step": 0.051,
+     "abs_dy_over_section_spacing": 0.056
+    }
+   },
+   {
+    "struct": "lhSTN",
+    "nucleus": "STN",
+    "hemisphere": "lh",
+    "a": "MR252",
+    "b": "MR256",
+    "a_name": "MM2",
+    "b_name": "MM3",
+    "demons": {
+     "dice": 0.4668,
+     "assd_mm": 0.351,
+     "hd95_mm": 1.09,
+     "centroid_mm": 0.753,
+     "centroid_offset_mm_signed": {
+      "x": -0.649,
+      "y": -0.367,
+      "z": 0.103
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.649,
+      "y": 0.367,
+      "z": 0.103
+     },
+     "vox_a": 481,
+     "vox_b": 333,
+     "abs_dy_over_nominal_step": 0.306,
+     "abs_dy_over_section_spacing": 0.371
+    },
+    "sdf": {
+     "dice": 0.5126,
+     "assd_mm": 0.308,
+     "hd95_mm": 0.829,
+     "centroid_mm": 0.714,
+     "centroid_offset_mm_signed": {
+      "x": -0.545,
+      "y": -0.461,
+      "z": 0.006
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.545,
+      "y": 0.461,
+      "z": 0.006
+     },
+     "vox_a": 591,
+     "vox_b": 439,
+     "abs_dy_over_nominal_step": 0.384,
+     "abs_dy_over_section_spacing": 0.466
+    },
+    "slab": {
+     "dice": 0.4777,
+     "assd_mm": 0.317,
+     "hd95_mm": 1.031,
+     "centroid_mm": 0.842,
+     "centroid_offset_mm_signed": {
+      "x": -0.671,
+      "y": -0.487,
+      "z": 0.148
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.671,
+      "y": 0.487,
+      "z": 0.148
+     },
+     "vox_a": 643,
+     "vox_b": 500,
+     "abs_dy_over_nominal_step": 0.406,
+     "abs_dy_over_section_spacing": 0.492
+    }
+   },
+   {
+    "struct": "rhLGN",
+    "nucleus": "LGN",
+    "hemisphere": "rh",
+    "a": "MR243",
+    "b": "MR252",
+    "a_name": "MM1",
+    "b_name": "MM2",
+    "demons": {
+     "dice": 0.6936,
+     "assd_mm": 0.302,
+     "hd95_mm": 0.75,
+     "centroid_mm": 0.509,
+     "centroid_offset_mm_signed": {
+      "x": 0.219,
+      "y": 0.441,
+      "z": 0.128
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.219,
+      "y": 0.441,
+      "z": 0.128
+     },
+     "vox_a": 2120,
+     "vox_b": 1966,
+     "abs_dy_over_nominal_step": 0.367,
+     "abs_dy_over_section_spacing": 0.405
+    },
+    "sdf": {
+     "dice": 0.718,
+     "assd_mm": 0.303,
+     "hd95_mm": 0.75,
+     "centroid_mm": 0.489,
+     "centroid_offset_mm_signed": {
+      "x": 0.208,
+      "y": 0.393,
+      "z": 0.203
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.208,
+      "y": 0.393,
+      "z": 0.203
+     },
+     "vox_a": 2689,
+     "vox_b": 2250,
+     "abs_dy_over_nominal_step": 0.328,
+     "abs_dy_over_section_spacing": 0.361
+    },
+    "slab": {
+     "dice": 0.6977,
+     "assd_mm": 0.257,
+     "hd95_mm": 0.75,
+     "centroid_mm": 0.435,
+     "centroid_offset_mm_signed": {
+      "x": 0.214,
+      "y": 0.323,
+      "z": 0.196
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.214,
+      "y": 0.323,
+      "z": 0.196
+     },
+     "vox_a": 2481,
+     "vox_b": 2455,
+     "abs_dy_over_nominal_step": 0.269,
+     "abs_dy_over_section_spacing": 0.297
+    }
+   },
+   {
+    "struct": "rhLGN",
+    "nucleus": "LGN",
+    "hemisphere": "rh",
+    "a": "MR243",
+    "b": "MR256",
+    "a_name": "MM1",
+    "b_name": "MM3",
+    "demons": {
+     "dice": 0.7354,
+     "assd_mm": 0.279,
+     "hd95_mm": 0.612,
+     "centroid_mm": 0.479,
+     "centroid_offset_mm_signed": {
+      "x": 0.235,
+      "y": 0.103,
+      "z": 0.404
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.235,
+      "y": 0.103,
+      "z": 0.404
+     },
+     "vox_a": 2120,
+     "vox_b": 2392,
+     "abs_dy_over_nominal_step": 0.086,
+     "abs_dy_over_section_spacing": 0.095
+    },
+    "sdf": {
+     "dice": 0.7392,
+     "assd_mm": 0.303,
+     "hd95_mm": 0.901,
+     "centroid_mm": 0.427,
+     "centroid_offset_mm_signed": {
+      "x": 0.134,
+      "y": 0.25,
+      "z": 0.319
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.134,
+      "y": 0.25,
+      "z": 0.319
+     },
+     "vox_a": 2689,
+     "vox_b": 2565,
+     "abs_dy_over_nominal_step": 0.208,
+     "abs_dy_over_section_spacing": 0.23
+    },
+    "slab": {
+     "dice": 0.692,
+     "assd_mm": 0.263,
+     "hd95_mm": 0.612,
+     "centroid_mm": 0.429,
+     "centroid_offset_mm_signed": {
+      "x": 0.181,
+      "y": 0.122,
+      "z": 0.369
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.181,
+      "y": 0.122,
+      "z": 0.369
+     },
+     "vox_a": 2481,
+     "vox_b": 2788,
+     "abs_dy_over_nominal_step": 0.102,
+     "abs_dy_over_section_spacing": 0.112
+    }
+   },
+   {
+    "struct": "rhLGN",
+    "nucleus": "LGN",
+    "hemisphere": "rh",
+    "a": "MR252",
+    "b": "MR256",
+    "a_name": "MM2",
+    "b_name": "MM3",
+    "demons": {
+     "dice": 0.7733,
+     "assd_mm": 0.237,
+     "hd95_mm": 0.559,
+     "centroid_mm": 0.437,
+     "centroid_offset_mm_signed": {
+      "x": 0.016,
+      "y": -0.338,
+      "z": 0.276
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.016,
+      "y": 0.338,
+      "z": 0.276
+     },
+     "vox_a": 1966,
+     "vox_b": 2392,
+     "abs_dy_over_nominal_step": 0.282,
+     "abs_dy_over_section_spacing": 0.313
+    },
+    "sdf": {
+     "dice": 0.7921,
+     "assd_mm": 0.229,
+     "hd95_mm": 0.559,
+     "centroid_mm": 0.198,
+     "centroid_offset_mm_signed": {
+      "x": -0.073,
+      "y": -0.143,
+      "z": 0.116
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.073,
+      "y": 0.143,
+      "z": 0.116
+     },
+     "vox_a": 2250,
+     "vox_b": 2565,
+     "abs_dy_over_nominal_step": 0.119,
+     "abs_dy_over_section_spacing": 0.132
+    },
+    "slab": {
+     "dice": 0.7255,
+     "assd_mm": 0.236,
+     "hd95_mm": 0.559,
+     "centroid_mm": 0.267,
+     "centroid_offset_mm_signed": {
+      "x": -0.033,
+      "y": -0.201,
+      "z": 0.172
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.033,
+      "y": 0.201,
+      "z": 0.172
+     },
+     "vox_a": 2455,
+     "vox_b": 2788,
+     "abs_dy_over_nominal_step": 0.168,
+     "abs_dy_over_section_spacing": 0.186
+    }
+   },
+   {
+    "struct": "rhSTN",
+    "nucleus": "STN",
+    "hemisphere": "rh",
+    "a": "MR243",
+    "b": "MR252",
+    "a_name": "MM1",
+    "b_name": "MM2",
+    "demons": {
+     "dice": 0.5473,
+     "assd_mm": 0.278,
+     "hd95_mm": 0.707,
+     "centroid_mm": 0.516,
+     "centroid_offset_mm_signed": {
+      "x": -0.034,
+      "y": 0.506,
+      "z": 0.092
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.034,
+      "y": 0.506,
+      "z": 0.092
+     },
+     "vox_a": 398,
+     "vox_b": 512,
+     "abs_dy_over_nominal_step": 0.422,
+     "abs_dy_over_section_spacing": 0.507
+    },
+    "sdf": {
+     "dice": 0.5119,
+     "assd_mm": 0.306,
+     "hd95_mm": 0.829,
+     "centroid_mm": 0.531,
+     "centroid_offset_mm_signed": {
+      "x": 0.064,
+      "y": 0.483,
+      "z": 0.209
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.064,
+      "y": 0.483,
+      "z": 0.209
+     },
+     "vox_a": 456,
+     "vox_b": 591,
+     "abs_dy_over_nominal_step": 0.403,
+     "abs_dy_over_section_spacing": 0.483
+    },
+    "slab": {
+     "dice": 0.4779,
+     "assd_mm": 0.284,
+     "hd95_mm": 0.791,
+     "centroid_mm": 0.483,
+     "centroid_offset_mm_signed": {
+      "x": -0.001,
+      "y": 0.467,
+      "z": 0.125
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.001,
+      "y": 0.467,
+      "z": 0.125
+     },
+     "vox_a": 510,
+     "vox_b": 687,
+     "abs_dy_over_nominal_step": 0.389,
+     "abs_dy_over_section_spacing": 0.467
+    }
+   },
+   {
+    "struct": "rhSTN",
+    "nucleus": "STN",
+    "hemisphere": "rh",
+    "a": "MR243",
+    "b": "MR256",
+    "a_name": "MM1",
+    "b_name": "MM3",
+    "demons": {
+     "dice": 0.632,
+     "assd_mm": 0.246,
+     "hd95_mm": 0.774,
+     "centroid_mm": 0.414,
+     "centroid_offset_mm_signed": {
+      "x": -0.03,
+      "y": 0.294,
+      "z": 0.29
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.03,
+      "y": 0.294,
+      "z": 0.29
+     },
+     "vox_a": 398,
+     "vox_b": 314,
+     "abs_dy_over_nominal_step": 0.245,
+     "abs_dy_over_section_spacing": 0.27
+    },
+    "sdf": {
+     "dice": 0.6132,
+     "assd_mm": 0.265,
+     "hd95_mm": 0.901,
+     "centroid_mm": 0.342,
+     "centroid_offset_mm_signed": {
+      "x": 0.124,
+      "y": 0.157,
+      "z": 0.278
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.124,
+      "y": 0.157,
+      "z": 0.278
+     },
+     "vox_a": 456,
+     "vox_b": 392,
+     "abs_dy_over_nominal_step": 0.131,
+     "abs_dy_over_section_spacing": 0.144
+    },
+    "slab": {
+     "dice": 0.5804,
+     "assd_mm": 0.226,
+     "hd95_mm": 0.707,
+     "centroid_mm": 0.323,
+     "centroid_offset_mm_signed": {
+      "x": 0.104,
+      "y": 0.145,
+      "z": 0.27
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.104,
+      "y": 0.145,
+      "z": 0.27
+     },
+     "vox_a": 510,
+     "vox_b": 441,
+     "abs_dy_over_nominal_step": 0.121,
+     "abs_dy_over_section_spacing": 0.133
+    }
+   },
+   {
+    "struct": "rhSTN",
+    "nucleus": "STN",
+    "hemisphere": "rh",
+    "a": "MR252",
+    "b": "MR256",
+    "a_name": "MM2",
+    "b_name": "MM3",
+    "demons": {
+     "dice": 0.5642,
+     "assd_mm": 0.29,
+     "hd95_mm": 0.901,
+     "centroid_mm": 0.29,
+     "centroid_offset_mm_signed": {
+      "x": 0.003,
+      "y": -0.212,
+      "z": 0.198
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.003,
+      "y": 0.212,
+      "z": 0.198
+     },
+     "vox_a": 512,
+     "vox_b": 314,
+     "abs_dy_over_nominal_step": 0.177,
+     "abs_dy_over_section_spacing": 0.214
+    },
+    "sdf": {
+     "dice": 0.5392,
+     "assd_mm": 0.298,
+     "hd95_mm": 0.791,
+     "centroid_mm": 0.339,
+     "centroid_offset_mm_signed": {
+      "x": 0.06,
+      "y": -0.327,
+      "z": 0.069
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.06,
+      "y": 0.327,
+      "z": 0.069
+     },
+     "vox_a": 591,
+     "vox_b": 392,
+     "abs_dy_over_nominal_step": 0.273,
+     "abs_dy_over_section_spacing": 0.33
+    },
+    "slab": {
+     "dice": 0.539,
+     "assd_mm": 0.284,
+     "hd95_mm": 0.935,
+     "centroid_mm": 0.368,
+     "centroid_offset_mm_signed": {
+      "x": 0.105,
+      "y": -0.322,
+      "z": 0.145
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.105,
+      "y": 0.322,
+      "z": 0.145
+     },
+     "vox_a": 687,
+     "vox_b": 441,
+     "abs_dy_over_nominal_step": 0.268,
+     "abs_dy_over_section_spacing": 0.325
+    }
+   }
+  ],
+  "per_brain": {
+   "MR243": {
+    "lhLGN": {
+     "name": "MM1",
+     "sections": {
+      "n_sections": 4,
+      "section_spacing_mm": [
+       1.098,
+       1.098,
+       1.098
+      ],
+      "section_spacing_median_mm": 1.098,
+      "span_first_to_last_mm": 3.294,
+      "slab_extent_mm": 4.392,
+      "blockface_step_mm": 0.366,
+      "voxels_per_section": [
+       1773,
+       2076,
+       2572,
+       2027
+      ]
+     },
+     "centroid_mm": {
+      "demons": [
+       -10.494,
+       10.541,
+       11.083
+      ],
+      "sdf": [
+       -10.475,
+       10.595,
+       11.132
+      ],
+      "slab": [
+       -10.452,
+       10.564,
+       11.085
+      ]
+     },
+     "interpolation_shift_demons_minus_slab_mm": {
+      "x": -0.042,
+      "y": -0.023,
+      "z": -0.002
+     },
+     "interpolation_shift_demons_minus_slab_norm_mm": 0.048,
+     "interpolation_shift_sdf_minus_slab_mm": {
+      "x": -0.023,
+      "y": 0.03,
+      "z": 0.047
+     },
+     "y_extent_template_mm": {
+      "demons": 4.5,
+      "sdf": 6.5,
+      "slab": 5.75
+     },
+     "volume_mm3": {
+      "demons": 35.22,
+      "sdf": 48.41,
+      "slab": 43.31
+     }
+    },
+    "lhSTN": {
+     "name": "MM1",
+     "sections": {
+      "n_sections": 4,
+      "section_spacing_mm": [
+       1.098,
+       1.098,
+       1.098
+      ],
+      "section_spacing_median_mm": 1.098,
+      "span_first_to_last_mm": 3.294,
+      "slab_extent_mm": 4.392,
+      "blockface_step_mm": 0.366,
+      "voxels_per_section": [
+       101,
+       901,
+       607,
+       191
+      ]
+     },
+     "centroid_mm": {
+      "demons": [
+       -4.653,
+       13.355,
+       11.873
+      ],
+      "sdf": [
+       -4.75,
+       13.24,
+       11.874
+      ],
+      "slab": [
+       -4.677,
+       13.325,
+       11.856
+      ]
+     },
+     "interpolation_shift_demons_minus_slab_mm": {
+      "x": 0.024,
+      "y": 0.03,
+      "z": 0.017
+     },
+     "interpolation_shift_demons_minus_slab_norm_mm": 0.042,
+     "interpolation_shift_sdf_minus_slab_mm": {
+      "x": -0.073,
+      "y": -0.085,
+      "z": 0.018
+     },
+     "y_extent_template_mm": {
+      "demons": 3.25,
+      "sdf": 4.75,
+      "slab": 4.25
+     },
+     "volume_mm3": {
+      "demons": 6.16,
+      "sdf": 7.08,
+      "slab": 8.0
+     }
+    },
+    "rhLGN": {
+     "name": "MM1",
+     "sections": {
+      "n_sections": 4,
+      "section_spacing_mm": [
+       1.098,
+       1.098,
+       1.098
+      ],
+      "section_spacing_median_mm": 1.098,
+      "span_first_to_last_mm": 3.294,
+      "slab_extent_mm": 4.392,
+      "blockface_step_mm": 0.366,
+      "voxels_per_section": [
+       1061,
+       2222,
+       2496,
+       1767
+      ]
+     },
+     "centroid_mm": {
+      "demons": [
+       10.62,
+       9.983,
+       11.365
+      ],
+      "sdf": [
+       10.716,
+       9.872,
+       11.429
+      ],
+      "slab": [
+       10.661,
+       9.919,
+       11.397
+      ]
+     },
+     "interpolation_shift_demons_minus_slab_mm": {
+      "x": -0.041,
+      "y": 0.065,
+      "z": -0.031
+     },
+     "interpolation_shift_demons_minus_slab_norm_mm": 0.083,
+     "interpolation_shift_sdf_minus_slab_mm": {
+      "x": 0.055,
+      "y": -0.046,
+      "z": 0.032
+     },
+     "y_extent_template_mm": {
+      "demons": 4.5,
+      "sdf": 6.0,
+      "slab": 5.25
+     },
+     "volume_mm3": {
+      "demons": 33.12,
+      "sdf": 42.02,
+      "slab": 38.77
+     }
+    },
+    "rhSTN": {
+     "name": "MM1",
+     "sections": {
+      "n_sections": 4,
+      "section_spacing_mm": [
+       1.098,
+       1.098,
+       1.098
+      ],
+      "section_spacing_median_mm": 1.098,
+      "span_first_to_last_mm": 3.294,
+      "slab_extent_mm": 4.392,
+      "blockface_step_mm": 0.366,
+      "voxels_per_section": [
+       173,
+       871,
+       637,
+       167
+      ]
+     },
+     "centroid_mm": {
+      "demons": [
+       4.999,
+       13.27,
+       12.03
+      ],
+      "sdf": [
+       5.001,
+       13.26,
+       12.05
+      ],
+      "slab": [
+       5.006,
+       13.321,
+       12.04
+      ]
+     },
+     "interpolation_shift_demons_minus_slab_mm": {
+      "x": -0.007,
+      "y": -0.05,
+      "z": -0.011
+     },
+     "interpolation_shift_demons_minus_slab_norm_mm": 0.052,
+     "interpolation_shift_sdf_minus_slab_mm": {
+      "x": -0.006,
+      "y": -0.061,
+      "z": 0.01
+     },
+     "y_extent_template_mm": {
+      "demons": 3.5,
+      "sdf": 5.0,
+      "slab": 4.25
+     },
+     "volume_mm3": {
+      "demons": 6.22,
+      "sdf": 7.12,
+      "slab": 7.97
+     }
+    }
+   },
+   "MR252": {
+    "lhLGN": {
+     "name": "MM2",
+     "sections": {
+      "n_sections": 5,
+      "section_spacing_mm": [
+       1.08,
+       1.17,
+       1.08,
+       1.08
+      ],
+      "section_spacing_median_mm": 1.08,
+      "span_first_to_last_mm": 4.41,
+      "slab_extent_mm": 5.49,
+      "blockface_step_mm": 0.045,
+      "voxels_per_section": [
+       772,
+       1819,
+       2734,
+       2410,
+       377
+      ]
+     },
+     "centroid_mm": {
+      "demons": [
+       -10.719,
+       10.402,
+       11.301
+      ],
+      "sdf": [
+       -10.688,
+       10.458,
+       11.314
+      ],
+      "slab": [
+       -10.702,
+       10.348,
+       11.354
+      ]
+     },
+     "interpolation_shift_demons_minus_slab_mm": {
+      "x": -0.017,
+      "y": 0.054,
+      "z": -0.053
+     },
+     "interpolation_shift_demons_minus_slab_norm_mm": 0.078,
+     "interpolation_shift_sdf_minus_slab_mm": {
+      "x": 0.014,
+      "y": 0.11,
+      "z": -0.039
+     },
+     "y_extent_template_mm": {
+      "demons": 6.25,
+      "sdf": 7.0,
+      "slab": 7.0
+     },
+     "volume_mm3": {
+      "demons": 31.72,
+      "sdf": 35.7,
+      "slab": 39.02
+     }
+    },
+    "lhSTN": {
+     "name": "MM2",
+     "sections": {
+      "n_sections": 4,
+      "section_spacing_mm": [
+       0.9,
+       1.755,
+       0.855
+      ],
+      "section_spacing_median_mm": 0.9,
+      "span_first_to_last_mm": 3.51,
+      "slab_extent_mm": 4.388,
+      "blockface_step_mm": 0.045,
+      "voxels_per_section": [
+       440,
+       1039,
+       631,
+       234
+      ]
+     },
+     "centroid_mm": {
+      "demons": [
+       -4.792,
+       13.666,
+       12.172
+      ],
+      "sdf": [
+       -4.806,
+       13.728,
+       12.215
+      ],
+      "slab": [
+       -4.767,
+       13.751,
+       12.135
+      ]
+     },
+     "interpolation_shift_demons_minus_slab_mm": {
+      "x": -0.025,
+      "y": -0.085,
+      "z": 0.038
+     },
+     "interpolation_shift_demons_minus_slab_norm_mm": 0.096,
+     "interpolation_shift_sdf_minus_slab_mm": {
+      "x": -0.04,
+      "y": -0.023,
+      "z": 0.081
+     },
+     "y_extent_template_mm": {
+      "demons": 3.5,
+      "sdf": 4.5,
+      "slab": 4.25
+     },
+     "volume_mm3": {
+      "demons": 7.52,
+      "sdf": 9.23,
+      "slab": 10.05
+     }
+    },
+    "rhLGN": {
+     "name": "MM2",
+     "sections": {
+      "n_sections": 5,
+      "section_spacing_mm": [
+       1.08,
+       1.17,
+       1.08,
+       1.08
+      ],
+      "section_spacing_median_mm": 1.08,
+      "span_first_to_last_mm": 4.41,
+      "slab_extent_mm": 5.49,
+      "blockface_step_mm": 0.045,
+      "voxels_per_section": [
+       443,
+       1577,
+       2618,
+       2665,
+       871
+      ]
+     },
+     "centroid_mm": {
+      "demons": [
+       10.839,
+       10.424,
+       11.494
+      ],
+      "sdf": [
+       10.924,
+       10.266,
+       11.632
+      ],
+      "slab": [
+       10.875,
+       10.242,
+       11.593
+      ]
+     },
+     "interpolation_shift_demons_minus_slab_mm": {
+      "x": -0.036,
+      "y": 0.183,
+      "z": -0.1
+     },
+     "interpolation_shift_demons_minus_slab_norm_mm": 0.211,
+     "interpolation_shift_sdf_minus_slab_mm": {
+      "x": 0.048,
+      "y": 0.024,
+      "z": 0.039
+     },
+     "y_extent_template_mm": {
+      "demons": 5.75,
+      "sdf": 6.75,
+      "slab": 6.75
+     },
+     "volume_mm3": {
+      "demons": 30.72,
+      "sdf": 35.16,
+      "slab": 38.36
+     }
+    },
+    "rhSTN": {
+     "name": "MM2",
+     "sections": {
+      "n_sections": 4,
+      "section_spacing_mm": [
+       0.9,
+       1.755,
+       0.855
+      ],
+      "section_spacing_median_mm": 0.9,
+      "span_first_to_last_mm": 3.51,
+      "slab_extent_mm": 4.388,
+      "blockface_step_mm": 0.045,
+      "voxels_per_section": [
+       347,
+       1018,
+       669,
+       272
+      ]
+     },
+     "centroid_mm": {
+      "demons": [
+       4.966,
+       13.776,
+       12.121
+      ],
+      "sdf": [
+       5.065,
+       13.743,
+       12.26
+      ],
+      "slab": [
+       5.005,
+       13.787,
+       12.165
+      ]
+     },
+     "interpolation_shift_demons_minus_slab_mm": {
+      "x": -0.039,
+      "y": -0.011,
+      "z": -0.044
+     },
+     "interpolation_shift_demons_minus_slab_norm_mm": 0.06,
+     "interpolation_shift_sdf_minus_slab_mm": {
+      "x": 0.06,
+      "y": -0.044,
+      "z": 0.095
+     },
+     "y_extent_template_mm": {
+      "demons": 3.25,
+      "sdf": 4.25,
+      "slab": 4.25
+     },
+     "volume_mm3": {
+      "demons": 8.0,
+      "sdf": 9.23,
+      "slab": 10.73
+     }
+    }
+   },
+   "MR256": {
+    "lhLGN": {
+     "name": "MM3",
+     "sections": {
+      "n_sections": 4,
+      "section_spacing_mm": [
+       1.08,
+       1.08,
+       1.08
+      ],
+      "section_spacing_median_mm": 1.08,
+      "span_first_to_last_mm": 3.24,
+      "slab_extent_mm": 4.32,
+      "blockface_step_mm": 0.045,
+      "voxels_per_section": [
+       1258,
+       1963,
+       2318,
+       1539
+      ]
+     },
+     "centroid_mm": {
+      "demons": [
+       -11.097,
+       10.04,
+       11.764
+      ],
+      "sdf": [
+       -11.13,
+       10.07,
+       11.793
+      ],
+      "slab": [
+       -11.086,
+       10.037,
+       11.777
+      ]
+     },
+     "interpolation_shift_demons_minus_slab_mm": {
+      "x": -0.011,
+      "y": 0.003,
+      "z": -0.013
+     },
+     "interpolation_shift_demons_minus_slab_norm_mm": 0.017,
+     "interpolation_shift_sdf_minus_slab_mm": {
+      "x": -0.044,
+      "y": 0.033,
+      "z": 0.016
+     },
+     "y_extent_template_mm": {
+      "demons": 4.25,
+      "sdf": 5.25,
+      "slab": 5.25
+     },
+     "volume_mm3": {
+      "demons": 29.53,
+      "sdf": 34.62,
+      "slab": 36.3
+     }
+    },
+    "lhSTN": {
+     "name": "MM3",
+     "sections": {
+      "n_sections": 3,
+      "section_spacing_mm": [
+       1.08,
+       1.08
+      ],
+      "section_spacing_median_mm": 1.08,
+      "span_first_to_last_mm": 2.16,
+      "slab_extent_mm": 3.24,
+      "blockface_step_mm": 0.045,
+      "voxels_per_section": [
+       381,
+       882,
+       380
+      ]
+     },
+     "centroid_mm": {
+      "demons": [
+       -5.441,
+       13.299,
+       12.275
+      ],
+      "sdf": [
+       -5.352,
+       13.267,
+       12.222
+      ],
+      "slab": [
+       -5.438,
+       13.264,
+       12.282
+      ]
+     },
+     "interpolation_shift_demons_minus_slab_mm": {
+      "x": -0.003,
+      "y": 0.035,
+      "z": -0.008
+     },
+     "interpolation_shift_demons_minus_slab_norm_mm": 0.036,
+     "interpolation_shift_sdf_minus_slab_mm": {
+      "x": 0.086,
+      "y": 0.003,
+      "z": -0.061
+     },
+     "y_extent_template_mm": {
+      "demons": 2.25,
+      "sdf": 3.25,
+      "slab": 3.25
+     },
+     "volume_mm3": {
+      "demons": 5.2,
+      "sdf": 6.86,
+      "slab": 7.81
+     }
+    },
+    "rhLGN": {
+     "name": "MM3",
+     "sections": {
+      "n_sections": 5,
+      "section_spacing_mm": [
+       1.08,
+       1.08,
+       1.08,
+       1.08
+      ],
+      "section_spacing_median_mm": 1.08,
+      "span_first_to_last_mm": 4.32,
+      "slab_extent_mm": 5.4,
+      "blockface_step_mm": 0.045,
+      "voxels_per_section": [
+       683,
+       1462,
+       2205,
+       2382,
+       837
+      ]
+     },
+     "centroid_mm": {
+      "demons": [
+       10.855,
+       10.087,
+       11.77
+      ],
+      "sdf": [
+       10.85,
+       10.123,
+       11.748
+      ],
+      "slab": [
+       10.842,
+       10.041,
+       11.766
+      ]
+     },
+     "interpolation_shift_demons_minus_slab_mm": {
+      "x": 0.013,
+      "y": 0.046,
+      "z": 0.004
+     },
+     "interpolation_shift_demons_minus_slab_norm_mm": 0.048,
+     "interpolation_shift_sdf_minus_slab_mm": {
+      "x": 0.008,
+      "y": 0.082,
+      "z": -0.017
+     },
+     "y_extent_template_mm": {
+      "demons": 5.25,
+      "sdf": 6.0,
+      "slab": 6.0
+     },
+     "volume_mm3": {
+      "demons": 37.38,
+      "sdf": 40.08,
+      "slab": 43.56
+     }
+    },
+    "rhSTN": {
+     "name": "MM3",
+     "sections": {
+      "n_sections": 3,
+      "section_spacing_mm": [
+       1.08,
+       1.08
+      ],
+      "section_spacing_median_mm": 1.08,
+      "span_first_to_last_mm": 2.16,
+      "slab_extent_mm": 3.24,
+      "blockface_step_mm": 0.045,
+      "voxels_per_section": [
+       245,
+       772,
+       563
+      ]
+     },
+     "centroid_mm": {
+      "demons": [
+       4.969,
+       13.564,
+       12.319
+      ],
+      "sdf": [
+       5.125,
+       13.416,
+       12.328
+      ],
+      "slab": [
+       5.11,
+       13.465,
+       12.31
+      ]
+     },
+     "interpolation_shift_demons_minus_slab_mm": {
+      "x": -0.141,
+      "y": 0.099,
+      "z": 0.009
+     },
+     "interpolation_shift_demons_minus_slab_norm_mm": 0.173,
+     "interpolation_shift_sdf_minus_slab_mm": {
+      "x": 0.015,
+      "y": -0.049,
+      "z": 0.018
+     },
+     "y_extent_template_mm": {
+      "demons": 2.0,
+      "sdf": 3.0,
+      "slab": 3.0
+     },
+     "volume_mm3": {
+      "demons": 4.91,
+      "sdf": 6.12,
+      "slab": 6.89
+     }
+    }
+   }
+  },
+  "mirror": [
+   {
+    "brain": "MR243",
+    "name": "MM1",
+    "nucleus": "LGN",
+    "demons": {
+     "dice": 0.7599,
+     "assd_mm": 0.242,
+     "hd95_mm": 0.559,
+     "centroid_mm": 0.638,
+     "centroid_offset_mm_signed": {
+      "x": -0.127,
+      "y": -0.558,
+      "z": 0.283
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.127,
+      "y": 0.558,
+      "z": 0.283
+     },
+     "vox_a": 2254,
+     "vox_b": 2120
+    },
+    "sdf": {
+     "dice": 0.7534,
+     "assd_mm": 0.268,
+     "hd95_mm": 0.75,
+     "centroid_mm": 0.817,
+     "centroid_offset_mm_signed": {
+      "x": -0.241,
+      "y": -0.722,
+      "z": 0.297
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.241,
+      "y": 0.722,
+      "z": 0.297
+     },
+     "vox_a": 3098,
+     "vox_b": 2689
+    },
+    "slab": {
+     "dice": 0.6884,
+     "assd_mm": 0.259,
+     "hd95_mm": 0.612,
+     "centroid_mm": 0.747,
+     "centroid_offset_mm_signed": {
+      "x": -0.21,
+      "y": -0.646,
+      "z": 0.312
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.21,
+      "y": 0.646,
+      "z": 0.312
+     },
+     "vox_a": 2772,
+     "vox_b": 2481
+    }
+   },
+   {
+    "brain": "MR243",
+    "name": "MM1",
+    "nucleus": "STN",
+    "demons": {
+     "dice": 0.7803,
+     "assd_mm": 0.134,
+     "hd95_mm": 0.354,
+     "centroid_mm": 0.389,
+     "centroid_offset_mm_signed": {
+      "x": -0.346,
+      "y": -0.085,
+      "z": 0.156
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.346,
+      "y": 0.085,
+      "z": 0.156
+     },
+     "vox_a": 394,
+     "vox_b": 398
+    },
+    "sdf": {
+     "dice": 0.7327,
+     "assd_mm": 0.138,
+     "hd95_mm": 0.354,
+     "centroid_mm": 0.308,
+     "centroid_offset_mm_signed": {
+      "x": -0.251,
+      "y": 0.02,
+      "z": 0.177
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.251,
+      "y": 0.02,
+      "z": 0.177
+     },
+     "vox_a": 453,
+     "vox_b": 456
+    },
+    "slab": {
+     "dice": 0.6967,
+     "assd_mm": 0.134,
+     "hd95_mm": 0.354,
+     "centroid_mm": 0.378,
+     "centroid_offset_mm_signed": {
+      "x": -0.33,
+      "y": -0.005,
+      "z": 0.184
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.33,
+      "y": 0.005,
+      "z": 0.184
+     },
+     "vox_a": 512,
+     "vox_b": 510
+    }
+   },
+   {
+    "brain": "MR252",
+    "name": "MM2",
+    "nucleus": "LGN",
+    "demons": {
+     "dice": 0.8158,
+     "assd_mm": 0.185,
+     "hd95_mm": 0.5,
+     "centroid_mm": 0.228,
+     "centroid_offset_mm_signed": {
+      "x": -0.121,
+      "y": 0.022,
+      "z": 0.193
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.121,
+      "y": 0.022,
+      "z": 0.193
+     },
+     "vox_a": 2030,
+     "vox_b": 1966
+    },
+    "sdf": {
+     "dice": 0.7828,
+     "assd_mm": 0.226,
+     "hd95_mm": 0.612,
+     "centroid_mm": 0.44,
+     "centroid_offset_mm_signed": {
+      "x": -0.235,
+      "y": -0.192,
+      "z": 0.318
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.235,
+      "y": 0.192,
+      "z": 0.318
+     },
+     "vox_a": 2285,
+     "vox_b": 2250
+    },
+    "slab": {
+     "dice": 0.7371,
+     "assd_mm": 0.215,
+     "hd95_mm": 0.559,
+     "centroid_mm": 0.314,
+     "centroid_offset_mm_signed": {
+      "x": -0.173,
+      "y": -0.106,
+      "z": 0.239
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.173,
+      "y": 0.106,
+      "z": 0.239
+     },
+     "vox_a": 2497,
+     "vox_b": 2455
+    }
+   },
+   {
+    "brain": "MR252",
+    "name": "MM2",
+    "nucleus": "STN",
+    "demons": {
+     "dice": 0.6908,
+     "assd_mm": 0.179,
+     "hd95_mm": 0.354,
+     "centroid_mm": 0.212,
+     "centroid_offset_mm_signed": {
+      "x": -0.174,
+      "y": 0.111,
+      "z": -0.051
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.174,
+      "y": 0.111,
+      "z": 0.051
+     },
+     "vox_a": 481,
+     "vox_b": 512
+    },
+    "sdf": {
+     "dice": 0.6684,
+     "assd_mm": 0.195,
+     "hd95_mm": 0.5,
+     "centroid_mm": 0.263,
+     "centroid_offset_mm_signed": {
+      "x": -0.258,
+      "y": 0.015,
+      "z": 0.044
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.258,
+      "y": 0.015,
+      "z": 0.044
+     },
+     "vox_a": 591,
+     "vox_b": 591
+    },
+    "slab": {
+     "dice": 0.6677,
+     "assd_mm": 0.173,
+     "hd95_mm": 0.5,
+     "centroid_mm": 0.243,
+     "centroid_offset_mm_signed": {
+      "x": -0.238,
+      "y": 0.036,
+      "z": 0.03
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.238,
+      "y": 0.036,
+      "z": 0.03
+     },
+     "vox_a": 643,
+     "vox_b": 687
+    }
+   },
+   {
+    "brain": "MR256",
+    "name": "MM3",
+    "nucleus": "LGN",
+    "demons": {
+     "dice": 0.7964,
+     "assd_mm": 0.227,
+     "hd95_mm": 0.5,
+     "centroid_mm": 0.246,
+     "centroid_offset_mm_signed": {
+      "x": 0.242,
+      "y": 0.047,
+      "z": 0.005
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.242,
+      "y": 0.047,
+      "z": 0.005
+     },
+     "vox_a": 1890,
+     "vox_b": 2392
+    },
+    "sdf": {
+     "dice": 0.7731,
+     "assd_mm": 0.254,
+     "hd95_mm": 0.559,
+     "centroid_mm": 0.289,
+     "centroid_offset_mm_signed": {
+      "x": 0.28,
+      "y": 0.053,
+      "z": -0.045
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.28,
+      "y": 0.053,
+      "z": 0.045
+     },
+     "vox_a": 2216,
+     "vox_b": 2565
+    },
+    "slab": {
+     "dice": 0.7149,
+     "assd_mm": 0.242,
+     "hd95_mm": 0.559,
+     "centroid_mm": 0.244,
+     "centroid_offset_mm_signed": {
+      "x": 0.244,
+      "y": 0.004,
+      "z": -0.012
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.244,
+      "y": 0.004,
+      "z": 0.012
+     },
+     "vox_a": 2323,
+     "vox_b": 2788
+    }
+   },
+   {
+    "brain": "MR256",
+    "name": "MM3",
+    "nucleus": "STN",
+    "demons": {
+     "dice": 0.677,
+     "assd_mm": 0.197,
+     "hd95_mm": 0.433,
+     "centroid_mm": 0.544,
+     "centroid_offset_mm_signed": {
+      "x": 0.472,
+      "y": 0.266,
+      "z": 0.044
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.472,
+      "y": 0.266,
+      "z": 0.044
+     },
+     "vox_a": 333,
+     "vox_b": 314
+    },
+    "sdf": {
+     "dice": 0.6811,
+     "assd_mm": 0.192,
+     "hd95_mm": 0.433,
+     "centroid_mm": 0.292,
+     "centroid_offset_mm_signed": {
+      "x": 0.227,
+      "y": 0.15,
+      "z": 0.107
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.227,
+      "y": 0.15,
+      "z": 0.107
+     },
+     "vox_a": 439,
+     "vox_b": 392
+    },
+    "slab": {
+     "dice": 0.5887,
+     "assd_mm": 0.203,
+     "hd95_mm": 0.5,
+     "centroid_mm": 0.386,
+     "centroid_offset_mm_signed": {
+      "x": 0.328,
+      "y": 0.201,
+      "z": 0.028
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.328,
+      "y": 0.201,
+      "z": 0.028
+     },
+     "vox_a": 500,
+     "vox_b": 441
+    }
+   }
+  ],
+  "sarm": {
+   "nuclei": {
+    "LGN": {
+     "sarm_id": 151,
+     "abbreviation": "DLG",
+     "name": "dorsal_lateral_geniculate",
+     "volume_mm3": {
+      "lh": 57.69,
+      "rh": 55.19
+     },
+     "centroid_mm": {
+      "lh": [
+       -10.337,
+       10.097,
+       11.741
+      ],
+      "rh": [
+       10.371,
+       10.08,
+       11.772
+      ]
+     },
+     "left_vs_mirrored_right": {
+      "dice": 0.9438,
+      "centroid_mm": 0.05
+     }
+    },
+    "STN": {
+     "sarm_id": 91,
+     "abbreviation": "STh",
+     "name": "subthalamic_nucleus",
+     "volume_mm3": {
+      "lh": 14.89,
+      "rh": 15.69
+     },
+     "centroid_mm": {
+      "lh": [
+       -5.215,
+       13.441,
+       12.241
+      ],
+      "rh": [
+       5.287,
+       13.362,
+       12.251
+      ]
+     },
+     "left_vs_mirrored_right": {
+      "dice": 0.9361,
+      "centroid_mm": 0.108
+     }
+    }
+   },
+   "mapping": {
+    "atlas": "NMT_v2.0_sym",
+    "engine": "upstream-sym",
+    "template_channel": "T2",
+    "mask_dice": {
+     "atlas_mask_in_template_vs_template": 0.9788,
+     "template_mask_in_atlas_vs_atlas": 0.9809
+    },
+    "inverse_consistency_mm": {
+     "roundtrip_GF_mm_in_Amask": {
+      "median": 0.0025835419073700905,
+      "p99": 0.008419097401201725,
+      "max": 0.023252489045262337
+     },
+     "roundtrip_FG_mm_in_Bmask": {
+      "median": 0.002711478155106306,
+      "p99": 0.009205210953950882,
+      "max": 0.02375630848109722
+     }
+    },
+    "outline": {
+     "atlas_in_template": {
+      "status": "WARN",
+      "reasons": [
+       "anterior undershoot p99 3.05 mm (warn)",
+       "ventral undershoot p99 2.57 mm (warn)"
+      ]
+     },
+     "template_in_atlas": {
+      "status": "WARN",
+      "reasons": [
+       "left undershoot p99 2.86 mm (warn)",
+       "right undershoot p99 2.93 mm (warn)",
+       "ventral overshoot p99 2.55 mm (warn)",
+       "ventral undershoot p99 2.76 mm (warn)"
+      ]
+     }
+    },
+    "folds": {
+     "phi_A": 0.0,
+     "phi_B": 0.0,
+     "F": 0.0,
+     "G": 0.0
+    },
+    "label_carry": "nearest neighbor (mri/code/atlas_v2.py: SARM level 6 into the template, labels for figures)",
+    "local_accuracy": "not measured: the mapping's quality measures are global (brain-mask Dice, inverse consistency, outline at the brain surface); its accuracy at the LGN and STN has no measurement of its own"
+   },
+   "rows": [
+    {
+     "brain": "MR243",
+     "name": "MM1",
+     "struct": "lhLGN",
+     "nucleus": "LGN",
+     "hemisphere": "lh",
+     "demons": {
+      "dice": 0.6357,
+      "assd_mm": 0.411,
+      "hd95_mm": 1.061,
+      "centroid_mm": 0.809,
+      "centroid_offset_mm_signed": {
+       "x": -0.157,
+       "y": 0.444,
+       "z": -0.658
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.157,
+       "y": 0.444,
+       "z": 0.658
+      },
+      "vox_a": 3692,
+      "vox_b": 2254
+     },
+     "slab": {
+      "dice": 0.6696,
+      "assd_mm": 0.353,
+      "hd95_mm": 0.901,
+      "centroid_mm": 0.813,
+      "centroid_offset_mm_signed": {
+       "x": -0.115,
+       "y": 0.467,
+       "z": -0.656
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.115,
+       "y": 0.467,
+       "z": 0.656
+      },
+      "vox_a": 3692,
+      "vox_b": 2772
+     }
+    },
+    {
+     "brain": "MR243",
+     "name": "MM1",
+     "struct": "lhSTN",
+     "nucleus": "STN",
+     "hemisphere": "lh",
+     "demons": {
+      "dice": 0.484,
+      "assd_mm": 0.383,
+      "hd95_mm": 0.791,
+      "centroid_mm": 0.677,
+      "centroid_offset_mm_signed": {
+       "x": 0.562,
+       "y": -0.086,
+       "z": -0.368
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.562,
+       "y": 0.086,
+       "z": 0.368
+      },
+      "vox_a": 953,
+      "vox_b": 394
+     },
+     "slab": {
+      "dice": 0.4983,
+      "assd_mm": 0.338,
+      "hd95_mm": 0.75,
+      "centroid_mm": 0.672,
+      "centroid_offset_mm_signed": {
+       "x": 0.538,
+       "y": -0.116,
+       "z": -0.385
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.538,
+       "y": 0.116,
+       "z": 0.385
+      },
+      "vox_a": 953,
+      "vox_b": 512
+     }
+    },
+    {
+     "brain": "MR243",
+     "name": "MM1",
+     "struct": "rhLGN",
+     "nucleus": "LGN",
+     "hemisphere": "rh",
+     "demons": {
+      "dice": 0.6454,
+      "assd_mm": 0.398,
+      "hd95_mm": 0.791,
+      "centroid_mm": 0.487,
+      "centroid_offset_mm_signed": {
+       "x": 0.249,
+       "y": -0.097,
+       "z": -0.407
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.249,
+       "y": 0.097,
+       "z": 0.407
+      },
+      "vox_a": 3532,
+      "vox_b": 2120
+     },
+     "slab": {
+      "dice": 0.6715,
+      "assd_mm": 0.347,
+      "hd95_mm": 0.829,
+      "centroid_mm": 0.501,
+      "centroid_offset_mm_signed": {
+       "x": 0.29,
+       "y": -0.162,
+       "z": -0.375
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.29,
+       "y": 0.162,
+       "z": 0.375
+      },
+      "vox_a": 3532,
+      "vox_b": 2481
+     }
+    },
+    {
+     "brain": "MR243",
+     "name": "MM1",
+     "struct": "rhSTN",
+     "nucleus": "STN",
+     "hemisphere": "rh",
+     "demons": {
+      "dice": 0.515,
+      "assd_mm": 0.367,
+      "hd95_mm": 0.791,
+      "centroid_mm": 0.375,
+      "centroid_offset_mm_signed": {
+       "x": -0.288,
+       "y": -0.091,
+       "z": -0.222
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.288,
+       "y": 0.091,
+       "z": 0.222
+      },
+      "vox_a": 1004,
+      "vox_b": 398
+     },
+     "slab": {
+      "dice": 0.5165,
+      "assd_mm": 0.326,
+      "hd95_mm": 0.75,
+      "centroid_mm": 0.354,
+      "centroid_offset_mm_signed": {
+       "x": -0.281,
+       "y": -0.041,
+       "z": -0.211
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.281,
+       "y": 0.041,
+       "z": 0.211
+      },
+      "vox_a": 1004,
+      "vox_b": 510
+     }
+    },
+    {
+     "brain": "MR252",
+     "name": "MM2",
+     "struct": "lhLGN",
+     "nucleus": "LGN",
+     "hemisphere": "lh",
+     "demons": {
+      "dice": 0.6271,
+      "assd_mm": 0.4,
+      "hd95_mm": 0.866,
+      "centroid_mm": 0.657,
+      "centroid_offset_mm_signed": {
+       "x": -0.382,
+       "y": 0.305,
+       "z": -0.44
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.382,
+       "y": 0.305,
+       "z": 0.44
+      },
+      "vox_a": 3692,
+      "vox_b": 2030
+     },
+     "slab": {
+      "dice": 0.6505,
+      "assd_mm": 0.359,
+      "hd95_mm": 0.829,
+      "centroid_mm": 0.588,
+      "centroid_offset_mm_signed": {
+       "x": -0.366,
+       "y": 0.251,
+       "z": -0.387
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.366,
+       "y": 0.251,
+       "z": 0.387
+      },
+      "vox_a": 3692,
+      "vox_b": 2497
+     }
+    },
+    {
+     "brain": "MR252",
+     "name": "MM2",
+     "struct": "lhSTN",
+     "nucleus": "STN",
+     "hemisphere": "lh",
+     "demons": {
+      "dice": 0.5565,
+      "assd_mm": 0.31,
+      "hd95_mm": 0.709,
+      "centroid_mm": 0.484,
+      "centroid_offset_mm_signed": {
+       "x": 0.423,
+       "y": 0.225,
+       "z": -0.069
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.423,
+       "y": 0.225,
+       "z": 0.069
+      },
+      "vox_a": 953,
+      "vox_b": 481
+     },
+     "slab": {
+      "dice": 0.5614,
+      "assd_mm": 0.299,
+      "hd95_mm": 0.75,
+      "centroid_mm": 0.555,
+      "centroid_offset_mm_signed": {
+       "x": 0.448,
+       "y": 0.31,
+       "z": -0.107
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.448,
+       "y": 0.31,
+       "z": 0.107
+      },
+      "vox_a": 953,
+      "vox_b": 643
+     }
+    },
+    {
+     "brain": "MR252",
+     "name": "MM2",
+     "struct": "rhLGN",
+     "nucleus": "LGN",
+     "hemisphere": "rh",
+     "demons": {
+      "dice": 0.6264,
+      "assd_mm": 0.425,
+      "hd95_mm": 1.09,
+      "centroid_mm": 0.644,
+      "centroid_offset_mm_signed": {
+       "x": 0.468,
+       "y": 0.344,
+       "z": -0.279
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.468,
+       "y": 0.344,
+       "z": 0.279
+      },
+      "vox_a": 3532,
+      "vox_b": 1966
+     },
+     "slab": {
+      "dice": 0.6461,
+      "assd_mm": 0.368,
+      "hd95_mm": 0.901,
+      "centroid_mm": 0.559,
+      "centroid_offset_mm_signed": {
+       "x": 0.504,
+       "y": 0.162,
+       "z": -0.179
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.504,
+       "y": 0.162,
+       "z": 0.179
+      },
+      "vox_a": 3532,
+      "vox_b": 2455
+     }
+    },
+    {
+     "brain": "MR252",
+     "name": "MM2",
+     "struct": "rhSTN",
+     "nucleus": "STN",
+     "hemisphere": "rh",
+     "demons": {
+      "dice": 0.6069,
+      "assd_mm": 0.296,
+      "hd95_mm": 0.612,
+      "centroid_mm": 0.541,
+      "centroid_offset_mm_signed": {
+       "x": -0.322,
+       "y": 0.415,
+       "z": -0.13
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.322,
+       "y": 0.415,
+       "z": 0.13
+      },
+      "vox_a": 1004,
+      "vox_b": 512
+     },
+     "slab": {
+      "dice": 0.5784,
+      "assd_mm": 0.293,
+      "hd95_mm": 0.612,
+      "centroid_mm": 0.518,
+      "centroid_offset_mm_signed": {
+       "x": -0.282,
+       "y": 0.426,
+       "z": -0.087
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.282,
+       "y": 0.426,
+       "z": 0.087
+      },
+      "vox_a": 1004,
+      "vox_b": 687
+     }
+    },
+    {
+     "brain": "MR256",
+     "name": "MM3",
+     "struct": "lhLGN",
+     "nucleus": "LGN",
+     "hemisphere": "lh",
+     "demons": {
+      "dice": 0.5812,
+      "assd_mm": 0.501,
+      "hd95_mm": 1.118,
+      "centroid_mm": 0.763,
+      "centroid_offset_mm_signed": {
+       "x": -0.761,
+       "y": -0.057,
+       "z": 0.023
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.761,
+       "y": 0.057,
+       "z": 0.023
+      },
+      "vox_a": 3692,
+      "vox_b": 1890
+     },
+     "slab": {
+      "dice": 0.6347,
+      "assd_mm": 0.391,
+      "hd95_mm": 0.912,
+      "centroid_mm": 0.753,
+      "centroid_offset_mm_signed": {
+       "x": -0.75,
+       "y": -0.06,
+       "z": 0.037
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.75,
+       "y": 0.06,
+       "z": 0.037
+      },
+      "vox_a": 3692,
+      "vox_b": 2323
+     }
+    },
+    {
+     "brain": "MR256",
+     "name": "MM3",
+     "struct": "lhSTN",
+     "nucleus": "STN",
+     "hemisphere": "lh",
+     "demons": {
+      "dice": 0.4883,
+      "assd_mm": 0.392,
+      "hd95_mm": 0.791,
+      "centroid_mm": 0.269,
+      "centroid_offset_mm_signed": {
+       "x": -0.226,
+       "y": -0.142,
+       "z": 0.033
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.226,
+       "y": 0.142,
+       "z": 0.033
+      },
+      "vox_a": 953,
+      "vox_b": 333
+     },
+     "slab": {
+      "dice": 0.5988,
+      "assd_mm": 0.287,
+      "hd95_mm": 0.714,
+      "centroid_mm": 0.288,
+      "centroid_offset_mm_signed": {
+       "x": -0.223,
+       "y": -0.177,
+       "z": 0.041
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.223,
+       "y": 0.177,
+       "z": 0.041
+      },
+      "vox_a": 953,
+      "vox_b": 500
+     }
+    },
+    {
+     "brain": "MR256",
+     "name": "MM3",
+     "struct": "rhLGN",
+     "nucleus": "LGN",
+     "hemisphere": "rh",
+     "demons": {
+      "dice": 0.7134,
+      "assd_mm": 0.332,
+      "hd95_mm": 0.75,
+      "centroid_mm": 0.484,
+      "centroid_offset_mm_signed": {
+       "x": 0.484,
+       "y": 0.006,
+       "z": -0.003
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.484,
+       "y": 0.006,
+       "z": 0.003
+      },
+      "vox_a": 3532,
+      "vox_b": 2392
+     },
+     "slab": {
+      "dice": 0.7149,
+      "assd_mm": 0.304,
+      "hd95_mm": 0.707,
+      "centroid_mm": 0.473,
+      "centroid_offset_mm_signed": {
+       "x": 0.471,
+       "y": -0.039,
+       "z": -0.007
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.471,
+       "y": 0.039,
+       "z": 0.007
+      },
+      "vox_a": 3532,
+      "vox_b": 2788
+     }
+    },
+    {
+     "brain": "MR256",
+     "name": "MM3",
+     "struct": "rhSTN",
+     "nucleus": "STN",
+     "hemisphere": "rh",
+     "demons": {
+      "dice": 0.4659,
+      "assd_mm": 0.438,
+      "hd95_mm": 1.0,
+      "centroid_mm": 0.384,
+      "centroid_offset_mm_signed": {
+       "x": -0.318,
+       "y": 0.203,
+       "z": 0.068
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.318,
+       "y": 0.203,
+       "z": 0.068
+      },
+      "vox_a": 1004,
+      "vox_b": 314
+     },
+     "slab": {
+      "dice": 0.5343,
+      "assd_mm": 0.33,
+      "hd95_mm": 0.707,
+      "centroid_mm": 0.214,
+      "centroid_offset_mm_signed": {
+       "x": -0.177,
+       "y": 0.104,
+       "z": 0.059
+      },
+      "centroid_offset_mm_abs": {
+       "x": 0.177,
+       "y": 0.104,
+       "z": 0.059
+      },
+      "vox_a": 1004,
+      "vox_b": 441
+     }
+    }
+   ]
+  }
+ }
+}

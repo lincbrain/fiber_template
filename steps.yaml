@@ -1240,8 +1240,8 @@ steps:
     run: $PY_TIRL code/histology/linc-histology all --subject {id} --store $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface.ome.zarr --histology $LINC_RAW/linc_000003/sourcedata/sub-{id}/micr
       --table $LINC_PRODUCTS/labels/match_tables/num_{id}_plus.txt --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --out $LINC_DATA/sub-{id}/histology/registration
       --threads 12 --jobs 2
-    check: $PY tests/compare/compare_histology.py $LINC_DATA/sub-{id}/histology/registration/tirl $LINC_PRODUCTS/data_arm_final/sub-{id}/blockface/06_histo2bf/tirl
-    expect: every registered section identical to the paper's, byte for byte (47 of 47)
+    check: $PY tests/compare/compare_histology.py $LINC_DATA/sub-{id}/histology/registration/tirl $LINC_PRODUCTS/data_arm_h9_final/sub-{id}/blockface/06_histo2bf/tirl
+    expect: every registered section identical to the paper's, byte for byte (47 of 47; the paper's registrations with the per-component nonlinear stiffness, data_arm_h9_final)
     needs: []
     gpu_gb: 0
     gpu_model: ''
@@ -1263,7 +1263,7 @@ steps:
     run: $PY_TIRL code/histology/linc-histology all --subject {id} --store $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface.ome.zarr --histology $LINC_RAW/linc_000003/sourcedata/sub-{id}/micr
       --table $LINC_PRODUCTS/labels/match_tables/num_{id}_plus.txt --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --out $LINC_DATA/sub-{id}/histology/registration
       --threads 12 --jobs 2
-    check: $PY_TIRL tests/compare/compare_histology.py $LINC_DATA/sub-{id}/histology/registration/tirl $LINC_PRODUCTS/data_arm_final/sub-{id}/blockface/06_histo2bf/tirl
+    check: $PY_TIRL tests/compare/compare_histology.py $LINC_DATA/sub-{id}/histology/registration/tirl $LINC_PRODUCTS/data_arm_h9_final/sub-{id}/blockface/06_histo2bf/tirl
       --max-mm 0.1
     expect: every registered section identical to the paper's, or its transform within 0.1 mm of the paper's (79 components)
     needs: []
@@ -1291,7 +1291,7 @@ steps:
       --threads 12 --jobs 2 || $PY_TIRL code/histology/linc-histology rgb --subject {id} --store $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface.ome.zarr
       --histology $LINC_RAW/linc_000003/sourcedata/sub-{id}/micr --table $LINC_PRODUCTS/labels/match_tables/num_{id}_plus.txt --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz
       --out $LINC_DATA/sub-{id}/histology/registration --threads 12 --jobs 2
-    check: $PY_TIRL tests/compare/compare_histology.py $LINC_DATA/sub-{id}/histology/registration/tirl $LINC_PRODUCTS/data_arm_final/sub-{id}/blockface/06_histo2bf/tirl
+    check: $PY_TIRL tests/compare/compare_histology.py $LINC_DATA/sub-{id}/histology/registration/tirl $LINC_PRODUCTS/data_arm_h9_final/sub-{id}/blockface/06_histo2bf/tirl
       --max-mm 0.1
     expect: the 62 sections the paper registered identical to the paper's (or within 0.1 mm); the 63rd fails, as in the paper
     needs: []
@@ -1316,7 +1316,7 @@ steps:
     run: $PY_TIRL code/histology/linc-histology all --subject {id} --store $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface.ome.zarr --histology $LINC_RAW/linc_000003/sourcedata/sub-{id}/micr
       --table $LINC_RAW/match_tables_hand/num_{id}.txt --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --out $LINC_DATA/sub-{id}/histology/registration
       --threads 12 --jobs 2
-    check: $PY_TIRL tests/compare/compare_histology.py $LINC_DATA/sub-{id}/histology/registration/tirl $LINC_PRODUCTS/data_arm_final/sub-{id}/blockface/06_histo2bf/tirl
+    check: $PY_TIRL tests/compare/compare_histology.py $LINC_DATA/sub-{id}/histology/registration/tirl $LINC_PRODUCTS/data_arm_h9_final/sub-{id}/blockface/06_histo2bf/tirl
       --max-mm 0.1
     expect: every registered section identical to the paper's, or its transform within 0.1 mm of the paper's (97 for MM1, 53 for MM3)
     needs: []
@@ -1344,8 +1344,10 @@ steps:
     run: $PY_TIRL code/histology/linc-histology all --subject {id} --store $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface.ome.zarr --histology $LINC_RAW/linc_000003/sourcedata/sub-{id}/micr
       --table $LINC_PRODUCTS/labels/match_tables/num_{id}.txt --regions $LINC_PRODUCTS/labels/regions_t2_mf191_made_at_vz600/{id}_regions_t2.nii.gz
       --regions-spacing-um 23.75 600 --out $LINC_WORK/histology/{id} --threads 12 --jobs 2
-    check: $PY tests/compare/compare_histology.py $LINC_WORK/histology/{id}/tirl $LINC_PRODUCTS/data_arm_final/sub-{id}/blockface/06_histo2bf/tirl
-    expect: every registered section identical to the paper's, byte for byte (58 of 58)
+    check: $PY tests/compare/compare_histology.py $LINC_WORK/histology/{id}/tirl $LINC_PRODUCTS/data_arm_h9_final/sub-{id}/blockface/06_histo2bf/tirl
+    expect: the paper's 56 registrations with the per-component nonlinear stiffness identical, byte for byte; the other 2 of 58 are
+      registrations of record the paper kept (mf191FR_c01_s04nDF_0000, whose tissue mask with the contrast saturated is another object, and
+      mf191FR_c01_s46nDF_0002, dropped as unmatched)
     needs: []
     gpu_gb: 0
     gpu_model: ''
@@ -1366,8 +1368,8 @@ steps:
     reads: the annotations, section map, match table and regions (settings/lab.sh links them for MM2); histology's masks and pieces; the registration
       the paper's labels used (before the tubes' holes were filled)
     writes: $LINC_DATA/sub-{id}/labels/blockface/tracer/{id}_*_bfnative_L2.nii.gz
-    run: $PY_TIRL code/labels/linc-labels push --subject {id} --registrations $LINC_PRODUCTS/data_arm_preinp/sub-{id}/blockface/06_histo2bf/tirl
-    check: $PY tests/compare/compare_nifti.py $LINC_DATA/sub-{id}/labels/blockface/tracer $LINC_PRODUCTS/labels/push_tracer_r058d/{id} $(ls $LINC_PRODUCTS/labels/push_tracer_r058d/{id}
+    run: $PY_TIRL code/labels/linc-labels push --subject {id} --registrations $LINC_PRODUCTS/data_arm_h9_preinp/sub-{id}/blockface/06_histo2bf/tirl
+    check: $PY tests/compare/compare_nifti.py $LINC_DATA/sub-{id}/labels/blockface/tracer $LINC_PRODUCTS/labels/push_tracer_h9/{id} $(ls $LINC_PRODUCTS/labels/push_tracer_h9/{id}
       | grep -E '^{id}_.*_bfnative_L2\.nii\.gz$')
     expect: the 6 pushed labels identical to the paper's
     needs: [histology]
@@ -1388,8 +1390,8 @@ steps:
     title: Interpolate the labels between sections, from the pushed labels
     reads: labels-push's labels; the registered sections of record (their colors drive the demons); the regions
     writes: $LINC_DATA/sub-{id}/labels/blockface/tracer/{id}_*_bfnative_L2_demons.nii.gz
-    run: $PY code/labels/linc-labels interpolate --subject {id} --registrations $LINC_PRODUCTS/data_arm_preinp/sub-{id}/blockface/06_histo2bf/tirl
-    check: $PY tests/compare/compare_nifti.py $LINC_DATA/sub-{id}/labels/blockface/tracer $LINC_PRODUCTS/labels/tracer_v2/{id} $(ls $LINC_PRODUCTS/labels/tracer_v2/{id}
+    run: $PY code/labels/linc-labels interpolate --subject {id} --registrations $LINC_PRODUCTS/data_arm_h9_preinp/sub-{id}/blockface/06_histo2bf/tirl
+    check: $PY tests/compare/compare_nifti.py $LINC_DATA/sub-{id}/labels/blockface/tracer $LINC_PRODUCTS/labels/tracer_v2_h9/{id} $(ls $LINC_PRODUCTS/labels/tracer_v2_h9/{id}
       | grep -E '^{id}_.*_bfnative_L2_demons\.nii\.gz$')
     expect: the 7 interpolated labels identical to the paper's
     needs: [labels-push]
@@ -1407,12 +1409,12 @@ steps:
     group: labels
     for: [MR243]
     title: Interpolate the labels between sections, from the paper's pushed labels
-    reads: the paper's pushed labels (labels/push_tracer_r058d); the registered sections of record; the regions; the hand-made match table
+    reads: the paper's pushed labels (labels/push_tracer_h9); the paper's registered sections; the regions; the match table of MM1's labels arm
     writes: $LINC_WORK/labels/{id}/blockface/{id}_*_bfnative_L2_demons.nii.gz
-    run: $PY code/labels/linc-labels interpolate --subject {id} --labels $LINC_PRODUCTS/labels/push_tracer_r058d/{id}/{id}_*_bfnative_L2.nii.gz --registrations
-      $LINC_PRODUCTS/data_arm_preinp/sub-{id}/blockface/06_histo2bf/tirl --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --match-table
-      $LINC_RAW/match_tables_hand/num_{id}.txt --grid $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface_L2.nii.gz --out $LINC_WORK/labels/{id}/blockface
-    check: $PY tests/compare/compare_nifti.py $LINC_WORK/labels/{id}/blockface $LINC_PRODUCTS/labels/tracer_v2/{id} $(ls $LINC_PRODUCTS/labels/tracer_v2/{id}
+    run: $PY code/labels/linc-labels interpolate --subject {id} --labels $LINC_PRODUCTS/labels/push_tracer_h9/{id}/{id}_*_bfnative_L2.nii.gz --registrations
+      $LINC_PRODUCTS/data_arm_h9_preinp_r058c/sub-{id}/blockface/06_histo2bf/tirl --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --match-table
+      $LINC_PRODUCTS/labels/match_tables/num_{id}_r058c.txt --grid $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface_L2.nii.gz --out $LINC_WORK/labels/{id}/blockface
+    check: $PY tests/compare/compare_nifti.py $LINC_WORK/labels/{id}/blockface $LINC_PRODUCTS/labels/tracer_v2_h9/{id} $(ls $LINC_PRODUCTS/labels/tracer_v2_h9/{id}
       | grep -E '^{id}_.*_bfnative_L2_demons\.nii\.gz$')
     expect: every interpolated label identical to the paper's
     needs: []
@@ -1425,18 +1427,19 @@ steps:
     hours: 0.15
     timed: clone
     optional: false
-    note: 'On 6 Nov from a clone: 10 of 10 identical, 329 s. With the rule-made table (num_MR243_r058c.txt) instead, 9 of 10 labels differ by 1 to
-      3,213 voxels: the paper''s interpolation read the hand-made table.'
+    note: 'On 12 Nov (LINC_PRODUCTS = the analysis project): 10 of 10 identical, 20 minutes on a loaded node. The paper''s labels go through MM1''s
+      own registrations with the per-component nonlinear stiffness (data_arm_h9_preinp_r058c), so the interpolation reads that arm''s table
+      (num_MR243_r058c.txt).'
   - name: labels-interpolate
     group: labels
     for: [MR256]
     title: Interpolate the labels between sections, from the paper's pushed labels
-    reads: the paper's pushed labels; the registered sections of record; the regions; the hand-made match table
+    reads: the paper's pushed labels; the paper's registered sections; the regions; the hand-made match table
     writes: $LINC_WORK/labels/{id}/blockface/{id}_*_bfnative_L2_demons.nii.gz
-    run: $PY code/labels/linc-labels interpolate --subject {id} --labels $LINC_PRODUCTS/labels/push_tracer_r058d/{id}/{id}_*_bfnative_L2.nii.gz --registrations
-      $LINC_PRODUCTS/data_arm_preinp/sub-{id}/blockface/06_histo2bf/tirl --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --match-table
+    run: $PY code/labels/linc-labels interpolate --subject {id} --labels $LINC_PRODUCTS/labels/push_tracer_h9/{id}/{id}_*_bfnative_L2.nii.gz --registrations
+      $LINC_PRODUCTS/data_arm_h9_preinp_r058/sub-{id}/blockface/06_histo2bf/tirl --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --match-table
       $LINC_RAW/match_tables_hand/num_{id}.txt --grid $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface_L2.nii.gz --out $LINC_WORK/labels/{id}/blockface
-    check: $PY tests/compare/compare_nifti.py $LINC_WORK/labels/{id}/blockface $LINC_PRODUCTS/labels/tracer_v2/{id} $(ls $LINC_PRODUCTS/labels/tracer_v2/{id}
+    check: $PY tests/compare/compare_nifti.py $LINC_WORK/labels/{id}/blockface $LINC_PRODUCTS/labels/tracer_v2_h9/{id} $(ls $LINC_PRODUCTS/labels/tracer_v2_h9/{id}
       | grep -E '^{id}_.*_bfnative_L2_demons\.nii\.gz$')
     expect: every interpolated label identical to the paper's
     needs: []
@@ -1454,12 +1457,12 @@ steps:
     group: labels
     for: [MF191]
     title: Interpolate the labels between sections, from the paper's pushed labels
-    reads: the paper's pushed labels; the registered sections of record; the regions; the match table of the labels
+    reads: the paper's pushed labels; the paper's registered sections; the regions; the match table of the labels
     writes: $LINC_WORK/labels/{id}/blockface/{id}_*_bfnative_L2_demons.nii.gz
-    run: $PY code/labels/linc-labels interpolate --subject {id} --labels $LINC_PRODUCTS/labels/push_tracer_r058d/{id}/{id}_*_bfnative_L2.nii.gz --registrations
-      $LINC_PRODUCTS/data_arm_preinp/sub-{id}/blockface/06_histo2bf/tirl --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --match-table
+    run: $PY code/labels/linc-labels interpolate --subject {id} --labels $LINC_PRODUCTS/labels/push_tracer_h9/{id}/{id}_*_bfnative_L2.nii.gz --registrations
+      $LINC_PRODUCTS/data_arm_h9_preinp_r058/sub-{id}/blockface/06_histo2bf/tirl --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --match-table
       $LINC_PRODUCTS/labels/match_tables/num_{id}_r058.txt --grid $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface_L2.nii.gz --out $LINC_WORK/labels/{id}/blockface
-    check: $PY tests/compare/compare_nifti.py $LINC_WORK/labels/{id}/blockface $LINC_PRODUCTS/labels/tracer_v2/{id} $(ls $LINC_PRODUCTS/labels/tracer_v2/{id}
+    check: $PY tests/compare/compare_nifti.py $LINC_WORK/labels/{id}/blockface $LINC_PRODUCTS/labels/tracer_v2_h9/{id} $(ls $LINC_PRODUCTS/labels/tracer_v2_h9/{id}
       | grep -E '^{id}_.*_bfnative_L2_demons\.nii\.gz$')
     expect: every interpolated label identical to the paper's
     needs: []
@@ -1477,11 +1480,11 @@ steps:
     group: labels
     for: [MR243]
     title: Carry the interpolated labels into the MRI template in one resampling
-    reads: the paper's interpolated labels (labels/tracer_v2); the blockface-to-b0 and b0-to-template registrations of record
+    reads: the paper's interpolated labels (labels/tracer_v2_h9); the blockface-to-b0 and b0-to-template registrations of record
     writes: $LINC_WORK/labels/{id}/template/{id}_*_mri-template{,_density,_footprint}.nii.gz
-    run: $PY code/labels/linc-labels carry --subject {id} --labels $LINC_PRODUCTS/labels/tracer_v2/{id}/{id}_*_bfnative_L2_demons.nii.gz --entry $LINC_PRODUCTS/data/sub-{id}/xfm_r1v3/bf-native__to__b0-native
+    run: $PY code/labels/linc-labels carry --subject {id} --labels $LINC_PRODUCTS/labels/tracer_v2_h9/{id}/{id}_*_bfnative_L2_demons.nii.gz --entry $LINC_PRODUCTS/data/sub-{id}/xfm_r1v3/bf-native__to__b0-native
       --entry $LINC_PRODUCTS/data/sub-{id}/xfm/b0-native__to__mri-template --out $LINC_WORK/labels/{id}/template
-    check: $PY tests/compare/compare_nifti.py $LINC_WORK/labels/{id}/template $LINC_PRODUCTS/labels/tracer_template_v2/{id} $(ls $LINC_PRODUCTS/labels/tracer_template_v2/{id}
+    check: $PY tests/compare/compare_nifti.py $LINC_WORK/labels/{id}/template $LINC_PRODUCTS/labels/tracer_template_v2_h9/{id} $(ls $LINC_PRODUCTS/labels/tracer_template_v2_h9/{id}
       | grep -E '^{id}_.*_mri-template(_density|_footprint)?\.nii\.gz$')
     expect: every carried label, density and footprint identical to the paper's (30 of 30)
     needs: []
@@ -1499,11 +1502,11 @@ steps:
     group: labels
     for: [MR252, MR256]
     title: Carry the interpolated labels into the MRI template in one resampling
-    reads: the paper's interpolated labels (labels/tracer_v2); the blockface-to-b0 and b0-to-template registrations of record
+    reads: the paper's interpolated labels (labels/tracer_v2_h9); the blockface-to-b0 and b0-to-template registrations of record
     writes: $LINC_WORK/labels/{id}/template/{id}_*_mri-template{,_density,_footprint}.nii.gz
-    run: $PY code/labels/linc-labels carry --subject {id} --labels $LINC_PRODUCTS/labels/tracer_v2/{id}/{id}_*_bfnative_L2_demons.nii.gz --entry $LINC_PRODUCTS/data/sub-{id}/xfm_r1v3mr/bf-native__to__b0-native
+    run: $PY code/labels/linc-labels carry --subject {id} --labels $LINC_PRODUCTS/labels/tracer_v2_h9/{id}/{id}_*_bfnative_L2_demons.nii.gz --entry $LINC_PRODUCTS/data/sub-{id}/xfm_r1v3mr/bf-native__to__b0-native
       --entry $LINC_PRODUCTS/data/sub-{id}/xfm/b0-native__to__mri-template --out $LINC_WORK/labels/{id}/template
-    check: $PY tests/compare/compare_nifti.py $LINC_WORK/labels/{id}/template $LINC_PRODUCTS/labels/tracer_template_v2/{id} $(ls $LINC_PRODUCTS/labels/tracer_template_v2/{id}
+    check: $PY tests/compare/compare_nifti.py $LINC_WORK/labels/{id}/template $LINC_PRODUCTS/labels/tracer_template_v2_h9/{id} $(ls $LINC_PRODUCTS/labels/tracer_template_v2_h9/{id}
       | grep -E '^{id}_.*_mri-template(_density|_footprint)?\.nii\.gz$')
     expect: every carried label, density and footprint identical to the paper's (21 for MM2, 27 for MM3)
     needs: []
@@ -1523,10 +1526,10 @@ steps:
     title: Carry the labels into the MRI template through the blockface template
     reads: the paper's interpolated labels; MF8's warp from the blockface template's construction and rigid placement; the link of the two templates
     writes: $LINC_WORK/labels/{id}/template/{id}_*_mri-template{,_density,_footprint}.nii.gz
-    run: $PY code/labels/linc-labels carry --subject {id} --labels $LINC_PRODUCTS/labels/tracer_v2/{id}/{id}_*_bfnative_L2_demons.nii.gz --map $LINC_PRODUCTS/template/xfm/bf-template__to__mri-template:full
+    run: $PY code/labels/linc-labels carry --subject {id} --labels $LINC_PRODUCTS/labels/tracer_v2_h9/{id}/{id}_*_bfnative_L2_demons.nii.gz --map $LINC_PRODUCTS/template/xfm/bf-template__to__mri-template:full
       --warp $LINC_PRODUCTS/data/sub-{id}/xfm_member/bf-native__to__bf-template/{id}_d2bs8_warp.nii.gz:fsl_rel:$LINC_PRODUCTS/data/sub-{id}/xfm_member/bf-native__to__bf-template/src_grid.nii.gz
       --ras-pull $LINC_PRODUCTS/data/sub-{id}/xfm_member/bf-native__to__bf-template/{id}_rigid_pull_ras.txt --out $LINC_WORK/labels/{id}/template
-    check: $PY tests/compare/compare_nifti.py $LINC_WORK/labels/{id}/template $LINC_PRODUCTS/labels/tracer_template_v2/{id} $(ls $LINC_PRODUCTS/labels/tracer_template_v2/{id}
+    check: $PY tests/compare/compare_nifti.py $LINC_WORK/labels/{id}/template $LINC_PRODUCTS/labels/tracer_template_v2_h9/{id} $(ls $LINC_PRODUCTS/labels/tracer_template_v2_h9/{id}
       | grep -E '^{id}_.*_mri-template(_density|_footprint)?\.nii\.gz$')
     expect: every carried label, density and footprint identical to the paper's (30 of 30)
     needs: []
@@ -1547,7 +1550,7 @@ steps:
     reads: labels-carry's densities; the template's brain mask and FA
     writes: $LINC_WORK/labels/{id}/template/{id}_Bundles_mri-template_{connected,solid_v2c,bridges}.nii.gz, {id}_connect_v2c.json, the solid2 labels
     run: $PY code/labels/linc-labels connect --subject {id} --labels-dir $LINC_WORK/labels/{id}/template
-    check: $PY tests/compare/compare_nifti.py $LINC_WORK/labels/{id}/template $LINC_PRODUCTS/labels/tracer_template_v2c/{id} {id}_Bundles_mri-template_connected.nii.gz
+    check: $PY tests/compare/compare_nifti.py $LINC_WORK/labels/{id}/template $LINC_PRODUCTS/labels/tracer_template_v2c_h9/{id} {id}_Bundles_mri-template_connected.nii.gz
       {id}_Bundles_mri-template_solid_v2c.nii.gz {id}_Bundles_mri-template_bridges.nii.gz
     expect: the pathway, its solid label and its joins identical to the paper's (3 of 3)
     needs: [labels-carry]

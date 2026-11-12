@@ -45,29 +45,30 @@ NUMBERS_LINC := \
   tracer_sections_r054 tracer_sections_r058d tube_mf8_check_r054 tube_offsets_r054 \
   s1_segmentation_r057 s1_perbrain_r057 s1_photographs_r068b bf_spacing_summary_r073 bf_step_groups_r073 bf_tubes_per_brain_r073 \
   blockface_params_r073 registration_params_r073 tracer_label_volumes_r058d tracer_alic_topography_r058d r060_target_comparison \
-  lgnstn_targets_r060c mf8_s46_drop_r068 \
+  lgnstn_targets_r060c mf8_s46_drop_r068 histology_h9 \
   tracer_sections_v2 tracer_connected_v2c tracer_label_volumes_v2c tracer_alic_topography_v2c tracer_interp_accounting_v2 \
-  tracer_placement_v2c tracer_template_v2_all
+  tracer_placement_v2c tracer_template_v2_all tracer_alic_topography_v5 lgnstn_label_volumes
 NUMBERS_MRI := variants_leave_self_out_rebuild_fa025 variability_four_brains_r061 lobo_t2_rebuild \
   labels_overlap_current lgnstn_geometry_current \
   lgnstn_b0_visibility_r059 lgnstn_midplane_planes_r059 r057_mri_facts_b
 NUMBERS_TIRL := histo_pixel_sizes_r057
 NUMBERS_COMPLETION := d3_sigma2_pred d3_methods d3_predicted_share \
   d3p_vs_d3_pseudo d3p_vs_d3_pseudo_prod r057_missing_extent r057_s1_synthesis lgnstn_budget_r059
+NUMBERS_ATLAS := gallery_plane_2026-11
 NUMBERS_GPU := d3_domain_shift d3_domain_shift_prod
 # the segmentation models' records (Supplementary S5, Table S8): CPU, settings/env/deep.yml (torch counts the parameters); bf_mask2d ~6 min
 NUMBERS_SEGMENT := segmodels_mri_brainmask_2026-11 segmodels_bf_mask2d_2026-11 segmodels_bf_mask3d_2026-11 segmodels_bf_holes_2026-11
 
 FIGURES_MRI := template pipeline variability link tracer
 FIGURES_LINC := reconstruction bf_template alignment_comparison s_networks
-FIGURES_COMPLETION := s_synthesis_depth s_synthesis_gallery lgnstn
-FIGURES := $(FIGURES_MRI) $(FIGURES_LINC) $(FIGURES_COMPLETION) histology s_tracer_fidelity tracer_sections3d
+FIGURES_COMPLETION := s_synthesis_depth s_synthesis_gallery
+FIGURES := $(FIGURES_MRI) $(FIGURES_LINC) $(FIGURES_COMPLETION) lgnstn histology s_tracer_fidelity tracer_sections3d
 
-.PHONY: all numbers numbers-gpu numbers-figures check test figures print-figures print-figure-records $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_GPU) $(FIGURES)
+.PHONY: all numbers numbers-gpu numbers-figures check test figures print-figures print-figure-records $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_GPU) $(NUMBERS_ATLAS) $(FIGURES)
 
 all: numbers figures check
 
-numbers: $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT)
+numbers: $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_ATLAS)
 
 numbers-gpu: $(NUMBERS_GPU)
 
@@ -100,6 +101,11 @@ r060_target_comparison:
 	else echo "SKIPPED r060_target_comparison: NMT v2 and CIVM-R not found under settings/link.yaml inputs.atlas_reference (see settings/targets.yaml)"; fi
 
 # the LGN and STN rows of the same comparison: carried onto the target grids that r060_target_comparison prepares in $$LINC_WORK/r060
+# the gallery's axial plane (Supplementary S2): reads NMT v2's SARM from the same published templates
+gallery_plane_2026-11:
+	@if $(HAVE_ATLASES); then $(PY_DEEP) paper_numbers/$@.py; \
+	else echo "SKIPPED gallery_plane_2026-11: NMT v2 not found under settings/link.yaml inputs.atlas_reference (see settings/targets.yaml)"; fi
+
 lgnstn_targets_r060c: r060_target_comparison
 	@if $(HAVE_ATLASES); then $(PY) paper_numbers/$@.py; \
 	else echo "SKIPPED lgnstn_targets_r060c: it needs r060_target_comparison's prepared targets (NMT v2 and CIVM-R)"; fi
@@ -114,10 +120,11 @@ lgnstn_geometry_current: labels_overlap_current
 fig_histology_simple: registration_qc_histo2bf_20261001
 bf_spacing_summary_r073: bf_spacing_used
 mf8_s46_drop_r068: registration_qc_histo2bf_20261001     # writes registration_qc_histo2bf_r068, tube_offsets_r068, tube_mf8_check_r068
+# histology_h9 reads only the products; it writes registration_qc_histo2bf_h9, tube_offsets_h9, tube_mf8_check_h9
 r057_missing_extent: d3_methods d3_predicted_share
 alignment_comparison: route_test_1c
 s_synthesis_depth: r057_s1_synthesis
-s_synthesis_gallery: d3_predicted_share
+s_synthesis_gallery: d3_predicted_share gallery_plane_2026-11
 s_networks: $(NUMBERS_SEGMENT) d3_methods
 
 $(filter-out r057_mri_facts_b,$(NUMBERS_MRI)):
@@ -158,7 +165,7 @@ test:
 # alignment_comparison also writes the fig_routes_1c_section record, tracer the fig_tracer_r058 record
 figures: $(FIGURES)
 
-histology: tube_offsets_r054
+histology: histology_h9
 	@if [ -z "$(HISTOLOGY_ARGS)" ]; then echo "SKIPPED histology: set HISTOLOGY_ARGS (histology source data outside the release)"; \
 	else $(PY_TIRL) histology.py $(HISTOLOGY_ARGS) --out $(OUT)/figures/$@.png; fi
 
@@ -184,6 +191,10 @@ pipeline: bf_cohort histo_tube_landmarks
 $(FIGURES_LINC):
 	$(PY) $@.py --out $(OUT)/figures/$@.png
 
-# these three write a PDF (the paper's) and a PNG beside it
+# these two write a PDF (the paper's) and a PNG beside it
 $(FIGURES_COMPLETION):
 	$(PY_DEEP) $@.py --out $(OUT)/figures/$@.pdf
+
+# Fig. 8, the same: in settings/env/linc.yml, the environment the paper's figure was made in (its matplotlib draws other pixels than the deep one's)
+lgnstn:
+	$(PY) $@.py --out $(OUT)/figures/$@.pdf

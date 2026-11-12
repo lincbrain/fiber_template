@@ -12,7 +12,7 @@ What it does
   fractions in white matter and other tissue, and for bundles outside white matter the distance to it.
 
 You get
-  $LINC_NUMBERS/tracer_placement_v2c.json
+  $LINC_NUMBERS/tracer_placement_v2c_h9.json
 
     python code/figures/paper_numbers/tracer_placement_v2c.py
 """
@@ -26,7 +26,7 @@ from scipy import ndimage as ndi
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "code"))
 from shared import paths, provenance  # noqa: E402
 
-NAME = "tracer_placement_v2c"
+NAME = "tracer_placement_v2c_h9"
 CASES = ["MR243", "MR252", "MR256", "MF191"]
 GROUPS = {"Bundles": ["Fiber_light_bundle", "Fiber_moderate_bundle", "Fiber_dense_bundle", "Bundle"],
           "Terminals": ["Terminal_light", "Terminal_moderate", "Terminal_dense"]}

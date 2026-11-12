@@ -449,7 +449,7 @@ def main(argv=None):
               [str(MASK_), str(SARM6), str(ACPC)]
         rec["outputs"] = [out_png]
         rec["mf8_unbridged_outlined"] = split_rec
-        print(provenance.write_numbers("fig_tracer_r058", rec, inputs=ins, md5=False, cmd=cmd))
+        print(provenance.write_numbers("fig_tracer_r058_h9", rec, inputs=ins, md5=False, cmd=cmd))
         return
 
     # ------------------------------------------------------------------ companion: the two rules side by side (5b) --------------

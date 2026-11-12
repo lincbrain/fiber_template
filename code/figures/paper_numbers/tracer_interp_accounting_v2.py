@@ -10,7 +10,7 @@ What it does
   the labeled sections, and lists the pairs gained over the earlier interpolation.
 
 You get
-  $LINC_NUMBERS/tracer_interp_accounting_v2.json
+  $LINC_NUMBERS/tracer_interp_accounting_v2_h9.json
 
     python code/figures/paper_numbers/tracer_interp_accounting_v2.py
 """
@@ -24,7 +24,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "code"))
 from shared import paths, provenance  # noqa: E402
 
-NAME = "tracer_interp_accounting_v2"
+NAME = "tracer_interp_accounting_v2_h9"
 CASES = ["MR243", "MR252", "MR256", "MF191"]
 SKIP = "skipped: footprints differ (partial section)"
 # the record's method text, fixed (it was this script's docstring when the record was made; the docstring may change)

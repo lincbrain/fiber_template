@@ -114,6 +114,12 @@ if want tirl; then
         [ -n "$d" ] || { say "tirl: no $s, _src_$s or $s-<version> under $TIRL_SRC"; fails=$((fails + 1)); continue; }
         c="$PREFIX/src/$s"                                          # build from a copy: --tirl-src stays read-only (a build writes
         [ -d "$c" ] || run cp -a "$d" "$c" || { fails=$((fails + 1)); continue; }   # build/, *.egg-info and generated C into its tree)
+        if [ "$s" = tirl ]; then                                     # our one change to TIRL (code/histology/patches/README.txt)
+          E="$REPO/code/histology/patches/tirl-3.6.3_optnl_clip.edits.json"
+          if [ "$(md5sum < "$c/tirl/optimisation/optnl.py" | cut -c1-32)" = "$("$P" -c "import json,sys; print(json.load(open(sys.argv[1]))['result_md5'])" "$E")" ]; then
+            say "  tirl: start-point clip already applied"
+          else run "$P" "$REPO/code/template/patches/apply_edits.py" "$E" "$c" || { fails=$((fails + 1)); continue; }; fi
+        fi
         mkdir -p "$PREFIX/src/tirl_home"                         # TIRL's setup.py copies tirl.yml and an empty tirlscripts.yml into
         say "  (HOME=$PREFIX/src/tirl_home for this step: TIRL's setup.py writes \$HOME/.config/tirl*.yml)"   # $HOME/.config
         "${CLEAN[@]}" HOME="$PREFIX/src/tirl_home" "$P" -m pip install --no-deps --no-build-isolation "$c" \

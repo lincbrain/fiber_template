@@ -7,14 +7,16 @@ What it does
     tissue_masks    each section (green band, low resolution) -> an Otsu tissue mask per component
     moving_images   the blue band masked by the component's tissue mask, scaled into the blockface component's box
     fixed_images    the blockface component, contrast x1.6, grayscale
-    run_tirl        `linc.h2b` (run by the script's path) per component: rotation, rigid, affine, nonlinear
+    run_tirl        `linc.h2b` (run by the script's path) per component: rotation, rigid, affine, nonlinear; the nonlinear stage's
+                    stiffness per component from its affine-stage tissue Dice (settings/histology.yaml tirl.stiff_nonlinear)
     registered_rgb  the fitted TIRL transforms applied to all three JPEG 2000 bands
   The moving and fixed images share the blockface component's pixel grid, so TIRL registers them at one pixel size
   (settings/histology.yaml tirl.resolution_mm). run_tirl checks TIRL's version first; registered_rgb imports tirl, so it runs under
   the TIRL environment's Python, one process per component (TIRL's evaluate can corrupt the heap).
 You get
   <masks>/<section>_<tag>.png, <moving>/<component>.png, <fixed>/<component>.png, <tirl>/<component>/ (the transforms and the
-  registered images) and <tirl>/<component>/moving4_nonlinear_rgb.png. Tags: 0000 whole, 0001 left, 0002 right, 0003 cerebellum.
+  registered images, stiff_nonlinear.json: the affine Dice and the weight it chose) and <tirl>/<component>/moving4_nonlinear_rgb.png.
+  Tags: 0000 whole, 0001 left, 0002 right, 0003 cerebellum.
 
 Ported from the analysis project's code/register.py (histo_masks, histo_moving, bf_fixed, tirl_h2b), labels/histo_masks_par.py,
 labels/tirl_worker.py and labels/histo_rgb.py, the code of the products of record.
@@ -64,9 +66,13 @@ def _rlevel(j2k, want):
 # --------------------------------------------------------------------------- tissue masks
 
 def _enhance(a, mc):
+    """The contrast-stretched band with enhance_offset added to every nonzero pixel, saturated at 255. (Until 12 Nov 2026 the sum
+    wrapped in uint8 and was then multiplied by 255 in uint8: moderately bright tissue, e.g. a darkfield injection core, fell near 0,
+    below the Otsu threshold, and where it reached the border the outer contour detoured around it. The paper's registrations use the
+    saturated form; analysis: labels/fix_r058/masks_r058.py gen(fixed=True).)"""
     param = mc["enhance_low_contrast"] if np.std(a) < mc["enhance_std_threshold"] else mc["enhance_default"]
-    out = np.array(ImageEnhance.Contrast(Image.fromarray(a)).enhance(param))
-    return np.where(out > 0, out + mc["enhance_offset"], 0)
+    out = np.array(ImageEnhance.Contrast(Image.fromarray(a)).enhance(param)).astype(np.int32)
+    return np.where(out > 0, np.minimum(out + mc["enhance_offset"], 255), 0).astype(np.uint8)
 
 
 def generate_mask(jp2_path, cfg=None):
@@ -82,7 +88,7 @@ def generate_mask(jp2_path, cfg=None):
     bs = mc["pad_px"]
     pad = np.zeros((band.shape[0] + 2 * bs, band.shape[1] + 2 * bs), np.uint8)
     pad[bs:-bs, bs:-bs] = band
-    enh = np.uint8(_enhance(pad, mc) * 255)
+    enh = _enhance(pad, mc)
     _, binary = cv2.threshold(enh, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     contours = sorted(measure.find_contours(binary), key=len, reverse=True)
     two = len(contours) > 1 and len(contours[1]) / len(contours[0]) > mc["two_pieces_min_ratio"]
@@ -283,27 +289,87 @@ def tirl_params(moving, fixed, piece_dir, cfg=None):
     return p
 
 
-def _tirl_one(piece, moving_dir, fixed_dir, out_dir, exe, script, threads, cfg):
+def affine_dice(piece_dir, cfg=None):
+    """The registration QC's tissue Dice after the affine stage (the analysis's labels/qc_histo2bf.piece_qc): the blockface piece
+    (fixed.png above 0) against the histology after the affine stage (moving3_affine.png; its 255 = outside the domain = background),
+    both block-averaged dice_block_px x dice_block_px; rounded to 4 decimals."""
+    cfg = cfg or M.config()
+    k = int(cfg["tirl"]["stiff_nonlinear"]["dice_block_px"])
+
+    def load(name):
+        a = np.asarray(Image.open(os.path.join(piece_dir, name)).convert("L"))
+        a = a[: a.shape[0] // k * k, : a.shape[1] // k * k]
+        return a.reshape(a.shape[0] // k, k, a.shape[1] // k, k).mean((1, 3))
+    f = load("fixed.png") > 0
+    m = load("moving3_affine.png")
+    m = np.where(m >= 254.5, 0, m) > 0
+    return round(float(2 * (f & m).sum() / max(f.sum() + m.sum(), 1)), 4)
+
+
+def _h2b(piece, moving_dir, fixed_dir, d, exe, script, threads, cfg, regweight):
     import yaml
-    d = os.path.join(out_dir, piece)
     os.makedirs(d, exist_ok=True)
     fname = os.path.join(d, "tirlparam.yml")
+    p = tirl_params(os.path.join(moving_dir, piece + ".png"), os.path.join(fixed_dir, piece + ".png"), d, cfg)
+    p["regparams"]["nonlinear"]["regweight"] = regweight
     with open(fname, "w") as f:
-        yaml.dump(tirl_params(os.path.join(moving_dir, piece + ".png"), os.path.join(fixed_dir, piece + ".png"), d, cfg), f)
+        yaml.dump(p, f)
     env = dict(os.environ, PATH=os.environ.get("PATH", "") + ":" + os.path.dirname(script))
     for v in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
         env[v] = str(threads)
-    t0 = time.time()
     with open(os.path.join(d, "worker_stdout.log"), "w") as log:
         rc = subprocess.run([tirl_python(exe, cfg), script, "--config", fname, "--verbose"], stdout=log,
                             stderr=subprocess.STDOUT, env=env).returncode
-    ok = rc == 0 and os.path.exists(os.path.join(d, cfg["tirl"]["done_file"]))
-    return piece, ok, rc, time.time() - t0
+    return rc, rc == 0 and os.path.exists(os.path.join(d, cfg["tirl"]["done_file"]))
+
+
+def _tirl_one(piece, moving_dir, fixed_dir, out_dir, exe, script, threads, cfg):
+    """One component: TIRL at the stiff weight, then the rule on its affine stage (which does not depend on the nonlinear weight):
+    below the gate, rerun from scratch at the configuration's weight. A component registered before (done file, no decision) takes
+    the same rule from its own affine stage and is rerun only if it ran at the other weight."""
+    import yaml
+    rule = cfg["tirl"]["stiff_nonlinear"]
+    stiff, base = float(rule["regweight"]), float(cfg["tirl"]["config"]["regparams"]["nonlinear"]["regweight"])
+    d = os.path.join(out_dir, piece)
+    t0 = time.time()
+    rc, ok = 0, os.path.exists(os.path.join(d, cfg["tirl"]["done_file"]))
+    if not ok:
+        rc, ok = _h2b(piece, moving_dir, fixed_dir, d, exe, script, threads, cfg, stiff)
+    dec = None
+    if ok:
+        used = float(yaml.safe_load(open(os.path.join(d, "tirlparam.yml")))["regparams"]["nonlinear"]["regweight"])
+        dice = affine_dice(d, cfg)
+        want = stiff if dice >= float(rule["affine_dice_min"]) else base
+        dec = dict(dice_affine=dice, affine_dice_min=float(rule["affine_dice_min"]), regweight=want, first_run_regweight=used)
+        if used != want:
+            shutil.rmtree(d)
+            rc, ok = _h2b(piece, moving_dir, fixed_dir, d, exe, script, threads, cfg, want)
+            if ok:                                   # the affine stage is the same at either weight: the decision stands
+                dec["dice_affine_rerun"] = affine_dice(d, cfg)
+                assert dec["dice_affine_rerun"] == dice, f"{piece}: affine Dice {dice} -> {dec['dice_affine_rerun']} on the rerun"
+        if ok:
+            with open(os.path.join(d, "stiff_nonlinear.json"), "w") as f:
+                json.dump(dec, f)
+    return piece, ok, rc, time.time() - t0, dec
+
+
+def tirl_clip_applied(executable=None, cfg=None):
+    """True / False: the TIRL that runs carries our start-point clip (code/histology/patches/README.txt); None if not decidable."""
+    import hashlib
+    cfg = cfg or M.config()
+    spec = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "patches", "tirl-3.6.3_optnl_clip.edits.json")))
+    r = subprocess.run([tirl_python(executable, cfg), "-c", "import tirl.optimisation.optnl as o; print(o.__file__)"],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        return None
+    h = hashlib.md5(open(r.stdout.strip(), "rb").read()).hexdigest()
+    return True if h == spec["result_md5"] else False if h == spec["source_md5"] else None
 
 
 def run_tirl(moving_dir, fixed_dir, out_dir, jobs=1, threads=None, executable=None, pieces=None, cfg=None, log=print):
-    """TIRL per piece -> out_dir/<piece>/ (a piece whose fixed4_nonlinear.timg exists is skipped). Returns
-    {piece: {"ok", "rc", "wall_s"}} for the pieces run now; per-piece wall-clock also goes to out_dir/timing.tsv."""
+    """TIRL per piece -> out_dir/<piece>/ (a piece with fixed4_nonlinear.timg and stiff_nonlinear.json is skipped; one with the first
+    only takes the stiffness rule, _tirl_one). Returns {piece: {"ok", "rc", "wall_s", "dice_affine", "regweight"}} for the pieces run
+    now; per-piece wall-clock and the weight also go to out_dir/timing.tsv."""
     cfg = cfg or M.config()
     exe, ver = check_tirl(executable, cfg)
     script = tirl_script(exe, cfg)
@@ -314,22 +380,25 @@ def run_tirl(moving_dir, fixed_dir, out_dir, jobs=1, threads=None, executable=No
         piece = os.path.basename(mv)[:-4]
         if pieces and piece not in pieces:
             continue
-        if os.path.exists(os.path.join(out_dir, piece, cfg["tirl"]["done_file"])):
+        if all(os.path.exists(os.path.join(out_dir, piece, f)) for f in (cfg["tirl"]["done_file"], "stiff_nonlinear.json")):
             continue
         if not os.path.exists(os.path.join(str(fixed_dir), piece + ".png")):
             log(f"! no fixed image for {piece}, skipped")
             continue
         todo.append(piece)
-    log(f"TIRL {ver} ({exe} {script}): {len(todo)} pieces, {jobs} at a time, {threads} threads each")
+    clip = tirl_clip_applied(exe, cfg)
+    log(f"TIRL {ver} ({exe} {script}): {len(todo)} pieces, {jobs} at a time, {threads} threads each; start-point clip "
+        f"{'applied' if clip else 'NOT applied (code/histology/patches/README.txt)' if clip is False else 'unknown (optnl.py not the 3.6.3 file)'}")
     res = {}
     with ThreadPoolExecutor(max(1, jobs)) as ex:
         futs = [ex.submit(_tirl_one, p, str(moving_dir), str(fixed_dir), str(out_dir), exe, script, threads, cfg) for p in todo]
         for fu in futs:
-            piece, ok, rc, dt = fu.result()
-            res[piece] = dict(ok=ok, rc=rc, wall_s=round(dt, 2))
+            piece, ok, rc, dt, dec = fu.result()
+            res[piece] = dict(ok=ok, rc=rc, wall_s=round(dt, 2), dice_affine=dec and dec["dice_affine"], regweight=dec and dec["regweight"])
             with open(os.path.join(out_dir, "timing.tsv"), "a") as f:
-                f.write(f"{piece}\t{dt:.2f}\t{'ok' if ok else f'rc={rc}'}\n")
-            log(f"  {piece} {'ok' if ok else f'FAILED rc={rc}'} {dt / 60:.1f} min")
+                f.write(f"{piece}\t{dt:.2f}\t{'ok' if ok else f'rc={rc}'}\t{dec and dec['regweight']}\n")
+            log(f"  {piece} {'ok' if ok else f'FAILED rc={rc}'} {dt / 60:.1f} min" + (f", affine Dice {dec['dice_affine']}, nonlinear weight "
+                f"{dec['regweight']}" if dec else ""))
     log(f"TIRL histology -> blockface: {sum(r['ok'] for r in res.values())} ok, "
         f"{sum(not r['ok'] for r in res.values())} failed -> {out_dir}")
     return res

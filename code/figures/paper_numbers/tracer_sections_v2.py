@@ -13,9 +13,9 @@ What it does, per case
   3. fits each section's plane and measures the spacing between consecutive sections; lists every footprint voxel with its section.
 
 You get
-  $LINC_WORK/tracer_sections_v2/<ID>/: <ID>_<label>_mri-template_sections_{density,footprint}.nii.gz,
-  <ID>_section_index_mri-template.nii.gz, <ID>_sections.json, <ID>_sections_points.csv; and $LINC_NUMBERS/tracer_sections_v2.json
-  (MR243, MR252, MR256) and tracer_sections_v2_mf191.json (MF191)
+  $LINC_WORK/tracer_sections_v2_h9/<ID>/: <ID>_<label>_mri-template_sections_{density,footprint}.nii.gz,
+  <ID>_section_index_mri-template.nii.gz, <ID>_sections.json, <ID>_sections_points.csv; and $LINC_NUMBERS/tracer_sections_v2_h9.json
+  (the four cases)
 
     python code/figures/paper_numbers/tracer_sections_v2.py [--cases MR243 ...]
 """
@@ -38,7 +38,7 @@ from labels import carry as CA  # noqa: E402
 from labels.labels import config  # noqa: E402
 from blockface.registration import xfmtools as X  # noqa: E402
 
-NAME = "tracer_sections_v2"
+NAME = "tracer_sections_v2_h9"
 GROUPS = {"Bundles": ["Fiber_light_bundle", "Fiber_moderate_bundle", "Fiber_dense_bundle", "Bundle"],
           "Terminals": ["Terminal_light", "Terminal_moderate", "Terminal_dense"], "Injection_site": ["Injection_site"], "Fibers": ["Fibers"]}
 ROUTE = {"MR243": "B", "MR252": "B", "MR256": "B", "MF191": "A"}
@@ -65,8 +65,8 @@ PROTOCOL = (
     '      (mm), unit normal (PCA), spacing to the previous section along the mean normal (mm)\n'
     '  <S>_sections_points.csv                               x_mm,y_mm,z_mm,group,grade,section: every footprint voxel of every grade (world RAS,\n'
     '      MF191 unmirrored), the section from the index volume (nearest filled)\n'
-    'and the records $LINC_NUMBERS/tracer_sections_v2.json (MR243, MR252, MR256) and tracer_sections_v2_mf191.json (MF191), as the analysis wrote\n'
-    'them (per case: route (A = blockface-based, B = MRI-based alignment), links, per-label counts, sections, spacing: the absolute spacing between consecutive charted sections along their\n'
+    'and the record $LINC_NUMBERS/tracer_sections_v2_h9.json (the four cases), as the analysis wrote\n'
+    'it (per case: route (A = blockface-based, B = MRI-based alignment), links, per-label counts, sections, spacing: the absolute spacing between consecutive charted sections along their\n'
     'mean normal, median / p90 / max, point rows).\n'
 )
 
@@ -220,10 +220,10 @@ def main():
         crec["sections"] = len(secs); crec["points_rows"] = nrow
         crec["section_spacing_mm"] = summary
         crec["spacing_note"] = "absolute spacing along the mean section normal; see <S>_sections.json"
-        recs.setdefault(NAME if ROUTE[S] == "B" else f"{NAME}_mf191", dict(protocol=PROTOCOL, template_voxel_mm=TV, foot=FOOT, cases={}))["cases"][S] = crec
+        recs.setdefault(NAME, dict(protocol=PROTOCOL, template_voxel_mm=TV, foot=FOOT, cases={}))["cases"][S] = crec
         print(S, "sections", len(secs), "spacing", crec["section_spacing_mm"], "points", nrow, flush=True)
     cmd = " ".join(["python code/figures/paper_numbers/tracer_sections_v2.py"] + sys.argv[1:])
-    for name, r in recs.items():                                              # two records, as the analysis wrote them: the three MRI-route cases; MF191 on its own
+    for name, r in recs.items():                                              # one record, the four cases, as the analysis wrote it
         print(provenance.write_numbers(name, r, inputs=inputs, md5=False, cmd=cmd))
 
 

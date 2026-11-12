@@ -47,12 +47,13 @@ def stats(rows, key):
                 detected=len(e), searched=len(s), rate=round(len(e) / len(s), 4) if s else None)
 
 
-def offsets(method, drop=()):
-    """The record's data from the tube landmarks, without the pieces named in drop. Returns (data, inputs)."""
+def offsets(method, drop=(), landmarks="tube_landmarks", tag="r054hole"):
+    """The record's data from the tube landmarks (products_mri <landmarks>/<tag>_<ID>_native.json), without the pieces named in drop.
+    Returns (data, inputs)."""
     P = paths.products("products_mri")
     out = dict(method=method, per_subject={}, pooled={}); allrows = []; ins = []
     for S in BRAINS:
-        p = P["tube_landmarks"] / f"r054hole_{S}_native.json"; ins.append(p)
+        p = P[landmarks] / f"{tag}_{S}_native.json"; ins.append(p)
         rows = [r for r in json.loads(p.read_text())["pieces"] if r["piece"] not in drop]; allrows += rows
         s = [r for r in rows if r.get("bf_tube")]; h = [r["hole"] for r in s]
         shift = [r["center_shift_fixed_px"] * FIX_MM for r in s]

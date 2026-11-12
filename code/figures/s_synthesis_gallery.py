@@ -7,8 +7,10 @@
 Per brain, from the completed volumes of record (products `completed`) and the prepared folders (`completion_inputs`: canon_d3 for the
 13 brains with MRI, canon_d3n_prod for the 8 without), on the brain's canonical fine grid (the run-113 world, its rigid placement; RAS,
 0.25 mm, one lattice for all 21), with the display parameters of settings/figures.yaml (synthesis_gallery):
-  plane    ONE world axial plane z* for all 21: the lattice plane with the cohort's largest median synthesized area (brain voxels
-           with seam_depth < 0); anterior up, the subject's left on the left
+  plane    ONE world axial plane for all 21 (settings z_mm, checked against $LINC_NUMBERS/gallery_plane_2026-11.json): among the
+           planes with at least 0.8 of the largest median synthesized area, the fewest mask gaps, one-sided missing pieces and
+           cerebellum at the junction over the 21 tiles (code/figures/paper_numbers/gallery_plane_2026-11.py); anterior up, the
+           subject's left on the left. Without z_mm: z*, the plane with the cohort's largest median synthesized area
   crop     from the brain's caudal end to 22 mm rostral of the junction line's median in that plane, the rows aligned on it
   junction dashed where the product's seam_depth = 0 (caudal of it the tissue is synthesized), oblique in this frame
   scale    one physical scale for all brains (the widest brain fills its tile); one 10 mm bar
@@ -31,6 +33,8 @@ The earlier versions, as options:
                         world plane for all 21; letters P/A beside the first row
   --ncol, --letters     tiles per row; orientation letters once (axial: L/R beside row 1, A/P above and below the first tile), in
                         3 mm gutters
+  --z-mm, --planes-json, --plane-label   (canonical axial) one given world plane for all 21, or one plane per brain from a JSON
+                        {subject: z mm}; each tile's plane height on its header line
 """
 import argparse
 import json
@@ -167,6 +171,9 @@ def main():
     ap.add_argument("--x-mm", type=float, default=float(cfg["x_mm"]))
     ap.add_argument("--ncol", type=int, default=int(cfg["ncol"]))
     ap.add_argument("--letters", action=argparse.BooleanOptionalAction, default=bool(cfg["letters"]))
+    ap.add_argument("--z-mm", type=float, default=cfg.get("z_mm"), help="canonical axial: this world plane for all 21 (none: z*)")
+    ap.add_argument("--planes-json", default=None, help="canonical axial: {subject: world z mm} per brain")
+    ap.add_argument("--plane-label", action="store_true", help="each tile's plane height in its lower-right corner")
     a = ap.parse_args()
     assert a.frame == "canonical" or a.view == "axial", "the sagittal view is drawn on the canonical grid"
     assert a.frame == "flat" or a.plane == "record", "the canonical frame takes one plane for all brains"
@@ -183,12 +190,19 @@ def main():
             brains[S] = root
     order = sorted(brains, key=lambda s: (lab[s][:2], int(lab[s][2:])))
     assert len(order) == 21
-    T, extra = {}, {}
+    T, extra, extra_inputs = {}, {}, []
     if a.frame == "canonical":
-        coord = a.x_mm if sag else canon_planes({S: brains[S] for S in order}, OUT)[0]
-        extra = dict(frame="canonical (run-113 world)", view=a.view, plane_world_mm=coord)
+        coord = a.x_mm if sag else (a.z_mm if a.z_mm is not None else canon_planes({S: brains[S] for S in order}, OUT)[0])
+        rec = paths.numbers_root() / "gallery_plane_2026-11.json"          # the plane's rule: the setting must be its plane
+        if not sag and a.z_mm is not None and a.z_mm == cfg.get("z_mm") and not a.planes_json:
+            z_rec = (json.load(open(rec)).get("data") or {})["plane_z_mm"]
+            assert abs(z_rec - a.z_mm) < 1e-6, f"settings z_mm {a.z_mm} is not the plane of {rec.name} ({z_rec})"
+            extra_inputs.append(str(rec))
+        per = json.load(open(a.planes_json)) if a.planes_json else {}
+        coords = {S: float(per.get(S, coord)) for S in order}
+        extra = dict(frame="canonical (run-113 world)", view=a.view, plane_world_mm=coords if per else coord)
     for S in order:
-        T[S] = tile(S, brains[S], OUT, a.plane) if a.frame == "flat" else tile_canon(S, brains[S], OUT, a.view, coord)
+        T[S] = tile(S, brains[S], OUT, a.plane) if a.frame == "flat" else tile_canon(S, brains[S], OUT, a.view, coords[S])
         print(lab[S], S, "plane", T[S]["z"], "gaps", T[S]["gaps_shown"], flush=True)
     ncol, gap, hdr = a.ncol, 1.2, 4.0                                  # mm
     G = 3.0 if a.letters else 0.0                                      # side gutters for the letters
@@ -223,9 +237,13 @@ def main():
         AXS.append(ax)
         nomri = brains[S].name == "canon_d3n_prod"
         FS.header(ax, lab[S], dx=0, fontweight="bold")
-        ax.annotate(f"{100 * share[S]['predicted_share']:.0f}%", xy=(1, 1), xycoords="axes fraction", xytext=(0, 3),
-                    textcoords="offset points", ha="right", va="bottom", fontsize=FS.MIN_PT,
-                    color=FS.GRAY if nomri else FS.FG, annotation_clip=False)
+        pc = ax.annotate(f"{100 * share[S]['predicted_share']:.0f}%", xy=(1, 1), xycoords="axes fraction", xytext=(0, 3),
+                         textcoords="offset points", ha="right", va="bottom", fontsize=FS.MIN_PT,
+                         color=FS.GRAY if nomri else FS.FG, annotation_clip=False)
+        if a.plane_label and a.frame == "canonical":                   # the tile's plane height, on the header line left of the share
+            e_ = pc.get_window_extent(fig.canvas.get_renderer()); w_pc = e_.width / fig.dpi * 72.0
+            ax.annotate(f"{'x' if sag else 'z'} {coords[S]:.2f}", xy=(1, 1), xycoords="axes fraction", xytext=(-w_pc - 4.0, 3),
+                        textcoords="offset points", ha="right", va="bottom", fontsize=FS.MIN_PT, color=FS.GRAY, annotation_clip=False)
         if k == 0:
             ax.plot([tw - 10.0 / VOX * mm_per_vox - 0.3, tw - 0.3], [-below - 1.2] * 2, color=FS.FG, lw=1.0, clip_on=False,
                     solid_capstyle="butt")
@@ -235,7 +253,7 @@ def main():
             for s_, xy, off, va in (("A", (0.5, 1), (0, 3), "bottom"), ("P", (0.5, 0), (0, -2), "top")):
                 AXS[0].annotate(s_, xy=xy, xycoords="axes fraction", xytext=off, textcoords="offset points", ha="center", va=va,
                                 fontsize=FS.MIN_PT, color=FS.FG, annotation_clip=False)
-    ins = sorted({str(p) for t in T.values() for p in t["inputs"]} | {str(lp), str(sp)})
+    ins = sorted({str(p) for t in T.values() for p in t["inputs"]} | {str(lp), str(sp)} | set(extra_inputs))
     if a.plane != "record" or a.frame != "flat" or a.letters or a.ncol != 7:
         extra.update(options=dict(plane=a.plane, frame=a.frame, view=a.view, ncol=a.ncol, letters=a.letters),
                      gaps_shown={lab[S]: T[S]["gaps_shown"] for S in order})

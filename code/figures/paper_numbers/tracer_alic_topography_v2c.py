@@ -10,7 +10,7 @@ What it does
   under the footprint and solid rules and, for the bundles, the connected pathway; the injection site under the first two rules.
 
 You get
-  $LINC_NUMBERS/tracer_alic_topography_v2c.json
+  $LINC_NUMBERS/tracer_alic_topography_v2c_h9.json
 
     python code/figures/paper_numbers/tracer_alic_topography_v2c.py [--labels tracer_template_v2] [--connected-from products|work]
 """
@@ -32,7 +32,7 @@ SUBS = [
      '    P = paths.products("products_blockface")\n'
      '    LAB, SARM6, RUN = P[a.labels], P["atlas_nmt"] / "SARM_level6_in_template.nii.gz", P["atlas_nmt"] / "run"\n',
      '    ap.add_argument("--labels", default="tracer_template_v2", help="label folder: a key of configs/products_mri.yaml")\n'
-     '    ap.add_argument("--name", default="tracer_alic_topography_v2c", help="record name ($LINC_NUMBERS/<name>.json)")\n'
+     '    ap.add_argument("--name", default="tracer_alic_topography_v2c_h9", help="record name ($LINC_NUMBERS/<name>.json)")\n'
      '    a = ap.parse_args()\n'
      '    P = paths.products("products_blockface"); P2 = paths.products("products_mri")\n'
      '    LAB, SARM6, RUN = P2[a.labels], P["atlas_nmt"] / "SARM_level6_in_template.nii.gz", P["atlas_nmt"] / "run"\n'

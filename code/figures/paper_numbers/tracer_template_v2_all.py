@@ -10,7 +10,7 @@ What it does
   carries over the audit of the two re-matched sections unchanged.
 
 You get
-  $LINC_NUMBERS/tracer_template_v2_all.json
+  $LINC_NUMBERS/tracer_template_v2_all_h9.json
 
     python code/figures/paper_numbers/tracer_template_v2_all.py
 """
@@ -22,7 +22,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "code"))
 from shared import paths, provenance  # noqa: E402
 
-NAME = "tracer_template_v2_all"
+NAME = "tracer_template_v2_all_h9"
 MF8 = "MF191"                                                      # LINC ID of MF8, the route-A case
 ROUTE_MF8 = "A (2b member: d2bs8 member warp + the link d2bs8_s5sym)"   # the record's own route text for MF8, verbatim
 LABEL_SOURCE = ("labels/tracer_v2 (histo_interp_v2.py on the sheets of record labels/push_tracer_r058d: the grades of a group interpolated as one label, "
@@ -42,7 +42,7 @@ def neutral(block):
 
 def main():
     P = paths.products("products_mri"); N = P["numbers_of_record"]
-    fb, fa, fp = N / "tracer_template_v2.json", N / "tracer_template_v2_mf191.json", N / "tracer_template_r058d_all.json"
+    fb, fa, fp = N / "tracer_template_v2_h9.json", N / "tracer_template_v2_mf191_h9.json", N / "tracer_template_r058d_all.json"
     B = json.loads(fb.read_text())["data"]["summary"]; A = json.loads(fa.read_text())["data"]; ca = A["case"]
     nsec = dict(B["n_sections"]); nsec[MF8] = int(ca["n_sections"])
     route = dict(B["route"]); route[MF8] = ROUTE_MF8

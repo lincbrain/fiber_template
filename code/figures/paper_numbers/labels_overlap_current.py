@@ -15,7 +15,7 @@ Three variants of the interpolated labels:
                         >= 50 voxels
 Top level: the one-voxel reference per structure (and LGN / STN means over the primary variant's brain labels) and each brain's
 blockface A-P spacing.
--> $LINC_NUMBERS/labels_overlap_current.json
+-> $LINC_NUMBERS/labels_overlap_current_h9.json
     python code/figures/paper_numbers/labels_overlap_current.py"""
 import json
 import sys
@@ -130,7 +130,7 @@ def main():
                 chain_override=CHAIN_OVERRIDE_PREFIX + ", ".join(f"{S} {man[S]['variant']}" for S in SUBJECTS),
                 variants=VARIANT_TEXT,
                 rows=rows)
-    provenance.write_numbers("labels_overlap_current", data, inputs=inputs, md5=False,
+    provenance.write_numbers("labels_overlap_current_h9", data, inputs=inputs, md5=False,
                              cmd="python code/figures/paper_numbers/labels_overlap_current.py")
 
 

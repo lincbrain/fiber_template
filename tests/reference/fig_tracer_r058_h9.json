@@ -1,0 +1,679 @@
+{
+ "data": {
+  "method": [
+   "label\" (--figure rules).",
+   "",
+   "    python code/figures/tracer.py [--out figures/tracer.png]",
+   "    python code/figures/tracer.py --figure rules [--out figures/s_tracer_rules.png]",
+   "",
+   "Labels: the final tracer labels in the MRI template (products tracer_template: <S>/<S>_<class>_mri-template_density.nii.gz, the",
+   "demons-interpolated labels carried by the chains of record; MM1 / MM2 / MM3 through their own MRI, MF8 through the blockface",
+   "template), on the template's T2 and FA channels, with the internal capsule of the SARM atlas (level 6, label 50) carried from NMT v2.",
+   "Main figure (the layout the author chose on 30 Oct):",
+   "  (a) lateral and dorsal projections of the bundles, dense and moderate classes and MM2's ungraded class, drawn where the carried",
+   "      density exceeds 0.5; injection sites as white outlines;",
+   "  (b) injection sites in 0.5 mm coronal slabs of the T2 channel;",
+   "  (c) bundles in the anterior limb of the internal capsule in 0.5 mm coronal slabs of the FA channel (faded outside the capsule);",
+   "  (d) 0.5 mm coronal slabs of the T2 channel, one case per column; dense and moderate terminals as lighter contours.",
+   "  MF8 is mirrored onto the right hemisphere for display (exact: the template is symmetric and centered on x = 0). Its bundle voxels",
+   "  that come from sections outside every interpolated pair (its interpolation table) are drawn as thin outlines in (a) and (d): a",
+   "  template voxel is taken to MF8's blockface grid by its chain (the registration of the blockface template to the MRI template, MF8's",
+   "  member warp of the blockface template's construction, the inverse of its rigid placement), and its section is looked up.",
+   "  Writes $LINC_NUMBERS/fig_tracer_r058.json (volumes per case and class under both rules, the counts of (c), the injection sites",
+   "  of (b), and the share of MF8's bundle voxels drawn as outlines, which the paper prints).",
+   "Rules figure: per case, all bundle classes (light bundles included; terminals translucent) drawn where the density is at least 0.1 and",
+   "where it exceeds 0.5, in the lateral and dorsal projections.",
+   "Reads (settings/internal/products_figures.yaml): tracer_template, template_t2 / template_mask / template_fa, sarm_level6, bft_pull_map,",
+   "bft_member_warps, mf8_rigid, mf8_interp, mf8_label_grid; $LINC_NUMBERS/acpc.json is read from numbers_of_record (products_mri).",
+   "Ported from the analysis project's paper/fig_tracer_r058.py (paper/fig_tracer_variants_r058.py, Variant A, with the record's changes).",
+   ""
+  ],
+  "cases": {
+   "MR243": {
+    "label": "MM1",
+    "tracer": "Lucifer yellow",
+    "classes": {
+     "Fiber_dense_bundle": {
+      "solid_mm3": 5.797,
+      "footprint_mm3": 14.594,
+      "footprint_over_solid": 2.52,
+      "solid_frac_in_brain": 1.0
+     },
+     "Fiber_light_bundle": {
+      "solid_mm3": 62.703,
+      "footprint_mm3": 147.672,
+      "footprint_over_solid": 2.36,
+      "solid_frac_in_brain": 1.0
+     },
+     "Fiber_moderate_bundle": {
+      "solid_mm3": 35.078,
+      "footprint_mm3": 80.094,
+      "footprint_over_solid": 2.28,
+      "solid_frac_in_brain": 1.0
+     },
+     "Fibers": {
+      "solid_mm3": 0.0,
+      "footprint_mm3": 0.953,
+      "footprint_over_solid": null,
+      "solid_frac_in_brain": null
+     },
+     "Injection_site": {
+      "solid_mm3": 0.938,
+      "footprint_mm3": 2.375,
+      "footprint_over_solid": 2.53,
+      "solid_frac_in_brain": 1.0
+     },
+     "Terminal_dense": {
+      "solid_mm3": 59.875,
+      "footprint_mm3": 106.703,
+      "footprint_over_solid": 1.78,
+      "solid_frac_in_brain": 0.7657
+     },
+     "Terminal_light": {
+      "solid_mm3": 8.094,
+      "footprint_mm3": 33.125,
+      "footprint_over_solid": 4.09,
+      "solid_frac_in_brain": 0.9981
+     },
+     "Terminal_moderate": {
+      "solid_mm3": 16.734,
+      "footprint_mm3": 47.844,
+      "footprint_over_solid": 2.86,
+      "solid_frac_in_brain": 0.9907
+     }
+    },
+    "injection_side": "right (+x)",
+    "variant_bundles": {
+     "solid_mm3": 40.875,
+     "footprint_mm3": 93.297,
+     "solid_frac_in_brain": 1.0,
+     "solid_frac_on_injection_side": 0.9664,
+     "empty_coronal_planes_share_solid": 0.0412,
+     "empty_coronal_planes_share_footprint": 0.02,
+     "solid_components_26": 15,
+     "solid_largest_component_share": 0.3402,
+     "y_range_solid_mm": [
+      16.0,
+      40.0
+     ]
+    },
+    "variant_terminals": {
+     "solid_mm3": 76.609,
+     "footprint_mm3": 154.281,
+     "solid_frac_in_brain": 0.8148,
+     "solid_frac_on_injection_side": 0.9996,
+     "empty_coronal_planes_share_solid": 0.0077,
+     "empty_coronal_planes_share_footprint": 0.0,
+     "solid_components_26": 72,
+     "solid_largest_component_share": 0.5189,
+     "y_range_solid_mm": [
+      9.0,
+      41.25
+     ]
+    },
+    "v3_bundles": {
+     "solid_mm3": 103.547,
+     "footprint_mm3": 237.5,
+     "solid_frac_in_brain": 1.0,
+     "solid_frac_on_injection_side": 0.9867,
+     "empty_coronal_planes_share_solid": 0.0345,
+     "empty_coronal_planes_share_footprint": 0.0168,
+     "solid_components_26": 38,
+     "solid_largest_component_share": 0.6751,
+     "y_range_solid_mm": [
+      11.25,
+      40.0
+     ]
+    },
+    "v3_terminals": {
+     "solid_mm3": 84.672,
+     "footprint_mm3": 187.281,
+     "solid_frac_in_brain": 0.8323,
+     "solid_frac_on_injection_side": 0.9996,
+     "empty_coronal_planes_share_solid": 0.0,
+     "empty_coronal_planes_share_footprint": 0.0,
+     "solid_components_26": 141,
+     "solid_largest_component_share": 0.4695,
+     "y_range_solid_mm": [
+      9.0,
+      41.25
+     ]
+    }
+   },
+   "MR252": {
+    "label": "MM2",
+    "tracer": "fluorescein",
+    "classes": {
+     "Bundle": {
+      "solid_mm3": 39.375,
+      "footprint_mm3": 65.797,
+      "footprint_over_solid": 1.67,
+      "solid_frac_in_brain": 1.0
+     },
+     "Fiber_dense_bundle": {
+      "solid_mm3": 0.156,
+      "footprint_mm3": 0.891,
+      "footprint_over_solid": 5.7,
+      "solid_frac_in_brain": 1.0
+     },
+     "Fiber_light_bundle": {
+      "solid_mm3": 16.391,
+      "footprint_mm3": 28.953,
+      "footprint_over_solid": 1.77,
+      "solid_frac_in_brain": 1.0
+     },
+     "Fiber_moderate_bundle": {
+      "solid_mm3": 20.062,
+      "footprint_mm3": 33.906,
+      "footprint_over_solid": 1.69,
+      "solid_frac_in_brain": 1.0
+     },
+     "Fibers": {
+      "solid_mm3": 0.0,
+      "footprint_mm3": 0.078,
+      "footprint_over_solid": null,
+      "solid_frac_in_brain": null
+     },
+     "Injection_site": {
+      "solid_mm3": 0.688,
+      "footprint_mm3": 1.281,
+      "footprint_over_solid": 1.86,
+      "solid_frac_in_brain": 1.0
+     }
+    },
+    "injection_side": "right (+x)",
+    "variant_bundles": {
+     "solid_mm3": 40.438,
+     "footprint_mm3": 68.078,
+     "solid_frac_in_brain": 1.0,
+     "solid_frac_on_injection_side": 1.0,
+     "empty_coronal_planes_share_solid": 0.0156,
+     "empty_coronal_planes_share_footprint": 0.0,
+     "solid_components_26": 25,
+     "solid_largest_component_share": 0.7867,
+     "y_range_solid_mm": [
+      6.75,
+      22.5
+     ]
+    },
+    "variant_terminals": null,
+    "v3_bundles": {
+     "solid_mm3": 40.438,
+     "footprint_mm3": 68.078,
+     "solid_frac_in_brain": 1.0,
+     "solid_frac_on_injection_side": 1.0,
+     "empty_coronal_planes_share_solid": 0.0156,
+     "empty_coronal_planes_share_footprint": 0.0,
+     "solid_components_26": 25,
+     "solid_largest_component_share": 0.7867,
+     "y_range_solid_mm": [
+      6.75,
+      22.5
+     ]
+    },
+    "v3_terminals": null,
+    "bundle_class_overlap": {
+     "bundle_solid_mm3": 39.375,
+     "graded_solid_mm3": 36.609,
+     "share_of_bundle_in_graded": 0.9028,
+     "share_of_graded_in_bundle": 0.971
+    }
+   },
+   "MR256": {
+    "label": "MM3",
+    "tracer": "Lucifer yellow",
+    "classes": {
+     "Fiber_dense_bundle": {
+      "solid_mm3": 1.781,
+      "footprint_mm3": 5.516,
+      "footprint_over_solid": 3.1,
+      "solid_frac_in_brain": 1.0
+     },
+     "Fiber_light_bundle": {
+      "solid_mm3": 28.109,
+      "footprint_mm3": 58.984,
+      "footprint_over_solid": 2.1,
+      "solid_frac_in_brain": 1.0
+     },
+     "Fiber_moderate_bundle": {
+      "solid_mm3": 63.969,
+      "footprint_mm3": 105.203,
+      "footprint_over_solid": 1.64,
+      "solid_frac_in_brain": 1.0
+     },
+     "Fibers": {
+      "solid_mm3": 0.0,
+      "footprint_mm3": 0.0,
+      "footprint_over_solid": null,
+      "solid_frac_in_brain": null
+     },
+     "Terminal_dense": {
+      "solid_mm3": 8.297,
+      "footprint_mm3": 17.281,
+      "footprint_over_solid": 2.08,
+      "solid_frac_in_brain": 0.9473
+     },
+     "Terminal_light": {
+      "solid_mm3": 8.219,
+      "footprint_mm3": 23.109,
+      "footprint_over_solid": 2.81,
+      "solid_frac_in_brain": 0.9582
+     },
+     "Terminal_moderate": {
+      "solid_mm3": 29.094,
+      "footprint_mm3": 58.531,
+      "footprint_over_solid": 2.01,
+      "solid_frac_in_brain": 0.9678
+     }
+    },
+    "injection_side": null,
+    "variant_bundles": {
+     "solid_mm3": 65.734,
+     "footprint_mm3": 110.0,
+     "solid_frac_in_brain": 1.0,
+     "solid_frac_on_injection_side": null,
+     "empty_coronal_planes_share_solid": 0.0577,
+     "empty_coronal_planes_share_footprint": 0.0381,
+     "solid_components_26": 20,
+     "solid_largest_component_share": 0.6732,
+     "y_range_solid_mm": [
+      14.25,
+      40.0
+     ]
+    },
+    "variant_terminals": {
+     "solid_mm3": 37.328,
+     "footprint_mm3": 75.156,
+     "solid_frac_in_brain": 0.9636,
+     "solid_frac_on_injection_side": null,
+     "empty_coronal_planes_share_solid": 0.1642,
+     "empty_coronal_planes_share_footprint": 0.0741,
+     "solid_components_26": 50,
+     "solid_largest_component_share": 0.378,
+     "y_range_solid_mm": [
+      8.0,
+      41.25
+     ]
+    },
+    "v3_bundles": {
+     "solid_mm3": 93.844,
+     "footprint_mm3": 168.062,
+     "solid_frac_in_brain": 1.0,
+     "solid_frac_on_injection_side": null,
+     "empty_coronal_planes_share_solid": 0.0185,
+     "empty_coronal_planes_share_footprint": 0.0091,
+     "solid_components_26": 38,
+     "solid_largest_component_share": 0.676,
+     "y_range_solid_mm": [
+      13.25,
+      40.0
+     ]
+    },
+    "v3_terminals": {
+     "solid_mm3": 45.547,
+     "footprint_mm3": 97.984,
+     "solid_frac_in_brain": 0.9626,
+     "solid_frac_on_injection_side": null,
+     "empty_coronal_planes_share_solid": 0.0746,
+     "empty_coronal_planes_share_footprint": 0.0074,
+     "solid_components_26": 91,
+     "solid_largest_component_share": 0.3125,
+     "y_range_solid_mm": [
+      8.0,
+      41.25
+     ]
+    }
+   },
+   "MF191": {
+    "label": "MF8",
+    "tracer": "Fluoro-Ruby",
+    "classes": {
+     "Fiber_dense_bundle": {
+      "solid_mm3": 65.906,
+      "footprint_mm3": 178.688,
+      "footprint_over_solid": 2.71,
+      "solid_frac_in_brain": 1.0
+     },
+     "Fiber_light_bundle": {
+      "solid_mm3": 20.406,
+      "footprint_mm3": 89.578,
+      "footprint_over_solid": 4.39,
+      "solid_frac_in_brain": 1.0
+     },
+     "Fiber_moderate_bundle": {
+      "solid_mm3": 71.094,
+      "footprint_mm3": 186.016,
+      "footprint_over_solid": 2.62,
+      "solid_frac_in_brain": 0.9993
+     },
+     "Fibers": {
+      "solid_mm3": 46.984,
+      "footprint_mm3": 538.0,
+      "footprint_over_solid": 11.45,
+      "solid_frac_in_brain": 0.9997
+     },
+     "Injection_site": {
+      "solid_mm3": 2.969,
+      "footprint_mm3": 9.906,
+      "footprint_over_solid": 3.34,
+      "solid_frac_in_brain": 1.0
+     },
+     "Terminal_dense": {
+      "solid_mm3": 215.016,
+      "footprint_mm3": 431.531,
+      "footprint_over_solid": 2.01,
+      "solid_frac_in_brain": 0.9955
+     },
+     "Terminal_light": {
+      "solid_mm3": 51.188,
+      "footprint_mm3": 236.047,
+      "footprint_over_solid": 4.61,
+      "solid_frac_in_brain": 0.9982
+     },
+     "Terminal_moderate": {
+      "solid_mm3": 97.141,
+      "footprint_mm3": 315.328,
+      "footprint_over_solid": 3.25,
+      "solid_frac_in_brain": 0.9857
+     }
+    },
+    "injection_side": "left (-x)",
+    "variant_bundles": {
+     "solid_mm3": 133.719,
+     "footprint_mm3": 349.609,
+     "solid_frac_in_brain": 0.9996,
+     "solid_frac_on_injection_side": 0.9117,
+     "empty_coronal_planes_share_solid": 0.1742,
+     "empty_coronal_planes_share_footprint": 0.1139,
+     "solid_components_26": 54,
+     "solid_largest_component_share": 0.1623,
+     "y_range_solid_mm": [
+      1.5,
+      40.0
+     ]
+    },
+    "variant_terminals": {
+     "solid_mm3": 312.109,
+     "footprint_mm3": 733.312,
+     "solid_frac_in_brain": 0.9924,
+     "solid_frac_on_injection_side": 0.9762,
+     "empty_coronal_planes_share_solid": 0.1857,
+     "empty_coronal_planes_share_footprint": 0.1457,
+     "solid_components_26": 91,
+     "solid_largest_component_share": 0.4075,
+     "y_range_solid_mm": [
+      7.0,
+      41.75
+     ]
+    },
+    "v3_bundles": {
+     "solid_mm3": 154.109,
+     "footprint_mm3": 437.703,
+     "solid_frac_in_brain": 0.9997,
+     "solid_frac_on_injection_side": 0.9027,
+     "empty_coronal_planes_share_solid": 0.0818,
+     "empty_coronal_planes_share_footprint": 0.0,
+     "solid_components_26": 96,
+     "solid_largest_component_share": 0.173,
+     "y_range_solid_mm": [
+      0.5,
+      40.0
+     ]
+    },
+    "v3_terminals": {
+     "solid_mm3": 363.281,
+     "footprint_mm3": 965.578,
+     "solid_frac_in_brain": 0.9932,
+     "solid_frac_on_injection_side": 0.9651,
+     "empty_coronal_planes_share_solid": 0.2216,
+     "empty_coronal_planes_share_footprint": 0.1105,
+     "solid_components_26": 276,
+     "solid_largest_component_share": 0.3504,
+     "y_range_solid_mm": [
+      0.25,
+      41.75
+     ]
+    }
+   }
+  },
+  "voxel_mm3": 0.015625,
+  "rules": {
+   "solid": "density > 0.5",
+   "footprint": "density >= 0.1"
+  },
+  "groups": {
+   "variant_bundles": [
+    "Fiber_dense_bundle",
+    "Fiber_moderate_bundle",
+    "Bundle"
+   ],
+   "variant_terminals_d_only": [
+    "Terminal_dense",
+    "Terminal_moderate"
+   ],
+   "v3_bundles": [
+    "Fiber_dense_bundle",
+    "Fiber_moderate_bundle",
+    "Fiber_light_bundle",
+    "Bundle"
+   ],
+   "v3_terminals": [
+    "Terminal_dense",
+    "Terminal_moderate",
+    "Terminal_light"
+   ]
+  },
+  "slab": {
+   "half_mm": 0.25,
+   "weights": [
+    0.25,
+    0.5,
+    0.25
+   ],
+   "rule": "slab-mean density > 0.5"
+  },
+  "colors": {
+   "MR243": {
+    "hex": "#56b4e9",
+    "figstyle": "#56B4E9",
+    "proposed": false
+   },
+   "MR252": {
+    "hex": "#cc79a7",
+    "figstyle": "#CC79A7",
+    "proposed": false
+   },
+   "MR256": {
+    "hex": "#009e73",
+    "figstyle": "#009E73",
+    "proposed": false
+   },
+   "MF191": {
+    "hex": "#f0e442",
+    "figstyle": "#F0E442",
+    "proposed": false
+   }
+  },
+  "mirrored_for_display": [
+   "MF191"
+  ],
+  "alic_counts_slab_solid": {
+   "20.0": {
+    "MF191": {
+     "voxels_in_capsule": 26,
+     "voxels_total": 27,
+     "centroid_x_mm": 4.19,
+     "centroid_z_mm": 16.62
+    },
+    "MR256": {
+     "voxels_in_capsule": 15,
+     "voxels_total": 20,
+     "centroid_x_mm": 3.84,
+     "centroid_z_mm": 16.15
+    },
+    "MR243": {
+     "voxels_in_capsule": 20,
+     "voxels_total": 21,
+     "centroid_x_mm": 4.44,
+     "centroid_z_mm": 16.36
+    },
+    "MR252": {
+     "voxels_in_capsule": 4,
+     "voxels_total": 31,
+     "centroid_x_mm": 9.5,
+     "centroid_z_mm": 22.0
+    }
+   },
+   "22.0": {
+    "MF191": {
+     "voxels_in_capsule": 26,
+     "voxels_total": 26,
+     "centroid_x_mm": 5.73,
+     "centroid_z_mm": 16.96
+    },
+    "MR256": {
+     "voxels_in_capsule": 6,
+     "voxels_total": 13,
+     "centroid_x_mm": 5.08,
+     "centroid_z_mm": 16.17
+    },
+    "MR243": {
+     "voxels_in_capsule": 15,
+     "voxels_total": 15,
+     "centroid_x_mm": 5.09,
+     "centroid_z_mm": 16.87
+    },
+    "MR252": {
+     "voxels_in_capsule": 0,
+     "voxels_total": 0,
+     "centroid_x_mm": null,
+     "centroid_z_mm": null
+    }
+   },
+   "24.0": {
+    "MF191": {
+     "voxels_in_capsule": 5,
+     "voxels_total": 128,
+     "centroid_x_mm": 6.28,
+     "centroid_z_mm": 16.75
+    },
+    "MR256": {
+     "voxels_in_capsule": 9,
+     "voxels_total": 65,
+     "centroid_x_mm": 5.76,
+     "centroid_z_mm": 16.97
+    },
+    "MR243": {
+     "voxels_in_capsule": 7,
+     "voxels_total": 7,
+     "centroid_x_mm": 5.91,
+     "centroid_z_mm": 17.5
+    },
+    "MR252": {
+     "voxels_in_capsule": 0,
+     "voxels_total": 0,
+     "centroid_x_mm": null,
+     "centroid_z_mm": null
+    }
+   }
+  },
+  "injection_sites_b": {
+   "MR243": {
+    "centroid_nmt_mm": [
+     1.1,
+     40.59,
+     22.91
+    ],
+    "slab_y_mm": 40.5,
+    "solid_voxels": 60,
+    "solid_mm3": 0.938,
+    "mirrored": false,
+    "drawn": "any voxel with density > 0.5 in the planes y - 0.25, y, y + 0.25 (the site is small under the solid rule)"
+   },
+   "MR252": {
+    "centroid_nmt_mm": [
+     1.72,
+     23.02,
+     28.45
+    ],
+    "slab_y_mm": 23.0,
+    "solid_voxels": 44,
+    "solid_mm3": 0.688,
+    "mirrored": false,
+    "drawn": "any voxel with density > 0.5 in the planes y - 0.25, y, y + 0.25 (the site is small under the solid rule)"
+   },
+   "MF191": {
+    "centroid_nmt_mm": [
+     6.06,
+     30.17,
+     20.71
+    ],
+    "slab_y_mm": 30.25,
+    "solid_voxels": 190,
+    "solid_mm3": 2.969,
+    "mirrored": true,
+    "drawn": "any voxel with density > 0.5 in the planes y - 0.25, y, y + 0.25 (the site is small under the solid rule)"
+   }
+  },
+  "outputs": [
+   "figures/tracer.png"
+  ],
+  "mf8_unbridged_outlined": {
+   "bridged_slices": [
+    4,
+    5,
+    6,
+    10,
+    11,
+    12,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    60,
+    61,
+    62,
+    64,
+    65,
+    66,
+    72,
+    73,
+    74
+   ],
+   "solid_bundle_voxels": 8558,
+   "solid_bundle_voxels_unbridged": 2643,
+   "share_unbridged": 0.3088
+  }
+ }
+}

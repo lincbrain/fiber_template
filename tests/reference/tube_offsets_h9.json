@@ -1,0 +1,213 @@
+{
+ "data": {
+  "method": [
+   "tube_offsets_r054's computation on the registrations with the per-component nonlinear stiffness (settings/histology.yaml tirl.stiff_nonlinear, 12 Nov 2026), without mf191FR_c01_s46nDF_0002: dropped as unmatched (5 Nov 2026 revision): the matching rule classed this cerebellum-and-brainstem component as the right hemisphere, so it was registered to the right-hemisphere region of photograph 66; never validly registered.",
+   "only), the six histology brains.",
+   "Variants (pooled.<v> and per_subject.<S>.<v>, each {n, median_mm, p95_mm, mean_mm, detected, searched, rate}):",
+   "  hole_hidden   the 14 Oct 2026 revision's rule: blockface center = centroid of the hole-only voxels; every piece in which the hole was found with the",
+   "                tubes hidden (NOT paired with the tubes-visible arm)",
+   "  mask_hidden   the earlier center alone (centroid of the whole tube mask), the same hidden-only set (reproduces the",
+   "                inpainted arm of histo_tube_landmarks.json on its unpaired set)",
+   "searched = pieces whose blockface slice carries a tube; detected = hole found within 1 mm; rate = detected / searched.",
+   "Also per brain: how often the hole-only rule applied (refined), the shift of the center (mm, fixed grid 0.034 mm/px), and",
+   "detection diagnostics in a 4 mm window around the mapped hole-only center (hole-like components of 0.03-1.5 mm^2; tube-sized",
+   "= >= 0.10 mm^2): the share of pieces with any tube-sized hole within 1 mm / within 2 mm, and the median area of the detected holes.",
+   "-> paper/numbers/tube_offsets_r054.json",
+   "    python3 labels/tube_offsets_r054.py"
+  ],
+  "per_subject": {
+   "MR243": {
+    "hole_hidden": {
+     "n": 56,
+     "median_mm": 0.113,
+     "p95_mm": 0.391,
+     "mean_mm": 0.142,
+     "detected": 56,
+     "searched": 67,
+     "rate": 0.8358
+    },
+    "mask_hidden": {
+     "n": 56,
+     "median_mm": 0.106,
+     "p95_mm": 0.426,
+     "mean_mm": 0.148,
+     "detected": 56,
+     "searched": 67,
+     "rate": 0.8358
+    },
+    "refined_share": 0.9403,
+    "center_shift_mm_median": 0.061,
+    "center_shift_mm_p90": 0.135,
+    "hole_to_mask_area_median": 0.258,
+    "diag_share_tube_sized_within_1mm": 0.5672,
+    "diag_share_tube_sized_within_2mm": 0.597,
+    "detected_hole_area_mm2_median": 0.138,
+    "scorer_errors": []
+   },
+   "MR252": {
+    "hole_hidden": {
+     "n": 30,
+     "median_mm": 0.142,
+     "p95_mm": 0.363,
+     "mean_mm": 0.184,
+     "detected": 30,
+     "searched": 36,
+     "rate": 0.8333
+    },
+    "mask_hidden": {
+     "n": 30,
+     "median_mm": 0.195,
+     "p95_mm": 0.309,
+     "mean_mm": 0.196,
+     "detected": 30,
+     "searched": 36,
+     "rate": 0.8333
+    },
+    "refined_share": 0.9167,
+    "center_shift_mm_median": 0.118,
+    "center_shift_mm_p90": 0.184,
+    "hole_to_mask_area_median": 0.257,
+    "diag_share_tube_sized_within_1mm": 0.6667,
+    "diag_share_tube_sized_within_2mm": 0.6667,
+    "detected_hole_area_mm2_median": 0.163,
+    "scorer_errors": []
+   },
+   "MR256": {
+    "hole_hidden": {
+     "n": 34,
+     "median_mm": 0.198,
+     "p95_mm": 0.527,
+     "mean_mm": 0.236,
+     "detected": 34,
+     "searched": 39,
+     "rate": 0.8718
+    },
+    "mask_hidden": {
+     "n": 33,
+     "median_mm": 0.2,
+     "p95_mm": 0.362,
+     "mean_mm": 0.204,
+     "detected": 33,
+     "searched": 39,
+     "rate": 0.8462
+    },
+    "refined_share": 0.5385,
+    "center_shift_mm_median": 0.027,
+    "center_shift_mm_p90": 0.208,
+    "hole_to_mask_area_median": 0.156,
+    "diag_share_tube_sized_within_1mm": 0.5385,
+    "diag_share_tube_sized_within_2mm": 0.5385,
+    "detected_hole_area_mm2_median": 0.141,
+    "scorer_errors": []
+   },
+   "MF278": {
+    "hole_hidden": {
+     "n": 46,
+     "median_mm": 0.201,
+     "p95_mm": 0.638,
+     "mean_mm": 0.252,
+     "detected": 46,
+     "searched": 58,
+     "rate": 0.7931
+    },
+    "mask_hidden": {
+     "n": 46,
+     "median_mm": 0.324,
+     "p95_mm": 0.669,
+     "mean_mm": 0.344,
+     "detected": 46,
+     "searched": 58,
+     "rate": 0.7931
+    },
+    "refined_share": 0.8966,
+    "center_shift_mm_median": 0.099,
+    "center_shift_mm_p90": 0.167,
+    "hole_to_mask_area_median": 0.229,
+    "diag_share_tube_sized_within_1mm": 0.5517,
+    "diag_share_tube_sized_within_2mm": 0.5862,
+    "detected_hole_area_mm2_median": 0.16,
+    "scorer_errors": []
+   },
+   "MF275": {
+    "hole_hidden": {
+     "n": 35,
+     "median_mm": 0.252,
+     "p95_mm": 0.594,
+     "mean_mm": 0.284,
+     "detected": 35,
+     "searched": 42,
+     "rate": 0.8333
+    },
+    "mask_hidden": {
+     "n": 35,
+     "median_mm": 0.385,
+     "p95_mm": 0.708,
+     "mean_mm": 0.385,
+     "detected": 35,
+     "searched": 42,
+     "rate": 0.8333
+    },
+    "refined_share": 0.6429,
+    "center_shift_mm_median": 0.147,
+    "center_shift_mm_p90": 0.286,
+    "hole_to_mask_area_median": 0.141,
+    "diag_share_tube_sized_within_1mm": 0.5476,
+    "diag_share_tube_sized_within_2mm": 0.5714,
+    "detected_hole_area_mm2_median": 0.181,
+    "scorer_errors": [
+     "mf275FR_c04_s46nDF_0001"
+    ]
+   },
+   "MF191": {
+    "hole_hidden": {
+     "n": 8,
+     "median_mm": 0.507,
+     "p95_mm": 0.732,
+     "mean_mm": 0.437,
+     "detected": 8,
+     "searched": 42,
+     "rate": 0.1905
+    },
+    "mask_hidden": {
+     "n": 9,
+     "median_mm": 0.557,
+     "p95_mm": 0.773,
+     "mean_mm": 0.561,
+     "detected": 9,
+     "searched": 42,
+     "rate": 0.2143
+    },
+    "refined_share": 0.5476,
+    "center_shift_mm_median": 0.22,
+    "center_shift_mm_p90": 0.826,
+    "hole_to_mask_area_median": 0.275,
+    "diag_share_tube_sized_within_1mm": 0.119,
+    "diag_share_tube_sized_within_2mm": 0.1667,
+    "detected_hole_area_mm2_median": 0.055,
+    "scorer_errors": []
+   }
+  },
+  "pooled": {
+   "hole_hidden": {
+    "n": 209,
+    "median_mm": 0.171,
+    "p95_mm": 0.58,
+    "mean_mm": 0.222,
+    "detected": 209,
+    "searched": 284,
+    "rate": 0.7359
+   },
+   "mask_hidden": {
+    "n": 209,
+    "median_mm": 0.239,
+    "p95_mm": 0.656,
+    "mean_mm": 0.264,
+    "detected": 209,
+    "searched": 284,
+    "rate": 0.7359
+   },
+   "center_shift_mm_median": 0.086,
+   "refined_share": 0.7711
+  }
+ }
+}

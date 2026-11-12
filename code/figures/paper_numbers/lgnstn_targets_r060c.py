@@ -20,7 +20,7 @@ What it does
   average symmetric surface distance (mm) and the centroid distance (mm) between the two brains' labels; also in "ours-scale" mm
   (x (V_ours / V_target)^(1/3), V = the target's brain-mask volume).
 You get
-  $LINC_WORK/r060c/<S>/<S>_<st>_<target>_{prob,mask}_demons.nii.gz and carry_<S>.json; $LINC_NUMBERS/lgnstn_targets_r060c.json,
+  $LINC_WORK/r060c/<S>/<S>_<st>_<target>_{prob,mask}_demons.nii.gz and carry_<S>.json; $LINC_NUMBERS/lgnstn_targets_r060c_h9.json,
   which also holds, unchanged, the superseded r060b summaries (products: numbers_of_record) and the r060b run's blockface volumes
   (`lgnstn_r060b_carries`).
 
@@ -200,7 +200,7 @@ def score(W, out):
                bf_volume_mm3={CASES[S]: {st: dict(dense=v["vol_bf_mm3"], r060b_filled=old_carries[S]["targets"]["nmt"]["structs"][st]["vol_bf_mm3"])
                                          for st, v in c["targets"]["nmt"]["structs"].items()} for S, c in carries.items()},
                superseded_r060b=dict(summary={t: v["summary"] for t, v in O["sets"].items()}, ours_better=O["ours_better"]))
-    provenance.write_numbers("lgnstn_targets_r060c", rec, inputs=sorted(set(inputs)), md5=False,
+    provenance.write_numbers("lgnstn_targets_r060c_h9", rec, inputs=sorted(set(inputs)), md5=False,
                              cmd=" ".join(["python code/figures/paper_numbers/lgnstn_targets_r060c.py"] + sys.argv[1:]))
 
 

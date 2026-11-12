@@ -5,7 +5,7 @@
 
 Needs glymur (the raw histology is JPEG 2000). --jp2-root is the LINC source-data tree that holds sub-<ID>/micr/<section>.jp2.
   a  one section registered to its blockface slice: the MM3 piece (with a detected tube hole) whose nonlinear tissue Dice is closest
-     to that brain's median (numbers_of_record/registration_qc.json, family histo2bf): the blockface slice with the histology's tissue
+     to that brain's median (numbers_of_record/registration_qc_histo2bf_h9.json, family histo2bf): the blockface slice with the histology's tissue
      outline (white), and the registered darkfield histology (contrast-stretched). Flipped left-right into the neurological convention
      (the photographs show the subject's left on the image right); dorsal up; loose blockface fragments without histology removed.
   b  marker tubes at near-native resolution (JP2 level 2, ~1.8 um/px, 3 mm windows), three fixed quantiles (25th, 50th, 90th) of the
@@ -13,11 +13,12 @@ Needs glymur (the raw histology is JPEG 2000). --jp2-root is the LINC source-dat
      into the histology through that piece's tubes-hidden TIRL chain, o = the hole found in the histology (its recorded area; both
      white, black halo). The offset is in the header.
   c  ECDF of the tube offset of the six brains, tubes hidden from the registration (every piece in which the hole was found; blockface
-     tube center from the hole only); the median as a thin vertical line, checked against $LINC_NUMBERS/tube_offsets_r054.json
-     (variant hole_hidden; code/figures/paper_numbers/tube_offsets_r054.py).
+     tube center from the hole only); the median as a thin vertical line, checked against $LINC_NUMBERS/tube_offsets_h9.json
+     (variant hole_hidden; code/figures/paper_numbers/histology_h9.py).
   d  per-brain medians (the same record).
-Reads (settings/internal/products_mri.yaml): tube_landmarks/{preinp,r054hole}_<ID>_native.json, histo_arm_visible (panel a's TIRL piece),
-numbers_of_record/registration_qc.json, $LINC_NUMBERS/tube_offsets_r054.json, the JP2s. Writes the PNG and its provenance.json.
+Reads (settings/internal/products_mri.yaml): tube_landmarks_h9/{h9preinp,h9hole}_<ID>_native.json, products_blockface labels_histology_arm (panel
+a's TIRL piece, in MM3's own arm), numbers_of_record/registration_qc_histo2bf_h9.json, $LINC_NUMBERS/tube_offsets_h9.json, the JP2s. The registrations are
+those with the per-component nonlinear stiffness (settings/histology.yaml tirl.stiff_nonlinear, 12 Nov 2026). Writes the PNG and its provenance.json.
 """
 import argparse
 import json
@@ -44,7 +45,7 @@ A_SUBJ = "MR256"                                               # panel (a)'s bra
 PX_MM, FIX_MM = 0.4397e-3, 0.034                               # JP2 level-0 pixel (mm); TIRL fixed/moving grid (mm)
 JP2_LEVEL = 4                                                  # (b): read every 4th level-0 pixel (JP2 level 2)
 JP2 = "sub-{S}/micr/{sid}.jp2"                                 # under --jp2-root
-TIRL = "sub-{S}/blockface/06_histo2bf/tirl/{piece}"            # under histo_arm_visible
+TIRL = "sub-{S}/blockface/06_histo2bf/tirl/{piece}"            # under the brain's labels_histology_arm
 TUBE_VARIANT = "hole_hidden"                                   # the paper's tube set
 QUANT = (25, 50, 90)
 WIN_MM = 3.0                                                   # (b): window side
@@ -69,16 +70,16 @@ def main():
     ap.add_argument("--out", default="figures/histology.png")
     a = ap.parse_args()
     PR = paths.products("products_mri")
-    NUM, TUBE = PR["numbers_of_record"], PR["tube_landmarks"]
-    TJP = paths.numbers_root() / "tube_offsets_r054.json"
+    NUM, TUBE = PR["numbers_of_record"], PR["tube_landmarks_h9"]
+    TJP = paths.numbers_root() / "tube_offsets_h9.json"
     pieces = lambda tag, S_: {r["piece"]: r for r in json.loads((TUBE / f"{tag}_{S_}_native.json").read_text())["pieces"]}  # noqa: E731
     ins = []
     # ---- a: representative piece ----
-    rq = [r for r in json.loads((NUM / "registration_qc.json").read_text()) if r.get("family") == "histo2bf" and r["subject"] == A_SUBJ]
+    rq = [r for r in json.loads((NUM / "registration_qc_histo2bf_h9.json").read_text())["data"] if r.get("family") == "histo2bf" and r["subject"] == A_SUBJ]
     med = float(np.median([r["metrics"]["dice_nonlinear"] for r in rq]))
-    tp = pieces("preinp", A_SUBJ)
+    tp = pieces("h9preinp", A_SUBJ)
     ra = min((r for r in rq if tp.get(r["tag"], {}).get("found")), key=lambda r: abs(r["metrics"]["dice_nonlinear"] - med))
-    P = PR["histo_arm_visible"] / TIRL.format(S=A_SUBJ, piece=ra["tag"])
+    P = paths.products_root() / paths.products("products_blockface")["labels_histology_arm"][A_SUBJ] / TIRL.format(S=A_SUBJ, piece=ra["tag"])
     fx = np.asarray(Image.open(P / "fixed.png"), np.float32) / 255
     rgb = np.asarray(Image.open(P / "moving4_nonlinear_rgb.png").convert("RGB"), np.float32)
     mx = rgb.max(-1)
@@ -91,15 +92,15 @@ def main():
     soft = lambda m: np.clip(ndi.gaussian_filter(m.astype(np.float32), 1.0), 0, 1)   # noqa: E731  antialiased tissue edge (~1 px)
     fxd = fx * soft(fxd > 0); hs = hs * soft(tis)[..., None]
     pa = [flip(fxd[cr]), flip(hs[cr])]; outl = flip(tis[cr])
-    ins += [P / "fixed.png", P / "moving4_nonlinear_rgb.png", NUM / "registration_qc.json"]
+    ins += [P / "fixed.png", P / "moving4_nonlinear_rgb.png", NUM / "registration_qc_histo2bf_h9.json"]
     # ---- c: the six-brain distribution, tubes hidden, hole-only centers ----
     TJ = json.loads(TJP.read_text())["data"]
     e_inp, cand = [], []
     for S_ in MAIN:
-        for r_ in pieces("r054hole", S_).values():
+        for r_ in pieces("h9hole", S_).values():
             if r_.get("bf_tube") and r_["hole"]["found"]:
                 e_inp.append(r_["hole"]["error_mm"]); cand.append((S_, dict(r_["hole"], sid=r_["sid"], piece=r_["piece"])))
-        ins.append(TUBE / f"r054hole_{S_}_native.json")
+        ins.append(TUBE / f"h9hole_{S_}_native.json")
     m_inp = TJ["pooled"][TUBE_VARIANT]["median_mm"]
     assert len(e_inp) == TJ["pooled"][TUBE_VARIANT]["n"] and round(float(np.median(e_inp)), 3) == m_inp, "distribution != JSON"
     # ---- b: fixed quantiles of the offsets ----

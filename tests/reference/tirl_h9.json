@@ -1,0 +1,4761 @@
+{
+ "data": {
+  "post_hoc": "Post hoc, disclosed (data_tirl_h9/README.txt): the weight 0.45 (the sweep's C9) was added after the C1-C6 results, and the per-component rule (0.45 where the affine Dice is at least 0.85, else 0.30) was written after seeing that every component C2 pushed below 0.85 started with an affine Dice below 0.85. Only the tissue Dice informed the rule; the hidden tubes did not.",
+  "test_pieces_left_out": {
+   "pieces": {
+    "MF8": [
+     "mf191FR_c01_s46nDF_0002"
+    ]
+   },
+   "why": "dropped from the record on 5 Nov (r068: MF8 s46 unmatched); H9 has no run; left out of C0 and H9 alike"
+  },
+  "rule": {
+   "gain_mm": 0.03,
+   "brains_min": 4,
+   "dice_tol": 0.005,
+   "lobo_min": 4,
+   "failures": "any failed component -> not adoptable",
+   "stiff_regweight": 0.45,
+   "affine_dice_min": 0.85,
+   "fallback_regweight": 0.3
+  },
+  "candidates": {
+   "C0": {
+    "n_pieces": 283,
+    "found": 207,
+    "failed": 0,
+    "dice_nonlinear_median": 0.9666,
+    "dice_nonlinear_below_085": 8,
+    "per_brain": {
+     "MM1": {
+      "found": 56,
+      "n": 67,
+      "paired_n": 56,
+      "median_mm": 0.1289,
+      "c0_median_mm": 0.1289
+     },
+     "MM2": {
+      "found": 29,
+      "n": 36,
+      "paired_n": 29,
+      "median_mm": 0.25,
+      "c0_median_mm": 0.25
+     },
+     "MM3": {
+      "found": 34,
+      "n": 39,
+      "paired_n": 34,
+      "median_mm": 0.2262,
+      "c0_median_mm": 0.2262
+     },
+     "MF5": {
+      "found": 43,
+      "n": 58,
+      "paired_n": 43,
+      "median_mm": 0.2464,
+      "c0_median_mm": 0.2464
+     },
+     "MF6": {
+      "found": 36,
+      "n": 42,
+      "paired_n": 36,
+      "median_mm": 0.3288,
+      "c0_median_mm": 0.3288
+     },
+     "MF8": {
+      "found": 9,
+      "n": 41,
+      "paired_n": 9,
+      "median_mm": 0.5397,
+      "c0_median_mm": 0.5397
+     }
+    },
+    "pooled": {
+     "paired_n": 207,
+     "median_mm": 0.2197,
+     "c0_median_mm": 0.2197,
+     "gain_mm": 0.0
+    }
+   },
+   "H9": {
+    "n_pieces": 283,
+    "found": 209,
+    "failed": 0,
+    "dice_nonlinear_median": 0.9617,
+    "dice_nonlinear_below_085": 8,
+    "per_brain": {
+     "MM1": {
+      "found": 56,
+      "n": 67,
+      "paired_n": 56,
+      "median_mm": 0.1132,
+      "c0_median_mm": 0.1289
+     },
+     "MM2": {
+      "found": 30,
+      "n": 36,
+      "paired_n": 29,
+      "median_mm": 0.1407,
+      "c0_median_mm": 0.25
+     },
+     "MM3": {
+      "found": 34,
+      "n": 39,
+      "paired_n": 34,
+      "median_mm": 0.1981,
+      "c0_median_mm": 0.2262
+     },
+     "MF5": {
+      "found": 46,
+      "n": 58,
+      "paired_n": 43,
+      "median_mm": 0.209,
+      "c0_median_mm": 0.2464
+     },
+     "MF6": {
+      "found": 35,
+      "n": 42,
+      "paired_n": 35,
+      "median_mm": 0.252,
+      "c0_median_mm": 0.3328
+     },
+     "MF8": {
+      "found": 8,
+      "n": 41,
+      "paired_n": 8,
+      "median_mm": 0.5073,
+      "c0_median_mm": 0.5017
+     }
+    },
+    "pooled": {
+     "paired_n": 205,
+     "median_mm": 0.1714,
+     "c0_median_mm": 0.2197,
+     "gain_mm": 0.0483
+    },
+    "brains_improved": 5
+   }
+  },
+  "decision": {
+   "a_gain": true,
+   "b_brains": true,
+   "c_dice": true,
+   "d_stable": true,
+   "f_no_failures": true,
+   "adopt": true
+  },
+  "h9_vs_record": {
+   "per_brain": {
+    "MM1": {
+     "paired_n": 56,
+     "h9_median_mm": 0.1132,
+     "record_median_mm": 0.1258
+    },
+    "MM2": {
+     "paired_n": 29,
+     "h9_median_mm": 0.1407,
+     "record_median_mm": 0.2586
+    },
+    "MM3": {
+     "paired_n": 34,
+     "h9_median_mm": 0.1981,
+     "record_median_mm": 0.2254
+    },
+    "MF5": {
+     "paired_n": 43,
+     "h9_median_mm": 0.209,
+     "record_median_mm": 0.2521
+    },
+    "MF6": {
+     "paired_n": 35,
+     "h9_median_mm": 0.252,
+     "record_median_mm": 0.3278
+    },
+    "MF8": {
+     "paired_n": 8,
+     "h9_median_mm": 0.5073,
+     "record_median_mm": 0.5045
+    }
+   },
+   "paired_n": 205,
+   "h9_median_mm": 0.1714,
+   "record_median_mm": 0.2176
+  },
+  "tissue_dice_all_components": {
+   "hidden": {
+    "components": 394,
+    "h9_dice_median": 0.9576,
+    "h9_below_085": 13,
+    "record_components": 394,
+    "record_dice_median": 0.9619,
+    "record_below_085": 12
+   },
+   "visible": {
+    "components": 256,
+    "h9_dice_median": 0.9635,
+    "h9_below_085": 6,
+    "record_components": 256,
+    "record_dice_median": 0.9688,
+    "record_below_085": 6
+   }
+  },
+  "pieces": {
+   "C0": {
+    "MM1": {
+     "mr243LY_c18_s01nDF_0002": {
+      "found": true,
+      "error_mm": 0.6988,
+      "dice_affine": 0.9427,
+      "dice_nonlinear": 0.9645,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s03nDF_0002": {
+      "found": true,
+      "error_mm": 0.2361,
+      "dice_affine": 0.8592,
+      "dice_nonlinear": 0.9092,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s04nDF_0002": {
+      "found": true,
+      "error_mm": 0.0903,
+      "dice_affine": 0.9134,
+      "dice_nonlinear": 0.9712,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s05nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9257,
+      "dice_nonlinear": 0.975,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s06nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9456,
+      "dice_nonlinear": 0.9498,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s07nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9579,
+      "dice_nonlinear": 0.9711,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s08nDF_0002": {
+      "found": true,
+      "error_mm": 0.0802,
+      "dice_affine": 0.9481,
+      "dice_nonlinear": 0.9592,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s09nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9628,
+      "dice_nonlinear": 0.9774,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s10nDF_0002": {
+      "found": true,
+      "error_mm": 0.3248,
+      "dice_affine": 0.9485,
+      "dice_nonlinear": 0.9558,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s11nDF_0002": {
+      "found": true,
+      "error_mm": 0.1128,
+      "dice_affine": 0.967,
+      "dice_nonlinear": 0.9777,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s12nDF_0002": {
+      "found": true,
+      "error_mm": 0.5799,
+      "dice_affine": 0.9485,
+      "dice_nonlinear": 0.9738,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s13nDF_0002": {
+      "found": true,
+      "error_mm": 0.1077,
+      "dice_affine": 0.9694,
+      "dice_nonlinear": 0.9781,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s14nDF_0002": {
+      "found": true,
+      "error_mm": 0.1119,
+      "dice_affine": 0.9659,
+      "dice_nonlinear": 0.9763,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s15nDF_0002": {
+      "found": true,
+      "error_mm": 0.1274,
+      "dice_affine": 0.9695,
+      "dice_nonlinear": 0.9805,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s16nDF_0000": {
+      "found": true,
+      "error_mm": 0.2248,
+      "dice_affine": 0.9724,
+      "dice_nonlinear": 0.9848,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s17nDF_0000": {
+      "found": true,
+      "error_mm": 0.0425,
+      "dice_affine": 0.9627,
+      "dice_nonlinear": 0.9777,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s18nDF_0000": {
+      "found": true,
+      "error_mm": 0.0329,
+      "dice_affine": 0.9678,
+      "dice_nonlinear": 0.9783,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s19nDF_0000": {
+      "found": true,
+      "error_mm": 0.1619,
+      "dice_affine": 0.9698,
+      "dice_nonlinear": 0.9812,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s20nDF_0000": {
+      "found": true,
+      "error_mm": 0.1745,
+      "dice_affine": 0.9717,
+      "dice_nonlinear": 0.98,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s21nDF_0000": {
+      "found": true,
+      "error_mm": 0.0575,
+      "dice_affine": 0.9519,
+      "dice_nonlinear": 0.9691,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s22nDF_0000": {
+      "found": true,
+      "error_mm": 0.1144,
+      "dice_affine": 0.9296,
+      "dice_nonlinear": 0.9425,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s23nDF_0000": {
+      "found": true,
+      "error_mm": 0.0903,
+      "dice_affine": 0.9121,
+      "dice_nonlinear": 0.9333,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s24nDF_0000": {
+      "found": true,
+      "error_mm": 0.0278,
+      "dice_affine": 0.8985,
+      "dice_nonlinear": 0.9211,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s25nDF_0000": {
+      "found": true,
+      "error_mm": 0.1797,
+      "dice_affine": 0.9543,
+      "dice_nonlinear": 0.9788,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s26nDF_0000": {
+      "found": true,
+      "error_mm": 0.0077,
+      "dice_affine": 0.959,
+      "dice_nonlinear": 0.9841,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s27nDF_0000": {
+      "found": true,
+      "error_mm": 0.2653,
+      "dice_affine": 0.9705,
+      "dice_nonlinear": 0.982,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s28nDF_0000": {
+      "found": true,
+      "error_mm": 0.0432,
+      "dice_affine": 0.9656,
+      "dice_nonlinear": 0.984,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s29nDF_0000": {
+      "found": true,
+      "error_mm": 0.0717,
+      "dice_affine": 0.9578,
+      "dice_nonlinear": 0.9758,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s30nDF_0000": {
+      "found": true,
+      "error_mm": 0.2046,
+      "dice_affine": 0.958,
+      "dice_nonlinear": 0.9843,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s31nDF_0000": {
+      "found": true,
+      "error_mm": 0.0834,
+      "dice_affine": 0.971,
+      "dice_nonlinear": 0.985,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s32nDF_0000": {
+      "found": true,
+      "error_mm": 0.1835,
+      "dice_affine": 0.9656,
+      "dice_nonlinear": 0.9841,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s33nDF_0000": {
+      "found": true,
+      "error_mm": 0.0804,
+      "dice_affine": 0.9558,
+      "dice_nonlinear": 0.9761,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s34nDF_0000": {
+      "found": true,
+      "error_mm": 0.14,
+      "dice_affine": 0.9605,
+      "dice_nonlinear": 0.9797,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s35nDF_0000": {
+      "found": true,
+      "error_mm": 0.0358,
+      "dice_affine": 0.9543,
+      "dice_nonlinear": 0.9754,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s36nDF_0000": {
+      "found": true,
+      "error_mm": 0.0977,
+      "dice_affine": 0.9539,
+      "dice_nonlinear": 0.9766,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s37nDF_0000": {
+      "found": true,
+      "error_mm": 0.234,
+      "dice_affine": 0.9706,
+      "dice_nonlinear": 0.9838,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s38nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9599,
+      "dice_nonlinear": 0.98,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s39nDF_0000": {
+      "found": true,
+      "error_mm": 0.2077,
+      "dice_affine": 0.9561,
+      "dice_nonlinear": 0.9802,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s40nDF_0000": {
+      "found": true,
+      "error_mm": 0.0593,
+      "dice_affine": 0.9553,
+      "dice_nonlinear": 0.978,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s41nDF_0003": {
+      "found": true,
+      "error_mm": 0.1745,
+      "dice_affine": 0.9496,
+      "dice_nonlinear": 0.9368,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s42nDF_0003": {
+      "found": true,
+      "error_mm": 0.4262,
+      "dice_affine": 0.9431,
+      "dice_nonlinear": 0.9584,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s43nDF_0003": {
+      "found": true,
+      "error_mm": 0.412,
+      "dice_affine": 0.7911,
+      "dice_nonlinear": 0.8934,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s44nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9388,
+      "dice_nonlinear": 0.9766,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s45nDF_0002": {
+      "found": true,
+      "error_mm": 0.4416,
+      "dice_affine": 0.9481,
+      "dice_nonlinear": 0.9581,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s46nDF_0002": {
+      "found": true,
+      "error_mm": 0.3057,
+      "dice_affine": 0.9371,
+      "dice_nonlinear": 0.9718,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s47nDF_0002": {
+      "found": true,
+      "error_mm": 0.2701,
+      "dice_affine": 0.9438,
+      "dice_nonlinear": 0.9702,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s48nDF_0002": {
+      "found": true,
+      "error_mm": 0.1035,
+      "dice_affine": 0.9433,
+      "dice_nonlinear": 0.9643,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s49nDF_0002": {
+      "found": true,
+      "error_mm": 0.4929,
+      "dice_affine": 0.8917,
+      "dice_nonlinear": 0.9176,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s50nDF_0002": {
+      "found": true,
+      "error_mm": 0.1303,
+      "dice_affine": 0.9269,
+      "dice_nonlinear": 0.9527,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s51nDF_0002": {
+      "found": true,
+      "error_mm": 0.0214,
+      "dice_affine": 0.919,
+      "dice_nonlinear": 0.9567,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s52nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.897,
+      "dice_nonlinear": 0.9393,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s53nDF_0002": {
+      "found": true,
+      "error_mm": 0.092,
+      "dice_affine": 0.9039,
+      "dice_nonlinear": 0.9298,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s54nDF_0002": {
+      "found": true,
+      "error_mm": 0.159,
+      "dice_affine": 0.868,
+      "dice_nonlinear": 0.9193,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s55nDF_0002": {
+      "found": true,
+      "error_mm": 0.0447,
+      "dice_affine": 0.8694,
+      "dice_nonlinear": 0.9023,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s56nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8647,
+      "dice_nonlinear": 0.9117,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s57nDF_0002": {
+      "found": true,
+      "error_mm": 0.2251,
+      "dice_affine": 0.8746,
+      "dice_nonlinear": 0.9163,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s58nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8204,
+      "dice_nonlinear": 0.8949,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s59nDF_0003": {
+      "found": true,
+      "error_mm": 0.1763,
+      "dice_affine": 0.913,
+      "dice_nonlinear": 0.9542,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s60nDF_0003": {
+      "found": true,
+      "error_mm": 0.5227,
+      "dice_affine": 0.8864,
+      "dice_nonlinear": 0.9622,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s61nDF_0003": {
+      "found": true,
+      "error_mm": 0.1725,
+      "dice_affine": 0.9497,
+      "dice_nonlinear": 0.9683,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s62nDF_0003": {
+      "found": true,
+      "error_mm": 0.1204,
+      "dice_affine": 0.9606,
+      "dice_nonlinear": 0.974,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s63nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9279,
+      "dice_nonlinear": 0.941,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s64nDF_0003": {
+      "found": true,
+      "error_mm": 0.1419,
+      "dice_affine": 0.8013,
+      "dice_nonlinear": 0.8442,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s65nDF_0003": {
+      "found": true,
+      "error_mm": 0.0685,
+      "dice_affine": 0.8098,
+      "dice_nonlinear": 0.8905,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s66nDF_0003": {
+      "found": true,
+      "error_mm": 0.0342,
+      "dice_affine": 0.8323,
+      "dice_nonlinear": 0.8712,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s67nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.7843,
+      "dice_nonlinear": 0.8439,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s68nDF_0003": {
+      "found": true,
+      "error_mm": 0.0085,
+      "dice_affine": 0.7728,
+      "dice_nonlinear": 0.8214,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": false
+     }
+    },
+    "MM2": {
+     "mr252FS_c11_s04nDF_0002": {
+      "found": true,
+      "error_mm": 0.25,
+      "dice_affine": 0.9403,
+      "dice_nonlinear": 0.9742,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s05nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9271,
+      "dice_nonlinear": 0.96,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s06nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.942,
+      "dice_nonlinear": 0.9671,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s10nDF_0002": {
+      "found": true,
+      "error_mm": 0.1552,
+      "dice_affine": 0.956,
+      "dice_nonlinear": 0.9712,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s11nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.7779,
+      "dice_nonlinear": 0.8414,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s13nDF_0000": {
+      "found": true,
+      "error_mm": 0.4084,
+      "dice_affine": 0.9569,
+      "dice_nonlinear": 0.9765,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s14nDF_0000": {
+      "found": true,
+      "error_mm": 0.4497,
+      "dice_affine": 0.9687,
+      "dice_nonlinear": 0.9831,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s15nDF_0000": {
+      "found": true,
+      "error_mm": 0.2035,
+      "dice_affine": 0.9708,
+      "dice_nonlinear": 0.9814,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s16nDF_0000": {
+      "found": true,
+      "error_mm": 0.3764,
+      "dice_affine": 0.9787,
+      "dice_nonlinear": 0.9816,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s17nDF_0000": {
+      "found": true,
+      "error_mm": 0.0598,
+      "dice_affine": 0.9647,
+      "dice_nonlinear": 0.9822,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s18nDF_0000": {
+      "found": true,
+      "error_mm": 0.2366,
+      "dice_affine": 0.94,
+      "dice_nonlinear": 0.9673,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s19nDF_0000": {
+      "found": true,
+      "error_mm": 0.2723,
+      "dice_affine": 0.963,
+      "dice_nonlinear": 0.9776,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s20nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.955,
+      "dice_nonlinear": 0.9741,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s21nDF_0000": {
+      "found": true,
+      "error_mm": 0.0773,
+      "dice_affine": 0.9597,
+      "dice_nonlinear": 0.9734,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s22nDF_0000": {
+      "found": true,
+      "error_mm": 0.4664,
+      "dice_affine": 0.9321,
+      "dice_nonlinear": 0.9616,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s23nDF_0000": {
+      "found": true,
+      "error_mm": 0.2077,
+      "dice_affine": 0.8757,
+      "dice_nonlinear": 0.8982,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s24nDF_0000": {
+      "found": true,
+      "error_mm": 0.7064,
+      "dice_affine": 0.9113,
+      "dice_nonlinear": 0.935,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s25nDF_0000": {
+      "found": true,
+      "error_mm": 0.1696,
+      "dice_affine": 0.8996,
+      "dice_nonlinear": 0.9279,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s26nDF_0000": {
+      "found": true,
+      "error_mm": 0.4013,
+      "dice_affine": 0.9343,
+      "dice_nonlinear": 0.9652,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s27nDF_0000": {
+      "found": true,
+      "error_mm": 0.0427,
+      "dice_affine": 0.9156,
+      "dice_nonlinear": 0.9324,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s28nDF_0000": {
+      "found": true,
+      "error_mm": 0.5922,
+      "dice_affine": 0.95,
+      "dice_nonlinear": 0.974,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s29nDF_0000": {
+      "found": true,
+      "error_mm": 0.5982,
+      "dice_affine": 0.9433,
+      "dice_nonlinear": 0.974,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s30nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9407,
+      "dice_nonlinear": 0.9693,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s31nDF_0000": {
+      "found": true,
+      "error_mm": 0.0848,
+      "dice_affine": 0.9547,
+      "dice_nonlinear": 0.9819,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s32nDF_0000": {
+      "found": true,
+      "error_mm": 0.4095,
+      "dice_affine": 0.9534,
+      "dice_nonlinear": 0.9779,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s33nDF_0000": {
+      "found": true,
+      "error_mm": 0.6858,
+      "dice_affine": 0.9573,
+      "dice_nonlinear": 0.9825,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s34nDF_0000": {
+      "found": true,
+      "error_mm": 0.0159,
+      "dice_affine": 0.946,
+      "dice_nonlinear": 0.9779,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s35nDF_0000": {
+      "found": true,
+      "error_mm": 0.3653,
+      "dice_affine": 0.9565,
+      "dice_nonlinear": 0.9794,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s36nDF_0000": {
+      "found": true,
+      "error_mm": 0.4432,
+      "dice_affine": 0.9257,
+      "dice_nonlinear": 0.9736,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s37nDF_0000": {
+      "found": true,
+      "error_mm": 0.2958,
+      "dice_affine": 0.9633,
+      "dice_nonlinear": 0.9794,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s38nDF_0000": {
+      "found": true,
+      "error_mm": 0.0671,
+      "dice_affine": 0.954,
+      "dice_nonlinear": 0.9799,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s39nDF_0000": {
+      "found": true,
+      "error_mm": 0.0885,
+      "dice_affine": 0.9684,
+      "dice_nonlinear": 0.9821,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s40nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.909,
+      "dice_nonlinear": 0.9422,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s41nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9595,
+      "dice_nonlinear": 0.9802,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s43nDF_0003": {
+      "found": true,
+      "error_mm": 0.1316,
+      "dice_affine": 0.9709,
+      "dice_nonlinear": 0.9858,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s44nDF_0003": {
+      "found": true,
+      "error_mm": 0.1338,
+      "dice_affine": 0.9283,
+      "dice_nonlinear": 0.9726,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     }
+    },
+    "MM3": {
+     "mr256LY_c02_s01nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.648,
+      "dice_nonlinear": 0.9198,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": true
+     },
+     "mr256LY_c02_s02nDF_0002": {
+      "found": true,
+      "error_mm": 0.9544,
+      "dice_affine": 0.8968,
+      "dice_nonlinear": 0.9125,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s03nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8878,
+      "dice_nonlinear": 0.9042,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s04nDF_0002": {
+      "found": true,
+      "error_mm": 0.3566,
+      "dice_affine": 0.8736,
+      "dice_nonlinear": 0.9089,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s05nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.84,
+      "dice_nonlinear": 0.9102,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s06nDF_0002": {
+      "found": true,
+      "error_mm": 0.1984,
+      "dice_affine": 0.9309,
+      "dice_nonlinear": 0.9442,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s07nDF_0002": {
+      "found": true,
+      "error_mm": 0.3702,
+      "dice_affine": 0.9355,
+      "dice_nonlinear": 0.945,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s08nDF_0002": {
+      "found": true,
+      "error_mm": 0.2788,
+      "dice_affine": 0.9386,
+      "dice_nonlinear": 0.9691,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s09nDF_0002": {
+      "found": true,
+      "error_mm": 0.618,
+      "dice_affine": 0.9558,
+      "dice_nonlinear": 0.9702,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s10nDF_0002": {
+      "found": true,
+      "error_mm": 0.4151,
+      "dice_affine": 0.9486,
+      "dice_nonlinear": 0.9647,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s11nDF_0002": {
+      "found": true,
+      "error_mm": 0.085,
+      "dice_affine": 0.9603,
+      "dice_nonlinear": 0.9708,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s12nDF_0002": {
+      "found": true,
+      "error_mm": 0.234,
+      "dice_affine": 0.9534,
+      "dice_nonlinear": 0.9728,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s13nDF_0002": {
+      "found": true,
+      "error_mm": 0.2333,
+      "dice_affine": 0.943,
+      "dice_nonlinear": 0.9721,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s14nDF_0002": {
+      "found": true,
+      "error_mm": 0.2076,
+      "dice_affine": 0.9602,
+      "dice_nonlinear": 0.9726,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s15nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9588,
+      "dice_nonlinear": 0.9741,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s16nDF_0000": {
+      "found": true,
+      "error_mm": 0.1279,
+      "dice_affine": 0.9656,
+      "dice_nonlinear": 0.9784,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s17nDF_0000": {
+      "found": true,
+      "error_mm": 0.5012,
+      "dice_affine": 0.9474,
+      "dice_nonlinear": 0.9703,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s18nDF_0000": {
+      "found": true,
+      "error_mm": 0.139,
+      "dice_affine": 0.96,
+      "dice_nonlinear": 0.9694,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s19nDF_0000": {
+      "found": true,
+      "error_mm": 0.1607,
+      "dice_affine": 0.9428,
+      "dice_nonlinear": 0.9598,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s20nDF_0000": {
+      "found": true,
+      "error_mm": 0.2178,
+      "dice_affine": 0.9119,
+      "dice_nonlinear": 0.9273,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s21nDF_0000": {
+      "found": true,
+      "error_mm": 0.2098,
+      "dice_affine": 0.8854,
+      "dice_nonlinear": 0.9035,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s22nDF_0000": {
+      "found": true,
+      "error_mm": 0.24,
+      "dice_affine": 0.8581,
+      "dice_nonlinear": 0.8868,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s23nDF_0000": {
+      "found": true,
+      "error_mm": 0.8384,
+      "dice_affine": 0.8828,
+      "dice_nonlinear": 0.9282,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s24nDF_0000": {
+      "found": true,
+      "error_mm": 0.0816,
+      "dice_affine": 0.9488,
+      "dice_nonlinear": 0.9723,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s25nDF_0000": {
+      "found": true,
+      "error_mm": 0.1945,
+      "dice_affine": 0.9434,
+      "dice_nonlinear": 0.9633,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s26nDF_0000": {
+      "found": true,
+      "error_mm": 0.1053,
+      "dice_affine": 0.9464,
+      "dice_nonlinear": 0.9719,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s27nDF_0000": {
+      "found": true,
+      "error_mm": 0.3159,
+      "dice_affine": 0.9513,
+      "dice_nonlinear": 0.9767,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s28nDF_0000": {
+      "found": true,
+      "error_mm": 0.3049,
+      "dice_affine": 0.946,
+      "dice_nonlinear": 0.9698,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s29nDF_0000": {
+      "found": true,
+      "error_mm": 0.2191,
+      "dice_affine": 0.9446,
+      "dice_nonlinear": 0.9713,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s30nDF_0000": {
+      "found": true,
+      "error_mm": 0.6172,
+      "dice_affine": 0.9508,
+      "dice_nonlinear": 0.9802,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s31nDF_0000": {
+      "found": true,
+      "error_mm": 0.1178,
+      "dice_affine": 0.9397,
+      "dice_nonlinear": 0.9671,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s32nDF_0000": {
+      "found": true,
+      "error_mm": 0.1687,
+      "dice_affine": 0.9615,
+      "dice_nonlinear": 0.9801,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s33nDF_0000": {
+      "found": true,
+      "error_mm": 0.4237,
+      "dice_affine": 0.9348,
+      "dice_nonlinear": 0.9664,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s34nDF_0000": {
+      "found": true,
+      "error_mm": 0.1111,
+      "dice_affine": 0.9244,
+      "dice_nonlinear": 0.9667,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s35nDF_0000": {
+      "found": true,
+      "error_mm": 0.2952,
+      "dice_affine": 0.9555,
+      "dice_nonlinear": 0.9781,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s36nDF_0000": {
+      "found": true,
+      "error_mm": 0.5897,
+      "dice_affine": 0.9596,
+      "dice_nonlinear": 0.983,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s37nDF_0000": {
+      "found": true,
+      "error_mm": 0.0943,
+      "dice_affine": 0.9331,
+      "dice_nonlinear": 0.9645,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s38nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.934,
+      "dice_nonlinear": 0.9683,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s39nDF_0000": {
+      "found": true,
+      "error_mm": 0.0208,
+      "dice_affine": 0.9481,
+      "dice_nonlinear": 0.9706,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     }
+    },
+    "MF5": {
+     "mf278LY_c02_s01nDF_0002": {
+      "found": true,
+      "error_mm": 0.3255,
+      "dice_affine": 0.6676,
+      "dice_nonlinear": 0.6132,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s02nDF_0002": {
+      "found": true,
+      "error_mm": 0.809,
+      "dice_affine": 0.8353,
+      "dice_nonlinear": 0.8503,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s03nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9397,
+      "dice_nonlinear": 0.9496,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s04nDF_0002": {
+      "found": true,
+      "error_mm": 0.2304,
+      "dice_affine": 0.943,
+      "dice_nonlinear": 0.947,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s05nDF_0002": {
+      "found": true,
+      "error_mm": 0.0753,
+      "dice_affine": 0.9301,
+      "dice_nonlinear": 0.9706,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s06nDF_0002": {
+      "found": true,
+      "error_mm": 0.3624,
+      "dice_affine": 0.923,
+      "dice_nonlinear": 0.9365,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s07nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9518,
+      "dice_nonlinear": 0.9647,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s08nDF_0002": {
+      "found": true,
+      "error_mm": 0.3202,
+      "dice_affine": 0.9615,
+      "dice_nonlinear": 0.9648,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s09nDF_0002": {
+      "found": true,
+      "error_mm": 0.7538,
+      "dice_affine": 0.922,
+      "dice_nonlinear": 0.9673,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s10nDF_0002": {
+      "found": true,
+      "error_mm": 0.3294,
+      "dice_affine": 0.8918,
+      "dice_nonlinear": 0.9472,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s11nDF_0002": {
+      "found": true,
+      "error_mm": 0.2335,
+      "dice_affine": 0.9379,
+      "dice_nonlinear": 0.9433,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s12nDF_0002": {
+      "found": true,
+      "error_mm": 0.0716,
+      "dice_affine": 0.9483,
+      "dice_nonlinear": 0.9636,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s13nDF_0002": {
+      "found": true,
+      "error_mm": 0.1291,
+      "dice_affine": 0.9694,
+      "dice_nonlinear": 0.9715,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s14nDF_0000": {
+      "found": true,
+      "error_mm": 0.1523,
+      "dice_affine": 0.9447,
+      "dice_nonlinear": 0.9619,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s15nDF_0000": {
+      "found": true,
+      "error_mm": 0.0049,
+      "dice_affine": 0.936,
+      "dice_nonlinear": 0.9531,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s16nDF_0000": {
+      "found": true,
+      "error_mm": 0.0645,
+      "dice_affine": 0.9131,
+      "dice_nonlinear": 0.9314,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s17nDF_0000": {
+      "found": true,
+      "error_mm": 0.3389,
+      "dice_affine": 0.8837,
+      "dice_nonlinear": 0.9176,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s18nDF_0000": {
+      "found": true,
+      "error_mm": 0.32,
+      "dice_affine": 0.924,
+      "dice_nonlinear": 0.9501,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s19nDF_0000": {
+      "found": true,
+      "error_mm": 0.2775,
+      "dice_affine": 0.8946,
+      "dice_nonlinear": 0.9269,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s20nDF_0000": {
+      "found": true,
+      "error_mm": 0.3412,
+      "dice_affine": 0.9586,
+      "dice_nonlinear": 0.972,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s21nDF_0000": {
+      "found": true,
+      "error_mm": 0.3514,
+      "dice_affine": 0.9668,
+      "dice_nonlinear": 0.9759,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s22nDF_0000": {
+      "found": true,
+      "error_mm": 0.2031,
+      "dice_affine": 0.9557,
+      "dice_nonlinear": 0.974,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s23nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9651,
+      "dice_nonlinear": 0.9789,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s24nDF_0000": {
+      "found": true,
+      "error_mm": 0.0839,
+      "dice_affine": 0.9581,
+      "dice_nonlinear": 0.9689,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s25nDF_0000": {
+      "found": true,
+      "error_mm": 0.2851,
+      "dice_affine": 0.9428,
+      "dice_nonlinear": 0.9693,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s26nDF_0000": {
+      "found": true,
+      "error_mm": 0.1314,
+      "dice_affine": 0.9375,
+      "dice_nonlinear": 0.9695,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s27nDF_0000": {
+      "found": true,
+      "error_mm": 0.0939,
+      "dice_affine": 0.9359,
+      "dice_nonlinear": 0.966,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s28nDF_0000": {
+      "found": true,
+      "error_mm": 0.2782,
+      "dice_affine": 0.9525,
+      "dice_nonlinear": 0.9756,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s29nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9283,
+      "dice_nonlinear": 0.9687,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s30nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9456,
+      "dice_nonlinear": 0.9723,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s31nDF_0000": {
+      "found": true,
+      "error_mm": 0.2464,
+      "dice_affine": 0.9147,
+      "dice_nonlinear": 0.9592,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s32nDF_0000": {
+      "found": true,
+      "error_mm": 0.1752,
+      "dice_affine": 0.9353,
+      "dice_nonlinear": 0.9718,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s33nDF_0000": {
+      "found": true,
+      "error_mm": 0.2769,
+      "dice_affine": 0.9508,
+      "dice_nonlinear": 0.9772,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s34nDF_0000": {
+      "found": true,
+      "error_mm": 0.1269,
+      "dice_affine": 0.9532,
+      "dice_nonlinear": 0.9768,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s35nDF_0000": {
+      "found": true,
+      "error_mm": 0.0406,
+      "dice_affine": 0.9507,
+      "dice_nonlinear": 0.975,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s36nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9333,
+      "dice_nonlinear": 0.9708,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s37nDF_0000": {
+      "found": true,
+      "error_mm": 0.2522,
+      "dice_affine": 0.9314,
+      "dice_nonlinear": 0.9636,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s38nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8204,
+      "dice_nonlinear": 0.9044,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s39nDF_0003": {
+      "found": true,
+      "error_mm": 0.1471,
+      "dice_affine": 0.929,
+      "dice_nonlinear": 0.9547,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s40nDF_0002": {
+      "found": true,
+      "error_mm": 0.0271,
+      "dice_affine": 0.8852,
+      "dice_nonlinear": 0.9341,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s42nDF_0002": {
+      "found": true,
+      "error_mm": 0.2423,
+      "dice_affine": 0.8882,
+      "dice_nonlinear": 0.9312,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s43nDF_0002": {
+      "found": true,
+      "error_mm": 0.1416,
+      "dice_affine": 0.8896,
+      "dice_nonlinear": 0.9349,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s44nDF_0002": {
+      "found": true,
+      "error_mm": 0.3145,
+      "dice_affine": 0.8944,
+      "dice_nonlinear": 0.9356,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s45nDF_0002": {
+      "found": true,
+      "error_mm": 0.2578,
+      "dice_affine": 0.8915,
+      "dice_nonlinear": 0.9214,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s46nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8615,
+      "dice_nonlinear": 0.9023,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s47nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8787,
+      "dice_nonlinear": 0.9151,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s48nDF_0002": {
+      "found": true,
+      "error_mm": 0.0417,
+      "dice_affine": 0.8754,
+      "dice_nonlinear": 0.9145,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s49nDF_0002": {
+      "found": true,
+      "error_mm": 0.0666,
+      "dice_affine": 0.8453,
+      "dice_nonlinear": 0.9013,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s50nDF_0003": {
+      "found": true,
+      "error_mm": 0.732,
+      "dice_affine": 0.8542,
+      "dice_nonlinear": 0.9012,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s51nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.789,
+      "dice_nonlinear": 0.9286,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": true
+     },
+     "mf278LY_c02_s52nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8126,
+      "dice_nonlinear": 0.9187,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s53nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9296,
+      "dice_nonlinear": 0.9542,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s54nDF_0003": {
+      "found": true,
+      "error_mm": 0.4092,
+      "dice_affine": 0.8898,
+      "dice_nonlinear": 0.921,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s55nDF_0003": {
+      "found": true,
+      "error_mm": 0.5589,
+      "dice_affine": 0.9181,
+      "dice_nonlinear": 0.9503,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s56nDF_0003": {
+      "found": true,
+      "error_mm": 0.3255,
+      "dice_affine": 0.8889,
+      "dice_nonlinear": 0.9338,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s57nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8574,
+      "dice_nonlinear": 0.9664,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s58nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8627,
+      "dice_nonlinear": 0.9441,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s60nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8333,
+      "dice_nonlinear": 0.8987,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     }
+    },
+    "MF6": {
+     "mf275FR_c04_s03nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9159,
+      "dice_nonlinear": 0.9461,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s04nDF_0002": {
+      "found": true,
+      "error_mm": 0.176,
+      "dice_affine": 0.8924,
+      "dice_nonlinear": 0.9252,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s05nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9144,
+      "dice_nonlinear": 0.9666,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s06nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8974,
+      "dice_nonlinear": 0.9337,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s07nDF_0002": {
+      "found": true,
+      "error_mm": 0.5502,
+      "dice_affine": 0.9072,
+      "dice_nonlinear": 0.9432,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s08nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9041,
+      "dice_nonlinear": 0.9382,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s09nDF_0002": {
+      "found": true,
+      "error_mm": 0.0394,
+      "dice_affine": 0.9219,
+      "dice_nonlinear": 0.9509,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s10nDF_0002": {
+      "found": true,
+      "error_mm": 0.4759,
+      "dice_affine": 0.9353,
+      "dice_nonlinear": 0.9672,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s11nDF_0002": {
+      "found": true,
+      "error_mm": 0.1544,
+      "dice_affine": 0.937,
+      "dice_nonlinear": 0.9715,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s12nDF_0002": {
+      "found": true,
+      "error_mm": 0.1394,
+      "dice_affine": 0.9346,
+      "dice_nonlinear": 0.9741,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s13nDF_0002": {
+      "found": true,
+      "error_mm": 0.1761,
+      "dice_affine": 0.9467,
+      "dice_nonlinear": 0.9721,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s14nDF_0002": {
+      "found": true,
+      "error_mm": 0.4162,
+      "dice_affine": 0.9445,
+      "dice_nonlinear": 0.9624,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s15nDF_0000": {
+      "found": true,
+      "error_mm": 0.1525,
+      "dice_affine": 0.9637,
+      "dice_nonlinear": 0.97,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s16nDF_0000": {
+      "found": true,
+      "error_mm": 0.078,
+      "dice_affine": 0.9612,
+      "dice_nonlinear": 0.9667,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s17nDF_0000": {
+      "found": true,
+      "error_mm": 0.8209,
+      "dice_affine": 0.9021,
+      "dice_nonlinear": 0.9285,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s18nDF_0000": {
+      "found": true,
+      "error_mm": 0.113,
+      "dice_affine": 0.8815,
+      "dice_nonlinear": 0.9095,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s19nDF_0000": {
+      "found": true,
+      "error_mm": 0.4052,
+      "dice_affine": 0.8657,
+      "dice_nonlinear": 0.9189,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s20nDF_0000": {
+      "found": true,
+      "error_mm": 0.5072,
+      "dice_affine": 0.8476,
+      "dice_nonlinear": 0.9288,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s21nDF_0000": {
+      "found": true,
+      "error_mm": 0.7628,
+      "dice_affine": 0.9427,
+      "dice_nonlinear": 0.9671,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s22nDF_0000": {
+      "found": true,
+      "error_mm": 0.4968,
+      "dice_affine": 0.9438,
+      "dice_nonlinear": 0.971,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s23nDF_0000": {
+      "found": true,
+      "error_mm": 0.4332,
+      "dice_affine": 0.9366,
+      "dice_nonlinear": 0.9724,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s24nDF_0000": {
+      "found": true,
+      "error_mm": 0.19,
+      "dice_affine": 0.928,
+      "dice_nonlinear": 0.9576,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s25nDF_0000": {
+      "found": true,
+      "error_mm": 0.6498,
+      "dice_affine": 0.9443,
+      "dice_nonlinear": 0.974,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s26nDF_0000": {
+      "found": true,
+      "error_mm": 0.109,
+      "dice_affine": 0.9457,
+      "dice_nonlinear": 0.9655,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s27nDF_0000": {
+      "found": true,
+      "error_mm": 0.2467,
+      "dice_affine": 0.9503,
+      "dice_nonlinear": 0.9719,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s28nDF_0000": {
+      "found": true,
+      "error_mm": 0.3249,
+      "dice_affine": 0.9452,
+      "dice_nonlinear": 0.9675,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s29nDF_0000": {
+      "found": true,
+      "error_mm": 0.5042,
+      "dice_affine": 0.9426,
+      "dice_nonlinear": 0.9716,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s30nDF_0000": {
+      "found": true,
+      "error_mm": 0.3363,
+      "dice_affine": 0.9255,
+      "dice_nonlinear": 0.9593,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s31nDF_0000": {
+      "found": true,
+      "error_mm": 0.1006,
+      "dice_affine": 0.9477,
+      "dice_nonlinear": 0.9757,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s32nDF_0000": {
+      "found": true,
+      "error_mm": 0.5407,
+      "dice_affine": 0.9403,
+      "dice_nonlinear": 0.9682,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s33nDF_0000": {
+      "found": true,
+      "error_mm": 0.3328,
+      "dice_affine": 0.9335,
+      "dice_nonlinear": 0.9696,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s34nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.942,
+      "dice_nonlinear": 0.9686,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s35nDF_0000": {
+      "found": true,
+      "error_mm": 0.2658,
+      "dice_affine": 0.908,
+      "dice_nonlinear": 0.9472,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s36nDF_0003": {
+      "found": true,
+      "error_mm": 0.3899,
+      "dice_affine": 0.948,
+      "dice_nonlinear": 0.9563,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s37nDF_0003": {
+      "found": true,
+      "error_mm": 0.1128,
+      "dice_affine": 0.9421,
+      "dice_nonlinear": 0.9485,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s38nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8791,
+      "dice_nonlinear": 0.9346,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s40nDF_0002": {
+      "found": true,
+      "error_mm": 0.004,
+      "dice_affine": 0.8876,
+      "dice_nonlinear": 0.9335,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s41nDF_0002": {
+      "found": true,
+      "error_mm": 0.3786,
+      "dice_affine": 0.8855,
+      "dice_nonlinear": 0.9341,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s42nDF_0002": {
+      "found": true,
+      "error_mm": 0.064,
+      "dice_affine": 0.9065,
+      "dice_nonlinear": 0.9399,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s43nDF_0002": {
+      "found": true,
+      "error_mm": 0.2197,
+      "dice_affine": 0.8882,
+      "dice_nonlinear": 0.9128,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s44nDF_0002": {
+      "found": true,
+      "error_mm": 0.3379,
+      "dice_affine": 0.8721,
+      "dice_nonlinear": 0.9058,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s45nDF_0002": {
+      "found": true,
+      "error_mm": 0.3996,
+      "dice_affine": 0.76,
+      "dice_nonlinear": 0.7942,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": false
+     }
+    },
+    "MF8": {
+     "mf191FR_c01_s02nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8942,
+      "dice_nonlinear": 0.8907,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s03nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8597,
+      "dice_nonlinear": 0.9431,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s05nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9319,
+      "dice_nonlinear": 0.9514,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s06nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9129,
+      "dice_nonlinear": 0.9237,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s07nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9204,
+      "dice_nonlinear": 0.9374,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s08nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9316,
+      "dice_nonlinear": 0.9709,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s09nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9547,
+      "dice_nonlinear": 0.9734,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s10nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9464,
+      "dice_nonlinear": 0.9647,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s11nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9602,
+      "dice_nonlinear": 0.9771,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s12nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9557,
+      "dice_nonlinear": 0.9802,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s13nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9627,
+      "dice_nonlinear": 0.9773,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s14nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9391,
+      "dice_nonlinear": 0.9709,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s15nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9333,
+      "dice_nonlinear": 0.9671,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s16nDF_0000": {
+      "found": true,
+      "error_mm": 0.5464,
+      "dice_affine": 0.916,
+      "dice_nonlinear": 0.9543,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s17nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9439,
+      "dice_nonlinear": 0.9824,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s18nDF_0000": {
+      "found": true,
+      "error_mm": 0.4638,
+      "dice_affine": 0.9583,
+      "dice_nonlinear": 0.9798,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s19nDF_0000": {
+      "found": true,
+      "error_mm": 0.7354,
+      "dice_affine": 0.9697,
+      "dice_nonlinear": 0.9817,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s20nDF_0000": {
+      "found": true,
+      "error_mm": 0.2505,
+      "dice_affine": 0.9638,
+      "dice_nonlinear": 0.9834,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s21nDF_0000": {
+      "found": true,
+      "error_mm": 0.2398,
+      "dice_affine": 0.9492,
+      "dice_nonlinear": 0.9723,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s22nDF_0000": {
+      "found": true,
+      "error_mm": 0.2679,
+      "dice_affine": 0.9676,
+      "dice_nonlinear": 0.9856,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s23nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8986,
+      "dice_nonlinear": 0.9518,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s24nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9649,
+      "dice_nonlinear": 0.9792,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s25nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9575,
+      "dice_nonlinear": 0.9778,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s26nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9444,
+      "dice_nonlinear": 0.9719,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s27nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9631,
+      "dice_nonlinear": 0.979,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s28nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9657,
+      "dice_nonlinear": 0.9785,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s29nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8758,
+      "dice_nonlinear": 0.9055,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s30nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9583,
+      "dice_nonlinear": 0.9802,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s31nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9087,
+      "dice_nonlinear": 0.9481,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s32nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.903,
+      "dice_nonlinear": 0.9618,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s33nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8999,
+      "dice_nonlinear": 0.9458,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s34nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.7914,
+      "dice_nonlinear": 0.8221,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s36nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9154,
+      "dice_nonlinear": 0.9264,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s37nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9198,
+      "dice_nonlinear": 0.9317,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s38nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9095,
+      "dice_nonlinear": 0.9204,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s40nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9274,
+      "dice_nonlinear": 0.9589,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s41nDF_0003": {
+      "found": true,
+      "error_mm": 0.7416,
+      "dice_affine": 0.9546,
+      "dice_nonlinear": 0.9824,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s43nDF_0003": {
+      "found": true,
+      "error_mm": 0.6829,
+      "dice_affine": 0.851,
+      "dice_nonlinear": 0.9122,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s45nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9518,
+      "dice_nonlinear": 0.9656,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s50nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8106,
+      "dice_nonlinear": 0.8553,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s51nDF_0003": {
+      "found": true,
+      "error_mm": 0.5397,
+      "dice_affine": 0.8254,
+      "dice_nonlinear": 0.8342,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     }
+    }
+   },
+   "H9": {
+    "MM1": {
+     "mr243LY_c18_s01nDF_0002": {
+      "found": true,
+      "error_mm": 0.7821,
+      "dice_affine": 0.9427,
+      "dice_nonlinear": 0.9668,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s03nDF_0002": {
+      "found": true,
+      "error_mm": 0.2036,
+      "dice_affine": 0.8592,
+      "dice_nonlinear": 0.9019,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s04nDF_0002": {
+      "found": true,
+      "error_mm": 0.1026,
+      "dice_affine": 0.9134,
+      "dice_nonlinear": 0.9411,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s05nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9257,
+      "dice_nonlinear": 0.946,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s06nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9456,
+      "dice_nonlinear": 0.954,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s07nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9579,
+      "dice_nonlinear": 0.9768,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s08nDF_0002": {
+      "found": true,
+      "error_mm": 0.0304,
+      "dice_affine": 0.9481,
+      "dice_nonlinear": 0.9629,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s09nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9628,
+      "dice_nonlinear": 0.9764,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s10nDF_0002": {
+      "found": true,
+      "error_mm": 0.0892,
+      "dice_affine": 0.9485,
+      "dice_nonlinear": 0.9568,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s11nDF_0002": {
+      "found": true,
+      "error_mm": 0.1379,
+      "dice_affine": 0.967,
+      "dice_nonlinear": 0.9791,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s12nDF_0002": {
+      "found": true,
+      "error_mm": 0.5643,
+      "dice_affine": 0.9485,
+      "dice_nonlinear": 0.9715,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s13nDF_0002": {
+      "found": true,
+      "error_mm": 0.1005,
+      "dice_affine": 0.9694,
+      "dice_nonlinear": 0.9793,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s14nDF_0002": {
+      "found": true,
+      "error_mm": 0.1091,
+      "dice_affine": 0.9659,
+      "dice_nonlinear": 0.9762,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s15nDF_0002": {
+      "found": true,
+      "error_mm": 0.1049,
+      "dice_affine": 0.9695,
+      "dice_nonlinear": 0.9813,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s16nDF_0000": {
+      "found": true,
+      "error_mm": 0.1926,
+      "dice_affine": 0.9724,
+      "dice_nonlinear": 0.9851,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s17nDF_0000": {
+      "found": true,
+      "error_mm": 0.0204,
+      "dice_affine": 0.9627,
+      "dice_nonlinear": 0.9787,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s18nDF_0000": {
+      "found": true,
+      "error_mm": 0.0622,
+      "dice_affine": 0.9678,
+      "dice_nonlinear": 0.9771,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s19nDF_0000": {
+      "found": true,
+      "error_mm": 0.1261,
+      "dice_affine": 0.9698,
+      "dice_nonlinear": 0.9816,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s20nDF_0000": {
+      "found": true,
+      "error_mm": 0.1359,
+      "dice_affine": 0.9717,
+      "dice_nonlinear": 0.9805,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s21nDF_0000": {
+      "found": true,
+      "error_mm": 0.0564,
+      "dice_affine": 0.9519,
+      "dice_nonlinear": 0.9655,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s22nDF_0000": {
+      "found": true,
+      "error_mm": 0.065,
+      "dice_affine": 0.9296,
+      "dice_nonlinear": 0.9417,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s23nDF_0000": {
+      "found": true,
+      "error_mm": 0.047,
+      "dice_affine": 0.9121,
+      "dice_nonlinear": 0.9223,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s24nDF_0000": {
+      "found": true,
+      "error_mm": 0.019,
+      "dice_affine": 0.8985,
+      "dice_nonlinear": 0.9149,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s25nDF_0000": {
+      "found": true,
+      "error_mm": 0.1009,
+      "dice_affine": 0.9543,
+      "dice_nonlinear": 0.9765,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s26nDF_0000": {
+      "found": true,
+      "error_mm": 0.0276,
+      "dice_affine": 0.959,
+      "dice_nonlinear": 0.9825,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s27nDF_0000": {
+      "found": true,
+      "error_mm": 0.2043,
+      "dice_affine": 0.9705,
+      "dice_nonlinear": 0.9825,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s28nDF_0000": {
+      "found": true,
+      "error_mm": 0.0484,
+      "dice_affine": 0.9656,
+      "dice_nonlinear": 0.982,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s29nDF_0000": {
+      "found": true,
+      "error_mm": 0.1423,
+      "dice_affine": 0.9578,
+      "dice_nonlinear": 0.9717,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s30nDF_0000": {
+      "found": true,
+      "error_mm": 0.1518,
+      "dice_affine": 0.958,
+      "dice_nonlinear": 0.9826,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s31nDF_0000": {
+      "found": true,
+      "error_mm": 0.1453,
+      "dice_affine": 0.971,
+      "dice_nonlinear": 0.9851,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s32nDF_0000": {
+      "found": true,
+      "error_mm": 0.0918,
+      "dice_affine": 0.9656,
+      "dice_nonlinear": 0.9832,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s33nDF_0000": {
+      "found": true,
+      "error_mm": 0.0546,
+      "dice_affine": 0.9558,
+      "dice_nonlinear": 0.9737,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s34nDF_0000": {
+      "found": true,
+      "error_mm": 0.1456,
+      "dice_affine": 0.9605,
+      "dice_nonlinear": 0.9772,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s35nDF_0000": {
+      "found": true,
+      "error_mm": 0.1178,
+      "dice_affine": 0.9543,
+      "dice_nonlinear": 0.9723,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s36nDF_0000": {
+      "found": true,
+      "error_mm": 0.1096,
+      "dice_affine": 0.9539,
+      "dice_nonlinear": 0.9746,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s37nDF_0000": {
+      "found": true,
+      "error_mm": 0.2045,
+      "dice_affine": 0.9706,
+      "dice_nonlinear": 0.984,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s38nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9599,
+      "dice_nonlinear": 0.9774,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s39nDF_0000": {
+      "found": true,
+      "error_mm": 0.1167,
+      "dice_affine": 0.9561,
+      "dice_nonlinear": 0.9779,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s40nDF_0000": {
+      "found": true,
+      "error_mm": 0.0171,
+      "dice_affine": 0.9553,
+      "dice_nonlinear": 0.9756,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s41nDF_0003": {
+      "found": true,
+      "error_mm": 0.1823,
+      "dice_affine": 0.9496,
+      "dice_nonlinear": 0.9338,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s42nDF_0003": {
+      "found": true,
+      "error_mm": 0.3111,
+      "dice_affine": 0.9431,
+      "dice_nonlinear": 0.9544,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s43nDF_0003": {
+      "found": true,
+      "error_mm": 0.412,
+      "dice_affine": 0.7911,
+      "dice_nonlinear": 0.8934,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s44nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9388,
+      "dice_nonlinear": 0.9694,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s45nDF_0002": {
+      "found": true,
+      "error_mm": 0.1814,
+      "dice_affine": 0.9481,
+      "dice_nonlinear": 0.9599,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s46nDF_0002": {
+      "found": true,
+      "error_mm": 0.1595,
+      "dice_affine": 0.9371,
+      "dice_nonlinear": 0.9569,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s47nDF_0002": {
+      "found": true,
+      "error_mm": 0.0514,
+      "dice_affine": 0.9438,
+      "dice_nonlinear": 0.9639,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s48nDF_0002": {
+      "found": true,
+      "error_mm": 0.0965,
+      "dice_affine": 0.9433,
+      "dice_nonlinear": 0.9596,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s49nDF_0002": {
+      "found": true,
+      "error_mm": 0.2097,
+      "dice_affine": 0.8917,
+      "dice_nonlinear": 0.9098,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s50nDF_0002": {
+      "found": true,
+      "error_mm": 0.0756,
+      "dice_affine": 0.9269,
+      "dice_nonlinear": 0.9438,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s51nDF_0002": {
+      "found": true,
+      "error_mm": 0.0614,
+      "dice_affine": 0.919,
+      "dice_nonlinear": 0.9502,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s52nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.897,
+      "dice_nonlinear": 0.9303,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s53nDF_0002": {
+      "found": true,
+      "error_mm": 0.1068,
+      "dice_affine": 0.9039,
+      "dice_nonlinear": 0.9236,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s54nDF_0002": {
+      "found": true,
+      "error_mm": 0.1266,
+      "dice_affine": 0.868,
+      "dice_nonlinear": 0.898,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s55nDF_0002": {
+      "found": true,
+      "error_mm": 0.0842,
+      "dice_affine": 0.8694,
+      "dice_nonlinear": 0.8962,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s56nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8647,
+      "dice_nonlinear": 0.904,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s57nDF_0002": {
+      "found": true,
+      "error_mm": 0.2149,
+      "dice_affine": 0.8746,
+      "dice_nonlinear": 0.9103,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s58nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8204,
+      "dice_nonlinear": 0.8949,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s59nDF_0003": {
+      "found": true,
+      "error_mm": 0.145,
+      "dice_affine": 0.913,
+      "dice_nonlinear": 0.9369,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s60nDF_0003": {
+      "found": true,
+      "error_mm": 0.3835,
+      "dice_affine": 0.8864,
+      "dice_nonlinear": 0.9307,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s61nDF_0003": {
+      "found": true,
+      "error_mm": 0.1262,
+      "dice_affine": 0.9497,
+      "dice_nonlinear": 0.9608,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s62nDF_0003": {
+      "found": true,
+      "error_mm": 0.1169,
+      "dice_affine": 0.9606,
+      "dice_nonlinear": 0.9727,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s63nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9279,
+      "dice_nonlinear": 0.9361,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s64nDF_0003": {
+      "found": true,
+      "error_mm": 0.1419,
+      "dice_affine": 0.8013,
+      "dice_nonlinear": 0.8442,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s65nDF_0003": {
+      "found": true,
+      "error_mm": 0.0685,
+      "dice_affine": 0.8098,
+      "dice_nonlinear": 0.8905,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s66nDF_0003": {
+      "found": true,
+      "error_mm": 0.0342,
+      "dice_affine": 0.8323,
+      "dice_nonlinear": 0.8712,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s67nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.7843,
+      "dice_nonlinear": 0.8439,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": false
+     },
+     "mr243LY_c18_s68nDF_0003": {
+      "found": true,
+      "error_mm": 0.0085,
+      "dice_affine": 0.7728,
+      "dice_nonlinear": 0.8214,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": false
+     }
+    },
+    "MM2": {
+     "mr252FS_c11_s04nDF_0002": {
+      "found": true,
+      "error_mm": 0.3168,
+      "dice_affine": 0.9403,
+      "dice_nonlinear": 0.9714,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s05nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9271,
+      "dice_nonlinear": 0.9555,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s06nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.942,
+      "dice_nonlinear": 0.9655,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s10nDF_0002": {
+      "found": true,
+      "error_mm": 0.1431,
+      "dice_affine": 0.956,
+      "dice_nonlinear": 0.9718,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s11nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.7779,
+      "dice_nonlinear": 0.8414,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s13nDF_0000": {
+      "found": true,
+      "error_mm": 0.2097,
+      "dice_affine": 0.9569,
+      "dice_nonlinear": 0.9752,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s14nDF_0000": {
+      "found": true,
+      "error_mm": 0.3081,
+      "dice_affine": 0.9687,
+      "dice_nonlinear": 0.982,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s15nDF_0000": {
+      "found": true,
+      "error_mm": 0.1259,
+      "dice_affine": 0.9708,
+      "dice_nonlinear": 0.9826,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s16nDF_0000": {
+      "found": true,
+      "error_mm": 0.2023,
+      "dice_affine": 0.9787,
+      "dice_nonlinear": 0.9838,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s17nDF_0000": {
+      "found": true,
+      "error_mm": 0.0866,
+      "dice_affine": 0.9647,
+      "dice_nonlinear": 0.9827,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s18nDF_0000": {
+      "found": true,
+      "error_mm": 0.2868,
+      "dice_affine": 0.94,
+      "dice_nonlinear": 0.9593,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s19nDF_0000": {
+      "found": true,
+      "error_mm": 0.0838,
+      "dice_affine": 0.963,
+      "dice_nonlinear": 0.978,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s20nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.955,
+      "dice_nonlinear": 0.9713,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s21nDF_0000": {
+      "found": true,
+      "error_mm": 0.0644,
+      "dice_affine": 0.9597,
+      "dice_nonlinear": 0.9711,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s22nDF_0000": {
+      "found": true,
+      "error_mm": 0.1407,
+      "dice_affine": 0.9321,
+      "dice_nonlinear": 0.9575,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s23nDF_0000": {
+      "found": true,
+      "error_mm": 0.166,
+      "dice_affine": 0.8757,
+      "dice_nonlinear": 0.8931,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s24nDF_0000": {
+      "found": true,
+      "error_mm": 0.59,
+      "dice_affine": 0.9113,
+      "dice_nonlinear": 0.932,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s25nDF_0000": {
+      "found": true,
+      "error_mm": 0.0999,
+      "dice_affine": 0.8996,
+      "dice_nonlinear": 0.9221,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s26nDF_0000": {
+      "found": true,
+      "error_mm": 0.2838,
+      "dice_affine": 0.9343,
+      "dice_nonlinear": 0.957,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s27nDF_0000": {
+      "found": true,
+      "error_mm": 0.0444,
+      "dice_affine": 0.9156,
+      "dice_nonlinear": 0.9292,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s28nDF_0000": {
+      "found": true,
+      "error_mm": 0.2654,
+      "dice_affine": 0.95,
+      "dice_nonlinear": 0.9704,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s29nDF_0000": {
+      "found": true,
+      "error_mm": 0.4002,
+      "dice_affine": 0.9433,
+      "dice_nonlinear": 0.9693,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s30nDF_0000": {
+      "found": true,
+      "error_mm": 0.251,
+      "dice_affine": 0.9407,
+      "dice_nonlinear": 0.9643,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s31nDF_0000": {
+      "found": true,
+      "error_mm": 0.1344,
+      "dice_affine": 0.9547,
+      "dice_nonlinear": 0.9797,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s32nDF_0000": {
+      "found": true,
+      "error_mm": 0.3046,
+      "dice_affine": 0.9534,
+      "dice_nonlinear": 0.9753,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s33nDF_0000": {
+      "found": true,
+      "error_mm": 0.1308,
+      "dice_affine": 0.9573,
+      "dice_nonlinear": 0.9805,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s34nDF_0000": {
+      "found": true,
+      "error_mm": 0.092,
+      "dice_affine": 0.946,
+      "dice_nonlinear": 0.974,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s35nDF_0000": {
+      "found": true,
+      "error_mm": 0.0188,
+      "dice_affine": 0.9565,
+      "dice_nonlinear": 0.9764,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s36nDF_0000": {
+      "found": true,
+      "error_mm": 0.2498,
+      "dice_affine": 0.9257,
+      "dice_nonlinear": 0.9702,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s37nDF_0000": {
+      "found": true,
+      "error_mm": 0.1873,
+      "dice_affine": 0.9633,
+      "dice_nonlinear": 0.9781,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s38nDF_0000": {
+      "found": true,
+      "error_mm": 0.07,
+      "dice_affine": 0.954,
+      "dice_nonlinear": 0.9762,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s39nDF_0000": {
+      "found": true,
+      "error_mm": 0.123,
+      "dice_affine": 0.9684,
+      "dice_nonlinear": 0.9808,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s40nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.909,
+      "dice_nonlinear": 0.9325,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s41nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9595,
+      "dice_nonlinear": 0.9789,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s43nDF_0003": {
+      "found": true,
+      "error_mm": 0.0821,
+      "dice_affine": 0.9709,
+      "dice_nonlinear": 0.9856,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr252FS_c11_s44nDF_0003": {
+      "found": true,
+      "error_mm": 0.0577,
+      "dice_affine": 0.9283,
+      "dice_nonlinear": 0.957,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     }
+    },
+    "MM3": {
+     "mr256LY_c02_s01nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.648,
+      "dice_nonlinear": 0.9198,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": true
+     },
+     "mr256LY_c02_s02nDF_0002": {
+      "found": true,
+      "error_mm": 0.9935,
+      "dice_affine": 0.8968,
+      "dice_nonlinear": 0.9117,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s03nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8878,
+      "dice_nonlinear": 0.9022,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s04nDF_0002": {
+      "found": true,
+      "error_mm": 0.1982,
+      "dice_affine": 0.8736,
+      "dice_nonlinear": 0.8906,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s05nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.84,
+      "dice_nonlinear": 0.9102,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s06nDF_0002": {
+      "found": true,
+      "error_mm": 0.0313,
+      "dice_affine": 0.9309,
+      "dice_nonlinear": 0.9421,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s07nDF_0002": {
+      "found": true,
+      "error_mm": 0.3379,
+      "dice_affine": 0.9355,
+      "dice_nonlinear": 0.9443,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s08nDF_0002": {
+      "found": true,
+      "error_mm": 0.2666,
+      "dice_affine": 0.9386,
+      "dice_nonlinear": 0.9653,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s09nDF_0002": {
+      "found": true,
+      "error_mm": 0.3319,
+      "dice_affine": 0.9558,
+      "dice_nonlinear": 0.9696,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s10nDF_0002": {
+      "found": true,
+      "error_mm": 0.1911,
+      "dice_affine": 0.9486,
+      "dice_nonlinear": 0.9627,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s11nDF_0002": {
+      "found": true,
+      "error_mm": 0.1125,
+      "dice_affine": 0.9603,
+      "dice_nonlinear": 0.9698,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s12nDF_0002": {
+      "found": true,
+      "error_mm": 0.2066,
+      "dice_affine": 0.9534,
+      "dice_nonlinear": 0.9704,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s13nDF_0002": {
+      "found": true,
+      "error_mm": 0.2525,
+      "dice_affine": 0.943,
+      "dice_nonlinear": 0.9692,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s14nDF_0002": {
+      "found": true,
+      "error_mm": 0.2102,
+      "dice_affine": 0.9602,
+      "dice_nonlinear": 0.9716,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s15nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9588,
+      "dice_nonlinear": 0.9721,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s16nDF_0000": {
+      "found": true,
+      "error_mm": 0.1016,
+      "dice_affine": 0.9656,
+      "dice_nonlinear": 0.9782,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s17nDF_0000": {
+      "found": true,
+      "error_mm": 0.3194,
+      "dice_affine": 0.9474,
+      "dice_nonlinear": 0.9675,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s18nDF_0000": {
+      "found": true,
+      "error_mm": 0.0696,
+      "dice_affine": 0.96,
+      "dice_nonlinear": 0.97,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s19nDF_0000": {
+      "found": true,
+      "error_mm": 0.192,
+      "dice_affine": 0.9428,
+      "dice_nonlinear": 0.9559,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s20nDF_0000": {
+      "found": true,
+      "error_mm": 0.1916,
+      "dice_affine": 0.9119,
+      "dice_nonlinear": 0.9238,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s21nDF_0000": {
+      "found": true,
+      "error_mm": 0.1566,
+      "dice_affine": 0.8854,
+      "dice_nonlinear": 0.8978,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s22nDF_0000": {
+      "found": true,
+      "error_mm": 0.1121,
+      "dice_affine": 0.8581,
+      "dice_nonlinear": 0.8797,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s23nDF_0000": {
+      "found": true,
+      "error_mm": 0.8376,
+      "dice_affine": 0.8828,
+      "dice_nonlinear": 0.914,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s24nDF_0000": {
+      "found": true,
+      "error_mm": 0.1519,
+      "dice_affine": 0.9488,
+      "dice_nonlinear": 0.9707,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s25nDF_0000": {
+      "found": true,
+      "error_mm": 0.087,
+      "dice_affine": 0.9434,
+      "dice_nonlinear": 0.9604,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s26nDF_0000": {
+      "found": true,
+      "error_mm": 0.1388,
+      "dice_affine": 0.9464,
+      "dice_nonlinear": 0.9682,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s27nDF_0000": {
+      "found": true,
+      "error_mm": 0.3355,
+      "dice_affine": 0.9513,
+      "dice_nonlinear": 0.9747,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s28nDF_0000": {
+      "found": true,
+      "error_mm": 0.2003,
+      "dice_affine": 0.946,
+      "dice_nonlinear": 0.9636,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s29nDF_0000": {
+      "found": true,
+      "error_mm": 0.2853,
+      "dice_affine": 0.9446,
+      "dice_nonlinear": 0.9669,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s30nDF_0000": {
+      "found": true,
+      "error_mm": 0.3218,
+      "dice_affine": 0.9508,
+      "dice_nonlinear": 0.9767,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s31nDF_0000": {
+      "found": true,
+      "error_mm": 0.004,
+      "dice_affine": 0.9397,
+      "dice_nonlinear": 0.9632,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s32nDF_0000": {
+      "found": true,
+      "error_mm": 0.2145,
+      "dice_affine": 0.9615,
+      "dice_nonlinear": 0.9784,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s33nDF_0000": {
+      "found": true,
+      "error_mm": 0.3596,
+      "dice_affine": 0.9348,
+      "dice_nonlinear": 0.9597,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s34nDF_0000": {
+      "found": true,
+      "error_mm": 0.1434,
+      "dice_affine": 0.9244,
+      "dice_nonlinear": 0.9606,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s35nDF_0000": {
+      "found": true,
+      "error_mm": 0.1979,
+      "dice_affine": 0.9555,
+      "dice_nonlinear": 0.9756,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s36nDF_0000": {
+      "found": true,
+      "error_mm": 0.3302,
+      "dice_affine": 0.9596,
+      "dice_nonlinear": 0.9794,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s37nDF_0000": {
+      "found": true,
+      "error_mm": 0.1215,
+      "dice_affine": 0.9331,
+      "dice_nonlinear": 0.958,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s38nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.934,
+      "dice_nonlinear": 0.9615,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mr256LY_c02_s39nDF_0000": {
+      "found": true,
+      "error_mm": 0.0147,
+      "dice_affine": 0.9481,
+      "dice_nonlinear": 0.966,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     }
+    },
+    "MF5": {
+     "mf278LY_c02_s01nDF_0002": {
+      "found": true,
+      "error_mm": 0.3255,
+      "dice_affine": 0.6676,
+      "dice_nonlinear": 0.6132,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s02nDF_0002": {
+      "found": true,
+      "error_mm": 0.809,
+      "dice_affine": 0.8353,
+      "dice_nonlinear": 0.8503,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s03nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9397,
+      "dice_nonlinear": 0.9659,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s04nDF_0002": {
+      "found": true,
+      "error_mm": 0.1228,
+      "dice_affine": 0.943,
+      "dice_nonlinear": 0.9544,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s05nDF_0002": {
+      "found": true,
+      "error_mm": 0.1219,
+      "dice_affine": 0.9301,
+      "dice_nonlinear": 0.9487,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s06nDF_0002": {
+      "found": true,
+      "error_mm": 0.2926,
+      "dice_affine": 0.923,
+      "dice_nonlinear": 0.9394,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s07nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9518,
+      "dice_nonlinear": 0.968,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s08nDF_0002": {
+      "found": true,
+      "error_mm": 0.3004,
+      "dice_affine": 0.9615,
+      "dice_nonlinear": 0.9699,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s09nDF_0002": {
+      "found": true,
+      "error_mm": 0.6703,
+      "dice_affine": 0.922,
+      "dice_nonlinear": 0.9343,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s10nDF_0002": {
+      "found": true,
+      "error_mm": 0.2833,
+      "dice_affine": 0.8918,
+      "dice_nonlinear": 0.9479,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s11nDF_0002": {
+      "found": true,
+      "error_mm": 0.0956,
+      "dice_affine": 0.9379,
+      "dice_nonlinear": 0.9435,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s12nDF_0002": {
+      "found": true,
+      "error_mm": 0.1883,
+      "dice_affine": 0.9483,
+      "dice_nonlinear": 0.966,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s13nDF_0002": {
+      "found": true,
+      "error_mm": 0.1714,
+      "dice_affine": 0.9694,
+      "dice_nonlinear": 0.9732,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s14nDF_0000": {
+      "found": true,
+      "error_mm": 0.209,
+      "dice_affine": 0.9447,
+      "dice_nonlinear": 0.9619,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s15nDF_0000": {
+      "found": true,
+      "error_mm": 0.1069,
+      "dice_affine": 0.936,
+      "dice_nonlinear": 0.9464,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s16nDF_0000": {
+      "found": true,
+      "error_mm": 0.243,
+      "dice_affine": 0.9131,
+      "dice_nonlinear": 0.9295,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s17nDF_0000": {
+      "found": true,
+      "error_mm": 0.3498,
+      "dice_affine": 0.8837,
+      "dice_nonlinear": 0.9017,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s18nDF_0000": {
+      "found": true,
+      "error_mm": 0.4078,
+      "dice_affine": 0.924,
+      "dice_nonlinear": 0.9426,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s19nDF_0000": {
+      "found": true,
+      "error_mm": 0.3323,
+      "dice_affine": 0.8946,
+      "dice_nonlinear": 0.9218,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s20nDF_0000": {
+      "found": true,
+      "error_mm": 0.3204,
+      "dice_affine": 0.9586,
+      "dice_nonlinear": 0.9713,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s21nDF_0000": {
+      "found": true,
+      "error_mm": 0.382,
+      "dice_affine": 0.9668,
+      "dice_nonlinear": 0.9747,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s22nDF_0000": {
+      "found": true,
+      "error_mm": 0.1625,
+      "dice_affine": 0.9557,
+      "dice_nonlinear": 0.9722,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s23nDF_0000": {
+      "found": true,
+      "error_mm": 0.153,
+      "dice_affine": 0.9651,
+      "dice_nonlinear": 0.9787,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s24nDF_0000": {
+      "found": true,
+      "error_mm": 0.2855,
+      "dice_affine": 0.9581,
+      "dice_nonlinear": 0.9688,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s25nDF_0000": {
+      "found": true,
+      "error_mm": 0.131,
+      "dice_affine": 0.9428,
+      "dice_nonlinear": 0.9666,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s26nDF_0000": {
+      "found": true,
+      "error_mm": 0.1651,
+      "dice_affine": 0.9375,
+      "dice_nonlinear": 0.9624,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s27nDF_0000": {
+      "found": true,
+      "error_mm": 0.116,
+      "dice_affine": 0.9359,
+      "dice_nonlinear": 0.9601,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s28nDF_0000": {
+      "found": true,
+      "error_mm": 0.0611,
+      "dice_affine": 0.9525,
+      "dice_nonlinear": 0.9729,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s29nDF_0000": {
+      "found": true,
+      "error_mm": 0.5414,
+      "dice_affine": 0.9283,
+      "dice_nonlinear": 0.9635,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s30nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9456,
+      "dice_nonlinear": 0.9701,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s31nDF_0000": {
+      "found": true,
+      "error_mm": 0.2831,
+      "dice_affine": 0.9147,
+      "dice_nonlinear": 0.9441,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s32nDF_0000": {
+      "found": true,
+      "error_mm": 0.2194,
+      "dice_affine": 0.9353,
+      "dice_nonlinear": 0.9666,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s33nDF_0000": {
+      "found": true,
+      "error_mm": 0.2498,
+      "dice_affine": 0.9508,
+      "dice_nonlinear": 0.9756,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s34nDF_0000": {
+      "found": true,
+      "error_mm": 0.1658,
+      "dice_affine": 0.9532,
+      "dice_nonlinear": 0.9754,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s35nDF_0000": {
+      "found": true,
+      "error_mm": 0.0857,
+      "dice_affine": 0.9507,
+      "dice_nonlinear": 0.9728,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s36nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9333,
+      "dice_nonlinear": 0.9658,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s37nDF_0000": {
+      "found": true,
+      "error_mm": 0.2749,
+      "dice_affine": 0.9314,
+      "dice_nonlinear": 0.9606,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s38nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8204,
+      "dice_nonlinear": 0.9044,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s39nDF_0003": {
+      "found": true,
+      "error_mm": 0.0505,
+      "dice_affine": 0.929,
+      "dice_nonlinear": 0.9452,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s40nDF_0002": {
+      "found": true,
+      "error_mm": 0.1002,
+      "dice_affine": 0.8852,
+      "dice_nonlinear": 0.9261,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s42nDF_0002": {
+      "found": true,
+      "error_mm": 0.1935,
+      "dice_affine": 0.8882,
+      "dice_nonlinear": 0.9236,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s43nDF_0002": {
+      "found": true,
+      "error_mm": 0.1804,
+      "dice_affine": 0.8896,
+      "dice_nonlinear": 0.9268,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s44nDF_0002": {
+      "found": true,
+      "error_mm": 0.3477,
+      "dice_affine": 0.8944,
+      "dice_nonlinear": 0.9253,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s45nDF_0002": {
+      "found": true,
+      "error_mm": 0.1636,
+      "dice_affine": 0.8915,
+      "dice_nonlinear": 0.9129,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s46nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8615,
+      "dice_nonlinear": 0.8946,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s47nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8787,
+      "dice_nonlinear": 0.9072,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s48nDF_0002": {
+      "found": true,
+      "error_mm": 0.0538,
+      "dice_affine": 0.8754,
+      "dice_nonlinear": 0.9103,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s49nDF_0002": {
+      "found": true,
+      "error_mm": 0.0666,
+      "dice_affine": 0.8453,
+      "dice_nonlinear": 0.9013,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s50nDF_0003": {
+      "found": true,
+      "error_mm": 0.7711,
+      "dice_affine": 0.8542,
+      "dice_nonlinear": 0.8979,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s51nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.789,
+      "dice_nonlinear": 0.9286,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": true
+     },
+     "mf278LY_c02_s52nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8126,
+      "dice_nonlinear": 0.9187,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s53nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9296,
+      "dice_nonlinear": 0.9377,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s54nDF_0003": {
+      "found": true,
+      "error_mm": 0.3861,
+      "dice_affine": 0.8898,
+      "dice_nonlinear": 0.9056,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s55nDF_0003": {
+      "found": true,
+      "error_mm": 0.3791,
+      "dice_affine": 0.9181,
+      "dice_nonlinear": 0.9467,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s56nDF_0003": {
+      "found": true,
+      "error_mm": 0.1864,
+      "dice_affine": 0.8889,
+      "dice_nonlinear": 0.9239,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s57nDF_0003": {
+      "found": true,
+      "error_mm": 0.0769,
+      "dice_affine": 0.8574,
+      "dice_nonlinear": 0.903,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s58nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8627,
+      "dice_nonlinear": 0.9225,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf278LY_c02_s60nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8333,
+      "dice_nonlinear": 0.8987,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     }
+    },
+    "MF6": {
+     "mf275FR_c04_s03nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9159,
+      "dice_nonlinear": 0.95,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s04nDF_0002": {
+      "found": true,
+      "error_mm": 0.2406,
+      "dice_affine": 0.8924,
+      "dice_nonlinear": 0.923,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s05nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9144,
+      "dice_nonlinear": 0.963,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s06nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8974,
+      "dice_nonlinear": 0.9314,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s07nDF_0002": {
+      "found": true,
+      "error_mm": 0.4008,
+      "dice_affine": 0.9072,
+      "dice_nonlinear": 0.943,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s08nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9041,
+      "dice_nonlinear": 0.9379,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s09nDF_0002": {
+      "found": true,
+      "error_mm": 0.0628,
+      "dice_affine": 0.9219,
+      "dice_nonlinear": 0.9508,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s10nDF_0002": {
+      "found": true,
+      "error_mm": 0.4453,
+      "dice_affine": 0.9353,
+      "dice_nonlinear": 0.9599,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s11nDF_0002": {
+      "found": true,
+      "error_mm": 0.1642,
+      "dice_affine": 0.937,
+      "dice_nonlinear": 0.9642,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s12nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9346,
+      "dice_nonlinear": 0.9657,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s13nDF_0002": {
+      "found": true,
+      "error_mm": 0.1522,
+      "dice_affine": 0.9467,
+      "dice_nonlinear": 0.9671,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s14nDF_0002": {
+      "found": true,
+      "error_mm": 0.2694,
+      "dice_affine": 0.9445,
+      "dice_nonlinear": 0.9594,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s15nDF_0000": {
+      "found": true,
+      "error_mm": 0.1011,
+      "dice_affine": 0.9637,
+      "dice_nonlinear": 0.972,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s16nDF_0000": {
+      "found": true,
+      "error_mm": 0.0611,
+      "dice_affine": 0.9612,
+      "dice_nonlinear": 0.9681,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s17nDF_0000": {
+      "found": true,
+      "error_mm": 0.7206,
+      "dice_affine": 0.9021,
+      "dice_nonlinear": 0.9146,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s18nDF_0000": {
+      "found": true,
+      "error_mm": 0.0921,
+      "dice_affine": 0.8815,
+      "dice_nonlinear": 0.903,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s19nDF_0000": {
+      "found": true,
+      "error_mm": 0.3663,
+      "dice_affine": 0.8657,
+      "dice_nonlinear": 0.8972,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s20nDF_0000": {
+      "found": true,
+      "error_mm": 0.5072,
+      "dice_affine": 0.8476,
+      "dice_nonlinear": 0.9288,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s21nDF_0000": {
+      "found": true,
+      "error_mm": 0.7645,
+      "dice_affine": 0.9427,
+      "dice_nonlinear": 0.9639,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s22nDF_0000": {
+      "found": true,
+      "error_mm": 0.3514,
+      "dice_affine": 0.9438,
+      "dice_nonlinear": 0.9685,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s23nDF_0000": {
+      "found": true,
+      "error_mm": 0.2769,
+      "dice_affine": 0.9366,
+      "dice_nonlinear": 0.9695,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s24nDF_0000": {
+      "found": true,
+      "error_mm": 0.1606,
+      "dice_affine": 0.928,
+      "dice_nonlinear": 0.9509,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s25nDF_0000": {
+      "found": true,
+      "error_mm": 0.5402,
+      "dice_affine": 0.9443,
+      "dice_nonlinear": 0.9687,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s26nDF_0000": {
+      "found": true,
+      "error_mm": 0.2021,
+      "dice_affine": 0.9457,
+      "dice_nonlinear": 0.9626,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s27nDF_0000": {
+      "found": true,
+      "error_mm": 0.1276,
+      "dice_affine": 0.9503,
+      "dice_nonlinear": 0.969,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s28nDF_0000": {
+      "found": true,
+      "error_mm": 0.2833,
+      "dice_affine": 0.9452,
+      "dice_nonlinear": 0.9634,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s29nDF_0000": {
+      "found": true,
+      "error_mm": 0.4401,
+      "dice_affine": 0.9426,
+      "dice_nonlinear": 0.9672,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s30nDF_0000": {
+      "found": true,
+      "error_mm": 0.3036,
+      "dice_affine": 0.9255,
+      "dice_nonlinear": 0.9534,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s31nDF_0000": {
+      "found": true,
+      "error_mm": 0.1029,
+      "dice_affine": 0.9477,
+      "dice_nonlinear": 0.9714,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s32nDF_0000": {
+      "found": true,
+      "error_mm": 0.5045,
+      "dice_affine": 0.9403,
+      "dice_nonlinear": 0.9641,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s33nDF_0000": {
+      "found": true,
+      "error_mm": 0.252,
+      "dice_affine": 0.9335,
+      "dice_nonlinear": 0.9617,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s34nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.942,
+      "dice_nonlinear": 0.9642,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s35nDF_0000": {
+      "found": true,
+      "error_mm": 0.2128,
+      "dice_affine": 0.908,
+      "dice_nonlinear": 0.9391,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s36nDF_0003": {
+      "found": true,
+      "error_mm": 0.3742,
+      "dice_affine": 0.948,
+      "dice_nonlinear": 0.9549,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s37nDF_0003": {
+      "found": true,
+      "error_mm": 0.0945,
+      "dice_affine": 0.9421,
+      "dice_nonlinear": 0.9477,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s38nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8791,
+      "dice_nonlinear": 0.9273,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s40nDF_0002": {
+      "found": true,
+      "error_mm": 0.061,
+      "dice_affine": 0.8876,
+      "dice_nonlinear": 0.9208,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s41nDF_0002": {
+      "found": true,
+      "error_mm": 0.3646,
+      "dice_affine": 0.8855,
+      "dice_nonlinear": 0.9209,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s42nDF_0002": {
+      "found": true,
+      "error_mm": 0.0888,
+      "dice_affine": 0.9065,
+      "dice_nonlinear": 0.9281,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s43nDF_0002": {
+      "found": true,
+      "error_mm": 0.2376,
+      "dice_affine": 0.8882,
+      "dice_nonlinear": 0.9056,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s44nDF_0002": {
+      "found": true,
+      "error_mm": 0.2051,
+      "dice_affine": 0.8721,
+      "dice_nonlinear": 0.8943,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf275FR_c04_s45nDF_0002": {
+      "found": true,
+      "error_mm": 0.3996,
+      "dice_affine": 0.76,
+      "dice_nonlinear": 0.7942,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": false
+     }
+    },
+    "MF8": {
+     "mf191FR_c01_s02nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8942,
+      "dice_nonlinear": 0.8927,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s03nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8597,
+      "dice_nonlinear": 0.9345,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s05nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9319,
+      "dice_nonlinear": 0.9541,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s06nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9129,
+      "dice_nonlinear": 0.9206,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s07nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9204,
+      "dice_nonlinear": 0.9363,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s08nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9316,
+      "dice_nonlinear": 0.9693,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s09nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9547,
+      "dice_nonlinear": 0.9746,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s10nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9464,
+      "dice_nonlinear": 0.9653,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s11nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9602,
+      "dice_nonlinear": 0.9764,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s12nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9557,
+      "dice_nonlinear": 0.9776,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s13nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9627,
+      "dice_nonlinear": 0.9778,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s14nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9391,
+      "dice_nonlinear": 0.9643,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s15nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9333,
+      "dice_nonlinear": 0.9642,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s16nDF_0000": {
+      "found": true,
+      "error_mm": 0.6299,
+      "dice_affine": 0.916,
+      "dice_nonlinear": 0.9347,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s17nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9439,
+      "dice_nonlinear": 0.9793,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s18nDF_0000": {
+      "found": true,
+      "error_mm": 0.4749,
+      "dice_affine": 0.9583,
+      "dice_nonlinear": 0.9793,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s19nDF_0000": {
+      "found": true,
+      "error_mm": 0.5568,
+      "dice_affine": 0.9697,
+      "dice_nonlinear": 0.9825,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s20nDF_0000": {
+      "found": true,
+      "error_mm": 0.2425,
+      "dice_affine": 0.9638,
+      "dice_nonlinear": 0.9803,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s21nDF_0000": {
+      "found": true,
+      "error_mm": 0.2001,
+      "dice_affine": 0.9492,
+      "dice_nonlinear": 0.9699,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s22nDF_0000": {
+      "found": true,
+      "error_mm": 0.0631,
+      "dice_affine": 0.9676,
+      "dice_nonlinear": 0.985,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s23nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8986,
+      "dice_nonlinear": 0.9417,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s24nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9649,
+      "dice_nonlinear": 0.978,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s25nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9575,
+      "dice_nonlinear": 0.9758,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s26nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9444,
+      "dice_nonlinear": 0.9686,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s27nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9631,
+      "dice_nonlinear": 0.978,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s28nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9657,
+      "dice_nonlinear": 0.9776,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s29nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8758,
+      "dice_nonlinear": 0.9012,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s30nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9583,
+      "dice_nonlinear": 0.975,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s31nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9087,
+      "dice_nonlinear": 0.9352,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s32nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.903,
+      "dice_nonlinear": 0.9473,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s33nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8999,
+      "dice_nonlinear": 0.9397,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s34nDF_0000": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.7914,
+      "dice_nonlinear": 0.8221,
+      "flag_affine_lt_08": true,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s36nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9154,
+      "dice_nonlinear": 0.925,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s37nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9198,
+      "dice_nonlinear": 0.9316,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s38nDF_0002": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9095,
+      "dice_nonlinear": 0.9203,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s40nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9274,
+      "dice_nonlinear": 0.9595,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s41nDF_0003": {
+      "found": true,
+      "error_mm": 0.7865,
+      "dice_affine": 0.9546,
+      "dice_nonlinear": 0.9765,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s43nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.851,
+      "dice_nonlinear": 0.8937,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s45nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.9518,
+      "dice_nonlinear": 0.9631,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s50nDF_0003": {
+      "found": false,
+      "error_mm": null,
+      "dice_affine": 0.8106,
+      "dice_nonlinear": 0.8553,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     },
+     "mf191FR_c01_s51nDF_0003": {
+      "found": true,
+      "error_mm": 0.5397,
+      "dice_affine": 0.8254,
+      "dice_nonlinear": 0.8342,
+      "flag_affine_lt_08": false,
+      "flag_gain_gt_012": false
+     }
+    }
+   }
+  }
+ }
+}

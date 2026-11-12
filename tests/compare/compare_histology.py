@@ -5,7 +5,7 @@
     $PY_TIRL tests/compare/compare_histology.py <your --out folder>/tirl <the paper's tirl folder> --max-mm 0.1
 
 You need your `linc-histology all` output and the paper's registration (for the paper's brains,
-$LINC_PRODUCTS/data_arm_final/sub-<ID>/blockface/06_histo2bf/tirl); with --max-mm, the TIRL environment ($PY_TIRL).
+$LINC_PRODUCTS/data_arm_h9_final/sub-<ID>/blockface/06_histo2bf/tirl); with --max-mm, the TIRL environment ($PY_TIRL).
 What it does: for every component the paper registered (a folder holding the file, by default the registered section
 moving4_nonlinear.png), compares your file with the paper's, byte for byte. With --max-mm, a component whose file differs is
 accepted when the two final transforms (fixed4_nonlinear.timg) map every pixel of the photograph to points at most that far apart, in

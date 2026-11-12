@@ -50,11 +50,11 @@ histo_arm_final: data_arm_final                       # the histology -> blockfa
 # 23.75 600) the release reproduces that registration's blockface components (58 of 58 byte-identical, 3 Nov 2026)
 hidden_arm_regions:
   MF191: {file: labels/regions_t2_mf191_made_at_vz600/MF191_regions_t2.nii.gz, made_at_spacing_um: {vx: 23.75, vz: 600.0}}
-labels_histology_arm:
-  MR252: data_arm_preinp
-  MR243: data_arm_preinp_r058c    # MM1: s03, s05 _0001 re-masked (the mask's brightness clipped, not wrapped); s03 _0001 re-matched
-  MR256: data_arm_preinp_r058     # MM3: s01, s05 _0001 re-masked
-  MF191: data_arm_preinp_r058     # MF8: s04 split into its two lobes (num_MF191_r058.txt); s05, s08-s11 _0002 re-masked
+labels_histology_arm:            # the registrations with the per-component nonlinear stiffness (12 Nov 2026), tubes visible
+  MR252: data_arm_h9_preinp
+  MR243: data_arm_h9_preinp_r058c    # MM1: s03, s05 _0001 re-masked (the mask's brightness clipped, not wrapped); s03 _0001 re-matched
+  MR256: data_arm_h9_preinp_r058     # MM3: s01, s05 _0001 re-masked
+  MF191: data_arm_h9_preinp_r058     # MF8: s04 split into its two lobes (num_MF191_r058.txt); s05, s08-s11 _0002 re-masked
 
 # --- the cross-modal alignment (S2) of record: <ID>/<ID>_d2s2.json, _linear_world.txt, _warp.nii.gz, _mask_in_template.nii.gz ---
 direct_placement: featurereg/d2_s2/prod_s125
@@ -85,7 +85,7 @@ template_mri: template/mri                            # the MRI template's chann
 atlas_nmt: mri/tc/atlas_v2/NMT_v2.0_sym               # the template <-> NMT v2 mapping of record: run/ (H, Hinv, F, G), SARM_level6_in_template
 nmt_label_keys: labels/r058_nmt_tables                # CHARM_key_all.txt: the tables_CHARM/ folder of the public NMT v2.0 sym archive
                                                       # (https://afni.nimh.nih.gov/pub/dist/atlases/macaque/nmt/NMT_v2.0_sym.tgz); not redistributed
-tracer_template_r058d: labels/tracer_template_r058d   # the final tracer labels in the MRI template (the set of record: Fig. 9, Table S4)
+tracer_template_r058d: labels/tracer_template_r058d   # the earlier interpolated tracer labels in the MRI template, before the v2 chain (tracer_placement_v2c compares with them)
 r060_runs: mri/tc/r060_up                             # the target-comparison runs of record (30 Oct): place/<ID>_P0.txt, start/<tgt>/<ID>/prep.json, {b0,multi}/<tgt>/<ID>/run/
                                                       # (H.txt, Hinv.txt, F_ras_disp, G_ras_disp, metrics.json); xfm/sub-<ID>/ registry entries.
                                                       # The runs' mid_A* images and the warped images beside them hold target intensities

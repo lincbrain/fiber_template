@@ -30,19 +30,19 @@ mri_input: mri/data/sub-MF283/canonical                              # t2, brain
 
 # --- the histology example (MM2 = MR252): its reconstruction (for the side check) and one histology section ---
 blockface_store: data/sub-MR252/blockface/MR252_blockface.ome.zarr   # the reconstructed volume (OME-Zarr pyramid)
-histology_piece: data_arm_final/sub-MR252/blockface/06_histo2bf/tirl/mr252FS_c11_s28nDF_0000   # moving4_nonlinear_rgb.png, fixed.png
+histology_piece: data_arm_h9_final/sub-MR252/blockface/06_histo2bf/tirl/mr252FS_c11_s28nDF_0000   # moving4_nonlinear_rgb.png, fixed.png (the registrations with the per-component nonlinear stiffness)
 
 # --- the tracer labels figure (code/figures/tracer.py) ---
-tracer_template: labels/tracer_template_r058d                       # <S>/<S>_<class>_mri-template{,_density}.nii.gz: the final tracer labels
+tracer_template: labels/tracer_template_r058d_h9                    # <S>/<S>_<class>_mri-template{,_density}.nii.gz: the final tracer labels
 template_fa: template/mri/linc_mri_FA.nii.gz
 sarm_level6: mri/tc/atlas_v2/NMT_v2.0_sym/SARM_level6_in_template.nii.gz    # SARM level 6 carried from NMT v2 (internal capsule = 50)
 bft_member_warps: bftemplate/d2b/final_s8/d2_member_warps.json      # each member's construction warp (file, convention, src_grid)
 mf8_rigid: data/sub-MF191/mri/s2lin_prod/MF191_s2lin.json           # MF8's rigid placement (T_world_bf_to_run113)
-mf8_interp: data_arm_preinp_r058/sub-MF191/blockface/06_histo2bf/interp/interp.json   # MF8's interpolation table (interpolated pairs)
-mf8_label_grid: labels/push_tracer_r058d/MF191/MF191_Fiber_dense_bundle_bfnative_L2.nii.gz   # MF8's blockface label grid (its header)
+mf8_interp: data_arm_h9_preinp_r058/sub-MF191/blockface/06_histo2bf/interp_tracer/interp.json   # MF8's interpolation table (interpolated pairs)
+mf8_label_grid: labels/push_tracer_h9/MF191/MF191_Fiber_dense_bundle_bfnative_L2.nii.gz   # MF8's blockface label grid (its header)
 
 # --- the chart-to-template figure (Supplementary S3: code/figures/s_tracer_fidelity.py) ---
-push_sheets: labels/push_tracer_r058d                             # <S>/<S>_<class>_bfnative_L2.nii.gz (one slice per charted section) + push_tracer_<S>.json (the pieces)
+push_sheets: labels/push_tracer_h9                                # <S>/<S>_<class>_bfnative_L2.nii.gz (one slice per charted section) + push_tracer_<S>.json (the pieces)
 section_maps: labels/section_maps                                 # <S>_<stain>.tsv: the histology stack's index -> section, level-0 extent
 r1_record: paper/numbers/r1_current_2026-10-03.json               # MM1-MM3's blockface -> b0 registry entries of record (with sub-<S>/xfm/b0-native__to__mri-template)
 data: data                                                        # sub-<S>/blockface/<S>_blockface_L2.nii.gz, sub-<S>/xfm/

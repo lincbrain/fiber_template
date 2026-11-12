@@ -10,7 +10,7 @@ What it does
   connected pathway with its inferred fraction; groups are measured on the group's own density (the union of the classes is kept beside).
 
 You get
-  $LINC_NUMBERS/tracer_label_volumes_v2c.json
+  $LINC_NUMBERS/tracer_label_volumes_v2c_h9.json
 
     python code/figures/paper_numbers/tracer_label_volumes_v2c.py [--labels tracer_template_v2] [--connected-from products|work]
 """
@@ -35,7 +35,7 @@ SUBS = [
      '    P = paths.products("products_blockface")\n'
      '    LAB, T = P[a.labels], P["template_mri"]\n',
      '    ap.add_argument("--labels", default="tracer_template_v2", help="label folder: a key of configs/products_mri.yaml")\n'
-     '    ap.add_argument("--name", default="tracer_label_volumes_v2c", help="record name ($LINC_NUMBERS/<name>.json)")\n'
+     '    ap.add_argument("--name", default="tracer_label_volumes_v2c_h9", help="record name ($LINC_NUMBERS/<name>.json)")\n'
      '    a = ap.parse_args()\n'
      '    P = paths.products("products_mri"); P1 = paths.products("products_blockface")\n'
      '    LAB, T = P[a.labels], P1["template_mri"]\n'

@@ -50,7 +50,7 @@ def layout(subject, key, cfg=None):
 def subject_config(subject):
     """settings/brains/<S>.yaml (the reconstruction's inputs: idx_range, vx, vz, ...)."""
     import yaml
-    return yaml.safe_load((CONFIG.parent / "subjects" / f"{subject}.yaml").read_text())
+    return yaml.safe_load((CONFIG.parent / "brains" / f"{subject}.yaml").read_text())
 
 
 def first_photo(subject):

@@ -1,0 +1,29 @@
+{
+ "data": {
+  "method": [
+   "tube_mf8_check_r054's computation on tube_offsets_h9.",
+   "ground-truth problem? From paper/numbers/tube_offsets_r054.json: the share of pieces with a tube-sized hole (>= 0.10 mm^2, the hole",
+   "rules of the detector) within 2 mm of the carried hole-only center, MF8 against the other five brains (min-max), and the median area of",
+   "the holes that were detected. A tube hole absent from the section cannot be found by any registration.",
+   "-> paper/numbers/tube_mf8_check_r054.json"
+  ],
+  "MF8": {
+   "share_tube_sized_within_2mm": 0.1667,
+   "detected_hole_area_mm2_median": 0.055,
+   "rate": 0.1905
+  },
+  "others": {
+   "brains": [
+    "MR243",
+    "MR252",
+    "MR256",
+    "MF278",
+    "MF275"
+   ],
+   "share_tube_sized_within_2mm_min": 0.5385,
+   "share_tube_sized_within_2mm_max": 0.6667,
+   "detected_hole_area_mm2_median_min": 0.138,
+   "detected_hole_area_mm2_median_max": 0.181
+  }
+ }
+}

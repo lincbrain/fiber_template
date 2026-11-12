@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """LGN/STN label geometry beyond Dice and ASSD (paper: Results, "Labels in the template"; Table 7 and its supplementary detail).
 
-Inputs: exactly the labels scored by $LINC_NUMBERS/labels_overlap_current.json (run code/figures/paper_numbers/labels_overlap_current.py first),
+Inputs: exactly the labels scored by $LINC_NUMBERS/labels_overlap_current_h9.json (run code/figures/paper_numbers/labels_overlap_current.py first),
 primary variant "demons" (whole volume): products push_current/<ID>/<ID>_<struct>_mri-template_mask_demons.nii.gz for MM1-MM3 and the
 template-space reference products template_gt/GT_<struct>_mri-template.nii.gz, all on the MRI template grid (0.25 mm isotropic,
 axis-aligned RAS: x = left->right, y = posterior->anterior (the blockface/histology section axis), z = inferior->superior).
@@ -16,7 +16,7 @@ Per row: signed and absolute per-axis centroid offsets (b - a, mm), HD95, label 
 one-voxel reference, a direction-averaged one-voxel reference (Dice against itself shifted one voxel along +x, -x, +y, -y, +z, -z; mean
 of the six), the same for ASSD and HD95, and the direction-averaged Dice at 1-4 voxel shifts, from which each row's "equivalent shift"
 (the direction-averaged shift that reproduces the observed Dice, by linear interpolation) is read.
--> $LINC_NUMBERS/lgnstn_geometry_current.json
+-> $LINC_NUMBERS/lgnstn_geometry_current_h9.json
     python code/figures/paper_numbers/lgnstn_geometry_current.py"""
 import os
 
@@ -36,7 +36,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "code"))
 from shared import paths, provenance  # noqa: E402
 from figures.evaluation.labels_agreement import one_voxel_ref, surface  # noqa: E402
 
-OVERLAP = "labels_overlap_current.json"                            # the overlap record these labels were scored in
+OVERLAP = "labels_overlap_current_h9.json"                            # the overlap record these labels were scored in
 SUBS = ["MR243", "MR252", "MR256"]                                 # LINC IDs of MM1, MM2, MM3
 STRUCTS = ["lhLGN", "lhSTN", "rhLGN", "rhSTN"]
 GTNAME = "GT(run113, Chiara)"                                      # the reference's name in the overlap record's rows
@@ -255,7 +255,7 @@ def main():
             labels_overlap_json=dict(LGN_dice=paper_ref["LGN_dice"], STN_dice=paper_ref["STN_dice"]),
             labels_overlap_s125_json=dict(LGN_dice=rec["one_voxel_reference"]["LGN_dice"], STN_dice=rec["one_voxel_reference"]["STN_dice"])),
         summary=summary, per_label=per_label, rows=rows, reproduction_checks=checks)
-    provenance.write_numbers("lgnstn_geometry_current", data, inputs=inputs + [src], md5=False,
+    provenance.write_numbers("lgnstn_geometry_current_h9", data, inputs=inputs + [src], md5=False,
                              cmd="python code/figures/paper_numbers/lgnstn_geometry_current.py")
 
 

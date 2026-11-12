@@ -52,7 +52,7 @@ sys.path.insert(0, str(HERE)); sys.path.insert(0, str(HERE.parents[1] / "code"))
 import figstyle as FS  # noqa: E402
 from shared import paths, provenance  # noqa: E402
 
-NAME = "fig_tracer_sections3d_v6"
+NAME = "fig_tracer_sections3d_v6_h9"
 P_MRI, P_FIG = paths.products("products_mri"), paths.products("products_figures")
 SEC, V2 = Path(P_MRI["tracer_sections_v2"]), Path(P_MRI["tracer_template_v2"])
 T2_F, MASK_F, FA_F, SARM = (Path(P_FIG[k]) for k in ("template_t2", "template_mask", "template_fa", "sarm_level6"))

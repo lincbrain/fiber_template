@@ -1,0 +1,18 @@
+{
+ "file": "tirl/optimisation/optnl.py",
+ "commit": "tirl 3.6.3 (github.com/tirlworks/tirl 2890372)",
+ "source_md5": "ed5b0b50a22459c1d0eea505bf293d7c",
+ "result_md5": "af747dd93695f609ec6da397cef46b70",
+ "n_edits": 1,
+ "edits": [
+  {
+   "start": 282,
+   "n_old": 0,
+   "old_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "new": [
+    "            x0 = np.clip(x0, -1.0, 1.0)     # LINC edit (fiber_template, 12 Nov 2026): a start a hair outside the normalised bounds\n",
+    "                                            # (a parameter that ended a level on its bound) made nlopt refuse it\n"
+   ]
+  }
+ ]
+}
