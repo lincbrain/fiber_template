@@ -10,7 +10,8 @@ Needs glymur (the raw histology is JPEG 2000). --jp2-root is the LINC source-dat
      outline (white), and the registered darkfield histology (contrast-stretched). Flipped left-right into the neurological convention
      (the photographs show the subject's left on the image right); dorsal up; loose blockface fragments without histology removed.
   b  marker tubes at near-native resolution (JP2 level 2, ~1.8 um/px, 3 mm windows), three fixed quantiles (25th, 50th, 90th) of the
-     pooled offsets: for each, the found piece whose offset is closest to that quantile; + = the hole-only blockface tube center carried
+     pooled offsets: for each, the found piece whose offset is closest to that quantile, or the one settings/figures.yaml histology
+     panel_b_pieces names (within PIN_RANKS ranks of the quantile); + = the hole-only blockface tube center carried
      into the histology through that piece's tubes-hidden TIRL chain, o = the hole found in the histology (its recorded area; both
      white, black halo). The offset is in the header.
   c  ECDF of the tube offset of the six brains, tubes hidden from the registration (every piece in which the hole was found; blockface
@@ -50,6 +51,7 @@ JP2 = "sub-{S}/micr/{sid}.jp2"                                 # under --jp2-roo
 TIRL = "sub-{S}/blockface/06_histo2bf/tirl/{piece}"            # under the brain's labels_histology_arm
 TUBE_VARIANT = "hole_hidden"                                   # the paper's tube set
 QUANT = (25, 50, 90)
+PIN_RANKS = 3                                                  # (b): a named piece lies within this many ranks of its quantile
 WIN_MM = 3.0                                                   # (b): window side
 ECDF_XMAX = 1.0                                                # (c): to the 1 mm search radius (the curve reaches 1)
 SCALEBARS_MM = (5, 0.5)                                        # (a), (b)
@@ -80,7 +82,8 @@ def main():
     rq = [r for r in json.loads((NUM / "registration_qc_histo2bf_h9.json").read_text())["data"] if r.get("family") == "histo2bf" and r["subject"] == A_SUBJ]
     med = float(np.median([r["metrics"]["dice_nonlinear"] for r in rq]))
     tp = pieces("h9preinp", A_SUBJ)
-    fixed = (yaml.safe_load((HERE.parents[1] / "settings" / "figures.yaml").read_text()).get("histology") or {}).get("panel_a_piece")
+    CFG = yaml.safe_load((HERE.parents[1] / "settings" / "figures.yaml").read_text()).get("histology") or {}
+    fixed = CFG.get("panel_a_piece")
     if fixed:
         ra = next((r for r in rq if r["tag"] == fixed), None)
         assert ra is not None and tp.get(fixed, {}).get("found"), f"panel_a_piece {fixed}: not a {A_SUBJ} piece with a found tube hole"
@@ -112,7 +115,18 @@ def main():
     assert len(e_inp) == TJ["pooled"][TUBE_VARIANT]["n"] and round(float(np.median(e_inp)), 3) == m_inp, "distribution != JSON"
     # ---- b: fixed quantiles of the offsets ----
     qv = np.percentile(e_inp, QUANT)
-    ex = [min(cand, key=lambda c: abs(c[1]["error_mm"] - q)) for q in qv]
+    pins, n = CFG.get("panel_b_pieces") or {}, len(e_inp)
+    rank = np.argsort(np.argsort(e_inp, kind="stable"), kind="stable")
+    pick = []
+    for q, qq in zip(qv, QUANT):
+        if pins.get(qq):
+            hit = [i for i, c in enumerate(cand) if c[1]["piece"] == pins[qq]]
+            assert len(hit) == 1, f"panel_b_pieces {qq}: {pins[qq]} is not a found piece"
+            assert abs(rank[hit[0]] - qq / 100 * (n - 1)) <= PIN_RANKS, f"panel_b_pieces {qq}: {pins[qq]} lies beyond {PIN_RANKS} ranks"
+            pick.append(hit[0])
+        else:
+            pick.append(min(range(n), key=lambda i: abs(cand[i][1]["error_mm"] - q)))
+    ex = [cand[i] for i in pick]
     # ---- figure ----
     import glymur
     S.setup()
@@ -182,8 +196,9 @@ def main():
     S.letter(axd, "d", dx=-28, dy=2)
     S.save(fig, str(a.out), ins + [TJP], cmd=" ".join(["python"] + sys.argv),
            extra=dict(panel_a_piece=ra["tag"], panel_a_dice=ra["metrics"]["dice_nonlinear"], panel_a_subject_median_dice=med,
-                      panel_b=[dict(subject=S_, piece=r["piece"], quantile=qq, quantile_mm=round(float(q), 3), offset_mm=r["error_mm"])
-                               for (S_, r), q, qq in zip(ex, qv, QUANT)],
+                      panel_b=[dict(subject=S_, piece=r["piece"], quantile=qq, quantile_mm=round(float(q), 3), offset_mm=r["error_mm"],
+                                    rank_from_quantile=round(float(rank[i] - qq / 100 * (n - 1)), 1), named=bool(pins.get(qq)))
+                               for (S_, r), i, q, qq in zip(ex, pick, qv, QUANT)],
                       per_brain_median_mm={S_: ps[S_][TUBE_VARIANT]["median_mm"] for S_ in MAIN},
                       median_tubes_hidden_mm=m_inp, n_pieces=len(e_inp), scale_a=round(scale_a, 3), scalebars_mm=list(SCALEBARS_MM)))
     plt.close(fig)

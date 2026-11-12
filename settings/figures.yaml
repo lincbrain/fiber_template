@@ -58,3 +58,6 @@ histology:
   panel_a_piece: mr256LY_c02_s18nDF_0000   # panel (a)'s section (MM3): an intact one, as shown until 12 Nov 2026 (the author: the piece the
                                            #   median rule picks on the registrations with the per-component stiffness, s28, has a torn cortex);
                                            #   empty: the MM3 piece whose nonlinear tissue Dice is closest to MM3's median
+  panel_b_pieces:                          # panel (b)'s tiles by quantile: a listed quantile shows that piece (a found piece within 3 ranks of
+    90: mf275FR_c04_s07nDF_0002            #   the quantile); the others the found piece whose offset is closest to it. The 90th: the author,
+                                           #   12 Nov 2026 (the closest piece's hole is barely visible and its window has a gap)
