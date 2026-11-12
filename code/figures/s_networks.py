@@ -10,15 +10,18 @@ You need
 
 What it does
   One row per network, the example brain chosen by one rule: MM3, the brain whose held-out masks the training runs kept for every
-  segmentation network; the stand-in network's row, the first brain without MRI in the paper's order (MF8).
+  segmentation network; the stand-in network's row, the first brain without MRI in the paper's order (MF8). The MRI row shows
+  MM6's b0 (MRI_CASE): of the cases with a kept held-out mask, the one with the most signal outside the brain after MM3's (the
+  fraction of the image's energy outside the hand mask), and one that lies upright as scanned, so it needs no rotation for display.
     input    the image the network reads, as it reads it: the segmentation networks' training case of the brain (the photograph at
              /4, the b0 image, the color volume with its background, the masked color volume), the synthesis networks' b0 input
     output   what the network returned for that input: for the segmentation networks the held-out mask of the cross-validation fold
              that left the brain out (val_pred, written by the trainer); for the synthesis networks the predicted blockface
              brightness of record over the whole brain (the completed volume uses it caudal of the junction plane only)
     plane    the photograph itself (2D); for the 3D networks one sagittal plane of the left hemisphere: in the blockface volumes
-             the plane through the most voxels of the tube network's output; in the b0 images the plane at the same distance left
-             of the center of the brain's mask
+             the plane through the most voxels of the tube network's output; in the synthesis rows' b0 images the plane at the same
+             distance left of the center of the brain's mask; in the MRI row the plane 4 to 12 mm left of that center that keeps the
+             network's mask in one piece (whole_plane)
     scale    one physical scale for every panel; the dashed frame on each input is the network's patch (the whole photograph for
              the 2D network) at that scale
     box      architecture, input channels, working resolution, patch, number of parameters and training data, every value read
@@ -54,6 +57,7 @@ import figstyle as FS  # noqa: E402
 from shared import paths  # noqa: E402
 
 EXAMPLE = "MR256"                       # MM3: held-out masks kept for all four segmentation networks (fold 0, 0, 0 and 2)
+MRI_CASE = "MR251_b0"                   # the MRI row: MM6's b0, as scanned (the author, 11 Nov 2026)
 PRINT_SCALE = 0.40                      # print mm per tissue mm, every panel
 FOV_MM = (80.0, 64.0)                   # each panel's window (tissue mm, width x height), centered on the brain
 SCALE_BAR_MM = 10
@@ -78,16 +82,19 @@ def canon(p, used):
     return FS.canonical(nib.load(p))
 
 
-def case_3d(seg, key, S, used):
-    """A 3D segmentation network's training case of brain S and its held-out mask, both in canonical RAS order."""
+def case_3d(seg, key, S, used, case_id=None):
+    """A 3D segmentation network's training case of brain S (or the case `case_id`) and its held-out mask, both in canonical RAS
+    order."""
     t = json.load(open(seg / "tasks" / f"{TASKS[key]}.json")); used.append(str(seg / "tasks" / f"{TASKS[key]}.json"))
-    c = next(c for c in t["cases"] if c["subject"] == S and c.get("counted", True) and c.get("modality", "b0") == "b0")
+    c = next(c for c in t["cases"] if (c["id"] == case_id if case_id else
+                                       c["subject"] == S and c.get("counted", True) and c.get("modality", "b0") == "b0"))
+    S = c["subject"]
     chans = [canon(paths.rerooted(p), used) for p in c["image"]]
     img, A = (np.stack([d for d, _ in chans], -1), chans[0][1]) if len(chans) > 1 else chans[0]
     k = fold_of(t, S)
     pred, Ap = canon(seg / "runs" / TASKS[key] / f"fold_{k}" / "val_pred" / f"{c['id']}.nii.gz", used)
     assert pred.shape == img.shape[:3] and np.allclose(Ap, A, atol=1e-4), f"{key}: the held-out mask is not on its input's grid"
-    return dict(img=img.astype(np.float32), A=A, pred=pred > 0, fold=k, case=c["id"])
+    return dict(img=img.astype(np.float32), A=A, pred=pred > 0, fold=k, case=c["id"], subject=S)
 
 
 def case_photo(seg, S, used):
@@ -120,6 +127,23 @@ def centroid_x(mask, A):
 def sag(vol, A, x_mm):
     i = FS.world_index(A, "sagittal", x_mm)
     return FS.section(vol, "sagittal", i), i
+
+
+def whole_plane(mask, A, d_ref, lo=4.0, hi=12.0):
+    """The MRI row's sagittal plane: of the planes of the mask's own grid lying lo to hi mm left of its center of mass, the one where
+    the mask's largest connected piece (8-connected in the plane) holds the largest share of the plane's mask pixels; ties go to the
+    offset nearest d_ref. Returns (world x, offset left of the center, share)."""
+    from scipy import ndimage as ndi
+    xc, best = centroid_x(mask, A), None
+    for i in range(mask.shape[0]):
+        x = float(A[0, 0] * i + A[0, 3]); off = xc - x
+        if not lo <= off <= hi or not mask[i].any():
+            continue
+        lab, n = ndi.label(mask[i], structure=np.ones((3, 3)))
+        share = float(ndi.sum(mask[i], lab, range(1, n + 1)).max() / mask[i].sum())
+        if best is None or (-share, abs(off - d_ref)) < (-best[2], abs(best[1] - d_ref)):
+            best = (x, off, share)
+    return best
 
 
 def extent_mm(A, shape2d):
@@ -259,7 +283,8 @@ def main():
     S = EXAMPLE
 
     photo = case_photo(seg, S, used)
-    mri, bf, tubes = (case_3d(seg, k, S, used) for k in ("mri", "bf", "tubes"))
+    mri = case_3d(seg, "mri", S, used, MRI_CASE)
+    bf, tubes = (case_3d(seg, k, S, used) for k in ("bf", "tubes"))
     own, sti = synth(PC["completed"], S, used), synth(PC["completed"], standin, used)
 
     # the sagittal plane: through the most tube voxels; elsewhere at the same distance left of the brain's center
@@ -294,8 +319,10 @@ def main():
                          out_ext=eo, outline=ol))
 
     ts = R["mri"]["input"]["target_spacing"]; pt = R["mri"]["input"]["patch"]
-    vol_row("mri", "Brain mask, MRI", S, mri["img"], mri["pred"].astype(np.float32), mri["A"], mri["A"], mri["pred"],
-            (pt[1] * ts[1], pt[2] * ts[2]))
+    x_b, off_b, share_b = whole_plane(mri["pred"], mri["A"], d_left)
+    vol_row("mri", "Brain mask, MRI", mri["subject"], mri["img"], mri["pred"].astype(np.float32), mri["A"], mri["A"], mri["pred"],
+            (pt[1] * ts[1], pt[2] * ts[2]), x_mm=x_b)
+    planes["mri"].update(left_of_center_mm=round(off_b, 2), largest_piece_share=round(share_b, 4))
     for key, title, v in (("bf", "Brain mask, blockface volume", bf), ("tubes", "Marker tubes, blockface volume", tubes)):
         ts = R[key]["input"]["target_spacing"]; pt = R[key]["input"]["patch"]
         tissue = v["img"].max(-1) > 0                                   # the tube network's input is masked to the brain
@@ -352,6 +379,7 @@ def main():
     drawn = {k: dict(title=t, lines=l) for k, (t, _, _, l) in F.items()}
     FS.save(fig, a.out, used, cmd, extra=dict(example=FS.label(S), stand_in_example=FS.label(standin), planes=planes,
                                               tube_plane_left_of_center_mm=round(d_left, 2), print_scale=PRINT_SCALE,
+                                              mri_case=mri["case"],
                                               fov_mm=FOV_MM, scale_bar_mm=SCALE_BAR_MM, drawn=drawn,
                                               folds={k: v["fold"] for k, v in dict(photo=photo, mri=mri, bf=bf, tubes=tubes).items()}))
     if Path(a.out).suffix != ".png":
