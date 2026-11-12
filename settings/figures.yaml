@@ -61,3 +61,8 @@ histology:
   panel_b_pieces:                          # panel (b)'s tiles by quantile: a listed quantile shows that piece (a found piece within 3 ranks of
     90: mf275FR_c04_s07nDF_0002            #   the quantile); the others the found piece whose offset is closest to it. The 90th: the author,
                                            #   12 Nov 2026 (the closest piece's hole is barely visible and its window has a gap)
+
+bf2mri_steps:                              # Supplementary: the blockface registered to its own MRI, step by step
+  subject: MR252                           # MM2
+  variant: r1v3mr                          # its registration of record (FLIRT 9 dof, the cut, the deformable step)
+  x_mm: 4.25                               # the sagittal plane (b0 frame): a voxel plane of both grids, 0.5 and 0.25 mm

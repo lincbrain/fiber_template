@@ -129,7 +129,7 @@ steps:
     check: '$PY -c "import pathlib, sys; T = sys.argv[1:]; m = [t for t in T if not any(pathlib.Path(''outputs/figures'').glob(t + ''.*''))]; print(f''{len(T)
       - len(m)} of {len(T)} figures written'' + (''; missing: '' + '' ''.join(m) if m else '''')); sys.exit(1 if m or not T else 0)" $(make -s --no-print-directory
       -C code/figures print-figures)'
-    expect: every target of make figures wrote its file (make -C code/figures print-figures, 14 in this release; none skipped); the drawings are not
+    expect: every target of make figures wrote its file (make -C code/figures print-figures, 16 in this release; none skipped); the drawings are not
       compared bit for bit
     needs: []
     gpu_gb: 0

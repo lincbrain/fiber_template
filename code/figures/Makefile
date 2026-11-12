@@ -62,7 +62,7 @@ NUMBERS_SEGMENT := segmodels_mri_brainmask_2026-11 segmodels_bf_mask2d_2026-11 s
 FIGURES_MRI := template pipeline variability link tracer
 FIGURES_LINC := reconstruction bf_template alignment_comparison s_networks
 FIGURES_COMPLETION := s_synthesis_depth s_synthesis_gallery
-FIGURES := $(FIGURES_MRI) $(FIGURES_LINC) $(FIGURES_COMPLETION) lgnstn histology s_tracer_fidelity tracer_sections3d
+FIGURES := $(FIGURES_MRI) $(FIGURES_LINC) $(FIGURES_COMPLETION) lgnstn s_bf2mri_steps histology s_tracer_fidelity tracer_sections3d
 
 .PHONY: all numbers numbers-gpu numbers-figures check test figures print-figures print-figure-records $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_GPU) $(NUMBERS_ATLAS) $(FIGURES)
 
@@ -197,4 +197,8 @@ $(FIGURES_COMPLETION):
 
 # Fig. 8, the same: in settings/env/linc.yml, the environment the paper's figure was made in (its matplotlib draws other pixels than the deep one's)
 lgnstn:
+	$(PY) $@.py --out $(OUT)/figures/$@.pdf
+
+# Supplementary: the blockface registered to its own MRI, step by step (MM2; settings/figures.yaml bf2mri_steps): a PDF and a PNG beside it
+s_bf2mri_steps:
 	$(PY) $@.py --out $(OUT)/figures/$@.pdf
