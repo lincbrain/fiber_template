@@ -2,7 +2,7 @@
 # Check that the installation works, before downloading any data.
 #
 # You need
-#   the environments' interpreters (settings/env/README.txt), or linc_envs.sh sourced:
+#   the environments' interpreters (settings/env/README.md), or linc_envs.sh sourced:
 #     PY       settings/env/linc.yml        (default: python3 on PATH)
 #     PY_DEEP  settings/env/deep.yml        (default: PY)
 #     PY_TIRL  settings/env/tirl.yml        for the reconstruction and histology steps; without it or without TIRL those two steps SKIP and name the
@@ -22,7 +22,7 @@
 set -u
 cd "$(dirname "$0")/.."
 PY=${PY:-python3}; PY_DEEP=${PY_DEEP:-$PY}; PY_TIRL=${PY_TIRL:-}
-export PYTHONNOUSERSITE=1                       # packages in ~/.local must not shadow the environment's own (settings/env/README.txt)
+export PYTHONNOUSERSITE=1                       # packages in ~/.local must not shadow the environment's own (settings/env/README.md)
 LOG=${TMPDIR:-/tmp}/linc_selftest_$$; mkdir -p "$LOG"
 fails=0; n=0; skips=0
 step() {                                        # step <name> <command ...>; exit status 77 = SKIP (an optional environment absent)

@@ -3,7 +3,7 @@
 ```text
 bash tests/selftest.sh     the tests and a toy run of each command; no data, no GPU, a few minutes
 $PY tests/check_numbers.py --ref tests/reference <record>     a numbers record against the paper's
-$PY tests/verify_weights.py     checks downloaded weights (settings/models/README.txt)
+$PY tests/verify_weights.py     checks downloaded weights ([settings/models](../settings/models/README.md))
 ```
 
 |  |  |

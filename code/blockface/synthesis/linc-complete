@@ -51,13 +51,13 @@ def main():
     g.add_argument("--stand-in", action="store_true", help="the brain has no MRI: its input is the stand-in b0 (network d3p_full_A_s0)")
     x = ap.add_argument_group("advanced")
     x.add_argument("--model", type=Path, default=None, help="a network folder with last.pt (default: $LINC_MODELS/completion/"
-                   "d3_full_A_s0, or d3p_full_A_s0 with --stand-in; settings/models/README.txt)")
+                   "d3_full_A_s0, or d3p_full_A_s0 with --stand-in; settings/models/README.md)")
     x.add_argument("--device", default="cuda", help="cuda (default), cuda:N or cpu (slow for a full brain)")
     x.add_argument("--cache-out", type=Path, default=None, help="also write <DIR>/<ID>/deploy/{brain, real_mask} and <DIR>/seam.json, which the blockface template's construction reads")
     a = ap.parse_args()
     if a.model is None:
         if not os.environ.get("LINC_MODELS"):
-            sys.exit("set --model or LINC_MODELS (settings/models/README.txt)")
+            sys.exit("set --model or LINC_MODELS (settings/models/README.md)")
         a.model = Path(os.environ["LINC_MODELS"]) / "completion" / ("d3p_full_A_s0" if a.stand_in else "d3_full_A_s0")
     ckp = a.model / "last.pt" if a.model.is_dir() else a.model
     D = a.brain.resolve(); S = D.name

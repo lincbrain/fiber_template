@@ -42,6 +42,6 @@ sarm_in_template: mri/tc/atlas_v2/NMT_v2.0_sym/SARM_level6_in_template.nii.gz   
 sarm_key: labels/r058_nmt_tables/SARM_key_all.txt
 lgnstn_slab: labels/r059_L4/slab_h9              # the SARM nuclei split by hemisphere (SARM_<struct>_mri-template.nii.gz) and the slab
                                                  # labels of record, as code/figures/paper_numbers/lgnstn_budget_r059.py writes them (read by s_lgnstn)
-# the prepared folders of record, one per brain (code/blockface/synthesis/linc-complete --brain <folder>/<ID>; README.txt)
+# the prepared folders of record, one per brain (code/blockface/synthesis/linc-complete --brain <folder>/<ID>; code/blockface/synthesis/README.md)
 completion_prepared: isbi2027/data/canon_d3                  # the 13 brains with MRI, their own b0
 completion_prepared_standin: isbi2027/data/canon_d3n_prod_lo0 # the 8 brains without MRI, the stand-in b0 as deployed (lower limit 0)

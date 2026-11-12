@@ -16,7 +16,7 @@ $PY_DEEP code/shared/linc-segment predict --model mri_brainmask --out mask.nii.g
 $PY_DEEP code/shared/linc-segment predict --model bf_mask2d --native --in <photos> --out <masks>
 ```
 
-Every mask has the values 0 and 1, on its input's grid. `--postprocess` changes the clean-up step.
+`bf_mask2d` reads a folder of blockface photographs named `<case>_0000.png`. Every mask has the values 0 and 1, on its input's grid. `--postprocess` changes the clean-up step.
 
 They were trained on this project's brains, cameras and MRI acquisitions. A new setup, stain or
 contrast needs checking against a few manual masks. `bf_holes` keeps tubes in the left hemisphere

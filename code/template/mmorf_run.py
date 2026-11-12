@@ -16,7 +16,7 @@ Writes, under the run folder:
   config/                        data_structure.tree (+ one .tree per channel), mmorf_params_stepNN.ini (one per step),
                                  affine_zero_warp_for_deltaWarp.nii.gz (zero displacement on the canonical grid)
   run_spec.json                  channels, weights, quantitative channels, steps, ids
-`driver_command()` gives the patched driver's command line (code/template/patches/README.txt).
+`driver_command()` gives the patched driver's command line (code/template/patches/README.md).
 
 MMORF .ini layout (MMORF 1.0.1): per-modality options that vary by level (lambda_scalar, fwhm_*, use_mask_*, lambda_bias_reg) are
 one line per modality with one value per level; estimate_bias, bias_res_init and use_implicit_mask are one line with one value per
@@ -233,7 +233,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--prep", default=None, help="each brain's prep folder, {id} = the brain "
                     "(default $LINC_DATA/sub-{id}/mri/construction_inputs)")
-    ap.add_argument("--upstream", required=True, help="clone of mm-template-construction (see code/template/patches/README.txt)")
+    ap.add_argument("--upstream", required=True, help="clone of mm-template-construction (see code/template/patches/README.md)")
     ap.add_argument("--out", required=True, help="run folder to create")
     ap.add_argument("--name", default=None)
     ap.add_argument("--leave-out", default=None, help="leave-one-brain-out: drop this brain and its mirror")

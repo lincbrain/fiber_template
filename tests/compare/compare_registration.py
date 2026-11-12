@@ -17,7 +17,7 @@ What it does
          most --median-mm and --p99-mm (the largest is reported, not tested: single voxels can differ by more).
   image  identical voxels, or Pearson r inside the mask (else where either image is nonzero) of at least --min-r.
   The default tolerance is above what reruns of the paper's registrations gave on RTX 6000 Ada and RTX 4000 Ada cards (medians
-  under 0.03 mm, 99th percentiles under 0.5 mm: README.txt, Exact reproduction), and far below a failed registration.
+  under 0.03 mm, 99th percentiles under 0.5 mm: tests/README.md), and far below a failed registration.
 You get
   one line per file, then a last line with the evidence; exit status 0 only when every file is identical or within the tolerance.
 """

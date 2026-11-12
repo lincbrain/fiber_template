@@ -11,7 +11,7 @@ You need, for every brain of settings/mri_construction.yaml `inputs`, under $LIN
   or made by the nmt-, t2reg- and microreg-<ID> steps: mri/landmarks/ (the SARM labels and the brain -> NMT v2 affine on the b0
   grid) and xfm/t2-native__to__b0-native, xfm/micro-native__to__b0-native (the within-brain registrations);
   FSL (FSLDIR), ANTs (ANTSPATH), MRtrix (MRTRIX), and for the mmorf step MMORF (LINC_MMORF_EXE), the patched template-construction driver (LINC_TEMPLATE_DRIVER,
-  code/template/patches/README.txt) and one 48 GB GPU.
+  code/template/patches/README.md) and one 48 GB GPU.
 
 What it does, one step per brain, then together (each step one command; --plan prints them all)
   stage-<ID>      stages the preprocessed files as the build's inputs in the brain's MRI folder (b0, T2 and b0 N4-corrected, fractions)
@@ -37,8 +37,8 @@ xfm/ (the transforms). Under --work (default $LINC_WORK/build_mri_channels):
     python code/template/build_mri_channels.py --step prepare-MF283
     python code/template/build_mri_channels.py --from assemble --to channels
 
-Environment: settings/env/linc.yml. Steps and parameters: code/template/README.txt and settings/mri_construction.yaml (paper: Methods,
-"MRI preprocessing", "Symmetric groupwise construction", "Template channels"). Validated on MF283 (code/template/README.txt, "Validation").
+Environment: settings/env/linc.yml. Steps and parameters: code/template/README.md and settings/mri_construction.yaml (paper: Methods,
+"MRI preprocessing", "Symmetric groupwise construction", "Template channels"). Validated on MF283 (code/template/README.md, "Validation").
 """
 import os
 import sys
@@ -152,4 +152,4 @@ def make_steps(W, paths):
 
 if __name__ == "__main__":
     os.umask(0o002)                                                   # outputs readable by the group
-    D.main("Build the MRI channels of the template (code/template/README.txt)", make_steps, "build_mri_channels")
+    D.main("Build the MRI channels of the template (code/template/README.md)", make_steps, "build_mri_channels")

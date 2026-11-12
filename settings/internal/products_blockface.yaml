@@ -59,7 +59,7 @@ labels_histology_arm:            # the registrations with the per-component nonl
 # --- the cross-modal alignment (S2) of record: <ID>/<ID>_d2s2.json, _linear_world.txt, _warp.nii.gz, _mask_in_template.nii.gz ---
 direct_placement: featurereg/d2_s2/prod_s125
 
-# --- the blockface template's construction (code/template/blockface_*.py, code/template/README.txt) ---
+# --- the blockface template's construction (code/template/blockface_*.py, code/template/README.md) ---
 run113_frame: template/mri_template_0p5.nii.gz        # the run-113 0.5 mm frame; the template's grid is its exact 2x refinement
 frame1c: template/mri_template_0p5_frame1c.nii.gz     # the run-113 grid extended by whole voxels (152x176x120): grown by 8 mm, the prep frame
 bridge: template/bridge_run113_to_canonical/linear.json   # rigid run-113 <-> canonical frame (TPL is transformed through it)
@@ -73,7 +73,7 @@ bf_canon2: bftemplate/d2/s8/canon2                    # the 21 members x 2 mirro
 bf_canon2_tpl: bftemplate/d2b/canon2                  # the same + TPL (the b0 channel's inputs)
 # inputs of code/template/build_blockface_template.py that no other key names (3 Nov 2026)
 completion_cache: synthesis/cache_d3                  # <ID>/deploy/brain.nii.gz, the synthesis's per-brain cache (members' --cache)
-bf_plan_a_affine: bftemplate/d2b/plan_a_affine        # the first stage's affine part, copied from design 2's build (code/template/README.txt section 2)
+bf_plan_a_affine: bftemplate/d2b/plan_a_affine        # the first stage's affine part, copied from design 2's build (code/template/README.md section 2)
 bf_precision_rule: bftemplate/d2b/s8/precision_d2bs8/precision_rule_b1.json   # the finish's precision rule (finish --precision-json)
 link_greedy: bftemplate/cv/s5_direct_d2bs8/greedy       # the one-way link of record that `estimate compare` reads (build_link.py)
 bf_canon2_s8w: bftemplate/d2b/canon2_s8w              # the step-8 weights (the 8 without MRI: b0 cost = their blockface cost)

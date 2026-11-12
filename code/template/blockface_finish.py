@@ -1,4 +1,4 @@
-"""The blockface template's final average (Methods, "Blockface template"; code/template/README.txt, stage E). The published
+"""The blockface template's final average (Methods, "Blockface template"; code/template/README.md, stage E). The published
 template is not MMORF's own average: each input is resampled once from its 0.25 mm volume through its final MMORF warp, and the
 members are averaged with weights from their expected error, so photographed tissue counts more than synthesized tissue.
 

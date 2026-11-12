@@ -6,9 +6,9 @@ build-backend = "setuptools.build_meta"
 name = "fiber-template"
 version = "0.1.0"
 description = "The LINC template: a common coordinate framework for the macaque brain from ex vivo MRI and blockface photographs. Build it, use it with new data, and reproduce the paper."
-readme = "README.txt"
+readme = "README.md"
 requires-python = ">=3.9"
-# core: reading, transforms, provenance. Stage-specific dependencies are in env/*.yml (see env/README.md).
+# core: reading, transforms, provenance. Stage-specific dependencies are in env/*.yml (see settings/env/README.md).
 dependencies = ["numpy", "scipy", "nibabel", "zarr", "pyyaml"]
 
 [project.optional-dependencies]

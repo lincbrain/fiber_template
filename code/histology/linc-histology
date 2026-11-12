@@ -5,7 +5,7 @@
 You need
   the brain's reconstruction (<ID>_blockface.ome.zarr, code/blockface/linc-reconstruct); its histology sections (the Haber laboratory's
   collection: JPEG 2000, *nDF.jp2; LINC dataset 000003, sourcedata/sub-<ID>/micr); the regions volume on the blockface (1 left, 2 right,
-  3 cerebellum + brainstem, 4 marker tubes; how to make one: code/histology/README.txt); settings/brains/<ID>.yaml (idx_range,
+  3 cerebellum + brainstem, 4 marker tubes; how to make one: code/histology/README.md); settings/brains/<ID>.yaml (idx_range,
   ccs / cce); settings/env/tirl.yml's Python ($PY_TIRL) with TIRL. The match table (section number -> photograph number per component; format
   in code/histology/match.py) is, in this order: --table; <histology folder>/match_table_edited.txt, a copy of the proposal changed
   by hand, which nothing overwrites; <histology folder>/match_table.txt; <histology folder>/match_table_proposed.txt. The histology

@@ -2,7 +2,7 @@
 ext = .nii.gz / .nii / .png / .tif. Its mask is written as OUT/<case><ext> (uint8: 0 background, 1.. the classes) in the
 input's grid.
 
-    model_dir(task)     $LINC_MODELS/segment/<task>/ (model.pt, spec.json, card.txt; settings/models/README.txt), or a model folder
+    model_dir(task)     $LINC_MODELS/segment/<task>/ (model.pt, spec.json, card.txt; settings/models/README.md), or a model folder
     predict_folder(model, in_dir, out_dir, native=False, postprocess="spec", masks=None, device="cuda", mirror=None)
 
 native: the images are photographs at native size; they are first reduced by the model's native_downsample (block means; bf_mask2d:
@@ -30,7 +30,7 @@ def model_dir(model):
         raise ValueError(f"{model}: neither a model folder nor one of {TASKS}")
     root = os.environ.get("LINC_MODELS")
     if not root:
-        raise RuntimeError("set LINC_MODELS (the folder holding segment/<task>/; settings/models/README.txt)")
+        raise RuntimeError("set LINC_MODELS (the folder holding segment/<task>/; settings/models/README.md)")
     return Path(root) / "segment" / str(model)
 
 

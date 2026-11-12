@@ -141,7 +141,7 @@ def blockface_template_route(a):
     frame, bridge = a.frame or T / "frames" / "mri_template_0p5.nii.gz", a.bridge or T / "bridge_run113_to_canonical" / "linear.json"
     for p in (grey, cover, frame, bridge):
         if not Path(p).exists():
-            sys.exit(f"{p} not found: README.txt lists the template's files")
+            sys.exit(f"{p} not found: it is part of the template folder ($LINC_TEMPLATE, which settings/roots.sh sets)")
     _iso_pair(a.subject)
     g05, c05 = direct.coarsen_template(grey, cover, frame, str(out / "_template_grey_0.5.nii.gz"), str(out / "_template_coverage_0.5.nii.gz"))
     r = direct.to_blockface_template(a.subject, _bf(a.subject), g05, c05, str(out), cfg, str(bridge), device=a.device, xfm_root=a.registry, overwrite=a.overwrite)
@@ -169,7 +169,7 @@ def direct_placement_route(a):
         sys.exit(f"{S} has its own b0 ({own_b0}) but no registration to it ({own_entry}): run `linc-register mri --subject {S}` first")
     for p in ([] if has_b0 else [frame, bridge]):
         if not p.exists():
-            sys.exit(f"{p} not found: it is part of the template folder ($LINC_TEMPLATE; README.txt)")
+            sys.exit(f"{p} not found: it is part of the template folder ($LINC_TEMPLATE, which settings/roots.sh sets)")
     _iso_pair(S)
     r = direct.direct_placement(S, _bf(S), a.template_b0, a.template_mask, str(out), cfg, device=a.device, xfm_root=a.registry, overwrite=a.overwrite,
                                 stand_in_dir=str(si), frame=str(frame), bridge_json=str(bridge),

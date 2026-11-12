@@ -78,7 +78,7 @@ LINC_DATA=$LINC_MRI_DATA $PY code/template/build_mri_channels.py --step stage-MF
 LINC_DATA=$LINC_MRI_DATA $PY code/template/build_mri_channels.py --step tensor-MF283
 ```
 
-- **What it does:** fits the tensor (FSL dtifit) on the 43 volumes with b up to 4800 s/mm², with the b-vectors rotated by each volume's motion correction.
+- **What it does:** fits the tensor (FSL dtifit) on the 43 volumes with b up to 4800 s/mm², with the b-vectors rotated by each volume's motion correction and checked with `dwigradcheck`.
 - **Runs on:** CPU, 8 cores; about 8 minutes, 12 GB of RAM.
 - **Writes:** `$LINC_WORK/build_mri_channels/tensor_d9/MF283/tensor_d9_dwigrid.nii.gz`.
 
@@ -156,7 +156,7 @@ $PY run.py --run --only mri-construction-step1      # the affine stage and the f
 $PY run.py --run --only mri-construction-full       # all eight steps (optional: named only)
 ```
 
-- **What it does:** the symmetric groupwise registration of the eight inputs with MMORF 1.0.1, through the template-construction driver of Arthofer et al. with our edits (`code/template/patches/README.txt`).
+- **What it does:** the symmetric groupwise registration of the eight inputs with MMORF 1.0.1, through the template-construction driver of Arthofer et al. with our edits ([code/template/patches](../../code/template/patches/README.md)).
   `mri-construction-step1` stops after the first nonlinear step; `mri-construction-full` runs all eight.
 - **Runs on:** GPU, the card to itself.
   Step 1: 6 GB, about 2 hours, 32 GB of RAM.
@@ -252,7 +252,17 @@ $PY -m shared.xfm apply --from b0-native --to mri-template --subject <ID> \
 - **Runs on:** CPU; seconds.
 - **Writes:** `<output>`, on the template's grid.
 
-To go on to a published template, use `--to atlas:NMT_v2.0_sym`, `atlas:INIA19` or `atlas:CIVM-R` with that template's image as `--ref` (bring your own copy; 00 has the commands).
+To move an image between the template and a published template, bring your own copy of that template and use its name, `atlas:NMT_v2.0_sym`, `atlas:INIA19` or `atlas:CIVM-R` (add `--nearest` for a label image):
+
+```bash
+$PY -m shared.xfm apply --from mri-template --to atlas:NMT_v2.0_sym --ref <NMT image> \
+    <image in the template> <output>
+$PY -m shared.xfm apply --from atlas:NMT_v2.0_sym --to mri-template \
+    --ref $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz <image in NMT> <output>
+```
+
+`bf-template`, the blockface template in its own space, works the same way.
+It takes seconds, with no GPU.
 
 ## 4. Checks
 
@@ -304,7 +314,7 @@ The canonical frame must be within 1 degree and a mean move of 0.5 mm of the pap
 | The outline check fails anteriorly, the frontal pole pushed forward | the b0's mask included the olfactory bulbs or tracts, which the template's mask does not have, and they pulled the frontal cortex with them. This happened on two of the paper's brains during development | remove the bulbs and tracts from the b0's mask and run step B2 again |
 | `meta.json` shows `fallback_to_similarity: true` | the affine fit was rejected because it stretched the b0 too much (the ratio of its scales above 1.5); the registration then starts from the similarity transform. MR253, with the weakest b0 of the paper's brains, had a ratio of 1.80 | nothing: this is the rule working. Check the outline verdict as usual |
 | A b0 with a strong leftover intensity gradient | the registration measures the remaining bias field and, when its range exceeds 1.5, corrects it again with N4 inside the mask, for the deformable stage only (MR253 needed it) | nothing; it is automatic |
-| The construction (step A9) stops writing files for hours, with the GPU idle on repeated samples | MMORF can hang with a tensor channel at 8 inputs per batch on the fine steps | stop it, then resume at the step and iteration it reached (`-aff False -resume <step>:<iteration>` through the driver; `code/template/README.txt`) with 4 inputs per batch for steps 6 to 8. The paper's run used 8 for steps 1 to 5, 4 for 6 and 7, and 4, then 3, for step 8; the batch size does not change the result |
+| The construction (step A9) stops writing files for hours, with the GPU idle on repeated samples | MMORF can hang with a tensor channel at 8 inputs per batch on the fine steps | stop it, then resume at the step and iteration it reached (`-aff False -resume <step>:<iteration>` through the driver; [code/template](../../code/template/README.md)) with 4 inputs per batch for steps 6 to 8. The paper's run used 8 for steps 1 to 5, 4 for 6 and 7, and 4, then 3, for step 8; the batch size does not change the result |
 | One GPU sample shows 0 % during the construction | normal: MMORF alternates between CPU and GPU work on the fine steps | sample several times over a few seconds before deciding anything |
 | Step A5 runs out of GPU memory | it needs 22 GB | use a 48 GB card |
 | Step A7's comparison shows low correlations (a T2 r near 0.88) | the canonical frame of step A6 can land on a slightly different plane (up to 0.8 degrees on MF286 from a rerun's own NMT registration), and every image goes through the frame | compare after undoing the frame; the images themselves agree |

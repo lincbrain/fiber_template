@@ -129,7 +129,7 @@ def make_steps(W, paths):
                                                   w("tpl_costmask.json")],
           [w("canon2_tpl", tpl, "d2_b0_costmask_ones_v1.nii.gz")], [w("canon_tpl"), w("canon2_tpl")], "1 min"),
         S("step8-weights", s8_lbl, "linc", [*B, "step8-weights", "--canon2", w("canon2_tpl"), "--out", w("canon2_s8w")],
-          [w("canon2_s8w")], [w("canon2_tpl")], "5 min", "the author's step-8 rule (code/template/README.txt)"),
+          [w("canon2_s8w")], [w("canon2_tpl")], "5 min", "the author's step-8 rule (code/template/README.md)"),
         S("s8-box", s8_lbl, "linc", [*B, "s8-box", "--template", s6 / f"nln_template_{na - 1:02d}_{ni:02d}_scalar_mod_01_brain.nii.gz",
                                       s6 / f"nln_template_{na - 1:02d}_{ni:02d}_scalar_mod_02_brain.nii.gz", "--canon2", w("canon2"), "--out",
                                       w(f"box_{t8}.nii.gz")], [w(f"box_{t8}.nii.gz")], [s6, w("canon2")], "1 min",
@@ -173,4 +173,4 @@ def make_steps(W, paths):
 
 
 if __name__ == "__main__":
-    D.main("Blockface template build (code/template/README.txt)", make_steps, "build_blockface_template", doc=__doc__)
+    D.main("Blockface template build (code/template/README.md)", make_steps, "build_blockface_template", doc=__doc__)

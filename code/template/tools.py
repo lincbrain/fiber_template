@@ -1,7 +1,7 @@
 """The construction recipe (settings/mri_construction.yaml) and the external programs the MRI construction calls.
 
 External programs are found from the environment, never from a hard-coded path, and their versions are checked before use
-(the versions the paper's template was built with, README.txt "External tools"):
+(the versions the paper's template was built with, settings/env/README.md):
 
     FSLDIR      FSL 6.0.7.4             ($FSLDIR/etc/fslversion)
     MMORF       MMORF 1.0.1             (`mmorf --version`; set MMORF to the executable, default: `mmorf` on PATH)
@@ -52,7 +52,7 @@ def _which(name, env_dir=None):
 def fsldir():
     d = os.environ.get("FSLDIR")
     if not d:
-        raise RuntimeError("set FSLDIR (FSL 6.0.7.4, see README.txt)")
+        raise RuntimeError("set FSLDIR (FSL 6.0.7.4, see settings/env/README.md)")
     want = recipe()["tools"]["fsl"]
     vf = Path(d) / "etc" / "fslversion"
     got = vf.read_text().split(":")[0].strip() if vf.exists() else "unknown"

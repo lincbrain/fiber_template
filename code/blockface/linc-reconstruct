@@ -3,7 +3,7 @@
 "Blockface reconstruction"; Fig. 3).
 
 You need
-  the photographs as taken, one JPEG per section, in $LINC_RAW/<raw> (README.txt); the brain's settings/brains/<ID>.yaml (a new
+  the photographs as taken, one JPEG per section, in $LINC_RAW/<raw> (docs/how-to/new_brain.md); the brain's settings/brains/<ID>.yaml (a new
   brain: copy settings/brains/TEMPLATE.yaml): the photographs' folder, pattern and numbering, pixel size and section step, and the
   hand-made lists of camera jumps and missing sections; optional hand corrections (curated/<ID>_mask_edited.nii.gz,
   curated/<ID>_holes_edited.nii.gz, corrected photograph masks in 01_brainmask/01_final); the network weights in $LINC_MODELS/segment;

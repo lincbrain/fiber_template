@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The blockface segmentation networks (Supplementary S1.1): their training data, the human-in-the-loop rounds of the two 3D
 networks, and their performance. The paper describes these networks in Supplementary S1.1; the masks of record they made are
-data (settings/brains/<ID>.yaml masks_of_record), and the release segments with the final models (settings/models/README.txt).
+data (settings/brains/<ID>.yaml masks_of_record), and the release segments with the final models (settings/models/README.md).
 
     python code/figures/paper_numbers/s1_segmentation_r057.py
 

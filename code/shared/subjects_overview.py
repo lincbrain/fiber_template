@@ -3,13 +3,13 @@
 
     python code/shared/subjects_overview.py [--data $LINC_DATA] [--out file.csv]
 
-You need PyYAML; with --data, a folder of brains, sub-<ID>/ (README.txt).
+You need PyYAML; with --data, a folder of brains, sub-<ID>/ (docs/tutorials/00_start_here.md).
 What it does: reads every settings/brains/<ID>.yaml except TEMPLATE.yaml. It is a view: the yaml files stay the only input, nothing
 in the pipeline reads this table, so a change goes in the yaml file.
 You get CSV, on stdout or in --out. An optional setting a file leaves out shows its default. `jumps` and `missing` count the entries
 of those lists (the caudal cutoff is one of the `missing` entries, and is also given by itself).
 
-The in_folder_ columns report the brain's own folder under --data and nothing else (README.txt gives the locations):
+The in_folder_ columns report the brain's own folder under --data and nothing else (docs/tutorials/00_start_here.md gives the locations):
   in_folder_edited_mask, _edited_tubes, _regions, _section_map   yes or no
   in_folder_mri_masks     those present of dwi, t2, micro, final (mri/masks/<name>_brain_mask.nii.gz) and of_record (the b0 mask the
                           yaml file names under registration_to_own_mri), joined by +, or none

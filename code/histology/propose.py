@@ -3,7 +3,7 @@ was cut at.
 
 You need
   the brain's reconstruction store (<ID>_blockface.ome.zarr) and brain mask (<ID>_mask.nii.gz); its histology sections (JPEG 2000
-  files, or an OME-Zarr stack with its section map); the regions volume on the blockface (code/histology/README.txt); the raw index of
+  files, or an OME-Zarr stack with its section map); the regions volume on the blockface (code/histology/README.md); the raw index of
   the store's first photograph; the number of photographs per histology section (settings/histology.yaml propose.section_um / the
   section step the volume was built at, or --photos-per-section).
 What it does

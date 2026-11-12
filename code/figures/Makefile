@@ -6,11 +6,11 @@
 #   make check          # compare the regenerated records with the paper's (reference/), exceptions as documented
 #   make test           # the installation check: tests + toy smokes of the command lines, no data (selftest.sh, minutes)
 #   make figures        # the paper's figures, into ../../outputs/figures/ (one target per figure, named by its content;
-#                       # README.txt maps the paper's figure numbers to them)
+#                       # README.md maps the paper's figure numbers to them)
 #   make all            # numbers + figures + check (two figure targets also write a numbers record)
 #
-# Set the roots first (see README.txt): LINC_PRODUCTS, LINC_DATA, LINC_TEMPLATE, LINC_RAW, LINC_MODELS, LINC_NUMBERS.
-# Each target runs in the environment it ran in for the paper (settings/env/README.txt): PY = settings/env/linc.yml; PY_MRI = the same python (an alias kept for the MRI records) (the heavy MRI
+# Set the roots first (see README.md): LINC_PRODUCTS, LINC_DATA, LINC_TEMPLATE, LINC_RAW, LINC_MODELS, LINC_NUMBERS.
+# Each target runs in the environment it ran in for the paper (settings/env/README.md): PY = settings/env/linc.yml; PY_MRI = the same python (an alias kept for the MRI records) (the heavy MRI
 # records and the figures FIGURES_MRI lists); PY_DEEP = settings/env/deep.yml (the d3_* records, Supplementary S1 and the LGN/STN
 # budget, and their three figures); PY_TIRL = settings/env/tirl.yml (histology, s_tracer_fidelity;
 # histo_pixel_sizes_r057).
@@ -64,7 +64,7 @@ FIGURES_LINC := reconstruction bf_template alignment_comparison s_networks
 FIGURES_COMPLETION := s_synthesis_depth s_synthesis_gallery
 FIGURES := $(FIGURES_MRI) $(FIGURES_LINC) $(FIGURES_COMPLETION) lgnstn s_bf2mri_steps histology s_tracer_fidelity tracer_sections3d
 
-.PHONY: all numbers numbers-gpu numbers-figures check test figures print-figures print-figure-records $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_GPU) $(NUMBERS_ATLAS) $(FIGURES)
+.PHONY: all numbers numbers-gpu numbers-figures check test figures print-figures print-figure-records tracers-animation $(NUMBERS_LINC) $(NUMBERS_MRI) $(NUMBERS_TIRL) $(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_GPU) $(NUMBERS_ATLAS) $(FIGURES)
 
 all: numbers figures check
 
@@ -176,6 +176,12 @@ s_tracer_fidelity:
 
 # Fig. 10, the tracer figure: each charted section's labels in 3D (a) and the internal capsule slabs (b), with its rotation video;
 # renders headless in settings/env/viz3d.yml (record fig_tracer_sections3d_v6_h9_c, the cases of settings/figures.yaml tracer_sections3d): skipped with a message when PY_VIZ3D is unset
+# the README's animation, docs/media/tracers_rotation.gif: Fig. 9a's two views (MM1, MM2, MM3 and MF8) turning together, +-45 degrees
+# about the vertical axis (72 frames, 12 fps, 900 px); settings/env/viz3d.yml, about 1.5 min and 1.6 GB of RAM
+tracers-animation:
+	@if [ -z "$(PY_VIZ3D)" ]; then echo "SKIPPED tracers-animation: set PY_VIZ3D (settings/env/viz3d.yml; install.sh --with-figures-3d)"; \
+	else $(PY_VIZ3D) tracer_sections3d.py --animation ../../docs/media/tracers_rotation.gif; fi
+
 tracer_sections3d:
 	@if [ -z "$(PY_VIZ3D)" ]; then echo "SKIPPED tracer_sections3d: set PY_VIZ3D (settings/env/viz3d.yml; install.sh --with-figures-3d)"; \
 	else $(PY_VIZ3D) $@.py --video --out $(OUT)/figures/$@.png; fi
@@ -202,3 +208,11 @@ lgnstn:
 # Supplementary: the blockface registered to its own MRI, step by step (MM2; settings/figures.yaml bf2mri_steps): a PDF and a PNG beside it
 s_bf2mri_steps:
 	$(PY) $@.py --out $(OUT)/figures/$@.pdf
+
+# the README's animation, docs/media/template_coronal.gif: the template's five channels (T2-weighted, tensor, soma and neurite
+# fractions, blockface), coronal planes 0.5 mm apart from front to back (126 frames, 10 fps, 960 px); reads $LINC_DATA_TREE/template/outputs,
+# about 3.5 min and 1.1 GB of RAM on a CPU; TEMPLATE_ANIMATION_ARGS=--webp also writes the animated WebP beside it
+.PHONY: template-animation
+template-animation:
+	@if [ -z "$(LINC_DATA_TREE)" ]; then echo "SKIPPED template-animation: set LINC_DATA_TREE (settings/roots.sh)"; \
+	else $(PY) readme_animation.py --out ../../docs/media/template_coronal.gif $(TEMPLATE_ANIMATION_ARGS); fi

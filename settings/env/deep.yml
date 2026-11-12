@@ -5,7 +5,7 @@
 # pillow 13.0.0, matplotlib 3.10.6; on NVIDIA RTX 6000 Ada GPUs.
 # What ran here:
 # - linc-segment: the four segmentation models (MRI brain mask; blockface photograph mask, 3D mask, marker tubes) were trained,
-#   cross-validated and checked here (settings/models/README.txt); linc-reconstruct and linc-register call it through
+#   cross-validated and checked here (settings/models/README.md); linc-reconstruct and linc-register call it through
 #   LINC_SEGMENT_PYTHON = this environment's python.
 # - linc-complete: the four completion networks were trained, the completed volumes and the withheld-slab evaluation made, and the
 #   d3_* records written here.

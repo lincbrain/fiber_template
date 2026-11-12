@@ -2,7 +2,7 @@
 hand-made mask.
 
 You need
-  the b0 image, the network's weights ($LINC_MODELS/segment/mri_brainmask; settings/models/README.txt) and $LINC_SEGMENT_PYTHON
+  the b0 image, the network's weights ($LINC_MODELS/segment/mri_brainmask; settings/models/README.md) and $LINC_SEGMENT_PYTHON
   (settings/env/deep.yml's Python, which has torch).
 What it does
   segment_b0(b0_native, out_mask) runs `linc-segment predict --model mri_brainmask --out <out_mask> <b0_native> --postprocess none`
@@ -39,10 +39,10 @@ def model_dir(model=TASK):
         return Path(model)
     root = os.environ.get("LINC_MODELS")
     if not root:
-        raise RuntimeError("set LINC_MODELS (the folder holding segment/mri_brainmask/; settings/models/README.txt)")
+        raise RuntimeError("set LINC_MODELS (the folder holding segment/mri_brainmask/; settings/models/README.md)")
     d = Path(root) / "segment" / model
     if not (d / "model.pt").exists() or not (d / "spec.json").exists():
-        raise RuntimeError(f"{d}: no model.pt / spec.json (the MRI brain-mask weights; settings/models/README.txt)")
+        raise RuntimeError(f"{d}: no model.pt / spec.json (the MRI brain-mask weights; settings/models/README.md)")
     return d
 
 

@@ -5,7 +5,7 @@
 #   code/mri/linc-mri, code/labels/linc-labels carry and code/labels/linc-labels interpolate (SimpleITK 2.5.3 demons), code/figures/evaluation;
 # - the MRI channels' construction: MMORF 1.0.1 from the FSL conda channel (fsl-mmorf-cpu, fsl-mmorf-cuda), code/template;
 # - the numbers records of code/figures/paper_numbers and the figures of code/figures (matplotlib 3.11.1), except the GPU ones of
-#   settings/env/deep.yml, settings/env/anatomix.yml and settings/env/tirl.yml (README.txt lists each record's and figure's environment).
+#   settings/env/deep.yml, settings/env/anatomix.yml and settings/env/tirl.yml (settings/env/README.md).
 # The conda block is the MRI environment of record (python 3.11.16, numpy 2.4.6, scipy 1.17.1, nibabel 5.4.2) exported with
 # `conda env export --no-builds`; the pip block holds what the runs of record imported from the account's user site-packages (zarr 3.1.5
 # and its dependencies, matplotlib 3.11.1, pillow 12.3.0) plus the former linc.yml's extras (scikit-image, opencv, imageio, tifffile,

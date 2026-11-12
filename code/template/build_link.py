@@ -74,7 +74,7 @@ def make_steps(W, paths):
     for a in ATLASES:
         steps += [
             S(f"atlas-affine-{a}", "3. mappings to published templates", "linc", [*A, "affine", a, "--out", AT], [AT / a / "prep.json"], [],
-              "5 min", "ANTs affines in both directions, averaged in the log domain (ANTs 2.5.4; not bit-reproducible: code/template/README.txt)"),
+              "5 min", "ANTs affines in both directions, averaged in the log domain (ANTs 2.5.4; not bit-reproducible: code/template/README.md)"),
             S(f"atlas-solve-{a}", "3. mappings to published templates", "anatomix", [*A, "solve", a, "--out", AT],
               [AT / a / "run" / "metrics.json"], [AT / a / "prep.json"], "10 min", "the symmetric engine", gpu=True),
             S(f"atlas-score-{a}", "3. mappings to published templates", "linc", [*A, "score", a, "--out", AT], [AT / a / "score.json"],
@@ -91,4 +91,4 @@ def make_steps(W, paths):
 
 
 if __name__ == "__main__":
-    D.main("Link and template mappings build (code/template/README.txt)", make_steps, "build_link", doc=__doc__)
+    D.main("Link and template mappings build (code/template/README.md)", make_steps, "build_link", doc=__doc__)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare a step of the MRI template's build with the paper's files, as README.txt and code/template/README.txt state them.
+"""Compare a step of the MRI template's build with the paper's files, as docs/tutorials/01_mri.md and code/template/README.md state them.
 
     $PY tests/compare/compare_mri_build.py staged  <your sub-<ID>/mri> <the paper's sub-<ID>> [--min 17]
     $PY tests/compare/compare_mri_build.py nmt     <your sub-<ID>/mri> <the paper's sub-<ID>> [--min-agree 93]

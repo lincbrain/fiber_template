@@ -22,7 +22,7 @@ mid_Amask, mid_Bmask (.nii.gz), metrics.json. Pull maps in world coordinates (se
 
     python -m template.link.symreg A Amask B Bmask S_ras_B_to_A.txt OUT [--res 0.25] [--device cuda:0]
 
-Needs a GPU (or a very long CPU run) and the registration environment (settings/env/README.txt: torch, the FireANTs fork, anatomix). halfway()
+Needs a GPU (or a very long CPU run) and the registration environment (settings/env/README.md: torch, the FireANTs fork, anatomix). halfway()
 and maps() are numpy-only and run anywhere.
 
 Differences from the analysis script: the run-time switches LINC_CLIP_NEG (pre-2-Oct clipping) and LINC_ALLOW_UNMASKED are gone (the

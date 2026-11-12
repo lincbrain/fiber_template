@@ -15,20 +15,24 @@ take about 10 minutes on a CPU.
 
 One figure at a time: `$PY code/figures/<script>.py --out <file.png>`
 
-```text
-Figure  Script                     Figure  Script
-1       template.py                7       histology.py
-2       pipeline.py                8       lgnstn.py
-3       reconstruction.py          9       alignment_comparison.py
-4       variability.py             10      tracer_sections3d.py
-5       bf_template.py             S1      s_bf2mri_steps.py
-6       link.py                    S2      s_synthesis_gallery.py
-                                   S3      s_tracer_fidelity.py
-                                   S4      s_networks.py
-```
+| Figure | Script |
+|---|---|
+| 1 | `template.py` |
+| 2 | `pipeline.py` |
+| 3 | `reconstruction.py` |
+| 4 | `variability.py` |
+| 5 | `bf_template.py` |
+| 6 | `link.py` |
+| 7 | `histology.py` |
+| 8 | `lgnstn.py` |
+| 9 | `tracer_sections3d.py` |
+| S1 | `s_bf2mri_steps.py` |
+| S2 | `s_synthesis_gallery.py` |
+| S3 | `s_tracer_fidelity.py` |
+| S4 | `s_networks.py` |
+| not in the paper | `alignment_comparison.py` (it still writes a numbers record), `s_synthesis_depth.py` (its numbers are in the Supplement's text) |
 
-`s_synthesis_depth.py` draws a figure the paper no longer shows (its numbers are in the Supplement's
-text). `figstyle.py` holds the shared figure style. Fonts: Liberation Sans.
+`figstyle.py` holds the shared figure style. Fonts: Liberation Sans.
 
 |  |  |
 |---|---|

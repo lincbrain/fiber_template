@@ -1,6 +1,6 @@
 # The blockface template's construction: which brains, on which grids, with which MMORF schedule. The build reads its brains, grids
 # and parameters from this file (code/template/build_blockface_template.py, code/template/blockface_build.py and
-# blockface_mmorf.py); the values below are those of the template of record (code/template/README.txt).
+# blockface_mmorf.py); the values below are those of the template of record (code/template/README.md).
 
 members:
   with_mri: [MF275, MF278, MF282, MR243, MR249, MR250, MR251, MR252, MR253, MR254, MR256, MR257, MR261]   # b0 channel: their own b0

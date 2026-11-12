@@ -17,7 +17,7 @@ def executable(name="antsRegistration"):
             return str(p)
     p = shutil.which(name)
     if not p:
-        raise RuntimeError(f"{name} not found: put ANTs on PATH or set ANTSPATH (see settings/env/README.txt)")
+        raise RuntimeError(f"{name} not found: put ANTs on PATH or set ANTSPATH (see settings/env/README.md)")
     return p
 
 

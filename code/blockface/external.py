@@ -2,7 +2,7 @@
 
 You need
   linc-segment          `code/shared/linc-segment predict` (code/shared/segment), run with settings/env/deep.yml's Python (it has torch) named by
-                        LINC_SEGMENT_PYTHON; weights under $LINC_MODELS/segment/<model> (settings/models/README.txt): the three masks
+                        LINC_SEGMENT_PYTHON; weights under $LINC_MODELS/segment/<model> (settings/models/README.md): the three masks
   TIRL 3.6.3 (or 3.6.2) with tirlscripts-mgh-linc 1.0.1 (settings/env/tirl.yml): the camera-jump registrations; the reconstruction also
                         imports `tirl` to read them back (jumps.py)
   nifti-zarr 1.0.0rc6   zarr2nii, nii2zarr (settings/env/tirl.yml)

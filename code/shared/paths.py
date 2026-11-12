@@ -2,7 +2,7 @@
 
 Set once per shell (or pass the same values on the command line of each entry point):
 
-    LINC_DATA      per-brain data, one folder per brain: $LINC_DATA/sub-<ID>/...            (see README.txt)
+    LINC_DATA      per-brain data, one folder per brain: $LINC_DATA/sub-<ID>/...            (see README.md)
     LINC_TEMPLATE  the released template (channels, masks, transforms): $LINC_TEMPLATE/...
     LINC_NUMBERS   where code/figures/paper_numbers writes its JSON records (default: ./numbers)
     LINC_WORK      scratch for intermediate files (default: ./work)
@@ -20,7 +20,7 @@ def _env(name, default=None):
     if v:
         return Path(v).expanduser()
     if default is None:
-        raise RuntimeError(f"set {name} (see code/shared/paths.py and README.txt)")
+        raise RuntimeError(f"set {name} (see code/shared/paths.py and README.md)")
     return Path(default)
 
 

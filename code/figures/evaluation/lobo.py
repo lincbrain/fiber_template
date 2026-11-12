@@ -30,7 +30,7 @@ JAC_RANGE = (0.5, 2.0)                 # Jacobian determinants outside this rang
 def fsl(tool):
     d = os.environ.get("FSLDIR")
     if not d:
-        raise RuntimeError("set FSLDIR (FSL 6.0.7.4, see README.txt)")
+        raise RuntimeError("set FSLDIR (FSL 6.0.7.4, see settings/env/README.md)")
     return str(Path(d) / "bin" / tool)
 
 

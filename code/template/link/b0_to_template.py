@@ -21,7 +21,7 @@ Recipe (settings/link.yaml `b0_to_template`; every input brain-masked):
 
     python -m template.link.b0_to_template --subject <ID> --b0 <b0 native> --mask <mask native> --template-b0 B0 --template-mask M \
         [--registry DIR] [--out DIR] [--device cuda:0] [--overwrite]
-Inputs default to the data layout (README.txt): $LINC_DATA/sub-<ID>/mri/<ID>_mri_b0_native.nii.gz, <ID>_mri_mask_native.nii.gz
+Inputs default to the data layout (docs/tutorials/00_start_here.md): $LINC_DATA/sub-<ID>/mri/<ID>_mri_b0_native.nii.gz, <ID>_mri_mask_native.nii.gz
 (the brain's mask of record), <ID>_mri2template.mat, <ID>_mri.nii.gz; the bridge = settings/link.yaml inputs.bridge. The registry
 entry goes to $LINC_DATA/sub-<ID>/xfm/b0-native__to__mri-template (or <--registry>/b0-native__to__mri-template); the working files
 and products to --out (default $LINC_WORK/b0_to_template/<ID>).

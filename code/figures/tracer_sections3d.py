@@ -443,6 +443,8 @@ def main(argv=None):
     ap.add_argument("--views", nargs="+", help="(a)'s case groups, one view each, as comma lists (default: settings tracer_sections3d.views, "
                     "else one view of every case)")
     ap.add_argument("--arrange", choices=["side", "stack"], help="several views: side by side (default) or stacked")
+    ap.add_argument("--animation", help="write only (a)'s views turning together, as this GIF")
+    ap.add_argument("--animation-extras", help="with --animation: also an animated WebP and a still, in this folder")
     ap.add_argument("--record", help="the numbers record's name (default: settings/figures.yaml tracer_sections3d.record with its cases, "
                     "else fig_tracer_sections3d_v6_h9 for MM1, MF8, MM2 and <that>_<case labels> for another set)")
     a = ap.parse_args(argv); t0 = time.time(); a.layered = not a.by_depth
@@ -469,6 +471,9 @@ def main(argv=None):
     sd["sag"] = textured_plane(sd["gray"], A, 0, X_SAG, box, brain)
     sd["cor"] = textured_plane(sd["gray"], A, 1, Y_COR, (X_SAG, box[1], box[2], box[3], box[4], box[5]), brain)
     sd["surf"] = brain_surface(brain, A)
+    if a.animation:
+        print(json.dumps(animation(sd, views, a.animation, extras=a.animation_extras)), flush=True)
+        return
     sil = shot(sd, "sil").max(-1) > 127
     alone = {S: shot(sd, "id", only=[S]) for S in CASES}                            # each case alone, with the planes
     inj1 = {S: id_mask(shot(sd, "inj", only=[S]), S) for S in CASES}
@@ -574,6 +579,84 @@ def video(sd, f, size=(1600, 1072), n=360, layered=False):
         p.close()
     return dict(frames=n, fps=30, size_px=list(size), drawing="layered" if layered else "by depth",
                 turn="one full turn about the vertical axis through the view's focal point")
+
+
+def animation(sd, views, f, n=72, fps=12, width=900, swing=45.0, render=(1100, 733), point_gain=1.6, colors=128, extras=None):
+    """(a)'s views side by side, turning together (the README's animation): the still's camera swung +-swing degrees about the vertical
+    axis through the focal point (a smooth back-and-forth, n frames at fps), each view's cases layered over the planes as in the still,
+    a plane the camera is behind at 0.3 opacity, the brain's outline per frame, no tags; one legend line under the views. Written as a
+    GIF (one shared palette, no dithering, no comment or other metadata); with extras (a folder), also an animated WebP and a still
+    there; the views cropped to the outline's extent over the turn."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from PIL import Image
+    ps = POINT * render[1] / WIN[1] * point_gain
+    cases = [S for g in views for S in g]
+    pc, acts = {}, {}
+    for k in ["planes"] + cases:
+        pc[k] = plotter(render, 8)
+        acts[k] = build(pc[k], sd, "color", render, ps, only=[] if k == "planes" else [k])
+    pz = plotter(render, 1); build(pz, sd, "sil", render, ps)
+    foc = np.asarray(VIEW_FOC); a0, e0 = np.radians(VIEW_AZ_EL); R = _R
+    grab = lambda p: np.asarray(p.screenshot(None, return_img=True))[..., :3].copy()   # noqa: E731
+    frames, sils = [], []
+    for t in range(n):
+        az = a0 + np.radians(swing) * np.sin(2 * np.pi * t / n)
+        pos = foc + R * np.array([np.cos(e0) * np.cos(az), np.cos(e0) * np.sin(az), np.sin(e0)])
+        for k in ["planes"] + cases:
+            acts[k]["sag"].GetProperty().SetOpacity(1.0 if pos[0] >= X_SAG else 0.3)
+            acts[k]["cor"].GetProperty().SetOpacity(1.0 if pos[1] >= Y_COR else 0.3)
+        for p in list(pc.values()) + [pz]:
+            set_camera(p, render, pos=tuple(pos)); p.render()
+        planes = grab(pc["planes"]); imgs = {S: grab(pc[S]) for S in cases}
+        m = grab(pz).max(-1) > 127; edge = m & ~ndi.binary_erosion(m, iterations=2)
+        row = []
+        for g in views:
+            order = [S for S in LAYER_ORDER if S in g]
+            img, _ = layer({S: imgs[S] for S in g}, planes, order) if len(order) > 1 else (imgs[order[0]], None)
+            img = img.copy(); img[edge] = (181, 181, 181); row.append(img)
+        frames.append(row); sils.append(m)
+    for p in list(pc.values()) + [pz]:
+        p.close()
+    u = np.any(sils, 0); rr, cc = np.nonzero(u); pad = 6
+    r0, r1, c0, c1 = max(rr.min() - pad, 0), rr.max() + pad + 1, max(cc.min() - pad, 0), cc.max() + pad + 1
+    gap = 16; vw = (width - gap * (len(views) - 1)) // len(views); vh = round(vw * (r1 - r0) / (c1 - c0))
+    # the legend line, sentence case, black, rendered once at the animation's width, centered under the views (the author, 12 Nov 2026)
+    keys = [f"{FS.label(S)}, {AREA[S]}" if S in AREA else FS.label(S) for S in cases]
+    fig = plt.figure(figsize=(width / 100, 0.34), dpi=100, facecolor="black"); x = 0.0; texts = []
+    r_ = fig.canvas.get_renderer()
+    for S, t_ in zip(cases, keys):
+        texts.append(fig.text(x, 0.5, "\u25CF", color=FS.TRACER[S], fontsize=11, va="center"))
+        tt = fig.text(x + 0.018, 0.5, t_, color=FS.FG, fontsize=10, va="center"); texts.append(tt); x = tt.get_window_extent(r_).x1 / width + 0.03
+    shift = (1.0 - (x - 0.03)) / 2                                                 # the line's ink from 0 to x - 0.03: center it
+    for t_ in texts:
+        t_.set_x(t_.get_position()[0] + shift)
+    fig.canvas.draw(); leg = np.asarray(fig.canvas.buffer_rgba())[..., :3].copy(); plt.close(fig)
+    H = vh + leg.shape[0]
+    out = []
+    for row in frames:
+        c = np.zeros((H, width, 3), np.uint8)
+        for i, img in enumerate(row):
+            v = Image.fromarray(img[r0:r1, c0:c1]).resize((vw, vh), Image.LANCZOS)
+            c[:vh, i * (vw + gap):i * (vw + gap) + vw] = np.asarray(v)
+        c[vh:, :leg.shape[1]] = leg[:, :width]
+        out.append(Image.fromarray(c))
+    from matplotlib.colors import to_rgb
+    seed = np.zeros((48, width, 3), np.uint8)                                      # the palette keeps neutral grays and each case's color
+    seed[:24] = np.linspace(0, 255, width)[None, :, None].astype(np.uint8)
+    for i, S in enumerate(cases + [None]):
+        seed[24:, i * width // (len(cases) + 1):(i + 1) * width // (len(cases) + 1)] = (np.array(to_rgb(FS.TRACER[S] if S else FS.FG)) * 255).astype(np.uint8)
+    pal = Image.fromarray(np.concatenate([np.asarray(o) for o in out[::max(1, n // 8)]] + [seed] * 4, 0)).quantize(colors=colors, method=Image.Quantize.MEDIANCUT)
+    gif = [o.quantize(palette=pal, dither=Image.Dither.NONE) for o in out]
+    f = Path(f); f.parent.mkdir(parents=True, exist_ok=True)
+    gif[0].save(f, save_all=True, append_images=gif[1:], duration=round(1000 / fps), loop=0, optimize=True, disposal=1)
+    res = dict(frames=n, fps=fps, size_px=[width, H], swing_deg=swing, colors=colors, views=[[FS.label(S) for S in g] for g in views], gif_bytes=f.stat().st_size)
+    if extras:
+        x_ = Path(extras); x_.mkdir(parents=True, exist_ok=True); webp = x_ / (f.stem + ".webp")
+        out[0].save(webp, save_all=True, append_images=out[1:], duration=round(1000 / fps), loop=0, quality=80, method=6)
+        out[0].save(x_ / (f.stem + "_still.png")); res["webp_bytes"] = webp.stat().st_size
+    return res
 
 
 if __name__ == "__main__":

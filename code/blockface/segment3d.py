@@ -3,7 +3,7 @@
 You need
   for the mask, the volume with its background kept (nii/02_blockface_bg_L4: prepare.py); for the tubes, the masked color volume
   (steps/<S>_03_color.ome.zarr: reconstruct.py); the networks (settings/blockface.yaml `segmentation`: bf_mask3d and bf_holes,
-  settings/models/README.txt) run in between by external.py.
+  settings/models/README.md) run in between by external.py.
 What it does
     prep_mask, post_mask     the uncropped L4 volume at 0.40 mm sections, RGB -> the network -> the largest 3D connected
                              component, holes filled

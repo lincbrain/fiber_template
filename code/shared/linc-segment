@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Segment brain masks and marker tubes with the project's four networks, and train those networks again (code/shared/segment;
-settings/models/README.txt describes the networks).
+settings/models/README.md describes the networks).
 
 You need
   the environment settings/env/deep.yml ($PY_DEEP) and a GPU for a whole volume; the trained weights in $LINC_MODELS/segment/<model>/, which come

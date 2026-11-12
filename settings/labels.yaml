@@ -1,6 +1,6 @@
 # Labels on histology: pushed onto the blockface, interpolated between sections, carried into the MRI template
 # (paper Methods, "Histology registration and label propagation"). Read by code/histology/{labels,interpolate,carry}.py and
-# code/labels/linc-labels. Paths are relative to $LINC_DATA/sub-<ID>/ (README.txt); "{S}" is the Specimen ID.
+# code/labels/linc-labels. Paths are relative to $LINC_DATA/sub-<ID>/ (docs/tutorials/00_start_here.md); "{S}" is the Specimen ID.
 
 # --- per-brain layout of the inputs and outputs ---
 layout:

@@ -2,7 +2,7 @@
 # $LINC_DATA/sub-<ID>/), fill in the REQUIRED fields and delete the optional ones you do not need (their defaults are given). The
 # paper's 21 brains are worked examples (e.g. MR243.yaml: 400 um sections; MR252.yaml: 50 um sections with missing sections).
 # Read by code/blockface/linc-reconstruct (code/blockface/subject.py), code/blockface/registration/linc-register and code/histology/linc-histology. Every input a brain needs, raw and
-# hand-made, is listed in README.txt.
+# hand-made, is listed in docs/how-to/new_brain.md.
 
 # ---------------------------------------------------------------------------------------------------- the photographs (photos)
 subject: NEWBRAIN          # REQUIRED. The identifier, exactly as in this file's name and in the data folder sub-<ID>.
@@ -18,7 +18,7 @@ reduce: mean               # optional (default mean). How the coarser in-plane p
 vx: 20.0                   # REQUIRED. Pixel size of the photographs, in micrometers (e.g. from a ruler or a known length in a photograph).
 vz: 50.0                   # REQUIRED. Section step, the distance between consecutive photographs, in micrometers.
 # The paper's brains also carry `reconstruction_spacing_um` (they were reconstructed at their nominal spacing and then given the
-# spacing calibrated against their own MRI; code/blockface/README.txt, "The spacing") and a pinned `curation_f` (sections per slice of
+# spacing calibrated against their own MRI; docs/tutorials/02_blockface.md, Step 6, "The spacing") and a pinned `curation_f` (sections per slice of
 # the 0.40 mm hand-edit grid). A new brain leaves both out: they default to vx, vz and to round(400 / vz) (at least 1). One brain
 # (MR263) also sets `shading: poly2+zref`, the illumination correction its record was made with; a new brain leaves it out (poly2).
 
@@ -51,4 +51,4 @@ native_end_crop_mm: 0.0    # optional (default 0). Drops the last round(mm / vz)
 # masks_of_record (which masks were corrected by hand), series_alignment (MF8 and MF9: their recorded alignment to an external series,
 # replayed by `photos`), and the records histo_vx, histo_vz, histo_divisor and mri, which the release code does not read.
 # Hand corrections of a new brain need no entry: save them as curated/<ID>_mask_edited.nii.gz or curated/<ID>_holes_edited.nii.gz
-# (code/blockface/README.txt, "Hand corrections").
+# (docs/tutorials/02_blockface.md, Step 2).

@@ -2,7 +2,7 @@
 # code/blockface/linc-reconstruct. Per-brain inputs (spacing, camera jumps, missing sections, caudal cutoff, masks of record) are in
 # settings/brains/<ID>.yaml. Values as used for the paper (the analysis project's code/config.py).
 
-# Steps 1, 4 and 6: the networks that segment the photographs, the brain and the marker tubes (settings/models/README.txt;
+# Steps 1, 4 and 6: the networks that segment the photographs, the brain and the marker tubes (settings/models/README.md;
 # code/shared/linc-segment, weights in $LINC_MODELS/segment/<model>/). linc-reconstruct runs them with --postprocess none and applies each
 # task's post-processing once (code/blockface/mask_rules.py: photos fill_photo_mask, mask largest_cc_fill, tubes tube_rule).
 segmentation:

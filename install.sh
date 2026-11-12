@@ -114,7 +114,7 @@ if want tirl; then
         [ -n "$d" ] || { say "tirl: no $s, _src_$s or $s-<version> under $TIRL_SRC"; fails=$((fails + 1)); continue; }
         c="$PREFIX/src/$s"                                          # build from a copy: --tirl-src stays read-only (a build writes
         [ -d "$c" ] || run cp -a "$d" "$c" || { fails=$((fails + 1)); continue; }   # build/, *.egg-info and generated C into its tree)
-        if [ "$s" = tirl ]; then                                     # our one change to TIRL (code/histology/patches/README.txt)
+        if [ "$s" = tirl ]; then                                     # our one change to TIRL (code/histology/patches/README.md)
           E="$REPO/code/histology/patches/tirl-3.6.3_optnl_clip.edits.json"
           if [ "$(md5sum < "$c/tirl/optimisation/optnl.py" | cut -c1-32)" = "$("$P" -c "import json,sys; print(json.load(open(sys.argv[1]))['result_md5'])" "$E")" ]; then
             say "  tirl: start-point clip already applied"
@@ -139,7 +139,7 @@ if [ $VIZ3D = 1 ] && want figures-3d; then
     else say "figures-3d: vtk and pyvista already installed: skipped"; fi
   else fails=$((fails + 1)); fi
 fi
-# where the pipeline looks for each environment (settings/env/README.txt)
+# where the pipeline looks for each environment (settings/env/README.md)
 E="$PREFIX/linc_envs.sh"
 {
   echo "# written by install.sh $(date +%Y-%m-%d): the environments of $REPO"

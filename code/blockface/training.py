@@ -1,5 +1,5 @@
 """The training cases of the three blockface networks, staged from the data tree, so the networks can be trained again from the
-reconstructions (settings/models/README.txt; the task files of record: settings/segment/bf_mask2d.json, bf_mask3d.json, bf_holes.json).
+reconstructions (settings/models/README.md; the task files of record: settings/segment/bf_mask2d.json, bf_mask3d.json, bf_holes.json).
 
 You need
   a task file (settings/segment/<task>.json: its brains, folds and rules) and, for each of its brains, the data tree

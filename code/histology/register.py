@@ -354,7 +354,7 @@ def _tirl_one(piece, moving_dir, fixed_dir, out_dir, exe, script, threads, cfg):
 
 
 def tirl_clip_applied(executable=None, cfg=None):
-    """True / False: the TIRL that runs carries our start-point clip (code/histology/patches/README.txt); None if not decidable."""
+    """True / False: the TIRL that runs carries our start-point clip (code/histology/patches/README.md); None if not decidable."""
     import hashlib
     cfg = cfg or M.config()
     spec = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "patches", "tirl-3.6.3_optnl_clip.edits.json")))
@@ -388,7 +388,7 @@ def run_tirl(moving_dir, fixed_dir, out_dir, jobs=1, threads=None, executable=No
         todo.append(piece)
     clip = tirl_clip_applied(exe, cfg)
     log(f"TIRL {ver} ({exe} {script}): {len(todo)} pieces, {jobs} at a time, {threads} threads each; start-point clip "
-        f"{'applied' if clip else 'NOT applied (code/histology/patches/README.txt)' if clip is False else 'unknown (optnl.py not the 3.6.3 file)'}")
+        f"{'applied' if clip else 'NOT applied (code/histology/patches/README.md)' if clip is False else 'unknown (optnl.py not the 3.6.3 file)'}")
     res = {}
     with ThreadPoolExecutor(max(1, jobs)) as ex:
         futs = [ex.submit(_tirl_one, p, str(moving_dir), str(fixed_dir), str(out_dir), exe, script, threads, cfg) for p in todo]

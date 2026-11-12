@@ -119,7 +119,7 @@ It also takes long:
 | The blockface template's first stage | about 8.5 hours on a free card |
 | The blockface template's last step, at 0.25 mm | about 17 hours on one card (estimated), plus about 2.5 hours of CPU steps |
 
-The code can do this (01 and 02 show the drivers), but it is a decision, not a routine step.
+The code can do this (01 and 02 show the drivers; the members are listed in `settings/mri_construction.yaml` and `settings/blockface_template.yaml`), but it is a decision, not a routine step.
 
 ## Spaces and transforms
 
@@ -192,7 +192,17 @@ $PY run.py --status                                       # one line per step: p
 
 `--run` also runs the steps that a step needs, when they have not passed yet; `--plan` lists them.
 
-`--only` takes a step (such as `histology-MR243`), a group (`mri-template`, `blockface`, `registration`, `synthesis`, `blockface-template`, `link`, `histology`, `labels`), or a brain.
+To rerun everything (the plan lists the GPUs it needs: 48 GB for the templates):
+
+```bash
+mkdir -p outputs
+nohup $PY run.py --run > outputs/build_everything.log 2>&1 &
+$PY run.py --status                                       # one line per step
+```
+
+Optional steps (building the MRI template, training the networks) run only when you name them with `--only`.
+
+`--only` takes a step (such as `histology-MR243`), a group (`setup`, `mri-template`, `blockface`, `registration`, `synthesis`, `blockface-template`, `link`, `histology`, `labels`, `paper`, `training`), or a brain.
 Each step's log is in `outputs/build_everything/steps/<step>/`.
 
 **On a new brain, one command at a time.**
@@ -200,7 +210,7 @@ Each tutorial gives the commands, which are the same programs `run.py` runs.
 Every command prints what it needs, what it does and what it writes with `--help`.
 `run.py` does not run a new brain: its plan covers only the paper's brains.
 
-The paper's numbers and figures have their own commands (`make -C code/figures numbers`, `figures` and `check`); `code/figures/README.txt` explains them.
+The paper's numbers and figures have their own commands (`make -C code/figures numbers`, `figures` and `check`); [code/figures](../../code/figures/README.md) explains them.
 
 ## Where everything lands
 
@@ -214,7 +224,7 @@ The paper's numbers and figures have their own commands (`make -C code/figures n
 | A `run.py` run: each step's command, log and check | `outputs/build_everything/` in the code folder |
 
 Each tutorial ends with its own table.
-To keep a result of a new brain, copy it into the data folder under `brains/sub-<ID>/`, following its rules: everything that came to you in `inputs/`, the finished files in `outputs/`, a `README.txt` in each folder, the inputs' checksums in `checksums.md5`, and the brain in `brains.tsv`.
+To keep a new brain's results in the data folder, follow [Bring a new brain into the template](../how-to/new_brain.md#5-keep-the-results).
 
 ## What the package cannot do
 

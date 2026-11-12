@@ -273,13 +273,7 @@ A wrong spacing shows up in the registration to the brain's own b0: its linear s
 
 **How the photographs reach the code.**
 The code reads the photographs from `$LINC_RAW/<raw>`.
-Copy the photographs into the data folder (`brains/sub-<ID>/inputs/photographs/`), then make that folder visible under `$LINC_RAW`.
-For the paper's brains, `settings/files.tsv` and `settings/roots.sh` do this.
-For a new brain, one link does the same job:
-
-```bash
-ln -s $LINC_DATA_TREE/brains/sub-<ID>/inputs/photographs $LINC_RAW/<ID>    # then raw: <ID>
-```
+For the paper's brains, `settings/files.tsv` and `settings/roots.sh` make them visible there; for a new brain, one link does: see [Bring a new brain into the template](../how-to/new_brain.md#2-make-them-visible-to-the-code).
 
 What has been tested, and what has not:
 - Tested: the reconstruction of the paper's brains from their photographs, through the folders that `settings/roots.sh` prepares (`outputs/local_rebuild`); MR252 and MF191 came out identical to the paper's volumes.

@@ -14,18 +14,13 @@
 
 ## Spaces and transforms
 
-- bf-native                         a brain's blockface volume
-- b0-native, t2-native, micro-native  a brain's MRI as acquired
-- mri-template                      the MRI template, 0.25 mm
-- bf-template                       the blockface template in its own space
-- histo-piece:`<piece>`               one part of a histology section
-- atlas:`<name>`                      a published template (NMT_v2.0_sym, INIA19, CIVM-R)
+The spaces and their names: [00, Spaces and transforms](../../docs/tutorials/00_start_here.md#spaces-and-transforms).
 
 A transform `<from>__to__<to>` moves images from the first space to the second. Its folder holds the
 transform files and `meta.json`. World coordinates are RAS, in millimeters. A chain is applied with one
 interpolation. An inverted link is solved at every voxel of the target grid, so use 0.3 mm or coarser.
 
-```bash
+```text
 $PY -m shared.xfm chain --from bf-native --to mri-template --subject <ID>   lists the links
 $PY -m shared.xfm apply --from <a> --to <b> [--subject <ID>] --ref <grid> [--nearest] <in> <out>
 ```

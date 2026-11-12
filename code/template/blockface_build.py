@@ -1,4 +1,4 @@
-"""The blockface template's construction, apart from MMORF itself (code/template/README.txt; Methods, "Blockface template"):
+"""The blockface template's construction, apart from MMORF itself (code/template/README.md; Methods, "Blockface template"):
 the members, their frames, the MRI template's member, the weights of the eighth step, the averages computed by the driver's own
 code, and the two run folders.
 

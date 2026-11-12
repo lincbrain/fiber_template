@@ -22,7 +22,7 @@ inputs:
   s2_entry: data/sub-{S}/xfm_d2s2_prod_s125/bf-native__to__mri-template   # brains without MRI: direct placement on the MRI template
   s2_linear: data/sub-{S}/mri/s2lin_prod/{S}_s2lin.json                   # ... and its rigid blockface -> run-113 placement (T_world_bf_to_run113)
   member_src_grid: bftemplate/d2/s4/canon/{S}/t1_grey{flip}.nii.gz         # fallback when a member row carries no src_grid
-  atlas_reference: data/_lcn_src/templates/reference                       # published templates (NOT redistributed; see README.txt)
+  atlas_reference: data/_lcn_src/templates/reference                       # published templates (NOT redistributed; see README.md)
   atlas_v1_xfm: template/mri_v1_2026-09-26/xfm                             # INIA19 skull-stripped T1 + brain mask from its labels
   civmr_direct_link: bftemplate/cv/link_external/anatomix_greedy/CIVMR     # the one-way direct b0 registration to CIVM-R (comparison only)
   civmr_rigid: template/external_b0_prep/CIVMR/provenance.json            # applied_rigid_world: native CIVM-R -> its placed frame

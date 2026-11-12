@@ -33,7 +33,7 @@ md5 = lambda p: hashlib.md5(open(p, "rb").read()).hexdigest()  # noqa: E731
 _MAP = Path(__file__).resolve().parents[3] / "settings" / "models" / "completion_checksum_map.tsv"
 OF_RECORD = {r["md5_public"]: r["md5_of_record"] for r in csv.DictReader((x for x in open(_MAP) if not x.startswith("#")), delimiter="\t")}
 
-# the GPU model of the card both released networks were trained on (settings/models/README.txt); the training logs record the machine
+# the GPU model of the card both released networks were trained on (settings/models/README.md); the training logs record the machine
 # only, so the script checks that every epoch of a run ran on one machine and writes the card's model, never the machine's name
 GPU_OF_RECORD = "NVIDIA RTX 6000 Ada Generation"
 

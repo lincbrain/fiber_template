@@ -1,7 +1,7 @@
 # The feature-based deformable registration engine of every registration of record (code/blockface/registration/featurereg.py runs it
 # through code/blockface/registration/anatomix_runner.py; set ANATOMIX_PYTHON to this environment's python). Ran on NVIDIA RTX 4000 Ada,
 # RTX 6000 Ada and RTX 3090 GPUs (CUDA 12.6, cuDNN 9.10): bit-exact on the GPU model of a record; on another model a result can
-# differ by floating point (README.txt, "Exact reproduction"). The pip list below is what the engine imported in a registration of
+# differ by floating point (tests/README.md). The pip list below is what the engine imported in a registration of
 # record (traced), at the versions imported; built from this file it reproduces that registration bit for bit.
 # The engine is not on PyPI at these versions: anatomix from its repository at a pinned commit, and the FireANTs fork bundled in it,
 # both installed editable, without FireANTs' fused CUDA ops (the runs of record used --fused-ops off):

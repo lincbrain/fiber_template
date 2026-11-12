@@ -2,9 +2,9 @@
 """Run the whole method step by step, on one machine or several, and check each step against the paper's files.
 
 You need
-  the environments and the data roots, set in the shell you start it from (README.txt), and the plan,
+  the environments and the data roots, set in the shell you start it from (README.md), and the plan,
   steps.yaml: for each step its command, the check that compares its result with the paper's, what it reads
-  and writes, and the machine it needs. README.txt describes the same steps in words.
+  and writes, and the machine it needs. docs/tutorials/ describe the same steps in words.
 What it does
   --plan              prints the plan and runs nothing
   --run               tests the installation on each machine, then runs every step whose inputs are ready on a machine with room
