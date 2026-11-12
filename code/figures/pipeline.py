@@ -24,7 +24,8 @@ Planes (the sagittal plane of the template figure, x = 2.0 mm):
   Nothing is smoothed, cut or filled.
 - one photograph of the same brain, at MM2's place along its stack; the histology row is MM2's: its section, registered (TIRL), and
   the photograph it was registered to, in color from the store (histology_photo_slice; its gray is TIRL's fixed image, checked),
-  on the fixed image's pixels and crop.
+  on the fixed image's pixels and crop, displayed as the blockface volume is (the record's color scale: the record_color_pct
+  percentile of the brightest channel over its tissue to 1, the whole photograph alike); the raw photograph above stays raw.
 Orientation letters: L and R on the coronal views (neurological), P and A on the sagittal views (anterior right). One pair per block
 where one convention holds (Ex vivo MRI, MRI template, Blockface template, Histology): the first letter left of the block's leftmost
 image column, the second right of its rightmost, 2 pt off the images (as figstyle.dirs) and at least 0.5 mm inside the box, at
@@ -366,7 +367,11 @@ def main():
     px = float(cfg["histology_mm_px"])
     I["histo"] = (crop_to(np.clip(hi / np.percentile(hi, 99.5), 0, 1), 0.03, pad=6), px, px, None)
     q0, q1, q2, q3 = crop_box(np.clip(sl / np.percentile(sl[sl > 0], 99.5), 0, 1), 0.03, pad=6)   # the gray's crop, as before
-    I["slice"] = (np.clip(col[q0:q1, q2:q3], 0, 1), px, px, None)
+    # its display as the blockface volume's (the author, 12 Nov 2026: the same brightness): the record's color scale, the
+    # record_color_pct percentile of the brightest channel over its own tissue mapped to 1, applied to the whole photograph
+    hscale = float(np.percentile(col.max(-1)[col.sum(-1) > 0], float(cfg["record_color_pct"])))
+    photo_check["display_scale"] = round(hscale, 4)
+    I["slice"] = (np.clip(col[q0:q1, q2:q3] / hscale, 0, 1), px, px, None)
 
     # ---- the largest print scale that fits ------------------------------------------------------------------------------------
     W, PAD, GAP, MIDW, AGAP = 178.0, 1.8, 2.6, 22.0, 8.0      # box padding, image gap, middle column, arrow gap in a box (mm)
@@ -394,7 +399,7 @@ def main():
     SC = float(round(SC, 2)); SC_width = SC
 
     # ---- layout (mm), lowering the print scale while the figure is taller than max_height_mm -------------------------------
-    HEAD, LAB, G12, G23 = 6.0, 3.4, 6.0, 3.0                  # box header; label line; the registration's gap; rows 2-3
+    HEAD, LAB, G12, G23 = 6.0, 3.4, 4.5, 3.0                  # box header; label line; the registration's gap (its arrow); rows 2-3
     while True:
         lw, tw = widths(SC)
         LX0, LX1, TX0, TX1 = 2.0, 2.0 + lw, W - 2.0 - tw, W - 2.0
@@ -495,12 +500,12 @@ def main():
                 assert a1 <= b0 or b1 <= a0 or a3 <= b2 or b3 <= a2, f"direction letter {s} of {keys[0]}'s block touches an image or a label"
 
     # (1) two constructions of one style
-    for k, x, y, s in (("i_t2", C1, R1, "T2-weighted"), ("i_dec", C2, R1, "tensor"), ("i_f1", C1, R2, "soma fraction"),
-                       ("i_f2", C2, R2, "neurite fraction"), ("t_t2", T1c, R1, "T2-weighted"), ("t_dec", T2c, R1, "tensor"),
-                       ("t_f1", T1c, R2, "soma fraction"), ("t_f2", T2c, R2, "neurite fraction"), ("photo", xp, R3, "photograph"),
-                       ("bfvol", xv, R3, "blockface volume")):
+    for k, x, y, s in (("i_t2", C1, R1, "T2-weighted"), ("i_dec", C2, R1, "Tensor"), ("i_f1", C1, R2, "Soma fraction"),
+                       ("i_f2", C2, R2, "Neurite fraction"), ("t_t2", T1c, R1, "T2-weighted"), ("t_dec", T2c, R1, "Tensor"),
+                       ("t_f1", T1c, R2, "Soma fraction"), ("t_f2", T2c, R2, "Neurite fraction"), ("photo", xp, R3, "Photograph"),
+                       ("bfvol", xv, R3, "Blockface volume")):
         image(k, x, y); label(k, s)
-    tl = ax.text(cx("bfvol"), bot("bfvol") + 0.5 + LAB, "dashed: junction plane", fontsize=FS.MIN_PT, ha="center", va="top",
+    tl = ax.text(cx("bfvol"), bot("bfvol") + 0.5 + LAB, "Dashed: junction plane", fontsize=FS.MIN_PT, ha="center", va="top",
                  color=FG, linespacing=1.15)
     wl = tl.get_window_extent(fig.canvas.get_renderer()).width / fig.dpi / FS.MM
     if cx("bfvol") + wl / 2 > LX1 - 1.0:                           # kept inside the box
@@ -515,18 +520,18 @@ def main():
     box(bx0, by0, bx1, by1, ec=FG, lw_=0.9); header(bx0, bx1, by0, "Blockface template")
     arrow((rgt("photo") + 1.2, R3), (left("bfvol") - 1.2, R3), lw_=0.8)
     yA = (R1 + R2) / 2
-    arrow((LX1 + 1.5, yA), (TX0 - 1.0, yA)); text((LX1 + TX0) / 2, yA - 1.4, "groupwise\nconstruction", va="bottom")
-    arrow((LX1 + 1.5, R3), (bx0 - 1.0, R3)); text((LX1 + bx0) / 2, R3 - 1.4, "groupwise\nconstruction", va="bottom")
+    arrow((LX1 + 1.5, yA), (TX0 - 1.0, yA)); text((LX1 + TX0) / 2, yA - 1.4, "Groupwise\nconstruction", va="bottom")
+    arrow((LX1 + 1.5, R3), (bx0 - 1.0, R3)); text((LX1 + bx0) / 2, R3 - 1.4, "Groupwise\nconstruction", va="bottom")
     # (2) their registration
-    arrow((xbt, by0 - 0.4), (xbt, my1 + 0.4)); text(xbt + 1.5, (my1 + by0) / 2, "registration", ha="left", va="center")
+    arrow((xbt, by0 - 0.4), (xbt, my1 + 0.4)); text(xbt + 1.5, (my1 + by0) / 2, "Registration", ha="left", va="center")
     # (3) histology: a section, its blockface photograph, and the two alignments to the template
     image("histo", xh, R4); image("slice", xs, R4)
-    label("histo", "histology section"); label("slice", "blockface photograph")
+    label("histo", "Histology section"); label("slice", "Blockface photograph")
     arrow((rgt("histo") + 1.2, R4), (left("slice") - 1.2, R4), lw_=0.8)
     box(LX0, hy0, LX1, hy1); header(LX0, LX1, hy0, "Histology", f"{N['n_histo']} brains")
     x0a, yb, ym = LX1 + 1.5, R4 - 2.2, R4 + 2.2                    # the two alignments start right after the block
     elbow((x0a, yb), (xbt, yb), (xbt, by1 + 0.4), BFA)
-    text((LX1 + T1c) / 2, yb - 0.8, "blockface-based alignment", color=FS.COL["direct_text"], va="bottom")
+    text((LX1 + T1c) / 2, yb - 0.8, "Blockface-based alignment", color=FS.COL["direct_text"], va="bottom")
     elbow((x0a, ym), (T2c, ym), (T2c, my1 + 0.4), MRIA)
     t_mri = text((LX1 + T2c) / 2, ym + 0.8, "MRI-based alignment", color=FS.COL["mri_text"])
     # one scale bar, outside every block: the figure's bottom-right corner, right of the MRI-based alignment's vertical leg and below

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Supplementary figure "The trained networks": each of the paper's six trained networks drawn as its input, the network and its
-output, grouped by 2D and 3D, with the facts of each network beside it.
+output, with the facts of each network beside it.
 
 You need
   the records under $LINC_NUMBERS: segmodels_{mri_brainmask,bf_mask2d,bf_mask3d,bf_holes}_2026-11 (Supplementary S5, Table S8) and
@@ -10,7 +10,8 @@ You need
 
 What it does
   One row per network, the example brain chosen by one rule: MM3, the brain whose held-out masks the training runs kept for every
-  segmentation network; the stand-in network's row, the first brain without MRI in the paper's order (MF8). The MRI row shows
+  segmentation network; the stand-in network's row, settings/figures.yaml networks.standin (MM12: of the eight brains without MRI,
+  one whose stand-in b0 looks natural at the back; the author, 12 Nov 2026, chose it from the candidates sheet). The MRI row shows
   MM6's b0 (MRI_CASE): of the cases with a kept held-out mask, the one with the most signal outside the brain after MM3's (the
   fraction of the image's energy outside the hand mask), and one that lies upright as scanned, so it needs no rotation for display.
     input    the image the network reads, as it reads it: the segmentation networks' training case of the brain (the photograph at
@@ -22,12 +23,14 @@ What it does
              the plane through the most voxels of the tube network's output; in the synthesis rows' b0 images the plane at the same
              distance left of the center of the brain's mask; in the MRI row the plane 4 to 12 mm left of that center that keeps the
              network's mask in one piece (whole_plane)
-    scale    one physical scale for every panel; the dashed frame on each input is the network's patch (the whole photograph for
-             the 2D network) at that scale; one 10 mm bar under the last output, its length above it
-    box      architecture, input channels, working resolution, patch, number of parameters and training data, every value read
-             from the records above
+    scale    one physical scale for every panel, the largest that leaves the widest text line room in its box and keeps the
+             figure within networks.max_height_mm; the dashed frame on each input is the network's patch (the whole photograph
+             for the 2D network) at that scale; one 10 mm bar, its length above it, in the last output's empty bottom-left corner
+    box      one template for all six (the author, 12 Nov 2026): architecture, levels and parameters; Input; Grid (voxel or pixel
+             size, patch or image size); Output; Loss; Training (iterations of a batch); Data (N volumes or photographs of M
+             brains), every value read from the records above
   Display: the photograph and color volumes in their own colors with one gain per panel (99.5th percentile of the tissue), gray
-  images from 0 to the 99.5th percentile of the tissue; masks white; in the tube row the brain's outline in gray.
+  images from 0 to the 99.5th percentile of the tissue; masks white; in the tube row the brain's outline in gray (ON_IMG2).
 
 You get
   --out (default figures/s_networks.pdf), a PNG beside it, and the provenance (planes, brains, every value drawn).
@@ -37,12 +40,14 @@ You get
 import argparse
 import glob
 import json
+import re
 import os
 import sys
 from pathlib import Path
 
 import numpy as np
 import nibabel as nib
+import yaml
 import matplotlib
 
 matplotlib.use("Agg")
@@ -58,10 +63,9 @@ from shared import paths  # noqa: E402
 
 EXAMPLE = "MR256"                       # MM3: held-out masks kept for all four segmentation networks (fold 0, 0, 0 and 2)
 MRI_CASE = "MR251_b0"                   # the MRI row: MM6's b0, as scanned (the author, 11 Nov 2026)
-PRINT_SCALE = 0.40                      # print mm per tissue mm, every panel
 FOV_MM = (80.0, 64.0)                   # each panel's window (tissue mm, width x height), centered on the brain
 SCALE_BAR_MM = 10
-SB_Y = 3.2                              # the bar's line under the last output panel (print mm): its length fits above it
+BOX_TEXT_X, BOX_RIGHT, LINE = 23.5, 1.5, 3.0          # a network box: its text's x and right inset, its line pitch (mm)
 RECORDS = dict(mri="segmodels_mri_brainmask_2026-11", photo="segmodels_bf_mask2d_2026-11", bf="segmodels_bf_mask3d_2026-11",
                tubes="segmodels_bf_holes_2026-11", synth="d3_methods")
 TASKS = dict(mri="mri_brainmask", photo="bf_mask2d", bf="bf_mask3d", tubes="bf_holes")
@@ -207,12 +211,12 @@ def box(fig, x, y, w, h, title, lines, levels, dim3, head=False):
     ax = FS.axes_mm(fig, x, y, w, h); ax.set_xlim(0, w); ax.set_ylim(0, h); ax.axis("off")
     ax.add_patch(FancyBboxPatch((0.3, 0.3), w - 0.6, h - 0.6, boxstyle="round,pad=0,rounding_size=1.2", fc="#141414", ec=FS.GRAY,
                                 lw=0.5, zorder=1))
-    gw = 19.0
+    gw = BOX_TEXT_X - 4.5
     glyph(ax, 2.5, 2.0, gw, h - 4.0, levels, dim3, head)
-    tx = gw + 4.5
+    tx = BOX_TEXT_X
     ax.text(tx, h - 2.2, title, fontsize=FS.MIN_PT, fontweight="bold", color=FS.FG, ha="left", va="top")
     for k, s in enumerate(lines):
-        ax.text(tx, h - 2.2 - 3.25 * (k + 1), s, fontsize=FS.MIN_PT, color=FS.FG if k < len(lines) - 1 else FS.GRAY, ha="left",
+        ax.text(tx, h - 2.2 - LINE * (k + 1), s, fontsize=FS.MIN_PT, color=FS.FG if k < len(lines) - 1 else FS.GRAY, ha="left",
                 va="top")
     return ax
 
@@ -228,41 +232,63 @@ def millions(n):
     return f"{n / 1e6:.1f} M parameters"
 
 
-def seg_lines(r, inp, data):
+def seg_lines(r, inp, grid, data, out):
     net = r["recipe"]["network"]
     title = f"{net['dim']}D U-Net, {len(net['features'])} levels, {millions(r['recipe']['parameters'])}"
-    return title, len(net["features"]), net["dim"] == 3, [inp, *data]
+    rc = r["recipe"]; it = rc["epochs"] * rc["iterations_per_epoch"]
+    unit = "photographs" if net["dim"] == 2 else "patches"
+    loss = re.sub(r"\s*\([^)]*\)", "", rc["loss"].split(";")[0]).strip()            # "Dice + cross-entropy"
+    return title, len(net["features"]), net["dim"] == 3, [inp, grid, out, f"Loss: {loss}", f"Training: {it:,} iterations of {rc['batch']} {unit}",
+                                                         data]
+
+
+CLASS_OUT = {"brain": "brain mask", "tube": "marker-tube mask"}
 
 
 def facts(R):
+    """Each row's text, one template for all six (the author, 12 Nov 2026: the same fields in the same order and words): the
+    architecture, levels and parameters; the input; its grid; the output; the loss; the training's length; the training data.
+    Everything from the records."""
     out = {}
-    m = R["mri"]; ts = m["input"]["target_spacing"]; pt = m["input"]["patch"]
-    assert len(set(ts)) == 1 and len(set(pt)) == 1
-    out["mri"] = seg_lines(m, f"Input: {m['input']['channels']} channel, b0 or T2-weighted",
-                           [f"{ts[0]:g} mm voxels, patches of {pt[0]}³ voxels ({pt[0] * ts[0]:g} mm)",
-                            f"Trained on {m['data']['images_counted']} images of {m['data']['brains']} brains"])
-    p = R["photo"]; pt = p["input"]["patch"]
-    assert p["input"]["whole_image"]
-    out["photo"] = seg_lines(p, f"Input: {p['input']['channels']} color channels",
-                             [f"Whole photograph, reduced {p['input']['native_downsample']}-fold ({pt[0]} × {pt[1]} pixels)",
-                              f"Trained on {p['data']['images_counted']:,} photographs of {p['data']['brains']} brains"])
-    for key, inp in (("bf", "color channels, background kept"), ("tubes", "color channels, inside the brain mask")):
-        b = R[key]; ts = b["input"]["target_spacing"]; pt = b["input"]["patch"]
-        assert ts[0] == ts[2] and len(set(pt)) == 1                  # in plane x, z; between sections y (the slice axis)
-        assert b["data"]["images_counted"] == b["data"]["brains"]       # one volume per brain
-        out[key] = seg_lines(b, f"Input: {b['input']['channels']} {inp}",
-                             [f"{ts[0]:.2f} mm in plane, {ts[1]:.2f} mm between sections",
-                              f"Patches of {pt[0]}³ voxels",
-                              f"Trained on {b['data']['brains']} brains"])
+    for key in ("mri", "photo", "bf", "tubes"):
+        r = R[key]; i = r["input"]; o = r["output"]
+        what = CLASS_OUT[o["classes"]["1"]]
+        outl = f"Output: {what}, on the input's {'pixels' if i['whole_image'] else 'grid'}"
+        if key == "photo":
+            pt = i["patch"]; assert i["whole_image"]
+            out[key] = seg_lines(r, f"Input: {i['channels']} color channels",
+                                 f"Grid: {pt[0]} × {pt[1]} pixels, the whole photograph at 1/{i['native_downsample']}",
+                                 f"Data: {r['data']['images_counted']:,} photographs of {r['data']['brains']} brains", outl)
+            continue
+        ts, pt = i["target_spacing"], i["patch"]; assert len(set(pt)) == 1
+        if key == "mri":
+            pm = r["data"]["per_modality"]; n_b0, n_t2 = pm["b0"] + pm.get("b0m", 0), pm["t2"]
+            assert n_b0 + n_t2 == r["data"]["images_counted"], pm                # t2d: denoised copies, not counted
+            assert len(set(ts)) == 1
+            out[key] = seg_lines(r, f"Input: {i['channels']} channel, b0 or T2-weighted",
+                                 f"Grid: {ts[0]:g} mm voxels, {pt[0]}³ patches ({pt[0] * ts[0]:g} mm)",
+                                 f"Data: {r['data']['images_counted']} volumes of {r['data']['brains']} brains ({n_b0} b0, {n_t2} T2-weighted)", outl)
+            continue
+        assert ts[0] == ts[2] and r["data"]["images_counted"] == r["data"]["brains"]   # in plane x, z; between sections y; one per brain
+        inp = "background kept" if key == "bf" else "inside the brain mask"
+        out[key] = seg_lines(r, f"Input: {i['channels']} color channels, {inp}",
+                             f"Grid: {ts[0]:.2f} × {ts[1]:.2f} mm voxels, {pt[0]}³ patches ({pt[0] * ts[0]:.0f} × {pt[0] * ts[1]:.0f} mm)",
+                             f"Data: {r['data']['images_counted']} volumes of {r['data']['brains']} brains", outl)
     s = R["synth"]["models"]
-    for key, k, inp, data in (("own", "mri", "b0", "brains"), ("standin", "no_mri", "stand-in b0", "brains, from their stand-in b0")):
+    NAMES = dict(l1="L1", gradient_l1="gradient L1", one_minus_ms_ssim="(1 − MS-SSIM)")
+    for key, k, inp, data in (("own", "mri", "the brain's own b0", ""), ("standin", "no_mri", "a stand-in b0", ", from their stand-in b0")):
         g, a, t = s[k]["grids"], s[k]["architecture"], s[k]["training"]
         levels = len(a["features"]) - 1                                # MONAI BasicUNet: five encoder levels, the last number the output stage
+        loss = " + ".join((f"{w:g} " if w != 1 else "") + NAMES[n] for n, w in t["loss"].items())
+        it = t["epochs"] * t["patches_per_epoch"] // t["batch"]
+        assert len(t["brains"]) == t["n_brains"]                       # one b0 and one blockface volume per brain
         out[key] = (f"3D U-Net + 2× upsampling, {levels} levels, {millions(s[k]['parameters'])}", levels, True,
-                    [f"Input: 1 channel, {inp} at {g['input_mm']:g} mm",
-                     f"Output: blockface brightness at {g['output_mm']:g} mm",
-                     f"Cubes of {g['patch_input_vox']}³ input voxels ({g['patch_mm']:g} mm)",
-                     f"Trained on {t['n_brains']} {data}"])
+                    [f"Input: 1 channel, {inp}",
+                     f"Grid: {g['input_mm']:g} mm voxels, {g['patch_input_vox']}³ cubes ({g['patch_mm']:g} mm)",
+                     f"Output: blockface brightness, {g['output_mm']:g} mm voxels",
+                     f"Loss: {loss}",
+                     f"Training: {it:,} iterations of {t['batch']} cubes",
+                     f"Data: {t['n_brains']} volumes of {t['n_brains']} brains{data}"])
     return out
 
 
@@ -280,7 +306,9 @@ def main():
     lab = json.load(open(REPO / "settings" / "specimen_labels.json"))["labels"]; used.append(str(REPO / "settings" / "specimen_labels.json"))
     order = json.load(open(REPO / "settings" / "specimen_labels.json"))["order"]
     canon_root = PC["completion_inputs"] / "canon_d3n_prod" / "canon_root.json"; used.append(str(canon_root))
-    standin = min(json.load(open(canon_root))["brains"], key=lambda S: order.index(lab[S]))
+    NCFG = yaml.safe_load(open(REPO / "settings" / "figures.yaml"))["networks"]
+    standin = NCFG["standin"]                                           # row (f)'s brain (the author, 12 Nov 2026: MM12, a natural back)
+    assert standin in json.load(open(canon_root))["brains"], f"{standin} is not a brain without MRI"
     S = EXAMPLE
 
     photo = case_photo(seg, S, used)
@@ -334,51 +362,48 @@ def main():
                                  ("standin", "Synthesis from a stand-in b0", standin, sti)):
         vol_row(key, title, brain, v["img"], v["out"], v["A"], v["Ao"], v["img"] > 0, (g["patch_mm"], g["patch_mm"]))
 
-    # ---- layout (mm) ----
-    pw, phh = FOV_MM[0] * PRINT_SCALE, FOV_MM[1] * PRINT_SCALE
-    G, ar = 8.0, 7.0
-    x_in = G; x_box = x_in + pw + ar; x_out = FS.FULL_W_IN * 25.4 - pw; bw = x_out - ar - x_box
-    head, title_h, gap, group_gap, sb = 5.0, 4.6, 1.6, 3.0, 4.0
+    # ---- layout (mm): the space (the author, 12 Nov 2026): one print scale for every panel, the largest that both leaves the
+    # widest text line room in its box and keeps the figure within its max_height_mm; the page margins outside ----
+    M_, PAGE = FS.MARGIN_MM, FS.FULL_W_IN * 25.4
+    ar, head, title_h, gap = 5.5, 5.0, 4.6, 1.6                       # ar: the room of an arrow between panel and box
+    f_ = plt.figure(); r_ = f_.canvas.get_renderer()
+    textw = max(max(f_.text(0, 0, t, fontsize=FS.MIN_PT, fontweight="bold").get_window_extent(r_).width,
+                    *(f_.text(0, 0, l_, fontsize=FS.MIN_PT).get_window_extent(r_).width for l_ in lines)) for t, _, _, lines in F.values())
+    textw = textw / f_.dpi * 25.4; plt.close(f_)
+    bw_min = BOX_TEXT_X + textw + BOX_RIGHT
+    ps_w = (PAGE - 2 * M_ - 2 * ar - bw_min) / 2 / FOV_MM[0]
+    ps_h = (float(NCFG["max_height_mm"]) - head - M_ - 6 * (title_h + gap) + gap) / (6 * FOV_MM[1])
+    PS = min(ps_w, ps_h)
+    pw, phh = FOV_MM[0] * PS, FOV_MM[1] * PS
+    x_in = M_; x_box = x_in + pw + ar; x_out = PAGE - M_ - pw; bw = x_out - ar - x_box
     row_h = title_h + phh + gap
-    Htot = head + 6 * row_h + group_gap + sb
+    Htot = head + 6 * row_h - gap + M_
     fig = plt.figure(figsize=(FS.FULL_W_IN, Htot / 25.4))
-    ys = []
-    y = head
-    for k, r in enumerate(rows):
-        if k == 1:
-            y += group_gap
-        ys.append(y); y += row_h
+    ys = [head + k * row_h for k in range(len(rows))]
     for k, r in enumerate(rows):
         y0 = ys[k] + title_h
         ai = panel(fig, x_in, y0, pw, phh, r["inp"], r["ext"], r["cen"], cmap=r["cin"])
         patch_frame(ai, r["cen"], *r["patch"])
         ao = panel(fig, x_out, y0, pw, phh, r["out"], r["out_ext"], r["cen"], cmap="gray")
         if r.get("outline") is not None:
-            ao.contour(r["outline"].astype(float), [0.5], colors=[FS.GRAY], linewidths=0.4, extent=r["ext"], origin="upper", zorder=2)
+            ao.contour(r["outline"].astype(float), [0.5], colors=[FS.ON_IMG2], linewidths=0.4, extent=r["ext"], origin="upper", zorder=2)
         FS.letter(ai, "abcdef"[k], dx=0.0, dy=2.0)
         FS.header(ai, f"{r['title']}  ({FS.label(r['brain'])})", dx=9.0, dy=2.0)
         t, levels, dim3, lines = F[r["key"]]
         bx = box(fig, x_box, y0 + 0.6, bw, phh - 1.2, t, lines, levels, dim3, head=r["key"] in ("own", "standin"))
         arrow(fig, x_in + pw + 0.8, x_box - 0.4, y0 + phh / 2); arrow(fig, x_box + bw + 0.4, x_out - 0.8, y0 + phh / 2)
         if k == 0:
-            for xx_, s in ((x_in, "Input"), (x_box, "Network"), (x_out, "Output")):
+            for xx_, s_ in ((x_in, "Input"), (x_box, "Network"), (x_out, "Output")):
                 hx = FS.axes_mm(fig, xx_, 0.4, 30, 3.5); hx.axis("off")
-                hx.text(0, 0.5, s, fontsize=FS.MIN_PT, color=FS.GRAY, ha="left", va="center")
-        if k == len(rows) - 1:                                         # the bar under the last output, its length above it
-            FS.scalebar(ao, 1.0, SCALE_BAR_MM, y_frac=SB_Y / phh, end_px=r["cen"][0] + FOV_MM[0] / 2, lw=1.0)
-    # the 2D and 3D groups: a bracket and its label in the left margin
-    for (k0, k1), s in (((0, 0), "2D"), ((1, 5), "3D")):
-        top, bot = ys[k0] + title_h, ys[k1] + title_h + phh
-        gx = FS.axes_mm(fig, 0, top, G - 1.5, bot - top); gx.set_xlim(0, G - 1.5); gx.set_ylim(bot - top, 0); gx.axis("off")
-        gx.plot([G - 2.6, G - 3.6, G - 3.6, G - 2.6], [0.3, 0.3, bot - top - 0.3, bot - top - 0.3], color=FS.GRAY, lw=0.6)
-        gx.text(G - 5.2, (bot - top) / 2, s, fontsize=FS.LETTER_PT, fontweight="bold", color=FS.FG, ha="center", va="center",
-                rotation=90)
+                hx.text(0, 0.5, s_, fontsize=FS.MIN_PT, color=FS.GRAY, ha="left", va="center")
+        if k == len(rows) - 1:                                         # the bar in the last output's empty bottom-left corner
+            FS.scalebar_in(ao, 1.0, SCALE_BAR_MM, corner="bottom left", lw=1.0)
 
     used = sorted(set(used))
     cmd = " ".join(["code/figures/s_networks.py"] + sys.argv[1:])
     drawn = {k: dict(title=t, lines=l) for k, (t, _, _, l) in F.items()}
     FS.save(fig, a.out, used, cmd, extra=dict(example=FS.label(S), stand_in_example=FS.label(standin), planes=planes,
-                                              tube_plane_left_of_center_mm=round(d_left, 2), print_scale=PRINT_SCALE,
+                                              tube_plane_left_of_center_mm=round(d_left, 2), print_scale=round(PS, 4), max_height_mm=float(NCFG['max_height_mm']), text_width_mm=round(textw, 2),
                                               mri_case=mri["case"],
                                               fov_mm=FOV_MM, scale_bar_mm=SCALE_BAR_MM, drawn=drawn,
                                               folds={k: v["fold"] for k, v in dict(photo=photo, mri=mri, bf=bf, tubes=tubes).items()}))

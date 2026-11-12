@@ -11,8 +11,10 @@ average over the brains of each brain's construction warp composed with its own 
      blockface template's grey channel pulled into it by the registration; on every panel the same two lines, drawn from the MRI
      template only (sky blue: brain-mask outline; orange: gray/white boundary = a two-class (Otsu) split of the T2 inside the mask).
   b  per-voxel distance between the registration and the composed registrations (mm), on the same sections, inside the MRI brain mask.
-Two equal columns (the sagittal width) at up to the whole-brain print scale; the free width is split evenly into left margin, gap and
-right margin; coronal panels centered in their column; the color bar right of the coronal distance map.
+Two columns, each as wide as its widest cell (its images and the letters beside them; (b)'s coronal with its color bar), one gutter
+between them and between the rows, at the print scale that fills the page's width (lowered if the figure would pass MAX_H); coronal
+panels centered in their column; the color bar right of the coronal distance map; the 5 mm scale bar in (b)'s sagittal map's
+empty bottom-right corner, its length above it.
 Reads (settings/internal/products_mri*.yaml): template_mri/linc_mri_{T2,brainmask}.nii.gz, bftemplate_step8/d2bs8_grey.nii.gz, the two maps
 above, numbers_of_record/s5_link_d2bs8.json (recorded as an input: the caption's values). Writes the PNG and its provenance.json.
 """
@@ -39,10 +41,9 @@ VOX = 0.25                                                     # MRI template gr
 CROP_MM = 2.0                                                  # every panel of a row cropped to the MRI brain-mask box + this
 DIST_MAX_MM = 2.0                                              # distance color bar maximum
 SCALEBAR_MM = 5
-SB_BELOW = 3.4                                                 # the scale bar's line under (b)'s first panel (mm): its length fits above
 GW_SMOOTH = 1.0                                                # Gaussian sigma (voxels) of the T2 before the gray/white contour
-PAGE_W, RIGHT_M, TOP, GAPR = 178.0, 8.0, 9.0, 9.0              # mm; RIGHT_M: room for the A direction letter when fixing the scale
-SCALE_LEFT, SCALE_GAP = 9.0, 3.0                               # mm: the margins the print scale is fitted with
+PAGE_W, TOP, GAPR = 178.0, 9.0, 9.0                           # mm; TOP, GAPR: where the rows are first drawn, to be measured
+MAX_H = 185.0                                                  # the figure's height at most (mm): the page's 231 mm less its caption
 CBAR_DX = 7.0                                                  # mm from the coronal distance map to its color bar
 TITLES = ("MRI template (T2-weighted)\n", "Blockface template\nregistration")
 
@@ -100,48 +101,84 @@ def main():
         ij = np.argwhere(r["m"]); lo, hi = ij.min(0), ij.max(0); px = int(round(CROP_MM / VOX))
         lo = np.maximum(lo - px, 0); hi = np.minimum(hi + px, np.array(r["shp"]) - 1); r["crop"] = np.s_[lo[0]:hi[0] + 1, lo[1]:hi[1] + 1]
         r["mm"] = ((hi[0] - lo[0] + 1) * VOX, (hi[1] - lo[1] + 1) * VOX)
-    scale = min(S.SCALE["whole"], (PAGE_W - SCALE_LEFT - SCALE_GAP - RIGHT_M) / (2 * rows["sag"]["mm"][0]))
+    # ---- layout (the author, 12 Nov 2026: "optimize space"): two columns, each as wide as its widest cell (images and the letters
+    # beside them; (b)'s coronal with its color bar), one gutter between them and between the rows, the page margins outside; the
+    # print scale the largest that fills the width, lowered if the figure would be taller than MAX_H
+    import matplotlib.transforms as mtrans
+    G_, M_ = S.GUTTER_MM, S.MARGIN_MM
+
+    def render(scale, Xc=None, T=None, Hf=None):
+        hs, hc = rows["sag"]["mm"][1] * scale, rows["cor"]["mm"][1] * scale
+        Xc = Xc or (PAGE_W / 4, 3 * PAGE_W / 4)                           # the two columns' centers (mm)
+        T = T or (TOP, TOP + hs + GAPR, TOP + hs + GAPR + hc + GAPR + 4)  # the three rows' tops (mm)
+        Hf = Hf or T[2] + max(hs, hc) + 9
+        fig = plt.figure(figsize=(S.FULL_W_IN, Hf / 25.4), facecolor=S.BG)
+        col, row, first = ([], []), ([], [], []), {}
+        for r_, (kind, plane_name) in enumerate((("sag", "sagittal"), ("cor", "coronal"))):
+            r = rows[kind]; w, h = r["mm"][0] * scale, r["mm"][1] * scale
+            for j, key in enumerate(("t2", "sym")):
+                ax = S.axes_mm(fig, Xc[j] - w / 2, T[r_], w, h)
+                a_ = r[key][r["crop"]]; mm = r["m"][r["crop"]]
+                vmax = np.percentile(a_[mm], 99.5) if mm.any() else 1
+                ax.imshow(a_.T, cmap="gray", origin="lower", vmin=0, vmax=vmax, interpolation="nearest", aspect="equal")
+                ax.contour(mm.T.astype(float), [0.5], colors=[S.OKABE["sky"]], linewidths=0.5)
+                g = ndi.gaussian_filter(r["t2"][r["crop"]], GW_SMOOTH) * mm
+                ax.contour(g.T, [gw], colors=[S.OKABE["orange"]], linewidths=0.5)
+                ax.set_xticks([]); ax.set_yticks([]); [s_.set_visible(False) for s_ in ax.spines.values()]
+                if kind == "sag":
+                    ax.set_title(TITLES[j], color=S.FG, fontsize=S.MIN_PT, pad=2)
+                if j == 0:
+                    first[kind] = ax
+                last = ax; col[j].append(ax); row[r_].append(ax)
+            S.dirs_row(first[kind], last, plane_name)              # direction letters on the row's outer edges only
+        S.letter(first["sag"], "a", dx=-14, dy=10)
+        b_axes, head = [], None
+        for k, (kind, plane_name) in enumerate((("sag", "sagittal"), ("cor", "coronal"))):
+            r = rows[kind]; w, h = r["mm"][0] * scale, r["mm"][1] * scale
+            ax = S.axes_mm(fig, Xc[k] - w / 2, T[2], w, h)
+            im = ax.imshow(r["dist"][r["crop"]].T, cmap="magma", origin="lower", vmin=0, vmax=DIST_MAX_MM, interpolation="nearest",
+                           aspect="equal")
+            ax.contour(r["m"][r["crop"]].T.astype(float), [0.5], colors=[S.OKABE["sky"]], linewidths=0.5)
+            ax.set_xticks([]); ax.set_yticks([]); [s_.set_visible(False) for s_ in ax.spines.values()]
+            S.dirs(ax, plane_name)
+            if k == 0:
+                S.letter(ax, "b", dx=-14, dy=4)
+                head = S.header(ax, "Distance between the registration and the composed registrations", dx=-3, dy=4)
+                head.set_in_layout(False)                              # it runs over both columns: not a column's width
+            col[k].append(ax); row[2].append(ax); b_axes.append(ax)
+        wcor = rows["cor"]["mm"][0] * scale
+        cax = S.axes_mm(fig, Xc[1] + wcor / 2 + CBAR_DX, T[2] + 0.15 * max(hs, hc), 3.0, 0.7 * max(hs, hc))
+        cb = fig.colorbar(im, cax=cax); cb.set_label("Distance (mm)", color=S.FG, fontsize=S.MIN_PT)
+        cb.ax.tick_params(colors=S.FG, labelsize=S.MIN_PT); cb.outline.set_edgecolor(S.FRAME)
+        col[1].append(cax); row[2].append(cax)
+        return fig, col, row, b_axes, head
+
+    def ext(fig, axs, extra=()):
+        r_ = fig.canvas.get_renderer(); Hf = fig.get_size_inches()[1] * 25.4
+        bb = mtrans.Bbox.union([a_.get_tightbbox(r_) for a_ in axs] + [t.get_window_extent(r_) for t in extra])
+        return bb.x0 / fig.dpi * 25.4, bb.x1 / fig.dpi * 25.4, Hf - bb.y1 / fig.dpi * 25.4, Hf - bb.y0 / fig.dpi * 25.4
+
+    def measure(scale):
+        fig, col, row, _, head = render(scale)
+        X0 = (PAGE_W / 4, 3 * PAGE_W / 4)
+        sp = [ext(fig, c) for c in col]
+        T0 = (TOP, TOP + rows["sag"]["mm"][1] * scale + GAPR, TOP + (rows["sag"]["mm"][1] + rows["cor"]["mm"][1]) * scale + 2 * GAPR + 4)
+        rx = [ext(fig, row[k], (head,) if k == 2 else ()) for k in range(3)]
+        plt.close(fig)
+        W_ = [x1 - x0 for x0, x1, _, _ in sp]; off = [X0[j] - sp[j][0] for j in range(2)]          # column center from its left
+        Xc = (M_ + off[0], M_ + W_[0] + G_ + off[1])
+        above = [T0[k] - rx[k][2] for k in range(3)]; below = [rx[k][3] - T0[k] for k in range(3)]
+        t1 = M_ + above[0]; t2 = t1 + below[0] + G_ + above[1]; t3 = t2 + below[1] + G_ + above[2]
+        return W_[0] + G_ + W_[1], Xc, (t1, t2, t3), t3 + below[2] + M_
+
+    s0 = 1.0; w0 = measure(s0)[0]; w1 = measure(1.2)[0]
+    scale = s0 + (PAGE_W - 2 * M_ - w0) / ((w1 - w0) / 0.2)            # the content is affine in the scale: fill the width
+    wd, Xc, T, Hf = measure(scale)
+    if Hf > MAX_H:                                                     # the height binds
+        H0 = measure(0.9 * scale)[3]; scale = 0.9 * scale + (MAX_H - H0) / ((Hf - H0) / (0.1 * scale)); wd, Xc, T, Hf = measure(scale)
+    fig, col, row, b_axes, head = render(scale, Xc, T, Hf)
+    S.scalebar_in(b_axes[0], 1 / VOX, SCALEBAR_MM, corner="bottom right")   # in (b)'s sagittal map's empty bottom-right corner
     hs, hc = rows["sag"]["mm"][1] * scale, rows["cor"]["mm"][1] * scale
-    C = rows["sag"]["mm"][0] * scale; LEFT = GAP = (PAGE_W - 2 * C) / 3      # two equal columns, free width split evenly
-    H = TOP + hs + GAPR + hc + GAPR + 4 + max(hs, hc) + 9
-    fig = plt.figure(figsize=(S.FULL_W_IN, H / 25.4), facecolor=S.BG)
-    y = TOP; first = {}
-    for kind, plane_name in (("sag", "sagittal"), ("cor", "coronal")):
-        r = rows[kind]; w, h = r["mm"][0] * scale, r["mm"][1] * scale
-        for j, key in enumerate(("t2", "sym")):
-            ax = S.axes_mm(fig, LEFT + j * (C + GAP) + (C - w) / 2, y, w, h)
-            a_ = r[key][r["crop"]]; mm = r["m"][r["crop"]]
-            vmax = np.percentile(a_[mm], 99.5) if mm.any() else 1
-            ax.imshow(a_.T, cmap="gray", origin="lower", vmin=0, vmax=vmax, interpolation="nearest", aspect="equal")
-            ax.contour(mm.T.astype(float), [0.5], colors=[S.OKABE["sky"]], linewidths=0.5)
-            g = ndi.gaussian_filter(r["t2"][r["crop"]], GW_SMOOTH) * mm
-            ax.contour(g.T, [gw], colors=[S.OKABE["orange"]], linewidths=0.5)
-            ax.set_xticks([]); ax.set_yticks([]); [s.set_visible(False) for s in ax.spines.values()]
-            if kind == "sag":
-                ax.set_title(TITLES[j], color=S.FG, fontsize=S.MIN_PT, pad=2)
-            if j == 0:
-                first[kind] = ax
-            last = ax
-        S.dirs_row(first[kind], last, plane_name)              # direction letters on the row's outer edges only
-        y += h + GAPR
-    S.letter(first["sag"], "a", dx=-14, dy=10)
-    y += 4
-    for k, (kind, plane_name) in enumerate((("sag", "sagittal"), ("cor", "coronal"))):
-        r = rows[kind]; w, h = r["mm"][0] * scale, r["mm"][1] * scale
-        ax = S.axes_mm(fig, LEFT + k * (C + GAP) + (C - w) / 2, y, w, h)
-        im = ax.imshow(r["dist"][r["crop"]].T, cmap="magma", origin="lower", vmin=0, vmax=DIST_MAX_MM, interpolation="nearest",
-                       aspect="equal")
-        ax.contour(r["m"][r["crop"]].T.astype(float), [0.5], colors=[S.OKABE["sky"]], linewidths=0.5)
-        ax.set_xticks([]); ax.set_yticks([]); [s.set_visible(False) for s in ax.spines.values()]
-        S.dirs(ax, plane_name)
-        if k == 0:
-            S.letter(ax, "b", dx=-14, dy=4)
-            S.header(ax, "Distance between the registration and the composed registrations", dx=-3, dy=4)
-            S.scalebar(ax, 1 / VOX, SCALEBAR_MM, y_frac=SB_BELOW / h)      # its length above it, clear of the frame
-    cax = S.axes_mm(fig, LEFT + C + GAP + (C + rows["cor"]["mm"][0] * scale) / 2 + CBAR_DX, y + 0.15 * max(hs, hc), 3.0,
-                    0.7 * max(hs, hc))
-    cb = fig.colorbar(im, cax=cax); cb.set_label("distance (mm)", color=S.FG, fontsize=S.MIN_PT)
-    cb.ax.tick_params(colors=S.FG, labelsize=S.MIN_PT); cb.outline.set_edgecolor(S.GRAY)
     S.save(fig, str(a.out), [T2P, MSKP, GREYP, LINK / "maps.json", LINK / "full_d.nii.gz", COMP / "link_ras_disp.nii.gz", NUM],
            cmd=" ".join(["python"] + sys.argv),
            extra=dict(print_mm_per_tissue_mm=round(scale, 3), scalebar_mm=SCALEBAR_MM,

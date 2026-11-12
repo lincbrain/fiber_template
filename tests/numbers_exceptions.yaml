@@ -40,6 +40,13 @@ fig_tracer_r058_h9:
   # the paper reads: fig_tracer_r058_h9.mf8_unbridged_outlined.share_unbridged
   compare: ["cases", "voxel_mm3", "rules", "groups", "slab", "colors", "mirrored_for_display", "alic_counts_slab_solid", "injection_sites_b",
             "mf8_unbridged_outlined"]
+fig_tracer_sections3d_v6_h9:
+  reason: "the figure's still was turned to the right and front (azimuth 30, elevation 15 degrees; the author, 12 Nov 2026) and the page respaced (the author's space rules, 12 Nov 2026), so the record's view, layout_mm, injection_label_anchor_px and still_visibility_pixels (pixel counts of the drawn still) differ from the record of record; every other value is regenerated unchanged, the rotation video too"
+  # the paper reads: fig_tracer_sections3d_v6_h9.alic_slab_mm, .alic_y_mm.{0,1,2}, .capsule_totals.<ID>.charted_voxels(_in_capsule),
+  # .footprint_min_carried_fraction, .planes.coronal_y_mm
+  compare: ["alic_slab_mm", "alic_y_mm", "capsule", "capsule_box_mm", "capsule_rule", "capsule_totals", "cases", "drawing",
+            "footprint_min_carried_fraction", "injection_point_factor", "mirror", "mirrored", "planes", "point_px_at_window", "projection",
+            "protocol", "video", "window_px"]
 
 # Reference only: records of a test whose inputs this release does not ship. No script in code/figures/paper_numbers writes them, so
 # `make check` does not compare them. A record regenerated elsewhere is compared on the fields below.

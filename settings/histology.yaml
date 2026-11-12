@@ -106,7 +106,8 @@ tirl:
   script_module: tirlscripts.mgh.linc.histology_to_block   # the module linc.h2b names; its path needs no `tirl register`
   version: "3.6.2"                # checked before running (import tirl; tirl.__version__ in the executable's interpreter)
   also_accepted: ["3.6.3"]        # the source settings/env/tirl.yml builds: code-identical to 3.6.2 but the version strings (its header)
-  resolution_mm: 0.034            # pixel size given to both images (moving and fixed share one pixel grid)
+  resolution_mm: 0.034            # pixel size given to both images (moving and fixed share one pixel grid): nominal; in tissue a
+                                  #   pixel is half the brain's L2 voxel (0.040 mm at 20 um photographs, 0.054 at 27 um)
   threads: 12                     # OMP/MKL/OpenBLAS/NumExpr threads per piece in the run of record
   done_file: fixed4_nonlinear.timg   # a piece with this file is complete (resume rule)
   # Per-component stiffness of the nonlinear stage (adopted 12 Nov 2026; analysis: data_tirl_h9/README.txt, record tirl_h9). A component

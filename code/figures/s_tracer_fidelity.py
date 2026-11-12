@@ -25,7 +25,11 @@ What it does
   A section is cut obliquely to the template's coronal plane, so (iii) is not one coronal slice of the template; the template y the
   registered section spans is in the provenance. MF8's two frontal lobes were matched to adjacent photographs (0.75 mm apart): each
   pixel is drawn on the photograph of the nearest lobe. Anatomical convention (the subject's left on the left, dorsal up; no case
-  mirrored; L and R once, beside the first row, below its label). Row labels: the case, the section's number in its labeled series, the photograph(s).
+  mirrored; L and R once, beside the first row). Row labels, on a line above each row: the case, the section's number in its
+  labeled series, the photograph(s); the row's 5 mm bar on the same line at its right (each row has its own scale).
+  Space (the author, 12 Nov 2026): one gutter (figstyle GUTTER_MM) between the columns and between a row and the next row's label,
+  MARGIN_MM from the outermost ink to the page's edges; a zoomed panel's bar in its standard place, at its title's level, top right
+  (figstyle.scalebar_title), one per row (before, one under every panel); every text in sentence case.
   Classes: bundles (dense and moderate, and MM2's single bundle class), light bundles, terminal fields (all three density classes),
   injection site; single-fiber strokes are not drawn.
 
@@ -62,11 +66,22 @@ Image.MAX_IMAGE_PIXELS = None
 CASES = ["MR243", "MR252", "MR256", "MF191"]
 TV = 0.25
 OUTLINE = "#00e5ff"
-BAR_BELOW_MM = 3.5                                       # each 5 mm bar this far under its panel: its length fits between
+SB_MM = 5                                                # one bar per row, on its label's line, at the right
+TITLE_GAP_PT = 4.0                                       # the column titles this far above the first row's label (pt): apart from it
 GROUPS = [("bundles", ("Fiber_dense_bundle", "Fiber_moderate_bundle", "Bundle"), "#D55E00", 0.9),
           ("light bundles", ("Fiber_light_bundle",), "#E69F00", 0.5),
           ("terminal fields", ("Terminal_dense", "Terminal_moderate", "Terminal_light"), "#56B4E9", 0.5),
           ("injection site", ("Injection_site",), "#ffffff", 0.9)]
+
+
+def text_mm(plt):
+    """a function (text) -> (width, height) mm of a figstyle.MIN_PT text, measured at figstyle's DPI (at the screen's 100,
+    hinting widens a 7 pt text by up to 8 %)"""
+    fig = plt.figure(figsize=(7, 2), dpi=FS.DPI); r = fig.canvas.get_renderer()
+    def T(s_):
+        t = fig.text(0, 0, s_, fontsize=FS.MIN_PT); e = t.get_window_extent(r); t.remove()
+        return e.width / fig.dpi * 25.4, e.height / fig.dpi * 25.4
+    return T
 
 
 def load(p):
@@ -213,7 +228,15 @@ def main(argv=None):
         why = "injection level" if inj[pick] else ("most labeled\n(site on a shared\nphotograph)" if has_site else "most labeled\n(no site annotated)")
         cache[S] = (carS, files, classes, A, pj, sec_sl)
         rows_out.append((S, pick, why))
-    W = FS.FULL_W_IN * 25.4; LEFT, GAP, TOP, RIGHT = 29.0, 3.0, 12.0, 3.0      # RIGHT: room for the R beside the first row
+    W, GAP, MG, pt = FS.FULL_W_IN * 25.4, FS.GUTTER_MM, FS.MARGIN_MM, 25.4 / 72
+    titles = ["(i) The section (darkfield),\nregistered to its photograph", "(ii) The blockface photograph",
+              "(iii) The MRI template (T2)\non the photograph's plane"]
+    T = text_mm(plt); plt.close("all")
+    t_h, ct_h = T("MM1, section 6")[1], max(T(t)[1] for t in titles)
+    DPAD = 1.0                                                             # pt: the L and R beside the first row
+    LEFT, RIGHT = MG + T("L")[0] + DPAD * pt, T("R")[0] + DPAD * pt + MG
+    HEAD = t_h + 2.0 * pt                                                  # a row's label line, 2 pt above its panels
+    TOP = MG + ct_h + TITLE_GAP_PT * pt + HEAD                              # the column titles above the first row's label
     pw = (W - LEFT - 2 * GAP - RIGHT) / 3
     disp = lambda v: np.flipud(np.swapaxes(v, 0, 1))  # noqa: E731      volume (x, z) -> display (rows dorsal up, columns x)
     rows, prepped = [], []
@@ -278,15 +301,13 @@ def main(argv=None):
               f"({bad_in} in the section); registered section at template y {ty[0]:.2f}..{ty[1]:.2f} mm", flush=True)
         prepped.append(dict(S=S, sid=sid, why=why, his=his, ph=ph, tb=ph.max(-1) > 8, t2=t2, bm=bm, reg=reg, lab=lab, lab3=lab3, px_b=px_b,
                             cb=cb, half=half, sls=sls, root=root, ty=ty, res=res, bad=int(bad.sum()), bad_in=bad_in))
-    tot_h = TOP + sum(pw * d["half"][0] / d["half"][1] + 9.0 for d in prepped) + 14
+    tot_h = TOP + sum(pw * d["half"][0] / d["half"][1] for d in prepped) + (len(prepped) - 1) * (GAP + HEAD) + GAP + t_h + MG
     fig = plt.figure(figsize=(FS.FULL_W_IN, tot_h / 25.4)); ycur = TOP
     ROWLAB, FIRST = [], []
     for r_i, d in enumerate(prepped):
         S, sid, why, half, sls, px_b, cb = (d[k] for k in ("S", "sid", "why", "half", "sls", "px_b", "cb"))
         ph_mm = pw * half[0] / half[1]
-        y0 = ycur; ycur += ph_mm + 9.0
-        titles = ["(i) the section (darkfield),\nregistered to its photograph", "(ii) the blockface photograph",
-                  "(iii) the MRI template (T2)\non the photograph's plane"]
+        y0 = ycur; ycur += ph_mm + GAP + HEAD
         for c_i in range(3):
             ax = FS.axes_mm(fig, LEFT + c_i * (pw + GAP), y0, pw, ph_mm)
             if c_i == 0:
@@ -299,19 +320,18 @@ def main(argv=None):
             for g, cls, col, lw in GROUPS:
                 contour(ax, (d["lab3"] if c_i == 2 else d["lab"])[g], px_b, col, lw)
             contour(ax, d["reg"], px_b, OUTLINE, 0.6)
-            FS.scalebar(ax, 1.0, 5, y_frac=BAR_BELOW_MM / ph_mm)
-            if r_i == 0:
-                FS.header(ax, titles[c_i], dx=0, dy=2)
+            if r_i == 0:                                                       # the column titles over the first row's label line
+                FS.header(ax, titles[c_i], dx=0, dy=HEAD / pt + TITLE_GAP_PT)
             if c_i == 0:
                 nsec = int(sid.split("_")[-1][1:3])
                 photo = f"photograph {sls[0]}" if len(sls) == 1 else "photographs " + ", ".join(map(str, sls[:-1])) + f" and {sls[-1]}"
-                ROWLAB.append(ax.annotate(f"{FS.label(S)}, section {nsec}\n{photo}", xy=(0, 0.5), xycoords="axes fraction", xytext=(-3, 0),
-                                          textcoords="offset points", ha="right", va="center", color=FS.FG, fontsize=FS.MIN_PT,
-                                          annotation_clip=False))
+                ROWLAB.append(FS.header(ax, f"{FS.label(S)}, section {nsec}, {photo}", dx=0, dy=2.0))   # the row's label, above it
             if r_i == 0:
                 FIRST.append(ax)
+            if c_i == 2:                                                       # zoomed: the row's bar on its label's line, top right
+                FS.scalebar_title(ax, 1.0, SB_MM, ROWLAB[-1])                   # (world-mm axes: 1 unit = 1 mm)
         if r_i == 0:                                                           # orientation letters once (neurological): row 1,
-            FS.dirs_row(FIRST[0], FIRST[-1], "coronal", pad=1.0, color=FS.FG, y=0.2)   # below its row label (mid-height)
+            FS.dirs_row(FIRST[0], FIRST[-1], "coronal", pad=DPAD, color=FS.FG, y=0.2)
         rows.append(dict(case=FS.label(S), section=sid, why=why, slices=sls, window_mm=[round(2 * half[0], 1), round(2 * half[1], 1)],
                          arm=d["root"].name, section_template_y_mm=[round(v, 2) for v in d["ty"]],
                          inverse_residual_mm=dict(median=float(f"{np.median(d['res']):.2e}"), max=float(f"{d['res'].max():.2e}"),
@@ -322,10 +342,10 @@ def main(argv=None):
     assert not l_.overlaps(ROWLAB[0].get_window_extent(rend)), "the L touches the first row's label"
     r_ = [t for t in FIRST[-1].texts if t.get_text() == "R"][0].get_window_extent(rend)
     assert r_.x1 / fig.dpi * 25.4 <= W - 0.1, "the R runs off the page"
-    lax = FS.axes_mm(fig, 4, ycur + 1, W - 8, 8); lax.axis("off"); lax.set_xlim(0, 100); lax.set_ylim(0, 1)
-    items = [(g, col, lw, "-") for g, cls, col, lw in GROUPS] + [("the registered section's outline", OUTLINE, 0.6, "-")]
+    lax = FS.axes_mm(fig, MG, ycur - HEAD, W - 2 * MG, t_h); lax.axis("off"); lax.set_xlim(0, 100); lax.set_ylim(0, 1)   # the key, a gutter under
+    items = [(g[0].upper() + g[1:], col, lw, "-") for g, cls, col, lw in GROUPS] + [("The registered section's outline", OUTLINE, 0.6, "-")]
     rnd = fig.canvas.get_renderer(); inv = lax.transData.inverted()
-    x, yrow = 1.0, 0.5
+    x, yrow = 0.0, 0.5
     for g, col, lw, ls in items:                                           # each entry placed after the measured end of the previous label
         t = lax.text(x + 4, yrow, g, va="center", color=FS.FG, fontsize=FS.MIN_PT)
         x1 = inv.transform(t.get_window_extent(rnd).get_points())[1, 0]

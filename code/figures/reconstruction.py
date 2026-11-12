@@ -12,11 +12,13 @@
      section's median brightness before and after correction
   f  marker tubes (an orange arrowhead beside each) before and after filling, on the section with the most tube voxels
   g  the reconstructed volume: coronal, sagittal and axial
-Two print scales: whole-brain views (a, c, d, g), which share one 10 mm scale bar at the figure's bottom-left corner, and zoomed
-views (b, e, f): b and f have their own 5 mm bars below them, and e's scale is its trace's mm axis (the reslices' own horizontal
-scale). Each bar has its length above it.
+Two print scales, whole-brain views (a, c, d, g) and zoomed views (b, e, f) at twice it, both raised by one factor until the
+columns fill the page with one gutter between them and between the rows (figstyle GUTTER_MM, MARGIN_MM; settings/figures.yaml
+reconstruction max_height_mm). The whole-brain views share one 10 mm scale bar in the bottom-left corner of g's row, beside the
+coronal view; the zoomed b, e and f have their 5 mm bars in the standard place, at their title's level, top right (figstyle
+scalebar_title; e's trace keeps its mm axis). Each bar has its length above it, and none adds room to the figure.
 A grid of three columns, (a, d, g coronal), (b, e, g sagittal), (c, f, g axial): each cell is a rectangle of its column's width, its
-content centered in it and its letter and topic at its left edge; the free width is shared as equal column spaces.
+content centered in it and its letter and topic at its left edge.
 Reads one brain's reconstruction ($LINC_PRODUCTS data/sub-<ID>/blockface: the photographs, 2D masks, the aligned stack, the color
 store before tube filling, the final volume, the tubes, the curated background and mask) and its settings/brains/<ID>.yaml.
 Display parameters: settings/figures.yaml `reconstruction`.
@@ -187,16 +189,19 @@ def arrow_up(ax, x, gap=0.4, size=4.5, color=None):
             transform=tr, clip_on=False, zorder=5)
 
 
+SUB_PT, SWATCH_PT = 1.5, 8.0                                         # sub-labels over their images (pt); a key swatch's length (pt)
+
+
 def head2(ax, top, sub, letter=None, sub_color=None, lift_mm=0.0):
     """Two header lines above a panel: the panel's letter and topic, then its sub-label (either may be empty). lift_mm raises
     both lines by that many print mm (a panel centered lower in its row keeps its headers on the row's top line)."""
     up = lift_mm * 72 / 25.4
     if letter:
         FS.letter(ax, letter, dy=12.5 + up)
-    if top:
-        FS.header(ax, top, dx=11 if letter else 0, dy=12.5 + up)
+    t = FS.header(ax, top, dx=11 if letter else 0, dy=12.5 + up) if top else None
     if sub:
-        FS.header(ax, sub, dx=0, dy=2.5 + up, color=sub_color or FS.FG)
+        FS.header(ax, sub, dx=0, dy=SUB_PT + up, color=sub_color or FS.FG)
+    return t
 
 
 def main():
@@ -400,24 +405,32 @@ def main():
     # the author's layout (15 Oct): a grid of three columns, (a, d, g coronal), (b, e, g sagittal), (c, f, g axial). Each cell is a
     # rectangle of its column's width; its content (images, direction letters, the trace's labels) is centered horizontally in
     # it, and its letter and topic start at its left edge, so the letters line up down each column. A column is as wide as its
-    # widest cell, and the grid spans the page between the margins with the free width shared as equal column spaces. The print
-    # scales are the house ones (the author, 15 Oct: "keep it consistent"); --fit-width instead multiplies both by the factor K
-    # that leaves GAP_C between the columns (626c1ea).
-    SUB, LEFT, TOP1, TR, GAP_C = 1.2, 5.0, 11.0, 14.0, 6.0             # TR: (e)'s trace height; GAP_C: the column space (--fit-width)
-    SB_BELOW, SB_BELOW_ARROWS = 3.4, 5.2                               # a zoom bar's line under its image (mm): its length fits above it
+    # widest cell. Space (the author, 12 Nov 2026: "optimize space ... less empty space"): one gutter GUT between the columns and
+    # between the rows (a row's lowest extent to the next row's headers), MARGIN at the page's edges, and both print scales
+    # multiplied by the largest K that fits the page's width (and max_height_mm); the scale bars sit in empty corners.
+    SUB, LEFT, TOP1, TR = 1.2, 5.0, 11.0, 14.0                         # TR: (e)'s trace height; LEFT, TOP1: where cells are first drawn
+    GUT, MARGIN, HMAX = FS.GUTTER_MM, FS.MARGIN_MM, CFG["max_height_mm"]   # the house space between panels and at the edges
     ESUB = SUB + 4.0                                                    # (e): room for its two column headers
-    RIGHT = FS.FULL_W_IN / FS.MM - LEFT
     COLS = (("a", "d", "g0"), ("b", "e", "g1"), ("c", "f", "g2"))
 
-    def sublab(ax, s, color=None):
-        """A two-image cell's sub-label above its own image (FS.header at dx 0, dy 2.5); not part of the cell's measured width."""
-        t_ = ax.annotate(s, xy=(0, 1), xycoords="axes fraction", xytext=(0, 2.5), textcoords="offset points", annotation_clip=False,
-                         fontsize=FS.MIN_PT, ha="left", va="bottom", color=color or FS.FG)
+    def sublab(ax, s, swatch=None):
+        """A two-image cell's sub-label above its own image (SUB_PT over it); not part of the cell's measured width. swatch = (color,
+        line width): a short line in a trace's color and width before the word, so the label is also the trace's key (Fig. 3 e)."""
+        dx = 0.0
+        if swatch is not None:
+            fw = ax.get_position().width * ax.figure.get_size_inches()[0] * 72           # the axes' width (pt)
+            tr_ = mtrans.offset_copy(ax.transAxes, fig=ax.figure, x=0, y=SUB_PT + 3.3, units="points")   # the word's middle
+            ax.plot([0, SWATCH_PT / fw], [1, 1], transform=tr_, color=swatch[0], lw=swatch[1], solid_capstyle="butt", clip_on=False)
+            dx = SWATCH_PT + 2.5
+        t_ = ax.annotate(s, xy=(0, 1), xycoords="axes fraction", xytext=(dx, SUB_PT), textcoords="offset points", annotation_clip=False,
+                         fontsize=FS.MIN_PT, ha="left", va="bottom", color=FS.FG)
         t_.set_in_layout(False)
+        return t_
 
-    def render(K):
-        """The figure at print scales K x (WS, ZS), every cell drawn at x = LEFT (the grid then moves it). Returns the figure, each
-        cell's axes and the rows' tops and heights (mm)."""
+    def render(K, tops=None, Hf=None):
+        """The figure at print scales K x (WS, ZS), every cell drawn at x = LEFT (the grid then moves it), the rows at `tops` and the
+        figure Hf mm tall (default: provisional ones, to measure). Returns the figure, each cell's axes and the rows' tops and
+        heights (mm)."""
         ws, zs = WS * K, ZS * K
         aw, ah = sw * 1.12 * ws, sh * 1.12 * ws
         cpw, cph = (yc1 - yc0 + 2.0) * ws, (zt_c - zb_c + 2.0) * ws
@@ -428,12 +441,12 @@ def main():
         H2 = max(dh, fh, eh + 2.0 + TR)
         gbox = [(nm, img, e_, ctr, ww_ * 1.08 * ws, hh_ * 1.08 * ws) for nm, img, e_, ctr, ww_, hh_ in gbase]
         H3 = max(b_[5] for b_ in gbox)
-        TOP2 = TOP1 + H1 + 15.0; TOP3 = TOP2 + H2 + 15.0
-        fig = plt.figure(figsize=(FS.FULL_W_IN, (TOP3 + H3 + 6.0) * FS.MM))
+        T1, T2, T3 = tops if tops else (TOP1, TOP1 + H1 + 15.0, TOP1 + H1 + 15.0 + H2 + 15.0)
+        fig = plt.figure(figsize=(FS.FULL_W_IN, (Hf if Hf else T3 + H3 + 6.0) * FS.MM))
         cell, x_ = {}, LEFT
 
         # (a)
-        ax = FS.axes_mm(fig, x_, TOP1, aw, ah); cell["a"] = [ax]
+        ax = FS.axes_mm(fig, x_, T1, aw, ah); cell["a"] = [ax]
         ax.imshow(np.asarray(th), extent=pext, origin="upper", aspect="auto")
         ax.contour(np.linspace(0, pext[1], th.size[0]), np.linspace(pext[3], 0, th.size[1]), pm_th.astype(float), levels=[0.5],
                    colors=[FS.COL["outline"]], linewidths=0.6)
@@ -441,18 +454,16 @@ def main():
 
         # (b)
         axb = []
-        for n, (img, vt, vb, lab) in enumerate(((P.rgb01(rs[:, ob]), v_top, 0.0, "photographs"),
-                                                 (P.rgb01(sg[:, ob]), ztop, zbot, "aligned"))):
-            ax = FS.axes_mm(fig, x_ + n * (bw_ + SUB), TOP1, bw_, bh_); axb.append(ax)
+        for n, (img, vt, vb, lab) in enumerate(((P.rgb01(rs[:, ob]), v_top, 0.0, "Photographs"),
+                                                 (P.rgb01(sg[:, ob]), ztop, zbot, "Aligned"))):
+            ax = FS.axes_mm(fig, x_ + n * (bw_ + SUB), T1, bw_, bh_); axb.append(ax)
             strip(ax, img, yb[ob], vt, vb, bspan, bh_ / zs)
             arrow_up(ax, yj)
             sublab(ax, lab)
-            if n == 0:                                                 # below the arrowheads (0.4-2.0 mm under the strip), its length too
-                FS.scalebar(ax, 1.0, 5.0, y_frac=SB_BELOW_ARROWS / bh_)
         FS.dirs_row(axb[0], axb[1], "sagittal"); cell["b"] = axb
 
         # (c) every interpolated section of the stack: orange ticks below a sagittal reslice of the aligned stack (camera column)
-        ax = FS.axes_mm(fig, x_, TOP1, cpw, cph); cell["c"] = [ax]
+        ax = FS.axes_mm(fig, x_, T1, cpw, cph); cell["c"] = [ax]
         ax.imshow(P.rgb01(sgc[:, oa]), extent=(yall[oa][0], yall[oa][-1], zbot, ztop), origin="upper", aspect="auto")
         window(ax, (0.5 * (yc0 + yc1), 0.5 * (zt_c + zb_c)), cpw / ws, cph / ws)
         ax.vlines(section_y(As, interp), -0.10, -0.015, transform=mtrans.blended_transform_factory(ax.transData, ax.transAxes),
@@ -460,7 +471,7 @@ def main():
         FS.dirs(ax, "sagittal")
 
         # (d) the 3D mask on the unmasked aligned stack (the 3D model's grid), sagittal
-        ax = FS.axes_mm(fig, x_, TOP2, dw, dh); cell["d"] = [ax]
+        ax = FS.axes_mm(fig, x_, T2, dw, dh); cell["d"] = [ax]
         ax.imshow(P.rgb01(np.rot90(bg[xm])) * np.where(np.rot90(mk[xm]), 1.0, DIM)[..., None], extent=ext_b, origin="upper",
                   aspect="auto")
         ys_ = np.linspace(ext_b[0], ext_b[1], bg.shape[1]); zz_ = np.linspace(ext_b[3], ext_b[2], bg.shape[2])
@@ -469,32 +480,27 @@ def main():
 
         # (e)
         axe = []
-        for n, (img, vt, vb, lab) in enumerate(((np.clip(re_[:, oe] / np.percentile(re_[re_ > 0], 99.5), 0, 1), v_top, 0.0, "photographs"),
-                                                 (P.rgb01(sge[:, oe]), ztop, zbot, "corrected"))):
-            ax = FS.axes_mm(fig, x_ + n * (ew + ESUB), TOP2, ew, eh); axe.append(ax)
+        for n, (img, vt, vb, lab) in enumerate(((np.clip(re_[:, oe] / np.percentile(re_[re_ > 0], 99.5), 0, 1), v_top, 0.0, "Photographs"),
+                                                 (P.rgb01(sge[:, oe]), ztop, zbot, "Corrected"))):
+            ax = FS.axes_mm(fig, x_ + n * (ew + ESUB), T2, ew, eh); axe.append(ax)
             strip(ax, img, ye[oe], vt, vb, espan, eh / zs)
-            sublab(ax, lab, FS.COL["uncorrected"] if n == 0 else FS.COL["corrected"])        # item 12: the key, as the traces
+            sublab(ax, lab, swatch=(FS.COL["uncorrected"], 0.7) if n == 0 else (FS.COL["corrected"], 0.9))   # the headers are the key
             arrow_up(ax, ys0, gap=0.2 if n == 0 else 0.4, size=4.0 if n == 0 else 4.5)
         FS.dirs_row(axe[0], axe[1], "sagittal")
-        axp = FS.axes_mm(fig, x_, TOP2 + eh + 2.0, ew, TR)
+        axp = FS.axes_mm(fig, x_, T2 + eh + 2.0, ew, TR)
         axp.plot(ye[oe], rel_raw[oe], color=FS.COL["uncorrected"], lw=0.7)          # item 12: distinct lookup colors
         axp.plot(ye[oe], rel_cor[oe], color=FS.COL["corrected"], lw=0.9)
         lo_ = np.floor((np.nanmin(rel_raw) - 0.02) * 20) / 20; hi_ = np.ceil((np.nanmax(rel_raw) + 0.01) * 50) / 50
         axp.set_xlim(*axe[0].get_xlim()); axp.set_ylim(min(lo_, 0.95), max(hi_, 1.04))      # every photographed value inside
-        # the key (the author, 2 Oct: color-coded, with a key): two fixed lines right of the plot, a line sample + the name in its
-        # color, independent of the traces' values (a value-anchored label can run into the reslices above)
-        for q_, (t_, c_) in enumerate((("— photographs", FS.COL["uncorrected"]), ("— corrected", FS.COL["corrected"]))):
-            axp.annotate(t_, xy=(1, 0.80 - 0.28 * q_), xycoords="axes fraction", xytext=(3, 0), textcoords="offset points",
-                         ha="left", va="center", fontsize=FS.MIN_PT, color=c_, annotation_clip=False)   # right of the plot
         xl = sorted(axp.get_xlim()); dd = [v for v in range(-30, 31, 5) if xl[0] <= ys0 + v <= xl[1]]
         axp.set_xticks([ys0 + v for v in dd]); axp.set_xticklabels([f"{v:d}".replace("-", "−") for v in dd])
-        axp.set_xlabel("distance from the step (mm)", labelpad=1.5)
+        axp.set_xlabel("Distance from the step (mm)", labelpad=1.5)
         axp.axvline(ys0, color=FS.GRAY, lw=0.5, ls=(0, (1, 1.5)), zorder=0)
         yl_ = axp.get_ylim(); axp.set_yticks([t for t in np.arange(0.5, 1.21, 0.1) if yl_[0] - 1e-9 <= t <= yl_[1] + 1e-9])
         axp.yaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter("%.1f")); axp.tick_params(length=2, pad=1)
         for sp in ("top", "right"):
             axp.spines[sp].set_visible(False)
-        axp.annotate("median\nbrightness\n(relative)", xy=(0, 0.5), xycoords="axes fraction", xytext=(-15, 0), textcoords="offset points",
+        axp.annotate("Median\nbrightness\n(relative)", xy=(0, 0.5), xycoords="axes fraction", xytext=(-15, 0), textcoords="offset points",
                      ha="right", va="center", multialignment="right", fontsize=FS.MIN_PT, linespacing=1.1, annotation_clip=False)
         cell["e"] = axe + [axp]
         rec["intensity"].update(relative_median_sd=dict(photographs=sd(med_raw), corrected=sd(med_cor), sections="photographed only"),
@@ -504,8 +510,8 @@ def main():
 
         # (f)
         axf = []
-        for n, (vol, A_, lab) in enumerate(((col, Ac, "before"), (fin, Af, "filled"))):
-            ax = FS.axes_mm(fig, x_ + n * (fw + SUB), TOP2, fw, fh); axf.append(ax)
+        for n, (vol, A_, lab) in enumerate(((col, Ac, "Before"), (fin, Af, "Filled"))):
+            ax = FS.axes_mm(fig, x_ + n * (fw + SUB), T2, fw, fh); axf.append(ax)
             e_ = P.extent_coronal(vol[:, kt], A_)
             ax.imshow(soft(P.rgb01(np.rot90(vol[:, kt])), *SOFT_F), extent=e_, origin="upper", aspect="auto")
             xs_ = np.linspace(ext_f[0], ext_f[1], col.shape[0]); zz2 = np.linspace(ext_f[3], ext_f[2], col.shape[2])
@@ -514,13 +520,11 @@ def main():
                         mew=0, ls="none", color=FS.COL["pred"])
             window(ax, (cxh, czh), fw / zs, fh / zs)
             sublab(ax, lab)
-            if n == 0:
-                FS.scalebar(ax, 1.0, 5.0, y_frac=SB_BELOW / fh)
         cell["f"] = axf
 
         # (g) the reconstructed volume: coronal, sagittal, axial, each centered vertically on the row (the axial is the tallest)
         for q, (nm, img, e_, ctr, ww_, hh_) in enumerate(gbox):
-            ax = FS.axes_mm(fig, x_, TOP3 + (H3 - hh_) / 2, ww_, hh_); cell[f"g{q}"] = [ax]
+            ax = FS.axes_mm(fig, x_, T3 + (H3 - hh_) / 2, ww_, hh_); cell[f"g{q}"] = [ax]
             ax.imshow(soft(P.rgb01(img), *SOFT_G), extent=e_, origin="upper", aspect="auto")
             window(ax, ctr, ww_ / ws, hh_ / ws)
             if q == 0:
@@ -531,7 +535,7 @@ def main():
                 for xy, off, t_, va in (((0.5, 1), (0, 2), "A", "bottom"), ((0.5, 0), (0, -2), "P", "top")):
                     ax.annotate(t_, xy=xy, xycoords="axes fraction", xytext=off, textcoords="offset points", ha="center", va=va,
                                 fontsize=FS.MIN_PT, color=FS.GRAY, annotation_clip=False)
-        return fig, cell, dict(top=(TOP1, TOP2, TOP3), h=(H1, H2, H3))
+        return fig, cell, dict(top=(T1, T2, T3), h=(H1, H2, H3))
 
     def span(fig, axs, frames_only=False):
         """A cell's horizontal extent (print mm): its frames and everything printed beside them (letters, ticks, labels, key);
@@ -540,33 +544,86 @@ def main():
         bb_ = mtrans.Bbox.union([ax.get_window_extent(r_) if frames_only else ax.get_tightbbox(r_) for ax in axs])
         return bb_.x0 / fig.dpi * 25.4, bb_.x1 / fig.dpi * 25.4
 
-    K = 1.0                                                            # the house print scales
-    fig, cell, rows = render(K)
-    ext = {s: span(fig, v) for s, v in cell.items()}
-    Wc = [max(ext[s][1] - ext[s][0] for s in col_) for col_ in COLS]
-    G = (RIGHT - LEFT - sum(Wc)) / 2
-    assert G >= 3.0, f"columns too wide: spaces {G:.1f} mm (columns {[round(w, 1) for w in Wc]})"
-    Xc = [LEFT, LEFT + Wc[0] + G, LEFT + Wc[0] + G + Wc[1] + G]
-    Wf = fig.get_size_inches()[0] * 25.4
-    for i, col_ in enumerate(COLS):
-        for s in col_:
-            dx = Xc[i] + Wc[i] / 2 - (ext[s][0] + ext[s][1]) / 2             # the cell's content centered in its rectangle
-            for ax in cell[s]:
-                p_ = ax.get_position(); ax.set_position([p_.x0 + dx / Wf, p_.y0, p_.width, p_.height])
-    FS.dirs(cell["g2"][0], "axial")                                    # (g) the axial view's L and R, after the layout: the grid is unchanged
-    # each rectangle's header: the letter and topic at its left edge; a one-image cell's sub-label under them (the two-image cells'
-    # sub-labels sit above their own images)
-    HEAD = dict(a=("photograph", ""), b=("camera jump", ""), c=("interpolated sections", "aligned stack, sagittal"), d=("3D mask", ""),
-                e=("intensity correction", ""), f=("marker tubes, coronal", ""), g0=("reconstructed volume", "coronal"),
-                g1=("", "sagittal"), g2=("", "axial"))
-    for r_, row in enumerate(zip(*COLS)):
-        for i, s in enumerate(row):
-            rect = FS.axes_mm(fig, Xc[i], rows["top"][r_], Wc[i], rows["h"][r_]); rect.set_axis_off()
-            head2(rect, *HEAD[s], s[0] if s[0] != "g" or s == "g0" else None)
-    # ONE 10 mm bar for every whole-brain view (a, c, d, g), at the figure's bottom-left corner (the left column's edge)
-    FS.scalebar_mm(fig, Xc[0], fig.get_size_inches()[1] * 25.4 - 2.0, 10.0, WS * K)
+    HEAD = dict(a=("Photograph", ""), b=("Camera jump", ""), c=("Interpolated sections", "Aligned stack"), d=("3D mask", ""),
+                e=("Intensity correction", ""), f=("Marker tubes", ""), g0=("Reconstructed volume", ""), g1=("", ""), g2=("", ""))
+    # the planes are in the caption; the direction letters show each view (the author, 12 Nov 2026)
+    PAGE = FS.FULL_W_IN / FS.MM
+
+    def build(K, tops=None, Hf=None):
+        """render(K, tops, Hf), then the grid: each column as wide as its widest cell, the columns between the margins with equal
+        spaces G, each cell's content centered in its rectangle, each rectangle's header (letter and topic at its left edge; a
+        one-image cell's sub-label under them, the two-image cells' sub-labels above their own images)."""
+        fig, cell, rows = render(K, tops, Hf)
+        ext = {s_: span(fig, v) for s_, v in cell.items()}
+        Wc = [max(ext[s_][1] - ext[s_][0] for s_ in col_) for col_ in COLS]
+        G = (PAGE - 2 * MARGIN - sum(Wc)) / 2
+        Xc = [MARGIN, MARGIN + Wc[0] + G, MARGIN + Wc[0] + G + Wc[1] + G]
+        Wf = fig.get_size_inches()[0] * 25.4
+        for i, col_ in enumerate(COLS):
+            for s_ in col_:
+                dx = Xc[i] + Wc[i] / 2 - (ext[s_][0] + ext[s_][1]) / 2         # the cell's content centered in its rectangle
+                for ax in cell[s_]:
+                    p_ = ax.get_position(); ax.set_position([p_.x0 + dx / Wf, p_.y0, p_.width, p_.height])
+        FS.dirs(cell["g2"][0], "axial")                                # (g) the axial view's L and R, after the layout: the grid is unchanged
+        rects, titles = [[], [], []], {}
+        for r_, row in enumerate(zip(*COLS)):
+            for i, s_ in enumerate(row):
+                rect = FS.axes_mm(fig, Xc[i], rows["top"][r_], Wc[i], rows["h"][r_]); rect.set_axis_off(); rects[r_].append(rect)
+                titles[s_] = head2(rect, *HEAD[s_], s_[0] if s_[0] != "g" or s_ == "g0" else None,
+                                   lift_mm=0.0 if r_ < 2 else -(12.5 - SUB_PT) / 72 * 25.4)   # (g) has no sub-label line: its title on it
+        for s_ in ("b", "e", "f"):                                     # the zoomed panels' bars: at their title's level, top right
+            FS.scalebar_title(cell[s_][1], 1.0, 5.0, titles[s_])
+        return fig, cell, rows, Xc, Wc, G, rects
+
+    def row_extent(fig, cell, rects):
+        """Each row's vertical extent (figure mm from the top, top and bottom): its cells' tight boxes and its headers."""
+        r_ = fig.canvas.get_renderer(); Hf = fig.get_size_inches()[1] * 25.4
+        out = []
+        for k_, row in enumerate(zip(*COLS)):
+            bb_ = mtrans.Bbox.union([ax.get_tightbbox(r_) for s_ in row for ax in cell[s_]] + [rc.get_tightbbox(r_) for rc in rects[k_]])
+            out.append((Hf - bb_.y1 / fig.dpi * 25.4, Hf - bb_.y0 / fig.dpi * 25.4))
+        return out
+
+    def packed(K):
+        """The rows packed at print scales K x (WS, ZS): MARGIN above the first row's headers and below the last row, GUT between a
+        row's lowest extent and the next row's headers. Returns the tops and the figure height (mm)."""
+        fig, cell, rows, Xc, Wc, G, rects = build(K)
+        ext = row_extent(fig, cell, rects); plt.close(fig)
+        above = [rows["top"][k_] - ext[k_][0] for k_ in range(3)]; below = [ext[k_][1] - rows["top"][k_] for k_ in range(3)]
+        t1 = MARGIN + above[0]; t2 = t1 + below[0] + GUT + above[1]; t3 = t2 + below[1] + GUT + above[2]
+        return (t1, t2, t3), t3 + below[2] + MARGIN
+
+    def gap(K):
+        fig, _, _, _, _, G, _ = build(K); plt.close(fig)
+        return G
+
+    # the print scales: both x K, the largest that leaves GUT between the columns (a column's width is affine in K: its images
+    # scale, its letters and labels do not), lowered if the figure would be taller than its max_height_mm
+    g0_, g1_ = gap(1.0), gap(1.25)
+    K = 1.0 + (g0_ - GUT) / (g0_ - g1_) * 0.25
+    for _ in range(4):
+        gk = gap(K)
+        if abs(gk - GUT) < 0.02:
+            break
+        K += (gk - GUT) / ((g0_ - g1_) / 0.25)
+    tops, Hf = packed(K)
+    if Hf > HMAX:                                                       # the height binds: K from the packed height, affine in K too
+        t_lo, H_lo = packed(0.9 * K)
+        K = 0.9 * K + (HMAX - H_lo) / ((Hf - H_lo) / (0.1 * K)); tops, Hf = packed(K)
+    fig, cell, rows, Xc, Wc, G, rects = build(K, tops, Hf)
+    assert G >= GUT - 0.05, f"columns too wide: spaces {G:.2f} mm"
+    # ONE 10 mm bar for every whole-brain view (a, c, d, g): the bottom-left corner of g's row beside its coronal view, which is
+    # shorter than the row (the axial view sets its height), so the bar adds no room; inside the coronal panel's empty corner if
+    # the row leaves too little below it
+    p0 = cell["g0"][0].get_position(); g0_bot = (1 - p0.y0) * Hf
+    if tops[2] + rows["h"][2] - g0_bot >= 3.6:
+        FS.scalebar_mm(fig, Xc[0], tops[2] + rows["h"][2] - 0.3, 10.0, WS * K)
+        shared_bar = "below the coronal view, the row's bottom-left corner"
+    else:
+        FS.scalebar_in(cell["g0"][0], 1.0, 10.0, corner="bottom left"); shared_bar = "in the coronal view's bottom-left corner"
     rec["print_scale"] = dict(whole=round(WS * K, 4), zoom=round(ZS * K, 4), factor=round(K, 4), house=dict(whole=WS, zoom=ZS))
-    rec["grid"] = dict(columns_mm=[round(w, 2) for w in Wc], space_mm=round(G, 2), margin_mm=LEFT)
+    rec["grid"] = dict(columns_mm=[round(w, 2) for w in Wc], space_mm=round(G, 2), margin_mm=MARGIN, gutter_mm=GUT,
+                       row_tops_mm=[round(t, 2) for t in tops], height_mm=round(Hf, 1), max_height_mm=HMAX, shared_bar=shared_bar)
     ins = [f"{bd}/00_slices", f"{bd}/01_brainmask/01_final", f"{bd}/{S}.info", f"{bd}/02_blockface.ome.zarr", c.color_store,
            c.final_zarr("blockface"), c.final("holes"), f"{bd}/curated/{S}_bg.nii.gz", f"{bd}/curated/{S}_mask_edited.nii.gz"]
     FS.save(fig, a.out, ins, " ".join(["code/figures/reconstruction.py"] + sys.argv[1:]), md5=False, extra=rec)

@@ -10,9 +10,12 @@ mapped into the MRI template by the registration d2bs8_s5sym, inside its own mas
 channel (it stays in the release as the registration target for new brains).
 Orientation: figstyle.section() (neurological; sagittal anterior-right; axial anterior-up). One true scale for every panel (print mm
 per tissue mm, the largest that fits the columns across 178 mm; written to the provenance), each panel cropped to the brain + 0.75 mm.
-Direction letters outside the first and last panels of each row; one 10 mm scale bar, its length above it, at the figure's
-bottom-left corner; colorbars (and the direction-color key) below the columns. Windows: 0-1; T2 and the blockface channel normalized to their in-brain 99.5th percentile; MD 2nd-99.5th percentile of the
-tissue mode (voxels above a quarter of the median, brain eroded 0.5 mm; um^2/ms). Display bilinear.
+No row labels: the caption names the planes and the direction letters show the view (the author, 12 Nov 2026). Direction letters
+outside the first and last panels of each row; one space (GAP) between columns and between rows; the left margin as wide as the
+letters need; one 10 mm scale bar, its length above it, at the bottom left (--bar strip: a strip under the color bars as tall as the
+bar needs with 1.5 mm to the labels; --bar corner: the empty place nearest the bottom left inside the layout), placed by
+figstyle.scalebar_free (measured, 1.5 mm clear of tissue and of every text); colorbars (and the direction-color key) below the columns. Windows: 0-1; T2 and the blockface channel normalized to their in-brain 99.5th percentile; MD 2nd-99.5th
+percentile of the tissue mode (voxels above a quarter of the median, brain eroded 0.5 mm; um^2/ms). Display bilinear.
 Reads (settings/internal/products_mri*.yaml): template_mri/linc_mri_{brainmask,T2,frac1,frac2,FA,MD,DEC}.nii.gz,
 template2template/d2bs8_s5sym/d2bs8_s5sym{,_mask}_in_mri_template.nii.gz, numbers_of_record/acpc.json.
 Writes the PNG and <name>.provenance.json beside it.
@@ -33,22 +36,25 @@ from shared import paths                                         # noqa: E402
 
 PREFIX = "linc_mri"                                            # the MRI channels' file prefix
 BF_MAP = "d2bs8_s5sym"                                         # the registration that maps the blockface template into the MRI template
-CH = [("T2", "T2-weighted", "gray"), ("frac1", "soma fraction", "turbo"),
-      ("frac2", "neurite fraction", "turbo"), ("FA", "FA", "gray"), ("MD", "MD", "gray"), ("DEC", "principal direction", None),
-      ("BF", "blockface channel", "gray")]
+CH = [("T2", "T2-weighted", "gray"), ("frac1", "Soma fraction", "turbo"),
+      ("frac2", "Neurite fraction", "turbo"), ("FA", "FA", "gray"), ("MD", "MD", "gray"), ("DEC", "Principal direction", None),
+      ("BF", "Blockface channel", "gray")]
 FIXED = {"frac1": (0, 1), "frac2": (0, 1), "FA": (0, 1)}
-CBLAB = {"T2": "normalized", "frac1": "fraction", "frac2": "fraction", "FA": "FA", "MD": "µm²/ms", "BF": "normalized"}
+CBLAB = {"T2": "Normalized", "frac1": "Fraction", "frac2": "Fraction", "FA": "FA", "MD": "µm²/ms", "BF": "Normalized"}
 BF_GAP = 2.5                                                   # extra gap (mm) before the mapped blockface column
 PAD_MM, X_SAG = 0.75, 2.0                                      # crop margin (mm); sagittal plane (NMT v2 x, mm)
 SCALEBAR_MM = 10
 DEC_GAMMA = 1.6                                                # display gamma of the direction colors (read at print size)
-LEFT, RIGHT, GAP_C, GAP_R, TOP, CB_H, BOTTOM = 21.0, 3.5, 1.2, 3.2, 5.0, 9.0, 1.0      # mm
-SB_X, SB_UP = 2.0, 0.6                                         # the scale bar: its left edge, and its line above the bottom margin (mm)
+RIGHT, GAP, TOP, CB_H, BOTTOM = 3.5, 1.2, 5.0, 9.0, 1.0      # mm; GAP: the one space between columns and between rows
+LETTER_OFF_PT = 2                                              # the direction letters' distance from the panels (pt)
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", default="figures/template.png")
+    ap.add_argument("--bar", choices=["strip", "corner"], default="strip",
+                    help="strip: the bar at the bottom-left, in a strip under the color bars (the length's height + 1.5 mm); "
+                         "corner: the measured empty place nearest the bottom left inside the layout (no strip)")
     a = ap.parse_args()
     PR = {**paths.products("products_mri"), **paths.products("products_mri_figures")}
     import matplotlib
@@ -78,10 +84,17 @@ def main():
     ext = {pl: ((b[3] - b[2]) * vx, (b[1] - b[0]) * vx) for pl, b in boxes.items()}   # (width, height) mm of tissue
     ncol = len(CH)
     colw_t = max(w for w, _ in ext.values())                   # widest panel (tissue mm) sets the column width
-    scale = (S.FULL_W_IN * 25.4 - LEFT - RIGHT - (ncol - 1) * GAP_C - BF_GAP) / (ncol * colw_t)
+    f_ = plt.figure(); r_ = f_.canvas.get_renderer()             # the left margin: the widest row label, its offset, the page margin
+    wlab = max(f_.text(0, 0, S.DIRS[pl][0], fontsize=S.MIN_PT).get_window_extent(r_).width / f_.dpi * 25.4 for pl in planes)
+    bar_h = (f_.text(0, 0, f"{SCALEBAR_MM} mm", fontsize=S.MIN_PT).get_window_extent(r_).height / f_.dpi * 25.4
+             + (2.0 + 1.2) / 72 * 25.4)                           # the bar and its length: the text, its 2 pt gap, the line
+    plt.close(f_)
+    LEFT = S.MARGIN_MM + wlab + LETTER_OFF_PT / 72 * 25.4                 # the left letters only (no row labels: the caption names the planes)
+    scale = (S.FULL_W_IN * 25.4 - LEFT - RIGHT - (ncol - 1) * GAP - BF_GAP) / (ncol * colw_t)
     colw = colw_t * scale
     rowh = [ext[pl][1] * scale for pl in planes]
-    H = TOP + sum(rowh) + GAP_R * len(planes) + CB_H + BOTTOM
+    BOT = BOTTOM + (bar_h + S.CLEAR_MM if a.bar == "strip" else 0.0)
+    H = TOP + sum(rowh) + GAP * len(planes) + CB_H + BOT
     fig = plt.figure(figsize=(S.FULL_W_IN, H / 25.4))
     inputs = [P("brainmask"), acpc]
     for j, (key, title, cmap) in enumerate(CH):
@@ -105,7 +118,7 @@ def main():
                 lo, hi = np.percentile(w, [2, 99.5])                  # MD is bimodal: a low rim tail and the tissue mode
             elif key in FIXED:
                 lo, hi = FIXED[key]
-        x_col = LEFT + j * (colw + GAP_C) + (BF_GAP if key == "BF" else 0.0)
+        x_col = LEFT + j * (colw + GAP) + (BF_GAP if key == "BF" else 0.0)
         y = TOP; im = None
         for r, pl in enumerate(planes):
             r0, r1, c0, c1 = boxes[pl]
@@ -126,16 +139,14 @@ def main():
             if j == 0:
                 ax.annotate(S.DIRS[pl][0], xy=(0, 0.5), xycoords="axes fraction", xytext=(-2, 0), textcoords="offset points",
                             ha="right", va="center", color=S.GRAY, annotation_clip=False)      # left letter before the first column
-                ax.annotate(f"{pl}\n{pos[pl]}", xy=(0, 0.5), xycoords="axes fraction", xytext=(-16, 0), textcoords="offset points",
-                            ha="right", va="center", color=S.FG, annotation_clip=False)
             if j == ncol - 1:                                     # right letter after the last column
                 ax.annotate(S.DIRS[pl][1], xy=(1, 0.5), xycoords="axes fraction", xytext=(2 + (colw - pw) / 2 / 25.4 * 72, 0),
                             textcoords="offset points", ha="left", va="center", color=S.GRAY, annotation_clip=False)
-            y += ph + GAP_R
+            y += ph + GAP
         cax = S.axes_mm(fig, x_col + 0.18 * colw, y + 1.0, 0.64 * colw, 1.6)    # narrower: neighboring tick labels stay apart
         if rgb:
             cax.set_axis_off()
-            for k, (txt, c) in enumerate((("left–right", "#ff4040"), ("anterior–posterior", "#40d040"), ("dorsal–ventral", "#8fb0ff"))):
+            for k, (txt, c) in enumerate((("Left–right", "#ff4040"), ("Anterior–posterior", "#40d040"), ("Dorsal–ventral", "#8fb0ff"))):
                 cax.annotate(txt, xy=(0.5, 1.2 - 1.6 * k), xycoords="axes fraction", ha="center", va="top", color=c, annotation_clip=False)
         else:
             cb = fig.colorbar(im, cax=cax, orientation="horizontal")
@@ -145,13 +156,15 @@ def main():
             else:                                                          # 0-1 bars: short labels "0", "0.5", "1"
                 cb.set_ticks([0, 0.5, 1]); cb.ax.set_xticklabels(["0", "0.5", "1"])
             cb.set_label(CBLAB[key], labelpad=1)
-    S.scalebar_mm(fig, SB_X, H - BOTTOM - SB_UP, SCALEBAR_MM, scale)   # ONE scale bar, at the figure's bottom-left corner
+    S.scalebar_free(fig, SCALEBAR_MM, scale, (S.MARGIN_MM, LEFT + colw, TOP, H - BOTTOM))   # ONE scale bar: the first column's empty
+                                                                                         # corner nearest the bottom left
     out = Path(a.out); out.parent.mkdir(parents=True, exist_ok=True)
     S.save(fig, str(out), inputs, cmd=" ".join(["python"] + sys.argv),
-           extra=dict(print_mm_per_tissue_mm=round(scale, 4), sections=pos, scalebar_mm=SCALEBAR_MM,
+           extra=dict(print_mm_per_tissue_mm=round(scale, 4), sections=pos, scalebar_mm=SCALEBAR_MM, scalebar_place=a.bar,
+                      height_mm=round(H, 1),
                       orientation="neurological; sagittal anterior-right; axial anterior-up (figstyle.section)"))
     plt.close(fig)
-    print(f"-> {out}  scale {scale:.3f} print mm per tissue mm; {pos}")
+    print(f"-> {out}  scale {scale:.3f} print mm per tissue mm, height {H:.1f} mm, bar {a.bar}; {pos}")
 
 
 if __name__ == "__main__":

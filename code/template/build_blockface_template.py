@@ -3,7 +3,10 @@
 
 You need
   settings/env/linc.yml for every step ($PY_MRI names the same Python for the [mri] steps); a GPU with MMORF 1.0.1 (FSL's MultiMOdal
-  Registration Framework, in settings/env/linc.yml; one 48 GB card, at the batch in settings/blockface_template.yaml) for the two [driver] steps, and the edited template
+  Registration Framework, in settings/env/linc.yml) for the two [driver] steps: MMORF's tasks are small on the card, the first stage's
+  8 at a time (settings/blockface_template.yaml batch) peaked at 8.2 GB (rerun of 4-5 Nov), and in the paper's run step 8's 4 at a time
+  never left less than 42.4 GB of a 48 GB card free when a task started (its dispatch log, 130 starts), so under about 6 GB; the paper
+  ran on RTX 6000 Ada (48 GB) cards, alone (MMORF once failed to allocate its memory beside other jobs); and the edited template
   construction driver (LINC_BLOCKFACE_DRIVER, code/template/patches: the blockface edits, not the MRI build's); LINC_MMORF_EXE and FSLDIR;
   under $LINC_PRODUCTS (settings/internal/products_blockface.yaml, products_completion.yaml): every member brain's volume with its missing
   sections synthesized, and the synthesis cache; the MRI template's frames, b0 and mask; the bridge (the rigid transform between

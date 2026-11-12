@@ -41,7 +41,35 @@
     "rigid",
     "affine"
    ],
-   "resolution_mm": 0.034,
+   "resolution_mm": {
+    "per_brain": {
+     "MF204": 0.043,
+     "MF275": 0.026,
+     "MF278": 0.026,
+     "MF282": 0.026,
+     "MR243": 0.02,
+     "MR244": 0.02,
+     "MR247": 0.02,
+     "MR248": 0.02,
+     "MR249": 0.02,
+     "MR250": 0.02,
+     "MR251": 0.02,
+     "MR252": 0.02,
+     "MR253": 0.02,
+     "MR254": 0.02,
+     "MR256": 0.02,
+     "MR257": 0.02,
+     "MR261": 0.02,
+     "MR263": 0.02,
+     "MR273": 0.026
+    },
+    "values": [
+     0.02,
+     0.026,
+     0.043
+    ],
+    "rule": "each brain's photographs at full resolution, at their own pixel size (the reconstruction vx)"
+   },
    "per_brain": {
     "MF191": 0,
     "MF196": 0,

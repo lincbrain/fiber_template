@@ -30,7 +30,7 @@ bf_template:
   margin_mm: [1.0, 1.0, 1.0]          # black around the template's brain box (x, y, z), the 3D box the views are cut from
   post_mm: 4.0                        # ... and this much more behind the occipital pole
   fill_margin_mm: 0.5                 # each view: its own section's brain box + this
-  colorbar_mm: 17.0                   # width reserved for the color bar, its ticks and its title
+  max_height_mm: 185                  # the page's 231 mm text height less the caption and the float's spacing
 
 reconstruction:
   subject: MR252                      # MM2, the brain shown
@@ -38,8 +38,9 @@ reconstruction:
   luminance_weights: [0.299, 0.587, 0.114]   # RGB -> luminance (Rec. 601)
   jump_half_mm: 6.0                   # (b) at most this far on either side of the camera jump
   step_half_mm: 6.0                   # (e) the half window around the brightness step
-  print_scale_whole: 0.6              # print mm per tissue mm, whole-brain views (a, c, d, g): the house scale
+  print_scale_whole: 0.6              # print mm per tissue mm, whole-brain views (a, c, d, g), before the factor that fills the page
   print_scale_zoom: 1.2               # print mm per tissue mm, zoomed views (b, e, f)
+  max_height_mm: 185                  # the page's 231 mm text height less the caption and the float's spacing
   plane_window_mm: 3.0                # (g) the crack-free plane is chosen within this distance
   soft_edge_f: [1.0, 3.0]             # (f) display edge: Gaussian sigma, rounding (pixels)
   soft_edge_g: [0.8, 1.5]             # (g) display edge: Gaussian sigma, rounding (pixels)
@@ -54,6 +55,11 @@ synthesis_gallery:
   letters: true                       # orientation letters once (L/R beside the first row, A/P above and below its first tile)
   plane: record                       # the axial options only (--frame flat): record | fewest_gaps
 
+networks:
+  standin: MR247                      # Supplementary S4 row (f): MM12, of the eight brains without MRI one whose stand-in b0 looks natural at
+                                      #   the back (the author, 12 Nov 2026; MF8's looked flat there): paper/status/s4_row_f_candidates_2026-11-12
+  max_height_mm: 203                  # the figure's height at most: its page with its caption
+
 histology:
   panels: [a, b]                           # the panels drawn (the author, 12 Nov 2026: (c) and (d) left out; the text gives their numbers);
                                            #   empty: all four
@@ -65,6 +71,6 @@ histology:
                                            #   12 Nov 2026 (the closest piece's hole is barely visible and its window has a gap)
 
 bf2mri_steps:                              # Supplementary: the blockface registered to its own MRI, step by step
-  subject: MR252                           # MM2
-  variant: r1v3mr                          # its registration of record (FLIRT 9 dof, the cut, the deformable step)
+  subject: MR243                           # MM1 (the author, 12 Nov 2026: MM2's b0 has zigzag artifacts in the ventricles)
+  variant: r1v3                            # its registration of record (FLIRT 9 dof, the cut, the deformable step)
   x_mm: 4.25                               # the sagittal plane (b0 frame): a voxel plane of both grids, 0.5 and 0.25 mm

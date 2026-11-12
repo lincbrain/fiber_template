@@ -13,7 +13,8 @@ Per brain, from the completed volumes of record (products `completed`) and the p
            subject's left on the left. Without z_mm: z*, the plane with the cohort's largest median synthesized area
   crop     from the brain's caudal end to 22 mm rostral of the junction line's median in that plane, the rows aligned on it
   junction dashed where the product's seam_depth = 0 (caudal of it the tissue is synthesized), oblique in this frame
-  scale    one physical scale for all brains (the widest brain fills its tile); one 10 mm bar, its length above it
+  scale    one physical scale for all brains (the widest brain fills its tile); one 10 mm bar, its length above it, in the first
+           tile's empty bottom-right corner (it adds no room: the author, 12 Nov 2026)
   color    photographed tissue in its own color, cross-faded into the synthesis over 2 mm (the product's seam_ramp_real); synthesized
            tissue colored with the brain's own luminance -> color lookup fitted on its photographs (code/blockface/synthesis/views.py)
   header   name, and the synthesized share of the brain ($LINC_NUMBERS/d3_predicted_share.json; gray: the 8 brains synthesized from
@@ -215,11 +216,10 @@ def main():
         above = max(t["cut_row"] for t in T.values()) * mm_per_vox
         below = max(t["img"].shape[0] - t["cut_row"] for t in T.values()) * mm_per_vox
     th = above + below
-    sb_h = 3.0                                                         # room under the first row for the scale bar
-    sb_y = 3.4                                                         # its line under the first row (mm): its length fits above it
+    sb_h = 0.0                                                         # no room for the scale bar: it sits in a tile's empty corner
     H = nrow * (hdr + th) + (nrow - 1) * gap + sb_h
     fig = plt.figure(figsize=(FS.FULL_W_IN, H / 25.4))
-    AXS = []
+    AXS, TILE_IMG = [], []
     for k, S in enumerate(order):
         r, c = divmod(k, ncol)
         t = T[S]; hh, ww = t["img"].shape[:2]
@@ -235,7 +235,7 @@ def main():
             yy_, xx_ = np.mgrid[0:hh, 0:ww] + 0.5
             ax.contour(xi + xx_ * mm_per_vox, yi + h_ - yy_ * mm_per_vox, t["junction"], levels=[0.0], colors=[FS.FG], linewidths=0.6,
                        linestyles=[(0, (2.0, 1.3))], zorder=4)
-        AXS.append(ax)
+        AXS.append(ax); TILE_IMG.append((t["img"], xi, yi, w_, h_))
         nomri = brains[S].name == "canon_d3n_prod"
         FS.header(ax, lab[S], dx=0, fontweight="bold")
         pc = ax.annotate(f"{100 * share[S]['predicted_share']:.0f}%", xy=(1, 1), xycoords="axes fraction", xytext=(0, 3),
@@ -245,8 +245,19 @@ def main():
             e_ = pc.get_window_extent(fig.canvas.get_renderer()); w_pc = e_.width / fig.dpi * 72.0
             ax.annotate(f"{'x' if sag else 'z'} {coords[S]:.2f}", xy=(1, 1), xycoords="axes fraction", xytext=(-w_pc - 4.0, 3),
                         textcoords="offset points", ha="right", va="bottom", fontsize=FS.MIN_PT, color=FS.GRAY, annotation_clip=False)
-        if k == 0:                                                     # the 10 mm bar under the first tile's right, its length above it
-            FS.scalebar(ax, mm_per_vox / VOX, 10.0, y_frac=sb_y / th, x0_px=tw - 10.0 / VOX * mm_per_vox - 0.3, lw=1.0)
+    # the 10 mm bar in an empty bottom corner of a tile (no room added: the author, 12 Nov 2026): the first tile, in reading order,
+    # whose bottom-right (else bottom-left) corner holds no tissue under the bar and its length (7.0 x 3.4 mm, inset 0.8 mm)
+    def corner_free(img, xi, yi, w_, h_, corner):
+        x0, x1 = (tw - 0.8 - 7.0, tw - 0.8) if corner == "bottom right" else (0.8, 0.8 + 7.0)
+        y0, y1 = -below + 0.8, -below + 0.8 + 3.4
+        c0, c1 = int(np.floor((x0 - xi) / mm_per_vox)), int(np.ceil((x1 - xi) / mm_per_vox))
+        r0, r1 = int(np.floor((yi + h_ - y1) / mm_per_vox)), int(np.ceil((yi + h_ - y0) / mm_per_vox))
+        c0, c1, r0, r1 = max(c0, 0), min(c1, img.shape[1]), max(r0, 0), min(r1, img.shape[0])
+        return c1 <= c0 or r1 <= r0 or not (np.asarray(img[r0:r1, c0:c1], float).reshape(r1 - r0, c1 - c0, -1).max(-1) > 0.03).any()
+    bar_at = next(((k, c) for k, ti in enumerate(TILE_IMG) for c in ("bottom right", "bottom left") if corner_free(*ti, c)), None)
+    assert bar_at is not None, "no tile has an empty bottom corner for the scale bar"
+    FS.scalebar_in(AXS[bar_at[0]], mm_per_vox / VOX, 10.0, corner=bar_at[1], lw=1.0)
+    extra["scale_bar_at"] = dict(tile=lab[order[bar_at[0]]], corner=bar_at[1])
     if a.letters:                                                      # once: beside row 1, and A/P on the first axial tile
         FS.dirs_row(AXS[0], AXS[min(ncol, len(AXS)) - 1], a.view, color=FS.FG)
         if not sag:

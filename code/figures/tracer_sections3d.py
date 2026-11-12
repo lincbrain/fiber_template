@@ -13,8 +13,8 @@ What it does
   (a) one point per template voxel of each section's footprint (carried fraction >= 0.1): fiber bundles (all grades; the "Fibers"
       class left out) and, as larger points with one white edge, injection sites, named outside the image. Nothing is interpolated,
       joined, smoothed, thinned or cut. MF8's case is in the left hemisphere and is mirrored onto the right (x -> -x; the grid is
-      centered on x = 0). Parallel projection from the right, a little from the front and above, so the scale bar holds at every
-      depth. The T2 on the midline plane and on one coronal plane (right half, y = 18 mm, the middle slab of b), brain cells only,
+      centered on x = 0). Parallel projection from the right and front (turned 30 degrees toward the front and 15 up, so the
+      coronal plane shows its face; the author, 12 Nov 2026); a turned view has no single scale, so (a) has no scale bar. The T2 on the midline plane and on one coronal plane (right half, y = 18 mm, the middle slab of b), brain cells only,
       on a dimmed linear window; the planes hide what lies behind them. The cases are drawn in layers, MM2 over MM1 over MF8 (each
       case rendered alone with the planes, then stacked), so the smaller cases are not hidden by MF8; within a case, nearer points
       hide farther ones (--by-depth draws all three by depth instead). A thin gray line is the outline of the whole brain as the
@@ -69,12 +69,15 @@ FA_DIM = 0.6
 WIN = (4200, 2800)                                                   # the still's render window, px
 POINT = 7.0                                                          # px at WIN; injection points x INJ
 INJ = 1.7
-VIEW_POS, VIEW_FOC, VIEW_UP = (150.0, 30.0, 40.0), (6.0, 10.0, 14.0), (0.0, 0.0, 1.0)
+VIEW_FOC, VIEW_UP = (6.0, 10.0, 14.0), (0.0, 0.0, 1.0)
+VIDEO_POS = (150.0, 30.0, 40.0)                                      # the rotation video's start (the still's camera before 12 Nov 2026)
+VIEW_AZ_EL = (30.0, 15.0)                                            # the still: from the right, turned toward the front and up (degrees)
+_R = float(np.linalg.norm(np.subtract(VIDEO_POS, VIEW_FOC))); _a, _e = np.radians(VIEW_AZ_EL)
+VIEW_POS = tuple(round(float(f_ + _R * d), 3) for f_, d in zip(VIEW_FOC, (np.cos(_e) * np.cos(_a), np.cos(_e) * np.sin(_a), np.sin(_e))))
 PSCALE = 26.0                                                        # mm, half the window's height (parallel projection)
 FILL_A = 0.8
 EDGE_UP = 8                                                           # (b) outlines traced on an 8x finer copy of the voxel grid
 LAYERS = ["MF191", "MR243", "MR252"]                                 # --layered: bottom to top (the smaller cases over MF8)
-BAR_BELOW_MM = 3.5                                                    # (b)'s 2 mm bar this far under the row: its length fits between
 PAL = {"MR243": (255, 0, 0), "MF191": (0, 255, 0), "MR252": (0, 0, 255)}
 pv.OFF_SCREEN = True
 
@@ -256,6 +259,24 @@ def capsule(sd):
     return out, rec, ins
 
 
+LAB_SIDE = {"MR243": "right", "MF191": "right", "MR252": "top"}               # (a)'s injection-site tags: outside the frame, a line to the site
+TAG = {S: a_[0].upper() + a_[1:] for S, a_ in AREA.items()}                         # the tags start with a capital (sentence case)
+TAG_X, TAG_Y = 0.015, 0.03                                                          # the tags' offsets outside (a)'s frame (axes fraction)
+CROP_PAD = 0.0015                                                                   # (a)'s crop around the brain's outline (of the window): the line's width, no more
+KEY_X = 0.08                                                                        # the key's texts start here (its width's fraction)
+KEY_TEXTS = ["Injection site, white edge (a)", "Outline of the whole brain (a)", "Internal capsule, SARM atlas (b)",
+             "One square per charted voxel (b)"]
+
+
+def text_mm(plt):
+    """a function (text, size, **font) -> (width, height) mm as figstyle draws it"""
+    fig = plt.figure(figsize=(7, 2), dpi=FS.DPI); r = fig.canvas.get_renderer()   # figstyle's DPI: at 100, hinting widens a text
+    def T(s, fs=FS.MIN_PT, **kw):
+        t = fig.text(0, 0, s, fontsize=fs, **kw); e = t.get_window_extent(r); t.remove()
+        return e.width / fig.dpi * 25.4, e.height / fig.dpi * 25.4
+    return T
+
+
 # --------------------------------------------------------------------------- the figure
 def compose(sd, still, sil, cap, rec, args):
     import matplotlib
@@ -264,17 +285,25 @@ def compose(sd, still, sil, cap, rec, args):
     FS.setup()
     disp = lambda P: np.flipud(np.swapaxes(P, 0, 1))                                # noqa: E731  (x, z) -> rows = z down
     H, W = sil.shape
-    rows, cols = np.nonzero(sil); m = int(0.02 * W)
+    rows, cols = np.nonzero(sil); m = int(CROP_PAD * W)
     r0, r1, c0, c1 = max(0, rows.min() - m), min(H, rows.max() + m + 1), max(0, cols.min() - m), min(W, cols.max() + m + 1)
     crop, silc = still[r0:r1, c0:c1], sil[r0:r1, c0:c1]
     k = H / (2.0 * PSCALE)                                                          # px per mm in the image plane
-    FW = 180.0
-    LM, RM = 16.0, 22.0                                                             # margins of (a) for the injection labels
-    wa = FW - LM - RM; ha = wa * crop.shape[0] / crop.shape[1]
-    TOPA = 10.0
-    nb = len(cap); gapb = 3.0; wb = 32.0; hb = wb * (ALIC_Z[1] - ALIC_Z[0]) / (ALIC_X[1] - ALIC_X[0])
-    TOPB = TOPA + ha + 14.0
-    FH = TOPB + hb + 9.0
+    FW, GUT, MG = 180.0, FS.GUTTER_MM, FS.MARGIN_MM
+    T = text_mm(plt)
+    pad = 2.0 / 72 * 25.4                                                           # figstyle.dirs's pad
+    tag_w = max(T(TAG[S])[0] for S in CASES if LAB_SIDE[S] == "right"); tag_h = T("SMA")[1]
+    let_h = T("ab", FS.LETTER_PT, fontweight="bold")[1]
+    LM = MG + T("P")[0] + pad                                                       # (a): the P left of it, the tags right of it
+    wa = (FW - LM - MG - tag_w) / (1 + TAG_X); ha = wa * crop.shape[0] / crop.shape[1]
+    TOPA = MG + max(let_h + 4.0 / 72 * 25.4, TAG_Y * ha + tag_h)                       # the panel letter or the top tag, whichever is higher
+    keys_k = [f"{FS.label(S)}, {AREA[S]}" + (" (mirrored from the left)" if S in MIRROR else "") for S in CASES] + KEY_TEXTS
+    KW = max(T(t)[0] for t in keys_k) / (1 - KEY_X)                                  # the key: its texts start at KEY_X of its width
+    nb = len(cap); gapb = GUT; LB = MG + T("L")[0] + pad
+    wb = (FW - LB - (nb - 1) * GUT - (T("R")[0] + pad) - GUT - KW - MG) / nb       # (b)'s tiles fill the row beside the key
+    hb = wb * (ALIC_Z[1] - ALIC_Z[0]) / (ALIC_X[1] - ALIC_X[0])
+    TOPB = TOPA + ha + GUT + 12.0 / 72 * 25.4 + let_h                                # (b)'s title line 12 pt above its tiles
+    FH = TOPB + hb + MG
     fig = plt.figure(figsize=(FW / 25.4, FH / 25.4))
     ax = FS.axes_mm(fig, LM, TOPA, wa, ha)
     ax.imshow(crop, interpolation="lanczos"); ax.set_axis_off()
@@ -286,11 +315,10 @@ def compose(sd, still, sil, cap, rec, args):
             M = ndi.binary_fill_holes(ndi.binary_closing(np.pad(M, rr), (xx ** 2 + yy ** 2) <= rr * rr))[rr:-rr, rr:-rr]   # one edge around the site's points
             ax.contour(M.astype(float), [0.5], colors=[FS.FG], linewidths=0.4)
     ax.set_xlim(-0.5, crop.shape[1] - 0.5); ax.set_ylim(crop.shape[0] - 0.5, -0.5)
-    FS.letter(ax, "a", dx=-LM * 72 / 25.4 + 2, dy=4.0); FS.header(ax, "every charted section's labels in the template, seen from the right", dx=-LM * 72 / 25.4 + 13, dy=4.0)
-    FS.dirs(ax, "sagittal")                                                         # P and A only: the figures name no dorsal-ventral letters
-    FS.scalebar(ax, k, 5.0, y_frac=0.03)
+    FS.letter(ax, "a", dx=(MG - LM) * 72 / 25.4, dy=4.0); FS.header(ax, "Every charted section's labels in the template, seen from the right and front", dx=(MG - LM) * 72 / 25.4 + 11, dy=4.0)
+    FS.dirs(ax, "sagittal", y=0.25)                                                 # P and A only (no dorsal-ventral letters), low: the area tags
+                                                                                    # sit at the sites' heights on the right
     # injection sites: the label outside the image, a thin line to the site's center (its points' mean, projected)
-    lab_side = {"MR243": "right", "MF191": "right", "MR252": "top"}             # the label sits outside the frame, a line to the site
     rec["injection_label_anchor_px"] = {}
     for S in CASES:
         xyz = sd["pts"][S]["Injection_site"]
@@ -299,17 +327,17 @@ def compose(sd, still, sil, cap, rec, args):
         uv, _ = project(xyz.mean(0)[None], (W, H)); u, v = uv[0][0] - c0, uv[0][1] - r0
         rec["injection_label_anchor_px"][S] = [round(float(u), 1), round(float(v), 1)]
         fu, fv = u / crop.shape[1], 1 - v / crop.shape[0]
-        if lab_side[S] == "right":
-            yl = min(max(fv, 0.05), 0.95); xl, xt, ha_, va_ = (1.008, yl), (1.015, yl), "left", "center"
+        if LAB_SIDE[S] == "right":
+            yl = min(max(fv, 0.05), 0.95); xl, xt, ha_, va_ = (1 + TAG_X / 2, yl), (1 + TAG_X, yl), "left", "center"
         else:
-            xl0 = min(max(fu, 0.05), 0.95); xl, xt, ha_, va_ = (xl0, 1.02), (xl0, 1.03), "center", "bottom"
+            xl0 = min(max(fu, 0.05), 0.95); xl, xt, ha_, va_ = (xl0, 1 + TAG_Y * 2 / 3), (xl0, 1 + TAG_Y), "center", "bottom"
         ax.annotate("", xy=(u, v), xycoords="data", xytext=xl, textcoords="axes fraction", annotation_clip=False,
                     arrowprops=dict(arrowstyle="-", lw=0.5, color=FS.FG, shrinkA=0, shrinkB=3))   # the leader line, no text
-        ax.text(*xt, AREA[S], transform=ax.transAxes, fontsize=FS.MIN_PT, color=FS.FG, ha=ha_, va=va_, clip_on=False)
+        ax.text(*xt, TAG[S], transform=ax.transAxes, fontsize=FS.MIN_PT, color=FS.FG, ha=ha_, va=va_, clip_on=False)
     # panel b
     axs = []
     for q, c in enumerate(cap):
-        bx = FS.axes_mm(fig, LM + q * (wb + gapb), TOPB, wb, hb); axs.append(bx)
+        bx = FS.axes_mm(fig, LB + q * (wb + gapb), TOPB, wb, hb); axs.append(bx)
         bg = disp(c["fa"]); bx.imshow(bg, cmap="gray", vmin=0, vmax=1, interpolation="nearest")
         for S in LAYERS:                                                          # one square per charted voxel, bottom to top
             M = disp(c["lab"][S])
@@ -325,21 +353,22 @@ def compose(sd, still, sil, cap, rec, args):
         bx.contour(disp(c["ic"].astype(float)), [0.5], colors=[FS.FG], linewidths=0.7, linestyles=[(0, (1, 1.2))])
         bx.set_xlim(-0.5, bg.shape[1] - 0.5); bx.set_ylim(bg.shape[0] - 0.5, -0.5); bx.set_axis_off()
         if q == 0:
-            FS.letter(bx, "b", dx=-LM * 72 / 25.4 + 2, dy=12.0); FS.header(bx, "the charted labels at the right internal capsule, on FA", dx=-LM * 72 / 25.4 + 13, dy=12.0)
+            FS.letter(bx, "b", dx=(MG - LB) * 72 / 25.4, dy=12.0); tb = FS.header(bx, "The charted labels at the right internal capsule, on FA", dx=(MG - LB) * 72 / 25.4 + 11, dy=12.0)
         FS.header(bx, f"y = {c['y']:g} mm", dx=0, dy=2.5, color=FS.GRAY)
-    FS.dirs_row(axs[0], axs[-1], "coronal"); FS.scalebar(axs[0], 1.0 / sd["vox"], 2.0, y_frac=BAR_BELOW_MM / hb)
+    FS.dirs_row(axs[0], axs[-1], "coronal")
+    FS.scalebar_title(axs[-1], 1.0 / sd["vox"], 2.0, tb)                             # zoomed: the bar in its standard place, on (b)'s title line
     # the key, right of (b)
-    kx = LM + nb * (wb + gapb) + 6.0
-    axk = FS.axes_mm(fig, kx, TOPB, FW - kx - 2.0, hb); axk.set_xlim(0, 1); axk.set_ylim(0, 1); axk.set_axis_off()
-    rows_k = [(S, f"{FS.label(S)}, {AREA[S]}" + (" (mirrored from the left)" if S in MIRROR else "")) for S in CASES]
+    kx = FW - MG - KW
+    axk = FS.axes_mm(fig, kx, TOPB, KW, hb); axk.set_xlim(0, 1); axk.set_ylim(0, 1); axk.set_axis_off()
+    rows_k = list(zip(CASES, keys_k))
     yk = 0.92
     for S, t in rows_k:
-        axk.scatter([0.03], [yk], s=14, color=COLOR[S], clip_on=False); axk.text(0.08, yk, t, va="center", fontsize=FS.MIN_PT); yk -= 0.13
-    axk.scatter([0.03], [yk], s=30, facecolor="none", edgecolor=FS.FG, lw=0.6); axk.text(0.08, yk, "injection site, white edge (a)", va="center", fontsize=FS.MIN_PT); yk -= 0.13
-    axk.plot([0.0, 0.06], [yk, yk], color=FS.GRAY, lw=0.6); axk.text(0.08, yk, "outline of the whole brain (a)", va="center", fontsize=FS.MIN_PT); yk -= 0.13
-    axk.plot([0.0, 0.06], [yk, yk], color=FS.FG, lw=0.7, ls=(0, (1, 1.2))); axk.text(0.08, yk, "internal capsule, SARM atlas (b)", va="center", fontsize=FS.MIN_PT); yk -= 0.13
-    axk.text(0.08, yk, "(b) one square per charted voxel", va="center", fontsize=FS.MIN_PT, color=FS.GRAY)
-    rec["layout_mm"] = dict(width=FW, height=round(FH, 1), a=[LM, TOPA, round(wa, 2), round(ha, 2)], b_panel=[wb, round(hb, 2)],
+        axk.scatter([0.03], [yk], s=14, color=COLOR[S], clip_on=False); axk.text(KEY_X, yk, t, va="center", fontsize=FS.MIN_PT); yk -= 0.13
+    axk.scatter([0.03], [yk], s=30, facecolor="none", edgecolor=FS.FG, lw=0.6); axk.text(KEY_X, yk, KEY_TEXTS[0], va="center", fontsize=FS.MIN_PT); yk -= 0.13
+    axk.plot([0.0, 0.06], [yk, yk], color=FS.GRAY, lw=0.6); axk.text(KEY_X, yk, KEY_TEXTS[1], va="center", fontsize=FS.MIN_PT); yk -= 0.13
+    axk.plot([0.0, 0.06], [yk, yk], color=FS.FG, lw=0.7, ls=(0, (1, 1.2))); axk.text(KEY_X, yk, KEY_TEXTS[2], va="center", fontsize=FS.MIN_PT); yk -= 0.13
+    axk.text(KEY_X, yk, KEY_TEXTS[3], va="center", fontsize=FS.MIN_PT, color=FS.GRAY)
+    rec["layout_mm"] = dict(width=FW, height=round(FH, 1), a=[round(LM, 2), round(TOPA, 2), round(wa, 2), round(ha, 2)], b_panel=[round(wb, 2), round(hb, 2)],
                             a_print_mm_per_tissue_mm=round(wa / crop.shape[1] * k, 4), b_print_mm_per_tissue_mm=round(wb / (ALIC_X[1] - ALIC_X[0]), 4),
                             crop_px=dict(rows=[int(r0), int(r1)], cols=[int(c0), int(c1)]))
     return fig
@@ -433,7 +462,7 @@ def video(sd, f, size=(1600, 1072), n=360, layered=False):
         pc[k] = plotter(size, 8)
         acts[k] = build(pc[k], sd, "color", size, ps, only=([] if k == "planes" else [k]) if layered else None)
     pz = plotter(size, 1); build(pz, sd, "sil", size, ps)
-    foc = np.asarray(VIEW_FOC); r = np.asarray(VIEW_POS) - foc
+    foc = np.asarray(VIEW_FOC); r = np.asarray(VIDEO_POS) - foc
     wr = imageio.get_writer(str(f), fps=30, quality=8, macro_block_size=16)
     for t in range(n):
         th = 2 * np.pi * t / n; c, s_ = np.cos(th), np.sin(th)

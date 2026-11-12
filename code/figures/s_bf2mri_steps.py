@@ -11,7 +11,9 @@ registration of each brain to its own MRI), for one brain in one sagittal plane,
   d  step 3, the deformable registration (anatomix + MIND-SSC features, FireANTs): the blockface volume after it
      (nonlinear_<variant>/<ID>_bf_nonlin), with the outline of the cut b0 (nonlinear_<variant>/<ID>_mri, 0.25 mm)
 Gray scales are linear, 0 to the 99.5th percentile inside each image's own tissue; nothing is smoothed, cut or filled for display.
-Outlines are each mask's 0.5 contour on its own grid. The 10 mm bar under (a), its length above it.
+Outlines are each mask's 0.5 contour on its own grid. The 10 mm bar in (a)'s empty bottom-right corner (under the frontal lobe), its length above it.
+Space (the author, 12 Nov 2026): the view box is the b0 brain's extent here plus BOX_VOX voxels; one gutter (figstyle GUTTER_MM)
+between the panels and MARGIN_MM from the outermost ink (the direction letters, the panel letters) to the page's edges.
 
 You need (settings/internal/products_blockface.yaml data): sub-<ID>/mri/<variant>/<ID>_b0_masked, <ID>_mri_fixed_<variant>, and
 sub-<ID>/mri/nonlinear_<variant>/<ID>_bf_rigid, <ID>_bf_nonlin, <ID>_mri. The brain, its registration variant and the plane:
@@ -33,8 +35,8 @@ from shared import paths  # noqa: E402
 
 CFG = yaml.safe_load((HERE.parents[1] / "settings" / "figures.yaml").read_text())["bf2mri_steps"]
 LINE = FS.OKABE["sky"]
-SB_Y = 3.0                                                          # the scale bar's line under panel a (print mm): its length fits above
 SB_MM = 10
+BOX_VOX = 2                                                         # the view box: the b0 brain's extent plus this many 0.5 mm voxels
 
 
 def plane(path, x):
@@ -74,6 +76,17 @@ def cut_line(ax, kept, whole, ext, **kw):
     ax.contour(y, z, np.where(whole, (kept & whole).astype(float), np.nan), levels=[0.5], **kw)
 
 
+def text_room(fig):
+    """(side, top) mm: the widest outer direction letter with figstyle.dirs_row's 2 pt pad; the panel letters' height with
+    figstyle.letter's 3 pt offset (the tallest ink above the panels)"""
+    r = fig.canvas.get_renderer(); mm = lambda px: px / fig.dpi * 25.4  # noqa: E731
+    side = max(mm(fig.text(0, 0, s_, fontsize=FS.MIN_PT).get_window_extent(r).width) for s_ in FS.DIRS["sagittal"][:2]) + 2.0 / 72 * 25.4
+    top = mm(fig.text(0, 0, "abcd", fontsize=FS.LETTER_PT, fontweight="bold").get_window_extent(r).height) + 3.0 / 72 * 25.4
+    for t in list(fig.texts):
+        t.remove()
+    return side, top
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", default="figures/s_bf2mri_steps.pdf")
@@ -93,20 +106,22 @@ def main():
     nl, e_nl, _ = plane(P["nonlin"], X)
     f25, e_f25, _ = plane(P["fixed25"], X)
     assert abs(xs - xr) < 1e-4, f"the 0.5 mm panels lie at x = {xs}, the 0.25 mm panels at {xr}: choose a plane of both grids"
-    zz, yy = np.nonzero(b0 > 0)                                     # one view box for all panels: the b0 brain's extent here, 2 mm margin
+    zz, yy = np.nonzero(b0 > 0)                                     # one view box for all panels: the b0 brain's extent here + BOX_VOX
     dy, dz = (e_b0[1] - e_b0[0]) / b0.shape[1], (e_b0[3] - e_b0[2]) / b0.shape[0]
-    Y0, Y1 = e_b0[0] + dy * (yy.min() - 4), e_b0[0] + dy * (yy.max() + 5)
-    Z0, Z1 = e_b0[2] + dz * (zz.min() - 4), e_b0[2] + dz * (zz.max() + 5)
-    ncol, gap, hdr, sb, mg = 4, 2.5, 7.0, 4.0, 3.0                    # mm (mg: side margin for the direction letters)
+    Y0, Y1 = e_b0[0] + dy * (yy.min() - BOX_VOX), e_b0[0] + dy * (yy.max() + 1 + BOX_VOX)
+    Z0, Z1 = e_b0[2] + dz * (zz.min() - BOX_VOX), e_b0[2] + dz * (zz.max() + 1 + BOX_VOX)
+    ncol, gap, MG = 4, FS.GUTTER_MM, FS.MARGIN_MM
     W = FS.FULL_W_IN / FS.MM
-    tw = (W - 2 * mg - gap * (ncol - 1)) / ncol
+    side, top = text_room(plt.figure(figsize=(W * FS.MM, 1.0))); plt.close("all")
+    tw = (W - 2 * (MG + side) - gap * (ncol - 1)) / ncol
     th = tw * (Z1 - Z0) / (Y1 - Y0)
-    H = hdr + th + sb
+    hdr, mg = MG + top, MG + side
+    H = hdr + th + MG
     fig = plt.figure(figsize=(W * FS.MM, H * FS.MM))
     panels = [("a", "b0 image", b0, e_b0, []),
               ("b", "1  FLIRT (7, then 9 dof)", rg, e_rg, [(b0, e_b0, dict(colors=[LINE], linewidths=0.6))]),
-              ("c", "2  cut to the photographed slab", fx, e_fx, [(b0, e_b0, dict(colors=[FS.ON_IMG2], linewidths=0.4, linestyles="dashed"))]),
-              ("d", "3  deformable registration", nl, e_nl, [(f25, e_f25, dict(colors=[LINE], linewidths=0.6))])]
+              ("c", "2  Cut to the photographed slab", fx, e_fx, [(b0, e_b0, dict(colors=[FS.ON_IMG2], linewidths=0.4, linestyles="dashed"))]),
+              ("d", "3  Deformable registration", nl, e_nl, [(f25, e_f25, dict(colors=[LINE], linewidths=0.6))])]
     axs = []
     for k, (letter, title, img, ext, outs) in enumerate(panels):
         ax = FS.axes_mm(fig, mg + k * (tw + gap), hdr, tw, th); axs.append(ax)
@@ -119,7 +134,7 @@ def main():
             cut_line(ax, fx > 0, b0 > 0, e_b0, colors=[FS.COL["pred"]], linewidths=1.0)
         FS.letter(ax, letter); FS.header(ax, title)
         if k == 0:
-            FS.scalebar(ax, 1.0, SB_MM, y_frac=SB_Y / th, x0_px=Y0 + 2)   # world-mm axes: 1 unit = 1 mm
+            FS.scalebar_in(ax, 1.0, SB_MM, corner="bottom right")         # world-mm axes: 1 unit = 1 mm
     FS.dirs_row(axs[0], axs[-1], "sagittal")
     out = Path(a.out).with_suffix(".pdf")
     FS.save(fig, str(out), [str(p) for p in P.values()], " ".join(["code/figures/s_bf2mri_steps.py"] + sys.argv[1:]),

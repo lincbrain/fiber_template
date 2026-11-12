@@ -88,6 +88,8 @@ LABELS_JSON = os.path.join(REPO, "settings", "specimen_labels.json")   # the pap
 
 # ---- print scales (print mm per tissue mm): one whole-brain scale per figure, plus at most one zoom scale ----------------
 SCALE = dict(whole=1.0, strip=0.5, zoom=2.0)
+GUTTER_MM, MARGIN_MM = 3.0, 2.0              # the one space between panels (columns and rows) and at the page's edges (the author,
+                                             # 12 Nov 2026: "optimize space ... less empty space"); scale bars go in empty corners
 
 
 def brain_color(S):
@@ -143,17 +145,20 @@ def print_mm(extent_mm, scale="whole"):
     return np.asarray(extent_mm, float) * (SCALE[scale] if isinstance(scale, str) else float(scale))
 
 
+PANEL_LETTER_GID = "panel_letter"              # the bold lower-case panel letters (exempt from the sentence-case check)
+
+
 def letter(ax, s, dx=0.0, dy=3.0):
     """Bold lower-case panel letter at the top left, outside the axes (above its top-left corner)."""
-    ax.annotate(s, xy=(0, 1), xycoords="axes fraction", xytext=(dx, dy), textcoords="offset points", annotation_clip=False,
-                fontsize=LETTER_PT, fontweight="bold", ha="left", va="bottom", color=FG)
+    return ax.annotate(s, xy=(0, 1), xycoords="axes fraction", xytext=(dx, dy), textcoords="offset points", annotation_clip=False,
+                       fontsize=LETTER_PT, fontweight="bold", ha="left", va="bottom", color=FG, gid=PANEL_LETTER_GID)
 
 
 def header(ax, s, dx=11.0, dy=3.0, **kw):
     """A short header above the panel, on the letter's line (regular weight), or alone with dx=0."""
     kw.setdefault("color", FG)
-    ax.annotate(s, xy=(0, 1), xycoords="axes fraction", xytext=(dx, dy), textcoords="offset points", annotation_clip=False,
-                fontsize=kw.pop("fontsize", MIN_PT), ha=kw.pop("ha", "left"), va="bottom", **kw)
+    return ax.annotate(s, xy=(0, 1), xycoords="axes fraction", xytext=(dx, dy), textcoords="offset points", annotation_clip=False,
+                       fontsize=kw.pop("fontsize", MIN_PT), ha=kw.pop("ha", "left"), va="bottom", **kw)
 
 
 DIRS = dict(coronal=("L", "R", "S", "I"), sagittal=("P", "A", "S", "I"), axial=("L", "R", "A", "P"))
@@ -187,6 +192,9 @@ def lr(ax, left, right, fs=MIN_PT, color=FRAME):
 
 
 SCALEBAR_GID = "scalebar_length"                # marks a scale bar's length for check()
+SCALEBAR_LINE_GID = "scalebar_line"             # ... and its line
+CLEAR_MM = 1.5                                  # every bar and its length keep this much print space from every other text (the
+                                                # author, 12 Nov 2026; check() asserts it for every bar, scalebar_free() places by it)
 
 
 def scalebar(ax, px_per_mm, mm, y_frac=0.04, x0_px=None, color=FG, fs=MIN_PT, label=True, lw=1.2, end_px=None):
@@ -202,7 +210,8 @@ def scalebar(ax, px_per_mm, mm, y_frac=0.04, x0_px=None, color=FG, fs=MIN_PT, la
     if end_px is not None:
         x0 = end_px - L
     x1 = x0 + L
-    ln, = ax.plot([x0, x1], [-y_frac, -y_frac], transform=tr, color=color, lw=lw, solid_capstyle="butt", clip_on=False)
+    ln, = ax.plot([x0, x1], [-y_frac, -y_frac], transform=tr, color=color, lw=lw, solid_capstyle="butt", clip_on=False,
+                  gid=SCALEBAR_LINE_GID)
     if not label:
         return None
     t = ax.annotate(f"{mm:g} mm", xy=((x0 + x1) / 2, -y_frac), xycoords=tr, xytext=(0, 2.0 + lw / 2), textcoords="offset points",
@@ -216,12 +225,13 @@ def scalebar(ax, px_per_mm, mm, y_frac=0.04, x0_px=None, color=FG, fs=MIN_PT, la
     return t
 
 
-def scalebar_mm(fig, x_mm, y_mm, mm, print_mm_per_mm, anchor="left", color=FG, fs=MIN_PT, lw=1.2):
+def scalebar_mm(fig, x_mm, y_mm, mm, print_mm_per_mm, anchor="left", color=FG, fs=MIN_PT, lw=1.2, panels=True):
     """A plain scale bar placed in figure mm (from the top-left corner, y down, as axes_mm), for a bar outside every panel: its
     line at height y_mm, `mm` tissue millimeters long at the print scale print_mm_per_mm, its length centered above it as
     scalebar() prints it. The bar and its length start at x_mm (anchor="left") or end there ("right"), by the wider of the two.
-    Asserts the pair overlaps none of the figure's axes placed so far (draw it last). Returns the text and the pair's box
-    (x0, x1, top, bottom; mm)."""
+    Asserts the pair overlaps none of the figure's panels placed so far (axes with an image, or drawn axes; draw it last), unless
+    panels=False (scalebar_free: a place measured empty, which may be an image's empty background).
+    Returns the text and the pair's box (x0, x1, top, bottom; mm)."""
     from matplotlib.lines import Line2D
     W, H = (v * 25.4 for v in fig.get_size_inches())
     L = mm * print_mm_per_mm
@@ -232,13 +242,117 @@ def scalebar_mm(fig, x_mm, y_mm, mm, print_mm_per_mm, anchor="left", color=FG, f
     xc = x_mm + wu / 2 if anchor == "left" else x_mm - wu / 2
     t.set_x(xc / W)
     fig.add_artist(Line2D([(xc - L / 2) / W, (xc + L / 2) / W], [1 - y_mm / H] * 2, transform=fig.transFigure, color=color, lw=lw,
-                          solid_capstyle="butt"))
+                          solid_capstyle="butt", gid=SCALEBAR_LINE_GID))
     box = (xc - wu / 2, xc + wu / 2, H - t.get_window_extent(r).y1 / fig.dpi * 25.4, y_mm + lw / 2 / 72 * 25.4)
-    for ax in fig.axes:
+    for ax in (fig.axes if panels else []):
+        if not (ax.images or ax.axison):                         # an invisible layout axes (headers, keys) is not a panel
+            continue
         p = ax.get_position()
         a0, a1, a2, a3 = p.x0 * W, p.x1 * W, (1 - p.y1) * H, (1 - p.y0) * H
         assert box[1] <= a0 or a1 <= box[0] or box[3] <= a2 or a3 <= box[2], f"the {mm:g} mm scale bar overlaps an axes {p}"
     return t, box
+
+
+def scalebar_free(fig, mm, print_mm_per_mm, region_mm, corner="bottom left", clear_mm=CLEAR_MM, color=FG, fs=MIN_PT, lw=1.2,
+                  dpi=150):
+    """A plain scale bar (as scalebar_mm) in an EMPTY corner found by measurement, on the page or on an image's empty background:
+    the figure as drawn so far (every artist; call it last) is rendered once at `dpi`; every pixel that is not the background
+    (PAPER or TILE) is occupied, tissue, text and color bars alike; the occupied set is grown by clear_mm; the bar and its length go
+    at the free position inside region_mm = (x0, x1, y0, y1) (figure mm from the top-left corner, y down) nearest that corner of the
+    region. Raises if the region has no such position. Returns the text and the pair's box (x0, x1, top, bottom; mm)."""
+    from matplotlib.colors import to_rgb
+    from scipy import ndimage as ndi
+    W, H = (v * 25.4 for v in fig.get_size_inches())
+    dpi0 = fig.dpi; fig.set_dpi(dpi); fig.canvas.draw()
+    buf = np.asarray(fig.canvas.buffer_rgba())[..., :3].astype(np.float32) / 255.0
+    r = fig.canvas.get_renderer()
+    t = fig.text(0, 0, f"{mm:g} mm", ha="center", va="baseline", fontsize=fs)
+    e = t.get_window_extent(r); t.remove(); fig.set_dpi(dpi0)
+    px = dpi / 25.4                                                       # pixels per print mm
+    free = np.zeros(buf.shape[:2], bool)
+    for c_ in {to_rgb(PAPER), to_rgb(TILE)}:
+        free |= np.abs(buf - np.asarray(c_, np.float32)).max(-1) <= 0.08
+    ok = ndi.distance_transform_edt(free) > clear_mm * px                  # free, and clear_mm from anything drawn
+    L = mm * print_mm_per_mm; wu = max(L, e.width / px)                   # the pair: as wide as the wider of bar and length,
+    up = (2.0 + lw / 2) / 72 * 25.4 + (e.y1 - e.y0) / px                  # from the length's top down to the bar's lower edge
+    h = up + lw / 2 / 72 * 25.4
+    wp, hp = int(np.ceil(wu * px)), int(np.ceil(h * px))
+    S_ = np.pad(np.cumsum(np.cumsum((~ok).astype(np.int32), 0), 1), ((1, 0), (1, 0)))    # occupied count in any box: O(1)
+    x0, x1, y0, y1 = (int(round(v * px)) for v in region_mm)
+    best = None
+    for yt in range(max(y0, 0), min(y1, ok.shape[0]) - hp + 1):           # yt: the pair's top row; xl: its left column
+        for xl in range(max(x0, 0), min(x1, ok.shape[1]) - wp + 1):
+            if S_[yt + hp, xl + wp] - S_[yt, xl + wp] - S_[yt + hp, xl] + S_[yt, xl]:
+                continue
+            dx = xl - x0 if "left" in corner else x1 - (xl + wp)
+            dy = y1 - (yt + hp) if "bottom" in corner else yt - y0
+            d = dx * dx + dy * dy
+            if best is None or d < best[0]:
+                best = (d, xl, yt)
+    if best is None:
+        raise ValueError(f"no place for the {mm:g} mm bar {clear_mm:g} mm clear of everything drawn in the region {region_mm}")
+    _, xl, yt = best
+    return scalebar_mm(fig, xl / px, yt / px + up, mm, print_mm_per_mm, anchor="left", color=color, fs=fs, lw=lw, panels=False)
+
+
+def scalebar_title(ax, px_per_mm, mm, title, color=FG, fs=MIN_PT, lw=1.2, clear_mm=CLEAR_MM):
+    """A zoomed panel's scale bar in its standard place (the author, 12 Nov 2026): at the panel title's level, top right; the bar on
+    the title's baseline and its length above it (2 pt over the bar), the two right-aligned with the panel's right edge. `ax`: the
+    panel whose right edge and scale the bar takes (imshow axes, px_per_mm data units per tissue mm); `title`: the panel's title (a
+    Text). Placed in figure coordinates, so call it once the layout and every text near it are final. Asserts the bar and its length
+    keep clear_mm (1.5 mm) from every other text of the figure. Returns the length's text."""
+    from matplotlib.lines import Line2D
+    from matplotlib.transforms import Bbox
+    fig = ax.figure; r = fig.canvas.get_renderer(); pt = fig.dpi / 72
+    e = title.get_window_extent(r)
+    base = e.y0 + r.get_text_width_height_descent("lp", title.get_fontproperties(), ismath=False)[2]   # the title's baseline (px)
+    L = abs(ax.transData.transform((mm * px_per_mm, 0))[0] - ax.transData.transform((0, 0))[0])        # the bar (px)
+    right = ax.get_window_extent(r).x1
+    others = [u for u in fig.texts if u.get_visible() and u.get_text().strip()]
+    for a_ in fig.axes:
+        others += [u for u in a_.texts if u.get_visible() and u.get_text().strip()]
+    t = fig.text(0, 0, f"{mm:g} mm", fontsize=fs, color=color, ha="center", va="baseline", gid=SCALEBAR_GID)
+    wu = max(L, t.get_window_extent(r).width); xc = right - wu / 2
+    inv = fig.transFigure.inverted()
+    yb = base + lw / 2 * pt                                                  # the bar sits on the title's baseline
+    t.set_position(tuple(inv.transform((xc, yb + (2.0 + lw / 2) * pt))))
+    (x0f, ybf), (x1f, _) = inv.transform((xc - L / 2, yb)), inv.transform((xc + L / 2, yb))
+    fig.add_artist(Line2D([x0f, x1f], [ybf, ybf], transform=fig.transFigure, color=color, lw=lw, solid_capstyle="butt",
+                          gid=SCALEBAR_LINE_GID))
+    et = t.get_window_extent(r); c = clear_mm / 25.4 * fig.dpi
+    pair = Bbox([[xc - wu / 2 - c, yb - lw / 2 * pt - c], [xc + wu / 2 + c, et.y1 + c]])
+    for u in others:
+        b = u.get_window_extent(r)
+        assert pair.x1 <= b.x0 or b.x1 <= pair.x0 or pair.y1 <= b.y0 or b.y1 <= pair.y0, \
+            f"the {mm:g} mm bar is closer than {clear_mm:g} mm to the text {u.get_text()[:30]!r}"
+    return t
+
+
+def scalebar_in(ax, px_per_mm, mm, corner="bottom left", inset_mm=0.8, color=FG, fs=MIN_PT, lw=1.2):
+    """A plain scale bar INSIDE an image panel, in one of its corners ("top left", "top right", "bottom left", "bottom right")
+    on the image's empty background, inset_mm (print) from the two edges, its length centered above it as scalebar() prints it
+    (the wider of the two at the inset). It adds no room to the figure; save() refuses it over tissue. `mm` tissue millimeters
+    at px_per_mm data units per mm (imshow axes). Returns the length's text."""
+    import matplotlib.transforms as mtrans  # noqa: F401
+    fig = ax.figure; r = fig.canvas.get_renderer()
+    bb = ax.get_window_extent(r); pxmm = fig.dpi / 25.4; pt = fig.dpi / 72.0
+    xl = ax.get_xlim(); L = abs(mm * px_per_mm / (xl[1] - xl[0]))          # the bar, in axes fraction
+    t = ax.text(0, 0, f"{mm:g} mm", transform=ax.transAxes, ha="center", va="baseline", fontsize=fs, color=color,
+                gid=SCALEBAR_GID, clip_on=False)
+    t.set_in_layout(False)
+    e = t.get_window_extent(r)
+    tw, asc = e.width / bb.width, (e.y1 - bb.y0) / bb.height                 # the length's width and its height above the baseline
+    W_ = max(L, tw); ix, iy = inset_mm * pxmm / bb.width, inset_mm * pxmm / bb.height
+    gap = (2.0 + lw / 2) * pt / bb.height; half = lw / 2 * pt / bb.height
+    xc = ix + W_ / 2 if "left" in corner else 1 - ix - W_ / 2
+    if "bottom" in corner:
+        yb = iy + half; base = yb + gap
+    else:
+        base = 1 - iy - asc; yb = base - gap
+    t.set_position((xc, base))
+    ax.plot([xc - L / 2, xc + L / 2], [yb, yb], transform=ax.transAxes, color=color, lw=lw, solid_capstyle="butt", clip_on=False,
+            gid=SCALEBAR_LINE_GID)
+    return t
 
 
 # ---- sections in the stated convention --------------------------------------------------------------------------------------
@@ -286,8 +400,8 @@ def to_nmt(r6plus_dir, pts_world):
 
 # ---- checks and saving ------------------------------------------------------------------------------------------------------
 def check(fig):
-    """The house rules a script can break silently: text under 7 pt; text inside an image's axes (titles, headers, letters
-    and direction letters sit outside). Returns a list of problems."""
+    """The house rules a script can break silently: text under 7 pt; text or a scale bar over tissue (an image panel's empty
+    background is allowed); a bar's length off the page or over another text; text below 3:1. Returns a list of problems."""
     from matplotlib.text import Text
     fig.canvas.draw(); r = fig.canvas.get_renderer(); bad = []
     for t in fig.findobj(Text):
@@ -295,20 +409,45 @@ def check(fig):
             bad.append(f"text under {MIN_PT} pt ({t.get_fontsize():.1f} pt): {t.get_text()[:40]!r}")
     over = lambda e, b: e.x0 < b.x1 - 1 and e.x1 > b.x0 + 1 and e.y0 < b.y1 - 1 and e.y1 > b.y0 + 1
     boxes = [ax.get_window_extent(r) for ax in fig.axes if ax.images]
+    # no text (and no scale bar) over tissue: what lies under each, inside an image panel, drawn once at 200 dpi with every text
+    # and scale bar line hidden, must be the image's empty background (TILE) only
+    from matplotlib.lines import Line2D
+    from matplotlib.colors import to_rgb
+    hide = [t for t in fig.findobj(Text) if t.get_visible() and t.get_text().strip()]
+    bars = [ln for ln in fig.findobj(Line2D) if ln.get_gid() == SCALEBAR_LINE_GID and ln.get_visible()]
+    dpi0 = fig.dpi; fig.set_dpi(200)
+    for a_ in hide + bars:
+        a_.set_visible(False)
+    fig.canvas.draw(); buf = np.asarray(fig.canvas.buffer_rgba())[..., :3].astype(np.float32) / 255.0
+    for a_ in hide + bars:
+        a_.set_visible(True)
+    fig.canvas.draw(); r = fig.canvas.get_renderer(); bg = np.asarray(to_rgb(TILE), np.float32)
+    boxes = [ax.get_window_extent(r) for ax in fig.axes if ax.images]
+
+    def on_tissue(e):
+        for b in boxes:
+            x0, x1, y0, y1 = max(e.x0, b.x0), min(e.x1, b.x1), max(e.y0, b.y0), min(e.y1, b.y1)
+            if x1 - x0 > 1 and y1 - y0 > 1:
+                sub = buf[max(int(buf.shape[0] - y1), 0):int(np.ceil(buf.shape[0] - y0)), max(int(x0), 0):int(np.ceil(x1))]
+                if sub.size and (np.abs(sub - bg).max(-1) > 0.08).any():
+                    return True
+        return False
     for ax in fig.axes:
         cand = [t for t in ax.texts if t.get_visible() and t.get_text().strip()]
         if ax.get_legend() is not None and ax.get_legend().get_visible():
             cand.append(ax.get_legend())
         for t in cand:
-            e = t.get_window_extent(r)
-            if any(over(e, b) for b in boxes):
-                bad.append(f"text over an image: {getattr(t, 'get_text', lambda: 'legend')()[:40]!r}")
+            if on_tissue(t.get_window_extent(r)):
+                bad.append(f"text over tissue: {getattr(t, 'get_text', lambda: 'legend')()[:40]!r}")
     for t in fig.texts:
-        if t.get_visible() and t.get_text().strip() and any(over(t.get_window_extent(r), b) for b in boxes):
-            bad.append(f"figure text over an image: {t.get_text()[:40]!r}")
+        if t.get_visible() and t.get_text().strip() and on_tissue(t.get_window_extent(r)):
+            bad.append(f"figure text over tissue: {t.get_text()[:40]!r}")
     for lg in fig.legends:
-        if any(over(lg.get_window_extent(r), b) for b in boxes):
-            bad.append("figure legend over an image")
+        if on_tissue(lg.get_window_extent(r)):
+            bad.append("figure legend over tissue")
+    for ln in bars:
+        if on_tissue(ln.get_window_extent(r)):
+            bad.append("scale bar over tissue")
     # a scale bar's length: inside the figure and clear of every other text (texts, titles, and the drawn axes' tick and axis labels)
     others = [t for t in fig.texts if t.get_visible() and t.get_text().strip()]
     for ax in fig.axes:
@@ -324,9 +463,23 @@ def check(fig):
         e = t.get_window_extent(r)
         if e.x0 < fb.x0 or e.y0 < fb.y0 or e.x1 > fb.x1 or e.y1 > fb.y1:
             bad.append(f"scale bar length outside the figure: {t.get_text()!r}")
-        for u in others:
-            if u is not t and over(e, u.get_window_extent(r)):
-                bad.append(f"scale bar length {t.get_text()!r} over the text {u.get_text()[:40]!r}")
+    # every bar and its length: CLEAR_MM from every other text (texts, titles, tick and axis labels, legend entries); touching is
+    # not overlapping, so a length that runs into a label ("10 mmNormalized") is caught here
+    near_txt = others + [u for ax in fig.axes if ax.get_legend() is not None and ax.get_legend().get_visible()
+                         for u in ax.get_legend().get_texts() if u.get_text().strip()] \
+                      + [u for lg in fig.legends for u in lg.get_texts() if u.get_text().strip()]
+    c = CLEAR_MM / 25.4 * fig.dpi
+    near = lambda e, b: e.x0 - c < b.x1 and e.x1 + c > b.x0 and e.y0 - c < b.y1 and e.y1 + c > b.y0     # noqa: E731
+    for t in [u for u in near_txt if u.get_gid() == SCALEBAR_GID]:
+        e = t.get_window_extent(r)
+        for u in near_txt:
+            if u is not t and near(e, u.get_window_extent(r)):
+                bad.append(f"scale bar length {t.get_text()!r} closer than {CLEAR_MM:g} mm to the text {u.get_text()[:40]!r}")
+    for ln in bars:
+        e = ln.get_window_extent(r)
+        for u in near_txt:
+            if u.get_gid() != SCALEBAR_GID and near(e, u.get_window_extent(r)):
+                bad.append(f"a scale bar closer than {CLEAR_MM:g} mm to the text {u.get_text()[:40]!r}")
     # every text against what lies under its center, an image panel's black tile or the page: at least 3:1 (no black on a tile,
     # no white on white)
     for t in others:
@@ -334,7 +487,40 @@ def check(fig):
         under = TILE if any(b.x0 <= cx <= b.x1 and b.y0 <= cy <= b.y1 for b in boxes) else PAPER
         if contrast(t.get_color(), under) < 3.0:
             bad.append(f"text {t.get_text()[:40]!r} in {t.get_color()} on {under} ({contrast(t.get_color(), under):.2f}:1)")
+    # sentence case (the author, 12 Nov 2026): every label (texts, titles, axis and color bar labels, legend entries) starts with a
+    # capital letter, unless it starts with a number or a symbol or with one of LOWERCASE_OK; panel letters, single letters
+    # (orientation), tick labels and scale bar lengths are exempt
+    labs = [t for t in fig.texts if t.get_visible() and t.get_text().strip()]
+    for ax in fig.axes:
+        labs += [t for t in ax.texts if t.get_visible() and t.get_text().strip()]
+        labs += [t for t in (ax.title, ax._left_title, ax._right_title) if t.get_visible() and t.get_text().strip()]
+        if ax.axison:
+            labs += [t for t in (ax.xaxis.label, ax.yaxis.label) if t.get_visible() and t.get_text().strip()]
+        if ax.get_legend() is not None:
+            labs += [t for t in ax.get_legend().get_texts() if t.get_text().strip()]
+    for lg in fig.legends:
+        labs += [t for t in lg.get_texts() if t.get_text().strip()]
+    for t in labs:
+        if t.get_gid() not in (SCALEBAR_GID, PANEL_LETTER_GID) and not sentence_case_ok(t.get_text()):
+            bad.append(f"not in sentence case: {t.get_text()[:40]!r}")
     return bad
+
+
+LOWERCASE_OK = ("b0", "x =", "y =", "z =", "x ", "y ", "z ", "mm", "µm", "z-units", "°", "anatomix", "nnU-Net", "dof")
+
+
+def sentence_case_ok(s):
+    """True if a label is in sentence case: its first letter (after a leading sub-panel numeral "(i)" ... "(x)", and any leading
+    dash, bullet or bracket) is upper case, or it starts with a number, a symbol or one of LOWERCASE_OK (symbols, units, names lower
+    case by convention), or it is one letter."""
+    import re
+    s = re.sub(r"^\((i|ii|iii|iv|v|vi|vii|viii|ix|x)\)\s*", "", s.strip())   # a leading sub-panel numeral, "(i)", as a panel letter
+    if len(s) <= 1:
+        return True
+    s = s.lstrip("—–-•(+ ")
+    if not s or not s[0].isalpha() or s.startswith(LOWERCASE_OK):
+        return True
+    return s[0].isupper()
 
 
 def contrast(c1, c2):

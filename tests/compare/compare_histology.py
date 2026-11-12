@@ -9,7 +9,9 @@ $LINC_PRODUCTS/data_arm_h9_final/sub-<ID>/blockface/06_histo2bf/tirl); with --ma
 What it does: for every component the paper registered (a folder holding the file, by default the registered section
 moving4_nonlinear.png), compares your file with the paper's, byte for byte. With --max-mm, a component whose file differs is
 accepted when the two final transforms (fixed4_nonlinear.timg) map every pixel of the photograph to points at most that far apart, in
-mm: TIRL's last stage can end a few round-off steps apart from the paper's run (steps.yaml, the histology notes).
+TIRL's mm: TIRL's last stage can end a few round-off steps apart from the paper's run (steps.yaml, the histology notes). TIRL's mm
+are nominal: both images are given a 0.034 mm pixel (settings/histology.yaml tirl.resolution_mm), so 0.1 is 2.9 pixels; a pixel is
+half the brain's L2 voxel of tissue (0.040 mm for the brains photographed at 20 um, 0.054 mm at 27 um), 0.1 TIRL mm 0.12 or 0.16 mm.
 You get one line per component that differs or is missing, then a last line with the counts; the exit status is 0 only when every
 component is identical, or within --max-mm when it is given.
 """
@@ -32,7 +34,7 @@ def map_distance_mm(a, b):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("mine"); ap.add_argument("paper"); ap.add_argument("--file", default="moving4_nonlinear.png")
-    ap.add_argument("--max-mm", type=float, help="accept a differing component whose final transform is within this distance (mm)")
+    ap.add_argument("--max-mm", type=float, help="accept a differing component whose final transform is within this distance (TIRL's mm, 0.034 per pixel)")
     a = ap.parse_args()
     refs = sorted(p for p in Path(a.paper).glob(f"*/{a.file}"))
     bad = close = 0
