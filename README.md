@@ -1,5 +1,13 @@
 # fiber_template
 
+![The template's five channels (T2-weighted, tensor, soma fraction, neurite fraction, blockface) in coronal planes sweeping front to back](docs/media/template_coronal.gif)
+
+*The template's five channels, T2-weighted, tensor, soma fraction, neurite fraction and blockface, in coronal planes from front to back.*
+
+![MM1, MM2 and MM3's charted tracer labels (left) and MF8's (right) in the template, turning together](docs/media/tracers_rotation.gif)
+
+*The tracer labels charted in MM1, MM2 and MM3 (left) and in MF8 (right), carried into the template.*
+
 Code for the paper "A multimodal macaque template for aligning ex vivo MRI and microscopy" (Gonzales et
 al., in preparation). It builds a macaque brain template from ex vivo MRI and blockface photographs,
 brings new brains into it, and carries histology sections and the labels drawn on them into it.

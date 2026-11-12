@@ -210,9 +210,9 @@ s_bf2mri_steps:
 	$(PY) $@.py --out $(OUT)/figures/$@.pdf
 
 # the README's animation, docs/media/template_coronal.gif: the template's five channels (T2-weighted, tensor, soma and neurite
-# fractions, blockface), coronal planes 0.5 mm apart from front to back (126 frames, 10 fps, 960 px); reads $LINC_DATA_TREE/template/outputs,
-# about 3.5 min and 1.1 GB of RAM on a CPU; TEMPLATE_ANIMATION_ARGS=--webp also writes the animated WebP beside it
+# fractions, blockface), coronal planes 0.5 mm apart from front to back (126 frames, 10 fps, 960 px wide); reads
+# $LINC_DATA_TREE/template/outputs, about 4 min and 1.1 GB of RAM on a CPU
 .PHONY: template-animation
 template-animation:
 	@if [ -z "$(LINC_DATA_TREE)" ]; then echo "SKIPPED template-animation: set LINC_DATA_TREE (settings/roots.sh)"; \
-	else $(PY) readme_animation.py --out ../../docs/media/template_coronal.gif $(TEMPLATE_ANIMATION_ARGS); fi
+	else $(PY) readme_animation.py --out ../../docs/media/template_coronal.gif; fi
