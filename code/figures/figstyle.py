@@ -4,8 +4,9 @@
 - Black background for the WHOLE figure, as in the ISBI paper (isbi2027/code/fig*.py); off-white text, gray secondary text.
 - Liberation Sans (Arial-metric), designed at print size: 178 mm full width (86 mm one column), text >= 7 pt, bold lower-case
   9 pt panel letters outside the images, short headers above the panels, American spelling, 600 ppi.
-- NOTHING printed over images: headers above, direction letters and scale bars outside the frame, values in the caption.
-  save() refuses a figure with text inside an image's axes or under 7 pt.
+- NOTHING printed over images: headers above, direction letters and scale bars outside the frame, values in the caption but
+  for the scale bars' lengths, printed above each bar (author, 12 Nov 2026). save() refuses a figure with text inside an
+  image's axes or under 7 pt, or a scale bar's length over another text or outside the figure.
 - ONE color lookup, one meaning per hue (COL, BRAIN):
     routes              direct = cyan-teal, MRI = tan-brown (v2.1, 1 Oct: moved away from MR256's green, the provenance
                         orange and MF191's yellow)
@@ -18,7 +19,7 @@
   anterior to the right; coronal and sagittal views superior up; axial views anterior up. section() returns that display
   array from a volume in canonical RAS order (canonical()); dirs() writes the direction letters outside the frame.
 - True scale: place panels in physical mm (axes_mm) at one print scale per figure for whole brains (SCALE) and one for zooms;
-  scale bars outside the tissue (scalebar), their values in the caption.
+  scale bars outside the tissue (scalebar): plain bars, each with its length centered above it, 2 pt over the bar.
 - Display interpolation is bilinear for anatomy (rcParams; pass interpolation="nearest" for label maps); contours of masks
   are drawn at voxel accuracy (outline()).
 - Slice positions are given in NMT v2 mm: the MRI template's world is the NMT v2 symmetric frame, and a blockface-template
@@ -166,17 +167,59 @@ def lr(ax, left, right, fs=MIN_PT, color=GRAY):
                     fontsize=fs, color=color, annotation_clip=False)
 
 
-def scalebar(ax, px_per_mm, mm, y_frac=0.04, x0_px=None, color=FG, fs=MIN_PT, label=False, lw=1.2):
-    """A horizontal bar of `mm` millimeters (image pixel units, imshow axes) BELOW the frame, outside the tissue; its value
-    goes in the caption (label=True prints it beside the bar, still outside the image)."""
+SCALEBAR_GID = "scalebar_length"                # marks a scale bar's length for check()
+
+
+def scalebar(ax, px_per_mm, mm, y_frac=0.04, x0_px=None, color=FG, fs=MIN_PT, label=True, lw=1.2, end_px=None):
+    """A plain horizontal bar of `mm` millimeters (image pixel units, imshow axes) BELOW the frame, outside the tissue, its
+    length printed centered above it, 2 pt over the bar (label=False: the bar alone). The bar starts at x0_px (default: the
+    left limit); with end_px, the bar and its length end there instead, by the wider of the two. save() refuses the length
+    over an image, over another text, or outside the figure. Returns the length's text (or None)."""
     import matplotlib.transforms as mtrans
     tr = mtrans.blended_transform_factory(ax.transData, ax.transAxes)
+    sgn = 1 if ax.get_xlim()[1] > ax.get_xlim()[0] else -1
+    L = mm * px_per_mm * sgn
     xl = sorted(ax.get_xlim()); x0 = x0_px if x0_px is not None else xl[0]
-    x1 = x0 + mm * px_per_mm * (1 if ax.get_xlim()[1] > ax.get_xlim()[0] else -1)
-    ax.plot([x0, x1], [-y_frac, -y_frac], transform=tr, color=color, lw=lw, solid_capstyle="butt", clip_on=False)
-    if label:
-        ax.annotate(f"{mm:g} mm", xy=(max(x0, x1), -y_frac), xycoords=tr, xytext=(2, 0), textcoords="offset points",
-                    ha="left", va="center", fontsize=fs, color=color, annotation_clip=False)
+    if end_px is not None:
+        x0 = end_px - L
+    x1 = x0 + L
+    ln, = ax.plot([x0, x1], [-y_frac, -y_frac], transform=tr, color=color, lw=lw, solid_capstyle="butt", clip_on=False)
+    if not label:
+        return None
+    t = ax.annotate(f"{mm:g} mm", xy=((x0 + x1) / 2, -y_frac), xycoords=tr, xytext=(0, 2.0 + lw / 2), textcoords="offset points",
+                    ha="center", va="baseline", fontsize=fs, color=color, annotation_clip=False)
+    t.set_gid(SCALEBAR_GID); t.set_in_layout(False)              # a layout measured on tight boxes does not move for it
+    if end_px is not None:                                       # the length wider than the bar: both move back by the excess
+        e = t.get_window_extent(ax.figure.canvas.get_renderer()); inv = ax.transData.inverted()
+        wd = abs(inv.transform((e.x1, 0))[0] - inv.transform((e.x0, 0))[0])
+        dx = max(0.0, (wd - abs(L)) / 2) * sgn
+        ln.set_xdata([x0 - dx, x1 - dx]); t.xy = ((x0 + x1) / 2 - dx, -y_frac)
+    return t
+
+
+def scalebar_mm(fig, x_mm, y_mm, mm, print_mm_per_mm, anchor="left", color=FG, fs=MIN_PT, lw=1.2):
+    """A plain scale bar placed in figure mm (from the top-left corner, y down, as axes_mm), for a bar outside every panel: its
+    line at height y_mm, `mm` tissue millimeters long at the print scale print_mm_per_mm, its length centered above it as
+    scalebar() prints it. The bar and its length start at x_mm (anchor="left") or end there ("right"), by the wider of the two.
+    Asserts the pair overlaps none of the figure's axes placed so far (draw it last). Returns the text and the pair's box
+    (x0, x1, top, bottom; mm)."""
+    from matplotlib.lines import Line2D
+    W, H = (v * 25.4 for v in fig.get_size_inches())
+    L = mm * print_mm_per_mm
+    t = fig.text(0, 1 - (y_mm - (2.0 + lw / 2) / 72 * 25.4) / H, f"{mm:g} mm", ha="center", va="baseline", fontsize=fs, color=color,
+                 gid=SCALEBAR_GID)
+    r = fig.canvas.get_renderer()
+    wu = max(L, t.get_window_extent(r).width / fig.dpi * 25.4)
+    xc = x_mm + wu / 2 if anchor == "left" else x_mm - wu / 2
+    t.set_x(xc / W)
+    fig.add_artist(Line2D([(xc - L / 2) / W, (xc + L / 2) / W], [1 - y_mm / H] * 2, transform=fig.transFigure, color=color, lw=lw,
+                          solid_capstyle="butt"))
+    box = (xc - wu / 2, xc + wu / 2, H - t.get_window_extent(r).y1 / fig.dpi * 25.4, y_mm + lw / 2 / 72 * 25.4)
+    for ax in fig.axes:
+        p = ax.get_position()
+        a0, a1, a2, a3 = p.x0 * W, p.x1 * W, (1 - p.y1) * H, (1 - p.y0) * H
+        assert box[1] <= a0 or a1 <= box[0] or box[3] <= a2 or a3 <= box[2], f"the {mm:g} mm scale bar overlaps an axes {p}"
+    return t, box
 
 
 # ---- sections in the stated convention --------------------------------------------------------------------------------------
@@ -247,6 +290,24 @@ def check(fig):
     for lg in fig.legends:
         if any(over(lg.get_window_extent(r), b) for b in boxes):
             bad.append("figure legend over an image")
+    # a scale bar's length: inside the figure and clear of every other text (texts, titles, and the drawn axes' tick and axis labels)
+    others = [t for t in fig.texts if t.get_visible() and t.get_text().strip()]
+    for ax in fig.axes:
+        others += [t for t in ax.texts if t.get_visible() and t.get_text().strip()]
+        others += [t for t in (ax.title, ax._left_title, ax._right_title) if t.get_visible() and t.get_text().strip()]
+        if ax.axison:
+            others += [t for t in ax.get_xticklabels() + ax.get_yticklabels() + [ax.xaxis.label, ax.yaxis.label]
+                       if t.get_visible() and t.get_text().strip()]
+    fb = fig.bbox
+    for t in others:
+        if t.get_gid() != SCALEBAR_GID:
+            continue
+        e = t.get_window_extent(r)
+        if e.x0 < fb.x0 or e.y0 < fb.y0 or e.x1 > fb.x1 or e.y1 > fb.y1:
+            bad.append(f"scale bar length outside the figure: {t.get_text()!r}")
+        for u in others:
+            if u is not t and over(e, u.get_window_extent(r)):
+                bad.append(f"scale bar length {t.get_text()!r} over the text {u.get_text()[:40]!r}")
     return bad
 
 

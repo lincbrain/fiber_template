@@ -39,6 +39,7 @@ VOX = 0.25                                                     # MRI template gr
 CROP_MM = 2.0                                                  # every panel of a row cropped to the MRI brain-mask box + this
 DIST_MAX_MM = 2.0                                              # distance color bar maximum
 SCALEBAR_MM = 5
+SB_BELOW = 3.4                                                 # the scale bar's line under (b)'s first panel (mm): its length fits above
 GW_SMOOTH = 1.0                                                # Gaussian sigma (voxels) of the T2 before the gray/white contour
 PAGE_W, RIGHT_M, TOP, GAPR = 178.0, 8.0, 9.0, 9.0              # mm; RIGHT_M: room for the A direction letter when fixing the scale
 SCALE_LEFT, SCALE_GAP = 9.0, 3.0                               # mm: the margins the print scale is fitted with
@@ -136,7 +137,7 @@ def main():
         if k == 0:
             S.letter(ax, "b", dx=-14, dy=4)
             S.header(ax, "Distance between the registration and the composed registrations", dx=-3, dy=4)
-            S.scalebar(ax, 1 / VOX, SCALEBAR_MM)
+            S.scalebar(ax, 1 / VOX, SCALEBAR_MM, y_frac=SB_BELOW / h)      # its length above it, clear of the frame
     cax = S.axes_mm(fig, LEFT + C + GAP + (C + rows["cor"]["mm"][0] * scale) / 2 + CBAR_DX, y + 0.15 * max(hs, hc), 3.0,
                     0.7 * max(hs, hc))
     cb = fig.colorbar(im, cax=cax); cb.set_label("distance (mm)", color=S.FG, fontsize=S.MIN_PT)

@@ -55,6 +55,7 @@ PIN_RANKS = 3                                                  # (b): a named pi
 WIN_MM = 3.0                                                   # (b): window side
 ECDF_XMAX = 1.0                                                # (c): to the 1 mm search radius (the curve reaches 1)
 SCALEBARS_MM = (5, 0.5)                                        # (a), (b)
+BAR_BELOW_MM = 3.5                                             # each bar this far under its panel: its length fits between
 LEFT, RIGHT, GAP, TOP = 7.0, 7.0, 3.0, 6.0                     # mm
 
 
@@ -150,7 +151,7 @@ def main():
         ax.set_xticks([]); ax.set_yticks([]); [s_.set_visible(False) for s_ in ax.spines.values()]
         S.header(ax, heads[k], dx=0, dy=2)
         if k == 0:
-            S.letter(ax, "a", dx=-16, dy=2); S.scalebar(ax, 1 / FIX_MM, SCALEBARS_MM[0], y_frac=0.05)
+            S.letter(ax, "a", dx=-16, dy=2); S.scalebar(ax, 1 / FIX_MM, SCALEBARS_MM[0], y_frac=BAR_BELOW_MM / ph)
             ax.annotate("L", xy=(0, 0.5), xycoords="axes fraction", xytext=(-2, 0), textcoords="offset points", ha="right",
                         va="center", color=S.GRAY, annotation_clip=False)
         if k == len(pa) - 1:
@@ -173,7 +174,7 @@ def main():
         ax.set_xticks([]); ax.set_yticks([]); [s_.set_visible(False) for s_ in ax.spines.values()]
         S.header(ax, f"{S.label(S_)}, {qq}th percentile: {r['error_mm']:.2f} mm", dx=0, dy=2)
         if k == 0:
-            S.letter(ax, "b", dx=-16, dy=12); S.scalebar(ax, 1 / (PX_MM * f), SCALEBARS_MM[1], y_frac=0.04)
+            S.letter(ax, "b", dx=-16, dy=12); S.scalebar(ax, 1 / (PX_MM * f), SCALEBARS_MM[1], y_frac=BAR_BELOW_MM / bh)
             S.header(ax, "tubes hidden from the registration", dx=0, dy=12)
     yc = yb + bh + 12.0; wc = (3 * pw + 2 * GAP) * 0.54                  # (c) wide enough for (d)'s horizontal brain labels
     ax = S.axes_mm(fig, x0 + 12.0, yc, wc - 12.0, CH)

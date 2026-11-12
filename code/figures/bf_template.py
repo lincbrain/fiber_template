@@ -10,7 +10,7 @@ MRI channels figure (NMT v2 x = 2, y = 19.5, z = 15.5 mm, transformed into the b
 convention (sagittal anterior right; coronal and axial neurological; axial anterior up), the template's own 0.25 mm voxels (nothing
 resampled; bilinear display). Row headers give the NMT v2 coordinates (mm) of the sections, carried through the template's link of
 record. Each view is cropped to its own section's brain box + 0.5 mm, and one print scale makes the three columns and the color bar
-fill the page width. Inputs: the template of record and its link (settings/internal/products_blockface.yaml `bftemplate_step8`, `template_link`).
+fill the page width; one 10 mm scale bar, its length above it, at the figure's bottom-right corner. Inputs: the template of record and its link (settings/internal/products_blockface.yaml `bftemplate_step8`, `template_link`).
 Display parameters: settings/figures.yaml `bf_template`.
 Ported from the analysis project's paper/scripts/fig7_bf_template.py, the path the paper's figure was made with
 (--simple --no-d --fill on design 2b's step 8 and its link); the other variants of that script are not ported.
@@ -37,6 +37,7 @@ MARGIN = tuple(CFG["margin_mm"])              # mm of black around the brain box
 POST = CFG["post_mm"]                         # ... and extra mm behind the occipital pole (the 3D box the views are cut from)
 FILL_MARGIN = CFG["fill_margin_mm"]           # each view: its own section's brain box + this
 CBW = CFG["colorbar_mm"]                      # the color bar, its ticks and its title (mm)
+SB_MARGIN = 2.0                                # the scale bar's distance from the figure's right and bottom edges (mm)
 JOIN = "0.5 contour of photo_share within 1 mm of predicted tissue >= ~1 mm thick (opening x2, dilation x4)"   # provenance text, verbatim
 
 
@@ -116,14 +117,14 @@ def main():
                 ax.annotate(cname, xy=(0, 1), xycoords="axes fraction", xytext=(11, 13), textcoords="offset points",
                             fontsize=FS.MIN_PT, ha="left", va="bottom", annotation_clip=False)
         FS.dirs_row(axes[(plane, 0)], axes[(plane, 2)], plane, y=0.85 if plane == "sagittal" else 0.5)
-    FS.scalebar(axes[("axial", 1)], 1.0 / vox, 10.0)                    # under the axial color section
     pc = axes[("coronal", 2)].get_position(); fw, fh = fig.get_size_inches() * 25.4
     cx = (LEFT + 2 * (colw + GAP) + colw + 2.5) / fw
     cax = fig.add_axes([cx, pc.y0 + 0.1 * pc.height, 2.2 / fw, 0.8 * pc.height])
     cb = fig.colorbar(plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(0, 1)), cax=cax, ticks=[0, 0.5, 1])
     cb.outline.set_linewidth(0.4); cb.ax.tick_params(width=0.5, length=2); cb.ax.set_yticklabels(["0", "0.5", "1"])
     cb.set_label("photographed fraction")
-    ins = [str(T / f"{ARM}_{n}.nii.gz") for n in ("grey", "rgb", "brainmask", "photo_share", "real_eff")]
+    FS.scalebar_mm(fig, fw - SB_MARGIN, fh - SB_MARGIN, 10.0, ws, anchor="right")   # ONE scale bar, at the figure's bottom-right corner
+    ins =[str(T / f"{ARM}_{n}.nii.gz") for n in ("grey", "rgb", "brainmask", "photo_share", "real_eff")]
     FS.save(fig, a.out, ins + [str(link / "mri-template__to__bftemplate" / "maps.json")],
             " ".join(["code/figures/bf_template.py"] + sys.argv[1:]),
             extra=dict(template=ARM, slices_world_mm=dict(sagittal_x=xs, coronal_y=yc, axial_z=za), symmetry=None,

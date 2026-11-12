@@ -34,8 +34,8 @@ The Blockface block (photograph and volume, two views) has its letters per view,
 line. The blockface stores are +x = right: the tubes, which mark the left hemisphere, lie at lower x (checked on MM6 and MM2,
 11 Nov 2026).
 One print scale for every image (the largest that fits the 178 mm width, lowered in 0.01 steps while the figure is taller than
-max_height_mm); one 10 mm scale bar, outside every block (the bottom-right corner). Writes the PNG, a PDF beside it, and
-provenance.json.
+max_height_mm); one 10 mm scale bar, outside every block (the bottom-right corner), its length centered above it. Writes the
+PNG, a PDF beside it, and provenance.json.
 """
 import argparse
 import json
@@ -530,15 +530,20 @@ def main():
     elbow((x0a, ym), (T2c, ym), (T2c, my1 + 0.4), MRIA)
     t_mri = text((LX1 + T2c) / 2, ym + 0.8, "MRI-based alignment", color=MRIA)
     # one scale bar, outside every block: the figure's bottom-right corner, right of the MRI-based alignment's vertical leg and below
-    # the blockface template; its length goes in the caption
-    bar = float(cfg["scale_bar_mm"]); sb0, sb1, sby = TX1 - bar * SC, TX1, hy1 - 1.6
+    # the blockface template; its length centered above it, 2 pt over the bar (as figstyle.scalebar), the two ending at the margin
+    bar = float(cfg["scale_bar_mm"]); blen, sby = bar * SC, hy1 - 1.6
+    t_bar = ax.text(0, sby - (0.6 + 2.0) / 72 * 25.4, f"{bar:g} mm", fontsize=FS.MIN_PT, ha="center", va="baseline", color=FG,
+                    gid=FS.SCALEBAR_GID)
+    e_ = t_bar.get_window_extent(fig.canvas.get_renderer()); wl_ = (e_.x1 - e_.x0) / fig.dpi / FS.MM
+    xc_ = TX1 - max(blen, wl_) / 2; t_bar.set_x(xc_); sb0, sb1 = xc_ - blen / 2, xc_ + blen / 2
     ax.plot([sb0, sb1], [sby, sby], color=FG, lw=1.2, solid_capstyle="butt")
+    e_ = t_bar.get_window_extent(fig.canvas.get_renderer()); sl0 = min(sb0, e_.x0 / fig.dpi / FS.MM); sl_top = H - e_.y1 / fig.dpi / FS.MM
     e_ = t_mri.get_window_extent(fig.canvas.get_renderer()); lab_x1 = e_.x1 / fig.dpi / FS.MM
     lab_y1 = H - e_.y0 / fig.dpi / FS.MM                            # the label's bottom (figure mm, y down)
-    assert sb0 > T2c + 3.0, "the scale bar must keep clear of the MRI-based alignment's vertical leg"
-    assert sby > by1 + 3.0 and sby > ym + 3.0, "the scale bar must sit below the blockface template and the MRI-based line"
-    assert sb0 > lab_x1 + 3.0 or sby > lab_y1 + 2.0, "the scale bar must keep clear of the MRI-based alignment's label"
-    assert sb0 > LX1 + 3.0 and sby > my1 + 3.0, "the scale bar must lie outside the histology and MRI template blocks"
+    assert sl0 > T2c + 3.0, "the scale bar and its length must keep clear of the MRI-based alignment's vertical leg"
+    assert sl_top > by1 + 3.0 and sby > ym + 3.0, "the scale bar must sit below the blockface template and the MRI-based line"
+    assert sl0 > lab_x1 + 3.0 or sl_top > lab_y1 + 2.0, "the scale bar must keep clear of the MRI-based alignment's label"
+    assert sl0 > LX1 + 3.0 and sl_top > my1 + 3.0, "the scale bar must lie outside the histology and MRI template blocks"
     # orientation letters: one pair per block of one convention, at its sides; the Blockface block's per view
     side_letters(("i_t2", "i_dec", "i_f1", "i_f2"), "sagittal", LX0, LX1)
     side_letters(("t_t2", "t_dec", "t_f1", "t_f2"), "sagittal", TX0, TX1)

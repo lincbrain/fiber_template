@@ -4,7 +4,8 @@
 (a) The mean absolute deviation of the four brains from their mean, for three variants (T2 only, SANDI only, T2 + SANDI + tensor), in
     T2 (z-units), the soma fraction (percentage points; the neurite fraction gives the same value) and the
     principal direction (degrees), on the coronal section through the anterior commissure, in the voxels covered by all inputs (the
-    template's T2 core); brain voxels outside the core dark gray; one color scale per measure; white outline = the template brain.
+    template's T2 core); brain voxels outside the core dark gray; one color scale per measure; white outline = the template brain;
+    one 10 mm scale bar, its length above it, at the top left (below the letter, above the first row's label).
 (b) The core mean of every one of the seven variants; open = in sample (the variant was built with that channel), filled = out of
     sample; rings = the three variants shown in (a).
 Reads (settings/internal/products_mri.yaml): the deviation maps mri_runs/_variability/<arm>_four__<T2|FRAC1|DTI>.nii.gz (written by
@@ -98,8 +99,6 @@ def main():
             if j == 0:
                 ax.annotate(LABEL[arm].replace("T2 + SANDI + tensor", "T2 + SANDI\n+ tensor"), xy=(0, 0.5), xycoords="axes fraction",
                             xytext=(-16, 0), textcoords="offset points", ha="right", va="center", color=S.FG, annotation_clip=False)
-                if i == len(show) - 1:
-                    S.scalebar(ax, 1 / vx, SCALEBAR_MM, y_frac=0.05)
             if j == nm - 1 and i == 0:
                 ax.annotate("R", xy=(1, 0.5), xycoords="axes fraction", xytext=(2, 0), textcoords="offset points", ha="left",
                             va="center", color=S.GRAY, annotation_clip=False)
@@ -123,6 +122,8 @@ def main():
         ax.set_xlim(lo - 0.15 * d, hi + 0.15 * d)
         if j == 0:
             S.letter(ax, "b", dx=-70, dy=2)
+    # ONE scale bar, at the top left: right-aligned with the row labels, a quarter down the first row (below "a", above "T2")
+    S.scalebar_mm(fig, LEFT - 16 / 72 * 25.4, TOP + ph / 4, SCALEBAR_MM, scale, anchor="right")
     S.save(fig, a.out, [NUM / f"{SUMMARY}.json", NUM / "acpc.json"] + [OUTD / f"{arm}__{k}.nii.gz" for arm in show for k, _ in FIG_METRICS],
            cmd="python code/figures/variability.py " + " ".join(sys.argv[1:]),
            extra=dict(print_mm_per_tissue_mm=round(scale, 3), section="coronal through the anterior commissure", scalebar_mm=SCALEBAR_MM,

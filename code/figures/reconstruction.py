@@ -12,7 +12,9 @@
      section's median brightness before and after correction
   f  marker tubes (an orange arrowhead beside each) before and after filling, on the section with the most tube voxels
   g  the reconstructed volume: coronal, sagittal and axial
-Two print scales: whole-brain views (a, c, d, g) and zoomed views (b, e, f); scale bars below the panels, their values in the caption.
+Two print scales: whole-brain views (a, c, d, g), which share one 10 mm scale bar at the figure's bottom-left corner, and zoomed
+views (b, e, f): b and f have their own 5 mm bars below them, and e's scale is its trace's mm axis (the reslices' own horizontal
+scale). Each bar has its length above it.
 A grid of three columns, (a, d, g coronal), (b, e, g sagittal), (c, f, g axial): each cell is a rectangle of its column's width, its
 content centered in it and its letter and topic at its left edge; the free width is shared as equal column spaces.
 Reads one brain's reconstruction ($LINC_PRODUCTS data/sub-<ID>/blockface: the photographs, 2D masks, the aligned stack, the color
@@ -402,6 +404,7 @@ def main():
     # scales are the house ones (the author, 15 Oct: "keep it consistent"); --fit-width instead multiplies both by the factor K
     # that leaves GAP_C between the columns (626c1ea).
     SUB, LEFT, TOP1, TR, GAP_C = 1.2, 5.0, 11.0, 14.0, 6.0             # TR: (e)'s trace height; GAP_C: the column space (--fit-width)
+    SB_BELOW, SB_BELOW_ARROWS = 3.4, 5.2                               # a zoom bar's line under its image (mm): its length fits above it
     ESUB = SUB + 4.0                                                    # (e): room for its two column headers
     RIGHT = FS.FULL_W_IN / FS.MM - LEFT
     COLS = (("a", "d", "g0"), ("b", "e", "g1"), ("c", "f", "g2"))
@@ -434,7 +437,7 @@ def main():
         ax.imshow(np.asarray(th), extent=pext, origin="upper", aspect="auto")
         ax.contour(np.linspace(0, pext[1], th.size[0]), np.linspace(pext[3], 0, th.size[1]), pm_th.astype(float), levels=[0.5],
                    colors=[FS.COL["outline"]], linewidths=0.6)
-        window(ax, pc, aw / ws, ah / ws); FS.dirs(ax, "coronal"); FS.scalebar(ax, 1.0, 10.0)
+        window(ax, pc, aw / ws, ah / ws); FS.dirs(ax, "coronal")
 
         # (b)
         axb = []
@@ -444,8 +447,8 @@ def main():
             strip(ax, img, yb[ob], vt, vb, bspan, bh_ / zs)
             arrow_up(ax, yj)
             sublab(ax, lab)
-            if n == 0:
-                FS.scalebar(ax, 1.0, 5.0, y_frac=0.16)
+            if n == 0:                                                 # below the arrowheads (0.4-2.0 mm under the strip), its length too
+                FS.scalebar(ax, 1.0, 5.0, y_frac=SB_BELOW_ARROWS / bh_)
         FS.dirs_row(axb[0], axb[1], "sagittal"); cell["b"] = axb
 
         # (c) every interpolated section of the stack: orange ticks below a sagittal reslice of the aligned stack (camera column)
@@ -463,7 +466,6 @@ def main():
         ys_ = np.linspace(ext_b[0], ext_b[1], bg.shape[1]); zz_ = np.linspace(ext_b[3], ext_b[2], bg.shape[2])
         ax.contour(ys_, zz_, np.rot90(mk[xm]).astype(float), levels=[0.5], colors=[FS.COL["outline"]], linewidths=0.6)
         window(ax, (cxb, czb), dw / ws, dh / ws); FS.dirs(ax, "sagittal")
-        FS.scalebar(ax, 1.0, 10.0)
 
         # (e)
         axe = []
@@ -513,7 +515,7 @@ def main():
             window(ax, (cxh, czh), fw / zs, fh / zs)
             sublab(ax, lab)
             if n == 0:
-                FS.scalebar(ax, 1.0, 5.0)
+                FS.scalebar(ax, 1.0, 5.0, y_frac=SB_BELOW / fh)
         cell["f"] = axf
 
         # (g) the reconstructed volume: coronal, sagittal, axial, each centered vertically on the row (the axial is the tallest)
@@ -522,7 +524,7 @@ def main():
             ax.imshow(soft(P.rgb01(img), *SOFT_G), extent=e_, origin="upper", aspect="auto")
             window(ax, ctr, ww_ / ws, hh_ / ws)
             if q == 0:
-                FS.dirs(ax, "coronal"); FS.scalebar(ax, 1.0, 10.0)
+                FS.dirs(ax, "coronal")
             elif nm == "sagittal":
                 FS.dirs(ax, "sagittal")
             else:                                                      # axial: anterior up, letters above and below
@@ -561,6 +563,8 @@ def main():
         for i, s in enumerate(row):
             rect = FS.axes_mm(fig, Xc[i], rows["top"][r_], Wc[i], rows["h"][r_]); rect.set_axis_off()
             head2(rect, *HEAD[s], s[0] if s[0] != "g" or s == "g0" else None)
+    # ONE 10 mm bar for every whole-brain view (a, c, d, g), at the figure's bottom-left corner (the left column's edge)
+    FS.scalebar_mm(fig, Xc[0], fig.get_size_inches()[1] * 25.4 - 2.0, 10.0, WS * K)
     rec["print_scale"] = dict(whole=round(WS * K, 4), zoom=round(ZS * K, 4), factor=round(K, 4), house=dict(whole=WS, zoom=ZS))
     rec["grid"] = dict(columns_mm=[round(w, 2) for w in Wc], space_mm=round(G, 2), margin_mm=LEFT)
     ins = [f"{bd}/00_slices", f"{bd}/01_brainmask/01_final", f"{bd}/{S}.info", f"{bd}/02_blockface.ome.zarr", c.color_store,

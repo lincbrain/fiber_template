@@ -74,6 +74,7 @@ PSCALE = 26.0                                                        # mm, half 
 FILL_A = 0.8
 EDGE_UP = 8                                                           # (b) outlines traced on an 8x finer copy of the voxel grid
 LAYERS = ["MF191", "MR243", "MR252"]                                 # --layered: bottom to top (the smaller cases over MF8)
+BAR_BELOW_MM = 3.5                                                    # (b)'s 2 mm bar this far under the row: its length fits between
 PAL = {"MR243": (255, 0, 0), "MF191": (0, 255, 0), "MR252": (0, 0, 255)}
 pv.OFF_SCREEN = True
 
@@ -326,7 +327,7 @@ def compose(sd, still, sil, cap, rec, args):
         if q == 0:
             FS.letter(bx, "b", dx=-LM * 72 / 25.4 + 2, dy=12.0); FS.header(bx, "the charted labels at the right internal capsule, on FA", dx=-LM * 72 / 25.4 + 13, dy=12.0)
         FS.header(bx, f"y = {c['y']:g} mm", dx=0, dy=2.5, color=FS.GRAY)
-    FS.dirs_row(axs[0], axs[-1], "coronal"); FS.scalebar(axs[0], 1.0 / sd["vox"], 2.0)
+    FS.dirs_row(axs[0], axs[-1], "coronal"); FS.scalebar(axs[0], 1.0 / sd["vox"], 2.0, y_frac=BAR_BELOW_MM / hb)
     # the key, right of (b)
     kx = LM + nb * (wb + gapb) + 6.0
     axk = FS.axes_mm(fig, kx, TOPB, FW - kx - 2.0, hb); axk.set_xlim(0, 1); axk.set_ylim(0, 1); axk.set_axis_off()

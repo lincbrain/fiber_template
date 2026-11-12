@@ -23,7 +23,7 @@ What it does
              distance left of the center of the brain's mask; in the MRI row the plane 4 to 12 mm left of that center that keeps the
              network's mask in one piece (whole_plane)
     scale    one physical scale for every panel; the dashed frame on each input is the network's patch (the whole photograph for
-             the 2D network) at that scale
+             the 2D network) at that scale; one 10 mm bar under the last output, its length above it
     box      architecture, input channels, working resolution, patch, number of parameters and training data, every value read
              from the records above
   Display: the photograph and color volumes in their own colors with one gain per panel (99.5th percentile of the tissue), gray
@@ -61,6 +61,7 @@ MRI_CASE = "MR251_b0"                   # the MRI row: MM6's b0, as scanned (the
 PRINT_SCALE = 0.40                      # print mm per tissue mm, every panel
 FOV_MM = (80.0, 64.0)                   # each panel's window (tissue mm, width x height), centered on the brain
 SCALE_BAR_MM = 10
+SB_Y = 3.2                              # the bar's line under the last output panel (print mm): its length fits above it
 RECORDS = dict(mri="segmodels_mri_brainmask_2026-11", photo="segmodels_bf_mask2d_2026-11", bf="segmodels_bf_mask3d_2026-11",
                tubes="segmodels_bf_holes_2026-11", synth="d3_methods")
 TASKS = dict(mri="mri_brainmask", photo="bf_mask2d", bf="bf_mask3d", tubes="bf_holes")
@@ -363,9 +364,8 @@ def main():
             for xx_, s in ((x_in, "Input"), (x_box, "Network"), (x_out, "Output")):
                 hx = FS.axes_mm(fig, xx_, 0.4, 30, 3.5); hx.axis("off")
                 hx.text(0, 0.5, s, fontsize=FS.MIN_PT, color=FS.GRAY, ha="left", va="center")
-        if k == len(rows) - 1:
-            ao.plot([r["cen"][0] + FOV_MM[0] / 2 - SCALE_BAR_MM, r["cen"][0] + FOV_MM[0] / 2],
-                    [r["cen"][1] - FOV_MM[1] / 2 - 2.5] * 2, color=FS.FG, lw=1.0, clip_on=False, solid_capstyle="butt")
+        if k == len(rows) - 1:                                         # the bar under the last output, its length above it
+            FS.scalebar(ao, 1.0, SCALE_BAR_MM, y_frac=SB_Y / phh, end_px=r["cen"][0] + FOV_MM[0] / 2, lw=1.0)
     # the 2D and 3D groups: a bracket and its label in the left margin
     for (k0, k1), s in (((0, 0), "2D"), ((1, 5), "3D")):
         top, bot = ys[k0] + title_h, ys[k1] + title_h + phh

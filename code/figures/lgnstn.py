@@ -8,7 +8,9 @@ Rows: LGN and STN. Columns, in two groups: the left hemisphere's coronal, axial 
 right hemisphere's, each through the mean centroid of the labels shown for that nucleus and hemisphere (window +-HALF_MM): the three brains' labels of record (demons; products
 lgnstn_labels/<ID>/<ID>_<struct>_mri-template_mask_demons, outlined by the 0.5 contour of their probability maps) in COLORS, and the SARM nucleus (products
 lgnstn_slab/SARM_<struct>_mri-template.nii.gz, as code/figures/paper_numbers/lgnstn_budget_r059.py writes it) dashed white. A legend
-above names them. Orientation as figstyle.section: coronal and axial, the left of the brain on the left; sagittal, anterior right;
+above names them, the LGN row's 2 mm scale bar at its right; the STN row's, at its own scale, under that row (the LGN windows are 9.25 mm
+across, the STN's 7.25 mm).
+Orientation as figstyle.section: coronal and axial, the left of the brain on the left; sagittal, anterior right;
 superior up. Values (centroid distances) go in the caption (lgnstn_budget_r059). Full width, 180 mm.
 Writes the PDF and a PNG beside it. Ported from the analysis project's paper/scripts/figS_lgnstn_r059.py.
 10 Nov 2026 (requested at the 10 Nov meeting): only the former last column (all three brains and SARM, the same section centers); the
@@ -56,6 +58,9 @@ HALF_MM = {"LGN": 4.5, "STN": 3.5}
 PLANES = ("coronal", "axial", "sagittal")
 LETTERS = dict(coronal=("L", "R"), axial=("L", "R"), sagittal=("P", "A"))   # left and right of each view, as figstyle.section draws it
 VOX = 0.25
+SCALE_BAR_MM = 2.0                                             # one bar per row (the rows' windows differ): LGN on the legend's row, STN under its row
+BAR_BELOW_MM = 3.5                                             # the STN bar this far under its panel: its length fits between
+BAR_Y_MM = 3.6                                                 # the bar's height from the figure's top: its length above it, inside
 
 
 def main():
@@ -77,7 +82,7 @@ def main():
     PR = {k: np.asarray(nib.load(p).dataobj).astype(np.float32) for k, p in pps.items()}                 # outlines: prob 0.5 (= the masks)
     RS = {k: gaussian_filter(v.astype(np.float32), 0.25 / 2.3548 / VOX) for k, v in R.items()}            # SARM: FWHM 0.25 mm, then 0.5
     ins = [str(bgp)] + [str(p) for p in lps.values()] + [str(p) for p in pps.values()] + [str(p) for p in rps.values()] + [str(lp)]
-    gap_in, gap_grp, gap_row, left, right, top, bottom = 0.5, 3.0, 2.2, 5.0, 1.0, 13.5 + 2.54, 4.0
+    gap_in, gap_grp, gap_row, left, right, top, bottom = 0.5, 3.0, 2.2, 5.0, 1.0, 13.5 + 2.54, BAR_BELOW_MM + 1.0
     W = FIG_W
     cell = (W - left - right - 4 * gap_in - gap_grp) / 6.0
     H = top + len(NUCS) * cell + (len(NUCS) - 1) * gap_row + bottom
@@ -124,11 +129,17 @@ def main():
                 if g_ == 0 and plane == "axial" and r_ == len(NUCS) - 1:
                     ax.annotate("P", xy=(0.5, 0), xycoords="axes fraction", xytext=(0, -2), textcoords="offset points",
                                 ha="center", va="top", fontsize=FS.MIN_PT, color=FS.GRAY, annotation_clip=False)
+                if r_ == len(NUCS) - 1 and g_ == len(HEMIS) - 1 and p_ == 2:   # the bottom row's own bar, at its scale, under its last panel
+                    FS.scalebar(ax, 1 / VOX, SCALE_BAR_MM, y_frac=BAR_BELOW_MM / cell, x0_px=2 * h + 0.5 - SCALE_BAR_MM / VOX)
                 if g_ == 0 and p_ == 0:
                     ax.annotate(nuc, xy=(0, 0.5), xycoords="axes fraction", xytext=(-3, 0), textcoords="offset points",
                                 rotation=90, ha="right", va="center", fontsize=FS.MIN_PT, color=FS.FG, annotation_clip=False)
-                if r_ == len(NUCS) - 1 and g_ == len(HEMIS) - 1 and p_ == 2:
-                    FS.scalebar(ax, 1 / VOX, 2.0, y_frac=0.06)
+    # the top row's 2 mm bar on the legend's row, at the top right (the author, 12 Nov 2026), at that row's scale (the LGN's window; the
+    # STN's is narrower, HALF_MM, and has its own bar under the bottom row), right-aligned with that row's last panel
+    n0 = 2 * int(round(HALF_MM[NUCS[0]] / VOX)) + 1
+    bx = FS.axes_mm(fig, left + (len(HEMIS) - 1) * (3 * cell + 2 * gap_in + gap_grp) + 2 * (cell + gap_in), BAR_Y_MM, cell, 0.01)
+    bx.axis("off"); bx.set_xlim(-0.5, n0 - 0.5); bx.set_ylim(0, 1)
+    FS.scalebar(bx, 1 / VOX, SCALE_BAR_MM, y_frac=0.0, x0_px=n0 - 0.5 - SCALE_BAR_MM / VOX)
     hl = [Line2D([], [], color=COLORS[S], lw=LW) for S in SUBS] + [Line2D([], [], color=FS.FG, lw=LW, linestyle="--")]
     fig.legend(hl, [lab[S] for S in SUBS] + ["SARM"], loc="upper center", ncol=4, frameon=False, fontsize=FS.MIN_PT,
                handlelength=2.6, columnspacing=1.6, borderaxespad=0, bbox_transform=fig.transFigure,
@@ -136,7 +147,8 @@ def main():
     cmd = " ".join(["code/figures/lgnstn.py"] + sys.argv[1:])
     FS.save(fig, a.out, ins, cmd, extra=dict(half_window_mm=HALF_MM, section_centers_world_mm=centers,
                                             colors=dict({lab[S]: COLORS[S] for S in SUBS}, SARM=f"{FS.FG}, dashed"),
-                                            scale_bar_mm=2))
+                                            scale_bar_mm=SCALE_BAR_MM, scale_bars={NUCS[0]: "top right, the legend's row",
+                                                                                    NUCS[-1]: "bottom right, under its row"}))
     fig.savefig(str(Path(a.out).with_suffix(".png")), dpi=FS.DPI, facecolor=fig.get_facecolor())
     print("->", a.out, f"{W:.0f} x {H:.1f} mm")
 

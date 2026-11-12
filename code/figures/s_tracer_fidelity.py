@@ -62,6 +62,7 @@ Image.MAX_IMAGE_PIXELS = None
 CASES = ["MR243", "MR252", "MR256", "MF191"]
 TV = 0.25
 OUTLINE = "#00e5ff"
+BAR_BELOW_MM = 3.5                                       # each 5 mm bar this far under its panel: its length fits between
 GROUPS = [("bundles", ("Fiber_dense_bundle", "Fiber_moderate_bundle", "Bundle"), "#D55E00", 0.9),
           ("light bundles", ("Fiber_light_bundle",), "#E69F00", 0.5),
           ("terminal fields", ("Terminal_dense", "Terminal_moderate", "Terminal_light"), "#56B4E9", 0.5),
@@ -298,7 +299,7 @@ def main(argv=None):
             for g, cls, col, lw in GROUPS:
                 contour(ax, (d["lab3"] if c_i == 2 else d["lab"])[g], px_b, col, lw)
             contour(ax, d["reg"], px_b, OUTLINE, 0.6)
-            FS.scalebar(ax, 1.0, 5)
+            FS.scalebar(ax, 1.0, 5, y_frac=BAR_BELOW_MM / ph_mm)
             if r_i == 0:
                 FS.header(ax, titles[c_i], dx=0, dy=2)
             if c_i == 0:

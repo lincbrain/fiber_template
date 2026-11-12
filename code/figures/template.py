@@ -10,8 +10,8 @@ mapped into the MRI template by the registration d2bs8_s5sym, inside its own mas
 channel (it stays in the release as the registration target for new brains).
 Orientation: figstyle.section() (neurological; sagittal anterior-right; axial anterior-up). One true scale for every panel (print mm
 per tissue mm, the largest that fits the columns across 178 mm; written to the provenance), each panel cropped to the brain + 0.75 mm.
-Direction letters and a 10 mm scale bar outside the first panel of each row; colorbars (and the direction-color key) below the
-columns. Windows: 0-1; T2 and the blockface channel normalized to their in-brain 99.5th percentile; MD 2nd-99.5th percentile of the
+Direction letters outside the first and last panels of each row; one 10 mm scale bar, its length above it, at the figure's
+bottom-left corner; colorbars (and the direction-color key) below the columns. Windows: 0-1; T2 and the blockface channel normalized to their in-brain 99.5th percentile; MD 2nd-99.5th percentile of the
 tissue mode (voxels above a quarter of the median, brain eroded 0.5 mm; um^2/ms). Display bilinear.
 Reads (settings/internal/products_mri*.yaml): template_mri/linc_mri_{brainmask,T2,frac1,frac2,FA,MD,DEC}.nii.gz,
 template2template/d2bs8_s5sym/d2bs8_s5sym{,_mask}_in_mri_template.nii.gz, numbers_of_record/acpc.json.
@@ -43,6 +43,7 @@ PAD_MM, X_SAG = 0.75, 2.0                                      # crop margin (mm
 SCALEBAR_MM = 10
 DEC_GAMMA = 1.6                                                # display gamma of the direction colors (read at print size)
 LEFT, RIGHT, GAP_C, GAP_R, TOP, CB_H, BOTTOM = 21.0, 3.5, 1.2, 3.2, 5.0, 9.0, 1.0      # mm
+SB_X, SB_UP = 2.0, 0.6                                         # the scale bar: its left edge, and its line above the bottom margin (mm)
 
 
 def main():
@@ -125,8 +126,6 @@ def main():
             if j == 0:
                 ax.annotate(S.DIRS[pl][0], xy=(0, 0.5), xycoords="axes fraction", xytext=(-2, 0), textcoords="offset points",
                             ha="right", va="center", color=S.GRAY, annotation_clip=False)      # left letter before the first column
-                if r == len(planes) - 1:                            # ONE scale bar, below the last row's first panel
-                    S.scalebar(ax, px_mm, SCALEBAR_MM, y_frac=0.05)
                 ax.annotate(f"{pl}\n{pos[pl]}", xy=(0, 0.5), xycoords="axes fraction", xytext=(-16, 0), textcoords="offset points",
                             ha="right", va="center", color=S.FG, annotation_clip=False)
             if j == ncol - 1:                                     # right letter after the last column
@@ -146,6 +145,7 @@ def main():
             else:                                                          # 0-1 bars: short labels "0", "0.5", "1"
                 cb.set_ticks([0, 0.5, 1]); cb.ax.set_xticklabels(["0", "0.5", "1"])
             cb.set_label(CBLAB[key], labelpad=1)
+    S.scalebar_mm(fig, SB_X, H - BOTTOM - SB_UP, SCALEBAR_MM, scale)   # ONE scale bar, at the figure's bottom-left corner
     out = Path(a.out); out.parent.mkdir(parents=True, exist_ok=True)
     S.save(fig, str(out), inputs, cmd=" ".join(["python"] + sys.argv),
            extra=dict(print_mm_per_tissue_mm=round(scale, 4), sections=pos, scalebar_mm=SCALEBAR_MM,

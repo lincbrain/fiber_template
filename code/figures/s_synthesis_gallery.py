@@ -13,7 +13,7 @@ Per brain, from the completed volumes of record (products `completed`) and the p
            subject's left on the left. Without z_mm: z*, the plane with the cohort's largest median synthesized area
   crop     from the brain's caudal end to 22 mm rostral of the junction line's median in that plane, the rows aligned on it
   junction dashed where the product's seam_depth = 0 (caudal of it the tissue is synthesized), oblique in this frame
-  scale    one physical scale for all brains (the widest brain fills its tile); one 10 mm bar
+  scale    one physical scale for all brains (the widest brain fills its tile); one 10 mm bar, its length above it
   color    photographed tissue in its own color, cross-faded into the synthesis over 2 mm (the product's seam_ramp_real); synthesized
            tissue colored with the brain's own luminance -> color lookup fitted on its photographs (code/blockface/synthesis/views.py)
   header   name, and the synthesized share of the brain ($LINC_NUMBERS/d3_predicted_share.json; gray: the 8 brains synthesized from
@@ -216,6 +216,7 @@ def main():
         below = max(t["img"].shape[0] - t["cut_row"] for t in T.values()) * mm_per_vox
     th = above + below
     sb_h = 3.0                                                         # room under the first row for the scale bar
+    sb_y = 3.4                                                         # its line under the first row (mm): its length fits above it
     H = nrow * (hdr + th) + (nrow - 1) * gap + sb_h
     fig = plt.figure(figsize=(FS.FULL_W_IN, H / 25.4))
     AXS = []
@@ -244,9 +245,8 @@ def main():
             e_ = pc.get_window_extent(fig.canvas.get_renderer()); w_pc = e_.width / fig.dpi * 72.0
             ax.annotate(f"{'x' if sag else 'z'} {coords[S]:.2f}", xy=(1, 1), xycoords="axes fraction", xytext=(-w_pc - 4.0, 3),
                         textcoords="offset points", ha="right", va="bottom", fontsize=FS.MIN_PT, color=FS.GRAY, annotation_clip=False)
-        if k == 0:
-            ax.plot([tw - 10.0 / VOX * mm_per_vox - 0.3, tw - 0.3], [-below - 1.2] * 2, color=FS.FG, lw=1.0, clip_on=False,
-                    solid_capstyle="butt")
+        if k == 0:                                                     # the 10 mm bar under the first tile's right, its length above it
+            FS.scalebar(ax, mm_per_vox / VOX, 10.0, y_frac=sb_y / th, x0_px=tw - 10.0 / VOX * mm_per_vox - 0.3, lw=1.0)
     if a.letters:                                                      # once: beside row 1, and A/P on the first axial tile
         FS.dirs_row(AXS[0], AXS[min(ncol, len(AXS)) - 1], a.view, color=FS.FG)
         if not sag:
