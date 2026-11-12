@@ -107,7 +107,9 @@ def main():
     ci[2] = int(np.percentile(np.argwhere(U[:, ci[1], :])[:, 1], ZPCT))       # the crop's height: centered on the section's tissue
     sl = lambda V: FS.section(V[ci[0] - half:ci[0] + half + 1, :, ci[2] - half:ci[2] + half + 1], "coronal", ci[1])   # noqa: E731
     nmt_y = float(FS.to_nmt(str(OUTD / ex / "link"), [A[:3, :3] @ ci + A[:3, 3]])[0][1])   # through the fold's own link (MRI template = NMT v2 mm)
-    BX = AX + AW + 18.0; cols = [(S1, L(S1)), (S2, L(S2)), (None, "|difference|")]
+    # (b) starts 18 mm right of (a) less 36 pixels (1.524 mm at 600 ppi): the room for the R beside its last panel within the
+    # page width; a whole number of pixels, so the images render the same
+    BX = AX + AW + 18.0 - 36 * 25.4 / FS.DPI; cols = [(S1, L(S1)), (S2, L(S2)), (None, "|difference|")]
     DIFF_MAX = CFG["difference_window_z"]                                     # z units, one window for both routes
     for r, (R, rname, col) in enumerate((("A", "blockface-based", CA), ("B", "MRI-based", CB))):
         Mc = sl((masks[S1, R] & masks[S2, R]).astype(np.float32)) > 0.5       # the crop where both brains have tissue
@@ -128,12 +130,15 @@ def main():
                 sp.set_visible(False)
             if r == 0:
                 FS.header(ax, cname, dx=0, dy=2)
-            if c == 0:
-                ax.text(-0.06, 0.5, rname, transform=ax.transAxes, rotation=90, ha="right", va="center", color=col, fontsize=FS.MIN_PT)
+            if c == 0:                                                        # the row label, left of the top row's L
+                ax.text(-2.9 / side, 0.5, rname, transform=ax.transAxes, rotation=90, ha="right", va="center", color=col,
+                        fontsize=FS.MIN_PT)
             if r == 1 and c == 2:
                 FS.scalebar(ax, 1.0 / vox, 2.0)
             if r == 0 and c == 0:
-                FS.letter(ax, "b", dx=-10, dy=2)
+                FS.letter(ax, "b", dx=-10, dy=2); ax_first = ax
+            if r == 0 and c == 2:
+                FS.dirs_row(ax_first, ax, "coronal")                          # L and R once, at the top row's mid-height
             if r == 0 and c == 2:
                 ax.text(1.0, -0.02, f"coronal, y = {nmt_y:.1f} mm".replace("-", "−"), transform=ax.transAxes, ha="right", va="top",
                         color=REF, fontsize=FS.MIN_PT)

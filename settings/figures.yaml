@@ -14,6 +14,7 @@ pipeline:
   record_color_pct: 99.0              # the record's color scale: this percentile of the brightest channel of the registered colors
   junction_depth_mm: 0.40             # a border vertex lies on the junction plane if the voxels across it are within this
   histology_mm_px: 0.034              # TIRL block grid (configuration.yml resolution)
+  histology_photo_slice: 704          # the histology example's photograph (MM2's store, level 0): its gray is TIRL's fixed image
   print_scale_range: [0.60, 0.25]     # the largest print scale (mm per tissue mm) in this range that fits the 178 mm width
   max_height_mm: 138                  # ... lowered in 0.01 steps while the figure is taller (it must fit a page with its caption)
   scale_bar_mm: 10
@@ -43,3 +44,11 @@ reconstruction:
   soft_edge_f: [1.0, 3.0]             # (f) display edge: Gaussian sigma, rounding (pixels)
   soft_edge_g: [0.8, 1.5]             # (g) display edge: Gaussian sigma, rounding (pixels)
 
+synthesis_gallery:
+  frame: canonical                    # each brain's canonical fine grid (the run-113 world, its rigid placement): one world plane for all 21
+  view: axial                         # one world axial plane for all 21 (the author's choice, 11 Nov 2026, 19:0x): the cohort's largest
+                                      #   median synthesized area (z = 4.4 mm), from the caudal end to 22 mm rostral of the junction
+  x_mm: 4.5                           # --view sagittal only: right of the midline, as Fig. 2's blockface volume
+  ncol: 7                             # 3 rows x 7 tiles
+  letters: true                       # orientation letters once (L/R beside the first row, A/P above and below its first tile)
+  plane: record                       # the axial options only (--frame flat): record | fewest_gaps

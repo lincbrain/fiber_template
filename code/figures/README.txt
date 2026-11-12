@@ -18,12 +18,13 @@ One figure at a time: $PY code/figures/<script>.py --out <file.png>
     2       pipeline.py                8       lgnstn.py
     3       reconstruction.py          9       alignment_comparison.py
     4       variability.py             10      tracer_sections3d.py
-    5       bf_template.py             S2      s_synthesis_depth.py
-    6       link.py                    S3      s_synthesis_gallery.py
-                                       S4      s_tracer_fidelity.py
+    5       bf_template.py             S2      s_synthesis_gallery.py
+    6       link.py                    S3      s_tracer_fidelity.py
+                                       S4      s_networks.py
 
-Figure 10 and S2 and S3 of the paper are drawn differently from these scripts' output. Figure S1 has
-no script here. figstyle.py holds the shared figure style. Fonts: Liberation Sans.
+Figure 10 of the paper is drawn differently from its script's output. Figure S1 has no script here.
+s_synthesis_depth.py draws a figure the paper no longer shows (its numbers are in the Supplement's
+text). figstyle.py holds the shared figure style. Fonts: Liberation Sans.
 
     paper_numbers/   one script per numbers record
     evaluation/      the measures the paper reports

@@ -59,6 +59,9 @@ models/blockface_holes/model.pt	models_wrapup/segment/bf_holes/model.pt	model	lo
 models/blockface_holes/spec.json	models_of_record/segment/bf_holes/spec.json	model	local	input	1130
 models/blockface_holes/spec.json	models_wrapup/segment/bf_holes/spec.json	model	local	input	1130
 models/blockface_holes/intermediate/task.json	models_wrapup/tasks/bf_holes.json	model	local	input	38898
+models/blockface_holes/intermediate/training_data/bf_holes3d/imagesTr/MR256_0000.nii.gz	models_wrapup/data_bf/bf_holes3d/imagesTr/MR256_0000.nii.gz	derivative	local	input	1088058
+models/blockface_holes/intermediate/training_data/bf_holes3d/imagesTr/MR256_0001.nii.gz	models_wrapup/data_bf/bf_holes3d/imagesTr/MR256_0001.nii.gz	derivative	local	input	1240812
+models/blockface_holes/intermediate/training_data/bf_holes3d/imagesTr/MR256_0002.nii.gz	models_wrapup/data_bf/bf_holes3d/imagesTr/MR256_0002.nii.gz	derivative	local	input	1329389
 models/blockface_holes/intermediate/training_data/bf_holes3d/labelsTr/MF191.nii.gz	models_wrapup/data_bf/bf_holes3d/labelsTr/MF191.nii.gz	label	local	input	9501
 models/blockface_holes/intermediate/training_data/bf_holes3d/labelsTr/MF196.nii.gz	models_wrapup/data_bf/bf_holes3d/labelsTr/MF196.nii.gz	label	local	input	13944
 models/blockface_holes/intermediate/training_data/bf_holes3d/labelsTr/MF204.nii.gz	models_wrapup/data_bf/bf_holes3d/labelsTr/MF204.nii.gz	label	local	input	3339
@@ -8366,6 +8369,7 @@ models/blockface_mask2d/intermediate/folds/fold_1/validation_fill/scores.json	mo
 models/blockface_mask2d/intermediate/folds/fold_2/DONE	models_wrapup/runs/bf_mask2d/fold_2/DONE	model	local	input	26
 models/blockface_mask2d/intermediate/folds/fold_2/model.pt	models_wrapup/runs/bf_mask2d/fold_2/model.pt	model	local	input	82515530
 models/blockface_mask2d/intermediate/folds/fold_2/record.json	models_wrapup/runs/bf_mask2d/fold_2/record.json	model	local	input	1472632
+models/blockface_mask2d/intermediate/folds/fold_2/val_pred/MR256_0740.png	models_wrapup/runs/bf_mask2d/fold_2/val_pred/MR256_0740.png	model	local	input	5114
 models/blockface_mask2d/intermediate/folds/fold_2/validation_fill/meta.json	models_wrapup/runs/bf_mask2d/fold_2/validation_fill/meta.json	model	local	input	1612
 models/blockface_mask2d/intermediate/folds/fold_2/validation_fill/scores.json	models_wrapup/runs/bf_mask2d/fold_2/validation_fill/scores.json	model	local	input	4092302
 models/blockface_mask2d/intermediate/folds/fold_3/DONE	models_wrapup/runs/bf_mask2d/fold_3/DONE	model	local	input	26
@@ -58452,6 +58456,9 @@ models/blockface_mask3d/model.pt	models_wrapup/segment/bf_mask3d/model.pt	model	
 models/blockface_mask3d/spec.json	models_of_record/segment/bf_mask3d/spec.json	model	local	input	990
 models/blockface_mask3d/spec.json	models_wrapup/segment/bf_mask3d/spec.json	model	local	input	990
 models/blockface_mask3d/intermediate/task.json	models_wrapup/tasks/bf_mask3d.json	model	local	input	36562
+models/blockface_mask3d/intermediate/training_data/bf_mask3d_v2/imagesTr/MR256_0000.nii.gz	models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR256_0000.nii.gz	derivative	local	input	3142389
+models/blockface_mask3d/intermediate/training_data/bf_mask3d_v2/imagesTr/MR256_0001.nii.gz	models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR256_0001.nii.gz	derivative	local	input	3308663
+models/blockface_mask3d/intermediate/training_data/bf_mask3d_v2/imagesTr/MR256_0002.nii.gz	models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR256_0002.nii.gz	derivative	local	input	3486129
 models/blockface_mask3d/intermediate/training_data/bf_mask3d_v2/labelsTr/MF191.nii.gz	models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MF191.nii.gz	label	local	input	54618
 models/blockface_mask3d/intermediate/training_data/bf_mask3d_v2/labelsTr/MF196.nii.gz	models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MF196.nii.gz	label	local	input	75040
 models/blockface_mask3d/intermediate/training_data/bf_mask3d_v2/labelsTr/MF204.nii.gz	models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MF204.nii.gz	label	local	input	20841

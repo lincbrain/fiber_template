@@ -6,7 +6,7 @@
 Three stages, read top to bottom. (1) Two constructions of one style: ex vivo MRI -> the MRI template; blockface -> the blockface
 template. (2) Their registration (vertical arrow). (3) Histology: a section registered to its blockface photograph, then transformed
 to the template by the blockface-based alignment (cyan, through the blockface template) or the MRI-based alignment (brown, through
-its own MRI).
+its own MRI). The blockface template's box starts at the MRI template's left edge.
 
 Inputs: the products listed in settings/internal/products_figures.yaml (under $LINC_PRODUCTS) and two counts from the numbers records
 ($LINC_NUMBERS: bf_cohort, histo_tube_landmarks). Display parameters: settings/figures.yaml (pipeline).
@@ -21,9 +21,15 @@ Planes (the sagittal plane of the template figure, x = 2.0 mm):
   start -> store, with one linear interpolation, on the record's color scale; its synthesized part is the completed RGB, linear, at
   its own 0.25 mm. A dashed line marks where the synthesized tissue begins: the synthesized mask's border on the junction plane.
   Nothing is smoothed, cut or filled.
-- one photograph of the same brain, at MM2's place along its stack; the histology row is MM2's.
+- one photograph of the same brain, at MM2's place along its stack; the histology row is MM2's: its section, registered (TIRL), and
+  the photograph it was registered to, in color from the store (histology_photo_slice; its gray is TIRL's fixed image, checked),
+  on the fixed image's pixels and crop.
+Orientation letters, once per block or row where one convention holds, at the bottom corners of its first image (on the label
+line): L and R on the coronal views (neurological), P and A on the sagittal views (anterior right). The blockface stores
+are +x = right: the tubes, which mark the left hemisphere, lie at lower x (checked on MM6 and MM2, 11 Nov 2026).
 One print scale for every image (the largest that fits the 178 mm width, lowered in 0.01 steps while the figure is taller than
-max_height_mm); a 10 mm scale bar. Writes the PNG, a PDF beside it, and provenance.json.
+max_height_mm); one 10 mm scale bar, outside every block (the bottom-right corner). Writes the PNG, a PDF beside it, and
+provenance.json.
 """
 import argparse
 import json
@@ -335,15 +341,26 @@ def main():
     ph = im[max(0, int(rc - hh)):int(rc + hh), max(0, int(cc - hw)):int(cc + hw)]
     th = Image.fromarray(np.ascontiguousarray(ph)); f_ = max(1, int(np.ceil(max(th.size) / 900))); th = th.reduce(f_)
     I["photo"] = (np.asarray(th, np.float32) / 255.0, mm_px * f_, mm_px * f_, None)
-    # one histology section and its blockface photograph (TIRL), neurological
+    # one histology section and its blockface photograph (TIRL), neurological; the photograph in color: the store's level 0 slice
+    # whose gray is TIRL's fixed image (slide orientation = the store's rows and columns reversed), on the fixed image's crop
+    import zarr
     hi = np.asarray(Image.open(P["histology_piece"] / "moving4_nonlinear_rgb.png").convert("RGB"), np.float32) / 255.0
     sl = np.asarray(Image.open(P["histology_piece"] / "fixed.png").convert("L"), np.float32) / 255.0
+    kh = int(cfg["histology_photo_slice"])
+    col = np.moveaxis(np.asarray(zarr.open_group(str(P["blockface_store"]), mode="r")["0"][:, :, kh, :]), 0, -1)[::-1, ::-1]
+    col = col.astype(np.float32) / 255.0
+    assert col.shape[:2] == sl.shape, (col.shape, sl.shape)
+    photo_check = dict(store_slice=kh, store_level=0,
+                       r_gray_vs_fixed=round(float(np.corrcoef((col @ W_LUM).ravel(), sl.ravel())[0, 1]), 5),
+                       support_agreement=round(float(((col.sum(-1) > 0) == (sl > 0)).mean()), 5))
+    assert photo_check["r_gray_vs_fixed"] > 0.99 and photo_check["support_agreement"] > 0.999, photo_check
     flip = histo_side(sl, read_level(P["blockface_store"], int(cfg["blockface_level"]))[0])     # the histology example's own stack
     if flip:
-        hi, sl = hi[:, ::-1], sl[:, ::-1]
+        hi, sl, col = hi[:, ::-1], sl[:, ::-1], col[:, ::-1]
     px = float(cfg["histology_mm_px"])
     I["histo"] = (crop_to(np.clip(hi / np.percentile(hi, 99.5), 0, 1), 0.03, pad=6), px, px, None)
-    I["slice"] = (crop_to(np.clip(sl / np.percentile(sl[sl > 0], 99.5), 0, 1), 0.03, pad=6), px, px, "gray")
+    q0, q1, q2, q3 = crop_box(np.clip(sl / np.percentile(sl[sl > 0], 99.5), 0, 1), 0.03, pad=6)   # the gray's crop, as before
+    I["slice"] = (np.clip(col[q0:q1, q2:q3], 0, 1), px, px, None)
 
     # ---- the largest print scale that fits ------------------------------------------------------------------------------------
     W, PAD, GAP, MIDW, AGAP = 178.0, 1.8, 2.6, 22.0, 8.0      # box padding, image gap, middle column, arrow gap in a box (mm)
@@ -381,7 +398,8 @@ def main():
     C1 = LX0 + (lw - (2 * wm + GAP)) / 2 + wm / 2; C2 = C1 + wm + GAP
     T1c = TX0 + PAD + wt / 2; T2c = T1c + wt + GAP
     xp = LX0 + PAD + wd("photo", SC) / 2; xv = LX1 - PAD - wd("bfvol", SC) / 2
-    bx0, bx1 = T1c - wd("bft", SC) / 2 - PAD, T1c + wd("bft", SC) / 2 + PAD     # the blockface template's box (under T1c)
+    bx0, bx1 = TX0, TX0 + wd("bft", SC) + 2 * PAD               # the blockface template's box, from the MRI template's left edge
+    xbt = (bx0 + bx1) / 2                                         # its image, the registration and the blockface-based arrowhead
     assert bx1 < T2c - 4.0, "the MRI-based alignment's arrow must pass right of the blockface template"
 
     fig = plt.figure(figsize=(W * FS.MM, H * FS.MM))
@@ -397,7 +415,7 @@ def main():
 
     def text(x, y, s, **kw):
         kw.setdefault("fontsize", FS.MIN_PT); kw.setdefault("ha", "center"); kw.setdefault("va", "top"); kw.setdefault("color", FG)
-        ax.text(x, y, s, linespacing=1.15, **kw)
+        return ax.text(x, y, s, linespacing=1.15, **kw)
 
     def arrow(p, q, col=FG, lw_=1.0):
         ax.add_patch(FancyArrowPatch(p, q, arrowstyle="-|>", mutation_scale=6, lw=lw_, color=col, shrinkA=0, shrinkB=0))
@@ -424,13 +442,29 @@ def main():
     rgt = lambda k: B[k][0] + B[k][2]
     cx = lambda k: B[k][0] + B[k][2] / 2
 
+    LBL = {}                                                        # the label under each image (its text artist)
+
+    def label(k, s):
+        LBL[k] = ax.text(cx(k), bot(k) + 0.5, s, fontsize=FS.MIN_PT, ha="center", va="top", color=FG, linespacing=1.15)
+
+    def letters(k, plane):
+        """The plane's two direction letters at the bottom corners of image k, on its label line; asserts they keep clear of
+        the label."""
+        r_ = fig.canvas.get_renderer()
+        ext = lambda t: [v / fig.dpi / FS.MM for v in (t.get_window_extent(r_).x0, t.get_window_extent(r_).x1)]  # noqa: E731
+        for s, x, ha in ((FS.DIRS[plane][0], left(k), "left"), (FS.DIRS[plane][1], rgt(k), "right")):
+            t = ax.text(x, bot(k) + 0.5, s, fontsize=FS.MIN_PT, ha=ha, va="top", color=FG)
+            if k in LBL:
+                (a0, a1), (b0, b1) = ext(t), ext(LBL[k])
+                assert a1 < b0 - 0.5 or b1 < a0 - 0.5, f"direction letter {s} touches the label of {k}"
+
     # (1) two constructions of one style
-    for k, x, y, s in (("i_t2", C1, R1, "T2-weighted"), ("i_dec", C2, R1, "tensor (direction)"), ("i_f1", C1, R2, "soma fraction"),
-                       ("i_f2", C2, R2, "neurite fraction"), ("t_t2", T1c, R1, "T2-weighted"), ("t_dec", T2c, R1, "principal direction"),
-                       ("t_f1", T1c, R2, "soma fraction"), ("t_f2", T2c, R2, "neurite fraction"), ("photo", xp, R3, "photographs"),
+    for k, x, y, s in (("i_t2", C1, R1, "T2-weighted"), ("i_dec", C2, R1, "tensor"), ("i_f1", C1, R2, "soma fraction"),
+                       ("i_f2", C2, R2, "neurite fraction"), ("t_t2", T1c, R1, "T2-weighted"), ("t_dec", T2c, R1, "tensor"),
+                       ("t_f1", T1c, R2, "soma fraction"), ("t_f2", T2c, R2, "neurite fraction"), ("photo", xp, R3, "photograph"),
                        ("bfvol", xv, R3, "blockface volume")):
-        image(k, x, y); text(cx(k), bot(k) + 0.5, s)
-    tl = ax.text(cx("bfvol"), bot("bfvol") + 0.5 + LAB, "dashed: synthesized tissue begins", fontsize=FS.MIN_PT, ha="center", va="top",
+        image(k, x, y); label(k, s)
+    tl = ax.text(cx("bfvol"), bot("bfvol") + 0.5 + LAB, "dashed: junction plane", fontsize=FS.MIN_PT, ha="center", va="top",
                  color=FG, linespacing=1.15)
     wl = tl.get_window_extent(fig.canvas.get_renderer()).width / fig.dpi / FS.MM
     if cx("bfvol") + wl / 2 > LX1 - 1.0:                           # kept inside the box
@@ -438,29 +472,41 @@ def main():
     for s_ in segs:                                                 # on the volume, in the mm of its extent
         AX["bfvol"].plot(s_[:, 0], s_[:, 1], color="k", lw=0.8, ls=(0, (3, 2)), solid_capstyle="butt", dash_capstyle="butt")
     AX["bfvol"].set_xlim(0, vol.shape[1] * I["bfvol"][2]); AX["bfvol"].set_ylim(vol.shape[0] * I["bfvol"][1], 0)
-    image("bft", T1c, R3)
-    box(LX0, top, LX1, my1); header(LX0, LX1, top, "Ex vivo MRI", "4 brains + their mirrors")
-    box(LX0, by0, LX1, by1); header(LX0, LX1, by0, "Blockface", f"{N['n_bf']} brains + their mirrors")
+    image("bft", xbt, R3)
+    box(LX0, top, LX1, my1); header(LX0, LX1, top, "Ex vivo MRI", "4 brains + their L-R mirrors")
+    box(LX0, by0, LX1, by1); header(LX0, LX1, by0, "Blockface", f"{N['n_bf']} brains + their L-R mirrors")
     box(TX0, top, TX1, my1, ec=FG, lw_=0.9); header(TX0, TX1, top, "MRI template")
     box(bx0, by0, bx1, by1, ec=FG, lw_=0.9); header(bx0, bx1, by0, "Blockface template")
-    bar = float(cfg["scale_bar_mm"])
-    ax.plot([bx1 - 2.5 - bar * SC, bx1 - 2.5], [by1 - 1.6, by1 - 1.6], color=FG, lw=1.2, solid_capstyle="butt")
     arrow((rgt("photo") + 1.2, R3), (left("bfvol") - 1.2, R3), lw_=0.8)
     yA = (R1 + R2) / 2
     arrow((LX1 + 1.5, yA), (TX0 - 1.0, yA)); text((LX1 + TX0) / 2, yA - 1.4, "groupwise\nconstruction", va="bottom")
     arrow((LX1 + 1.5, R3), (bx0 - 1.0, R3)); text((LX1 + bx0) / 2, R3 - 1.4, "groupwise\nconstruction", va="bottom")
     # (2) their registration
-    arrow((T1c, by0 - 0.4), (T1c, my1 + 0.4)); text(T1c + 1.5, (my1 + by0) / 2, "registration", ha="left", va="center")
+    arrow((xbt, by0 - 0.4), (xbt, my1 + 0.4)); text(xbt + 1.5, (my1 + by0) / 2, "registration", ha="left", va="center")
     # (3) histology: a section, its blockface photograph, and the two alignments to the template
     image("histo", xp, R4); image("slice", xv, R4)
-    text(cx("histo"), bot("histo") + 0.5, "histology section"); text(cx("slice"), bot("slice") + 0.5, "its blockface photograph")
+    label("histo", "histology section"); label("slice", "blockface photograph")
     arrow((rgt("histo") + 1.2, R4), (left("slice") - 1.2, R4), lw_=0.8)
     box(LX0, hy0, LX1, hy1); header(LX0, LX1, hy0, "Histology", f"{N['n_histo']} brains")
     x0a, yb, ym = rgt("slice") + 1.2, R4 - 2.2, R4 + 2.2
-    elbow((x0a, yb), (T1c, yb), (T1c, by1 + 0.4), BFA)
+    elbow((x0a, yb), (xbt, yb), (xbt, by1 + 0.4), BFA)
     text((LX1 + T1c) / 2, yb - 0.8, "blockface-based alignment", color=BFA, va="bottom")
     elbow((x0a, ym), (T2c, ym), (T2c, my1 + 0.4), MRIA)
-    text((LX1 + T2c) / 2, ym + 0.8, "MRI-based alignment (through its own MRI)", color=MRIA)
+    t_mri = text((LX1 + T2c) / 2, ym + 0.8, "MRI-based alignment", color=MRIA)
+    # one scale bar, outside every block: the figure's bottom-right corner, right of the MRI-based alignment's vertical leg and below
+    # the blockface template; its length goes in the caption
+    bar = float(cfg["scale_bar_mm"]); sb0, sb1, sby = TX1 - bar * SC, TX1, hy1 - 1.6
+    ax.plot([sb0, sb1], [sby, sby], color=FG, lw=1.2, solid_capstyle="butt")
+    e_ = t_mri.get_window_extent(fig.canvas.get_renderer()); lab_x1 = e_.x1 / fig.dpi / FS.MM
+    lab_y1 = H - e_.y0 / fig.dpi / FS.MM                            # the label's bottom (figure mm, y down)
+    assert sb0 > T2c + 3.0, "the scale bar must keep clear of the MRI-based alignment's vertical leg"
+    assert sby > by1 + 3.0 and sby > ym + 3.0, "the scale bar must sit below the blockface template and the MRI-based line"
+    assert sb0 > lab_x1 + 3.0 or sby > lab_y1 + 2.0, "the scale bar must keep clear of the MRI-based alignment's label"
+    assert sb0 > LX1 + 3.0 and sby > my1 + 3.0, "the scale bar must lie outside the histology and MRI template blocks"
+    # orientation letters, once per block or row of one convention, on its first image
+    for k, plane in (("i_t2", "sagittal"), ("t_t2", "sagittal"), ("photo", "coronal"), ("bfvol", "sagittal"), ("bft", "sagittal"),
+                     ("histo", "coronal")):
+        letters(k, plane)
 
     inputs = [P[k] for k in ("template_t2", "template_mask", "template_dec", "template_frac1", "template_frac2", "bft_rgb", "bft_mask",
                              "bft_pull_map", "blockface_completed_rgb", "blockface_synth_mask", "blockface_seam_depth",
@@ -473,7 +519,8 @@ def main():
             extra={"print_scale_mm_per_mm": SC, "print_scale_for_width": SC_width, "height_mm": round(H, 1),
                    "planes": {"template_x_mm": XS, "blockface_template_x_mm": xb_s, "blockface_volume_x_mm": xv_s},
                    "blockface": {"coronal_section": k0, "photo_mirrored": bool(mirrored), "photo_mm_px": mm_px,
-                                 "histology_flipped": bool(flip)}, "hires": hires_rec, "dashed_line": line_rec})
+                                 "histology_flipped": bool(flip), "histology_photo": photo_check},
+                   "hires": hires_rec, "dashed_line": line_rec})
     print("wrote", a.out, "scale", SC, "H", round(H, 1), line_rec)
 
 if __name__ == "__main__":

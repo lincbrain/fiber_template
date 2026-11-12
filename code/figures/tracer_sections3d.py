@@ -286,7 +286,7 @@ def compose(sd, still, sil, cap, rec, args):
             ax.contour(M.astype(float), [0.5], colors=[FS.FG], linewidths=0.4)
     ax.set_xlim(-0.5, crop.shape[1] - 0.5); ax.set_ylim(crop.shape[0] - 0.5, -0.5)
     FS.letter(ax, "a", dx=-LM * 72 / 25.4 + 2, dy=4.0); FS.header(ax, "every charted section's labels in the template, seen from the right", dx=-LM * 72 / 25.4 + 13, dy=4.0)
-    FS.dirs(ax, "sagittal", vertical=True)
+    FS.dirs(ax, "sagittal")                                                         # P and A only: the figures name no dorsal-ventral letters
     FS.scalebar(ax, k, 5.0, y_frac=0.03)
     # injection sites: the label outside the image, a thin line to the site's center (its points' mean, projected)
     lab_side = {"MR243": "right", "MF191": "right", "MR252": "top"}             # the label sits outside the frame, a line to the site

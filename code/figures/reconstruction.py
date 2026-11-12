@@ -551,6 +551,7 @@ def main():
             dx = Xc[i] + Wc[i] / 2 - (ext[s][0] + ext[s][1]) / 2             # the cell's content centered in its rectangle
             for ax in cell[s]:
                 p_ = ax.get_position(); ax.set_position([p_.x0 + dx / Wf, p_.y0, p_.width, p_.height])
+    FS.dirs(cell["g2"][0], "axial")                                    # (g) the axial view's L and R, after the layout: the grid is unchanged
     # each rectangle's header: the letter and topic at its left edge; a one-image cell's sub-label under them (the two-image cells'
     # sub-labels sit above their own images)
     HEAD = dict(a=("photograph", ""), b=("camera jump", ""), c=("interpolated sections", "aligned stack, sagittal"), d=("3D mask", ""),

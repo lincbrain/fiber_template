@@ -59,7 +59,7 @@ NUMBERS_GPU := d3_domain_shift d3_domain_shift_prod
 NUMBERS_SEGMENT := segmodels_mri_brainmask_2026-11 segmodels_bf_mask2d_2026-11 segmodels_bf_mask3d_2026-11 segmodels_bf_holes_2026-11
 
 FIGURES_MRI := template pipeline variability link tracer
-FIGURES_LINC := reconstruction bf_template alignment_comparison
+FIGURES_LINC := reconstruction bf_template alignment_comparison s_networks
 FIGURES_COMPLETION := s_synthesis_depth s_synthesis_gallery lgnstn
 FIGURES := $(FIGURES_MRI) $(FIGURES_LINC) $(FIGURES_COMPLETION) histology s_tracer_fidelity tracer_sections3d
 
@@ -118,6 +118,7 @@ r057_missing_extent: d3_methods d3_predicted_share
 alignment_comparison: route_test_1c
 s_synthesis_depth: r057_s1_synthesis
 s_synthesis_gallery: d3_predicted_share
+s_networks: $(NUMBERS_SEGMENT) d3_methods
 
 $(filter-out r057_mri_facts_b,$(NUMBERS_MRI)):
 	$(PY_MRI) paper_numbers/$@.py

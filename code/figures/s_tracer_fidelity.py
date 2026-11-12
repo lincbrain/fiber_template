@@ -25,7 +25,7 @@ What it does
   A section is cut obliquely to the template's coronal plane, so (iii) is not one coronal slice of the template; the template y the
   registered section spans is in the provenance. MF8's two frontal lobes were matched to adjacent photographs (0.75 mm apart): each
   pixel is drawn on the photograph of the nearest lobe. Anatomical convention (the subject's left on the left, dorsal up; no case
-  mirrored). Row labels: the case, the section's number in its labeled series, the photograph(s).
+  mirrored; L and R once, beside the first row, below its label). Row labels: the case, the section's number in its labeled series, the photograph(s).
   Classes: bundles (dense and moderate, and MM2's single bundle class), light bundles, terminal fields (all three density classes),
   injection site; single-fiber strokes are not drawn.
 
@@ -212,8 +212,8 @@ def main(argv=None):
         why = "injection level" if inj[pick] else ("most labeled\n(site on a shared\nphotograph)" if has_site else "most labeled\n(no site annotated)")
         cache[S] = (carS, files, classes, A, pj, sec_sl)
         rows_out.append((S, pick, why))
-    W = FS.FULL_W_IN * 25.4; LEFT, GAP, TOP = 30.0, 3.0, 12.0
-    pw = (W - LEFT - 2 * GAP - 2.0) / 3
+    W = FS.FULL_W_IN * 25.4; LEFT, GAP, TOP, RIGHT = 29.0, 3.0, 12.0, 3.0      # RIGHT: room for the R beside the first row
+    pw = (W - LEFT - 2 * GAP - RIGHT) / 3
     disp = lambda v: np.flipud(np.swapaxes(v, 0, 1))  # noqa: E731      volume (x, z) -> display (rows dorsal up, columns x)
     rows, prepped = [], []
     for S, sid, why in rows_out:
@@ -279,6 +279,7 @@ def main(argv=None):
                             cb=cb, half=half, sls=sls, root=root, ty=ty, res=res, bad=int(bad.sum()), bad_in=bad_in))
     tot_h = TOP + sum(pw * d["half"][0] / d["half"][1] + 9.0 for d in prepped) + 14
     fig = plt.figure(figsize=(FS.FULL_W_IN, tot_h / 25.4)); ycur = TOP
+    ROWLAB, FIRST = [], []
     for r_i, d in enumerate(prepped):
         S, sid, why, half, sls, px_b, cb = (d[k] for k in ("S", "sid", "why", "half", "sls", "px_b", "cb"))
         ph_mm = pw * half[0] / half[1]
@@ -303,12 +304,23 @@ def main(argv=None):
             if c_i == 0:
                 nsec = int(sid.split("_")[-1][1:3])
                 photo = f"photograph {sls[0]}" if len(sls) == 1 else "photographs " + ", ".join(map(str, sls[:-1])) + f" and {sls[-1]}"
-                ax.annotate(f"{FS.label(S)}, section {nsec}\n{photo}", xy=(0, 0.5), xycoords="axes fraction", xytext=(-3, 0),
-                            textcoords="offset points", ha="right", va="center", color=FS.FG, fontsize=FS.MIN_PT, annotation_clip=False)
+                ROWLAB.append(ax.annotate(f"{FS.label(S)}, section {nsec}\n{photo}", xy=(0, 0.5), xycoords="axes fraction", xytext=(-3, 0),
+                                          textcoords="offset points", ha="right", va="center", color=FS.FG, fontsize=FS.MIN_PT,
+                                          annotation_clip=False))
+            if r_i == 0:
+                FIRST.append(ax)
+        if r_i == 0:                                                           # orientation letters once (neurological): row 1,
+            FS.dirs_row(FIRST[0], FIRST[-1], "coronal", pad=1.0, color=FS.FG, y=0.2)   # below its row label (mid-height)
         rows.append(dict(case=FS.label(S), section=sid, why=why, slices=sls, window_mm=[round(2 * half[0], 1), round(2 * half[1], 1)],
                          arm=d["root"].name, section_template_y_mm=[round(v, 2) for v in d["ty"]],
                          inverse_residual_mm=dict(median=float(f"{np.median(d['res']):.2e}"), max=float(f"{d['res'].max():.2e}"),
                                                   pixels_over_0p01=d["bad"], of_them_in_the_section=d["bad_in"])))
+    rend = fig.canvas.get_renderer()                                           # the row labels and the letters stay on the page
+    assert min(t.get_window_extent(rend).x0 for t in ROWLAB) / fig.dpi * 25.4 >= 0.5, "a row label runs off the page's left edge"
+    l_ = [t for t in FIRST[0].texts if t.get_text() == "L"][0].get_window_extent(rend)
+    assert not l_.overlaps(ROWLAB[0].get_window_extent(rend)), "the L touches the first row's label"
+    r_ = [t for t in FIRST[-1].texts if t.get_text() == "R"][0].get_window_extent(rend)
+    assert r_.x1 / fig.dpi * 25.4 <= W - 0.1, "the R runs off the page"
     lax = FS.axes_mm(fig, 4, ycur + 1, W - 8, 8); lax.axis("off"); lax.set_xlim(0, 100); lax.set_ylim(0, 1)
     items = [(g, col, lw, "-") for g, cls, col, lw in GROUPS] + [("the registered section's outline", OUTLINE, 0.6, "-")]
     rnd = fig.canvas.get_renderer(); inv = lax.transData.inverted()

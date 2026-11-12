@@ -20,6 +20,10 @@ where both nuclei show as dark bodies between bright fiber tracts (T2 shows them
 its carried probability map (lgnstn_labels <ID>_<struct>_mri-template_prob_demons; the mask of record is prob > 0.5), drawn with
 sub-voxel interpolation instead of voxel steps; SARM's binary nucleus is smoothed by the anti-aliasing rule of record (FWHM 0.25 mm)
 before its 0.5 contour. The same layout, section centers, colors and window.
+11 Nov 2026 (AY's comment, the author's request): orientation letters once, on the left hemisphere's view headers: L and R on the
+coronal and axial views, P and A on the sagittal views (as figstyle.section draws them: neurological, anterior up on axial, anterior
+right on sagittal); the axial view's A on one more header line above and its P below the bottom row, because the panels sit 0.5 mm
+apart. The header band is 2.54 mm taller (60 px at 600 ppi) and the group headers one line higher; nothing else moves.
 """
 import argparse
 import json
@@ -50,6 +54,7 @@ HEMIS = (("lh", "left"), ("rh", "right"))                      # its two groups 
 FIG_W = 180.0                                                  # mm
 HALF_MM = {"LGN": 4.5, "STN": 3.5}
 PLANES = ("coronal", "axial", "sagittal")
+LETTERS = dict(coronal=("L", "R"), axial=("L", "R"), sagittal=("P", "A"))   # left and right of each view, as figstyle.section draws it
 VOX = 0.25
 
 
@@ -72,7 +77,7 @@ def main():
     PR = {k: np.asarray(nib.load(p).dataobj).astype(np.float32) for k, p in pps.items()}                 # outlines: prob 0.5 (= the masks)
     RS = {k: gaussian_filter(v.astype(np.float32), 0.25 / 2.3548 / VOX) for k, v in R.items()}            # SARM: FWHM 0.25 mm, then 0.5
     ins = [str(bgp)] + [str(p) for p in lps.values()] + [str(p) for p in pps.values()] + [str(p) for p in rps.values()] + [str(lp)]
-    gap_in, gap_grp, gap_row, left, right, top, bottom = 0.5, 3.0, 2.2, 5.0, 1.0, 13.5, 4.0
+    gap_in, gap_grp, gap_row, left, right, top, bottom = 0.5, 3.0, 2.2, 5.0, 1.0, 13.5 + 2.54, 4.0
     W = FIG_W
     cell = (W - left - right - 4 * gap_in - gap_grp) / 6.0
     H = top + len(NUCS) * cell + (len(NUCS) - 1) * gap_row + bottom
@@ -105,9 +110,20 @@ def main():
                 if r_ == 0:
                     ax.annotate(plane, xy=(0.5, 1), xycoords="axes fraction", xytext=(0, 2), textcoords="offset points",
                                 ha="center", va="bottom", fontsize=FS.MIN_PT, color=FS.GRAY, annotation_clip=False)
+                    if g_ == 0:                                       # orientation letters, once: the left group's view headers
+                        lt, rt = LETTERS[plane]
+                        for s_, x_, dx_, ha_ in ((lt, 0, 4, "left"), (rt, 1, -4, "right")):     # 4 pt in from the corners: one view's letters
+                            ax.annotate(s_, xy=(x_, 1), xycoords="axes fraction", xytext=(dx_, 2), textcoords="offset points",
+                                        ha=ha_, va="bottom", fontsize=FS.MIN_PT, color=FS.GRAY, annotation_clip=False)
+                        if plane == "axial":                          # its A one header line up (its P under the bottom row)
+                            ax.annotate("A", xy=(0.5, 1), xycoords="axes fraction", xytext=(0, 10.5), textcoords="offset points",
+                                        ha="center", va="bottom", fontsize=FS.MIN_PT, color=FS.GRAY, annotation_clip=False)
                     if p_ == 1:                                       # the group's header, above its view labels
-                        ax.annotate(hname, xy=(0.5, 1), xycoords="axes fraction", xytext=(0, 12), textcoords="offset points",
+                        ax.annotate(hname, xy=(0.5, 1), xycoords="axes fraction", xytext=(0, 19), textcoords="offset points",
                                     ha="center", va="bottom", fontsize=FS.MIN_PT, color=FS.FG, annotation_clip=False)
+                if g_ == 0 and plane == "axial" and r_ == len(NUCS) - 1:
+                    ax.annotate("P", xy=(0.5, 0), xycoords="axes fraction", xytext=(0, -2), textcoords="offset points",
+                                ha="center", va="top", fontsize=FS.MIN_PT, color=FS.GRAY, annotation_clip=False)
                 if g_ == 0 and p_ == 0:
                     ax.annotate(nuc, xy=(0, 0.5), xycoords="axes fraction", xytext=(-3, 0), textcoords="offset points",
                                 rotation=90, ha="right", va="center", fontsize=FS.MIN_PT, color=FS.FG, annotation_clip=False)
