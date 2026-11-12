@@ -4,8 +4,9 @@
     python code/figures/histology.py --jp2-root <LINC source data>/sourcedata [--out figures/histology.png]
 
 Needs glymur (the raw histology is JPEG 2000). --jp2-root is the LINC source-data tree that holds sub-<ID>/micr/<section>.jp2.
-  a  one section registered to its blockface slice: the MM3 piece (with a detected tube hole) whose nonlinear tissue Dice is closest
-     to that brain's median (numbers_of_record/registration_qc_histo2bf_h9.json, family histo2bf): the blockface slice with the histology's tissue
+  a  one section registered to its blockface slice: a fixed, intact MM3 piece with a detected tube hole (settings/figures.yaml histology
+     panel_a_piece; its nonlinear tissue Dice and MM3's median, numbers_of_record/registration_qc_histo2bf_h9.json, family histo2bf, go in the
+     provenance; with the setting empty, the piece whose Dice is closest to that median): the blockface slice with the histology's tissue
      outline (white), and the registered darkfield histology (contrast-stretched). Flipped left-right into the neurological convention
      (the photographs show the subject's left on the image right); dorsal up; loose blockface fragments without histology removed.
   b  marker tubes at near-native resolution (JP2 level 2, ~1.8 um/px, 3 mm windows), three fixed quantiles (25th, 50th, 90th) of the
@@ -30,6 +31,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import matplotlib.patheffects as pe  # noqa: E402
 import numpy as np  # noqa: E402
+import yaml  # noqa: E402
 from matplotlib.patches import Circle  # noqa: E402
 from PIL import Image  # noqa: E402
 from scipy import ndimage as ndi  # noqa: E402
@@ -78,7 +80,12 @@ def main():
     rq = [r for r in json.loads((NUM / "registration_qc_histo2bf_h9.json").read_text())["data"] if r.get("family") == "histo2bf" and r["subject"] == A_SUBJ]
     med = float(np.median([r["metrics"]["dice_nonlinear"] for r in rq]))
     tp = pieces("h9preinp", A_SUBJ)
-    ra = min((r for r in rq if tp.get(r["tag"], {}).get("found")), key=lambda r: abs(r["metrics"]["dice_nonlinear"] - med))
+    fixed = (yaml.safe_load((HERE.parents[1] / "settings" / "figures.yaml").read_text()).get("histology") or {}).get("panel_a_piece")
+    if fixed:
+        ra = next((r for r in rq if r["tag"] == fixed), None)
+        assert ra is not None and tp.get(fixed, {}).get("found"), f"panel_a_piece {fixed}: not a {A_SUBJ} piece with a found tube hole"
+    else:
+        ra = min((r for r in rq if tp.get(r["tag"], {}).get("found")), key=lambda r: abs(r["metrics"]["dice_nonlinear"] - med))
     P = paths.products_root() / paths.products("products_blockface")["labels_histology_arm"][A_SUBJ] / TIRL.format(S=A_SUBJ, piece=ra["tag"])
     fx = np.asarray(Image.open(P / "fixed.png"), np.float32) / 255
     rgb = np.asarray(Image.open(P / "moving4_nonlinear_rgb.png").convert("RGB"), np.float32)

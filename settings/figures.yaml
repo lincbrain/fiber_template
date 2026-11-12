@@ -53,3 +53,8 @@ synthesis_gallery:
   ncol: 7                             # 3 rows x 7 tiles
   letters: true                       # orientation letters once (L/R beside the first row, A/P above and below its first tile)
   plane: record                       # the axial options only (--frame flat): record | fewest_gaps
+
+histology:
+  panel_a_piece: mr256LY_c02_s18nDF_0000   # panel (a)'s section (MM3): an intact one, as shown until 12 Nov 2026 (the author: the piece the
+                                           #   median rule picks on the registrations with the per-component stiffness, s28, has a torn cortex);
+                                           #   empty: the MM3 piece whose nonlinear tissue Dice is closest to MM3's median
