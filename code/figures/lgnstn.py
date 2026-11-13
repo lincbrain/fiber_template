@@ -30,6 +30,11 @@ between the rows (before, 0.5 mm inside a hemisphere's group, 3 mm between the g
 the outermost ink to the page's edges; the 2 mm bar in its standard place, top right, its length's baseline on the legend's
 (figstyle.scalebar_title), right-aligned with the top row's last view; headers in sentence case (Left, Right, Coronal, Axial,
 Sagittal). The same sections, windows, colors, letters and legend.
+12 Nov 2026 (the author: one rule for orientation letters in every figure, figstyle.orient_letters): each view's letters left and
+right of it, at the first row's middle, ORIENT_GAP_MM from the view, on the left hemisphere's first row only (coronal and axial L
+and R, sagittal P and A); none above or below a view (the axial A and P go: anterior is up, as the caption states). Two letters
+share a gutter, so every gutter between the views is widened to the least that holds them (each letter its gap from its own view,
+and one gap between the two), all equal; the row labels move out of the first row's L. The header band loses the axial A's line.
 """
 import argparse
 import json
@@ -65,7 +70,14 @@ PLANES = ("coronal", "axial", "sagittal")
 LETTERS = dict(coronal=("L", "R"), axial=("L", "R"), sagittal=("P", "A"))   # left and right of each view, as figstyle.section draws it
 VOX = 0.25
 SCALE_BAR_MM = 2.0                                             # one bar for both rows (one window size), on the legend's line
-HDR_PT = (2.0, 10.5, 19.0)                                     # the header lines above the top row (pt): views, the axial A, groups
+HDR_PT = (2.0, 10.5)                                           # the header lines above the top row (pt): views, groups
+
+
+def ink_asc(s_, fs=FS.MIN_PT):
+    """mm of a text's ink above its baseline, drawn at figstyle's DPI"""
+    g = plt.figure(figsize=(4, 1), dpi=FS.DPI, facecolor="k"); t = g.text(0.05, 0.3, s_, fontsize=fs, color="w", va="baseline")
+    g.canvas.draw(); a_ = np.asarray(g.canvas.buffer_rgba())[..., 0]; plt.close(g)
+    return (0.7 * a_.shape[0] - np.where((a_ > 60).any(1))[0].min()) / FS.DPI * 25.4
 
 
 def text_mm(fig):
@@ -100,14 +112,21 @@ def main():
     W, GUT, MG, pt = FIG_W, FS.GUTTER_MM, FS.MARGIN_MM, 25.4 / 72
     T = text_mm(plt.figure(figsize=(W / 25.4, 1.0), dpi=FS.DPI)); plt.close("all")   # figstyle's DPI, as it is saved
     _, t_h, t_d = T("lp")                                          # a text line's box as matplotlib lays it out (its "lp")
-    left, right = MG + t_h + 3.0 * pt, MG                          # the rotated row labels 3 pt left of the views
-    leg_h = t_h - t_d + (2.0 + 1.2) * pt                            # the legend's line: its text's top to the bar's foot
-    top = MG + leg_h + GUT + HDR_PT[2] * pt + t_h                   # the group headers one gutter under it
-    bottom = 2.0 * pt + t_h - t_d + MG                              # the axial P under the bottom row
-    cell = (W - left - right - 5 * GUT) / 6.0
+    OG, room = FS.ORIENT_GAP_MM, FS.orient_room                    # the orientation letters: gap; room beside a view (gap + ink)
+    lets = [LETTERS[p_] for p_ in PLANES]                           # each view's (left, right) letters, on the left group's first row
+    need = [room(lets[p_][1]) + OG + room(lets[p_ + 1][0]) for p_ in range(len(PLANES) - 1)]   # two letters in a gutter, one gap apart
+    need.append(room(lets[-1][1]) + OG)                            # the group gutter: the last view's right letter alone
+    GUTV = max([GUT] + need)                                       # every gutter between the views: equal, the least that holds them
+    rl = room(lets[0][0]) + OG                                     # the rotated row labels: one gap left of the first view's left letter
+    left, right = MG + t_h + rl, MG
+    rise = max(ink_asc("MM1"), (2.0 + 1.2) * pt + ink_asc(f"{SCALE_BAR_MM:g} mm"))   # the legend line's ink above its baseline: the bar's
+    base_l = MG + rise                                              # length, 2 pt over the 1.2 pt bar on the baseline (scalebar_title)
+    top = base_l + GUT - (t_h - t_d - ink_asc("Left")) + t_h + HDR_PT[1] * pt   # the group headers' ink one gutter under the line
+    bottom = MG
+    cell = (W - left - right - 5 * GUTV) / 6.0
     H = top + len(NUCS) * cell + (len(NUCS) - 1) * GUT + bottom
     fig = plt.figure(figsize=(W / 25.4, H / 25.4))
-    centers = {}
+    centers, pairs = {}, []
     for r_, nuc in enumerate(NUCS):
         h = int(round(HALF_MM[nuc] / VOX))
         y0 = top + r_ * (cell + GUT)
@@ -117,7 +136,7 @@ def main():
             cen = np.rint(np.mean([np.argwhere(m).mean(0) for m in ms], axis=0)).astype(int)
             centers[st] = (cen * VOX + A[:3, 3]).round(2).tolist()
             for p_, plane in enumerate(PLANES):
-                x0 = left + (3 * g_ + p_) * (cell + GUT)
+                x0 = left + (3 * g_ + p_) * (cell + GUTV)
                 ax = FS.axes_mm(fig, x0, y0, cell, cell); ax.axis("off")
                 if r_ == 0 and g_ == len(HEMIS) - 1 and p_ == len(PLANES) - 1:
                     ax_tr = ax                                        # the top row's last view: the bar's edge and scale
@@ -137,34 +156,26 @@ def main():
                 if r_ == 0:
                     ax.annotate(plane.capitalize(), xy=(0.5, 1), xycoords="axes fraction", xytext=(0, HDR_PT[0]), textcoords="offset points",
                                 ha="center", va="bottom", fontsize=FS.MIN_PT, color=FS.GRAY, annotation_clip=False)
-                    if g_ == 0:                                       # orientation letters, once: the left group's view headers
-                        lt, rt = LETTERS[plane]
-                        for s_, x_, dx_, ha_ in ((lt, 0, 4, "left"), (rt, 1, -4, "right")):     # 4 pt in from the corners: one view's letters
-                            ax.annotate(s_, xy=(x_, 1), xycoords="axes fraction", xytext=(dx_, HDR_PT[0]), textcoords="offset points",
-                                        ha=ha_, va="bottom", fontsize=FS.MIN_PT, color=FS.GRAY, annotation_clip=False)
-                        if plane == "axial":                          # its A one header line up (its P under the bottom row)
-                            ax.annotate("A", xy=(0.5, 1), xycoords="axes fraction", xytext=(0, HDR_PT[1]), textcoords="offset points",
-                                        ha="center", va="bottom", fontsize=FS.MIN_PT, color=FS.GRAY, annotation_clip=False)
+                    if g_ == 0:                                       # orientation letters, once: beside the left group's first row
+                        pairs.append((ax, ax, LETTERS[plane]))
                     if p_ == 1:                                       # the group's header, above its view labels
-                        ax.annotate(hname, xy=(0.5, 1), xycoords="axes fraction", xytext=(0, HDR_PT[2]), textcoords="offset points",
+                        ax.annotate(hname, xy=(0.5, 1), xycoords="axes fraction", xytext=(0, HDR_PT[1]), textcoords="offset points",
                                     ha="center", va="bottom", fontsize=FS.MIN_PT, color=FS.FG, annotation_clip=False)
-                if g_ == 0 and plane == "axial" and r_ == len(NUCS) - 1:
-                    ax.annotate("P", xy=(0.5, 0), xycoords="axes fraction", xytext=(0, -2), textcoords="offset points",
-                                ha="center", va="top", fontsize=FS.MIN_PT, color=FS.GRAY, annotation_clip=False)
                 if g_ == 0 and p_ == 0:
-                    ax.annotate(nuc, xy=(0, 0.5), xycoords="axes fraction", xytext=(-3, 0), textcoords="offset points",
+                    ax.annotate(nuc, xy=(0, 0.5), xycoords="axes fraction", xytext=(-rl / pt, 0), textcoords="offset points",
                                 rotation=90, ha="right", va="center", fontsize=FS.MIN_PT, color=FS.FG, annotation_clip=False)
     hl = [Line2D([], [], color=COLORS[S], lw=LW) for S in SUBS] + [Line2D([], [], color=FS.FG, lw=LW, linestyle="--")]
     leg = fig.legend(hl, [lab[S] for S in SUBS] + ["SARM"], loc="upper center", ncol=4, frameon=False, fontsize=FS.MIN_PT,
                      handlelength=2.6, columnspacing=1.6, borderpad=0, borderaxespad=0, bbox_transform=fig.transFigure,
-                     bbox_to_anchor=(0.5, 1 - MG / H))
+                     bbox_to_anchor=(0.5, 1 - (base_l - (t_h - t_d)) / H))       # its texts' boxes' top: the baseline at base_l
+    FS.orient_letters(fig, [pairs])                                 # one level: the first row's middle (figstyle's gap, size, color)
     fig.canvas.draw()                                               # the legend laid out: its texts' places are final
     FS.scalebar_title(ax_tr, 1 / VOX, SCALE_BAR_MM, leg.get_texts()[-1])   # one bar for both rows (one window), top right
     cmd = " ".join(["code/figures/lgnstn.py"] + sys.argv[1:])
     FS.save(fig, a.out, ins, cmd, extra=dict(half_window_mm=HALF_MM, section_centers_world_mm=centers,
                                             colors=dict({lab[S]: COLORS[S] for S in SUBS}, SARM=f"{FS.FG}, dashed"),
                                             scale_bar_mm=SCALE_BAR_MM, scale_bar_place="top right, its length on the legend's baseline (both rows)",
-                                            layout_mm=dict(width=W, height=round(H, 2), view=round(cell, 2), gutter=GUT, margin=MG)))
+                                            layout_mm=dict(width=W, height=round(H, 2), view=round(cell, 2), gutter=GUT, view_gutter=round(GUTV, 2), margin=MG)))
     fig.savefig(str(Path(a.out).with_suffix(".png")), dpi=FS.DPI, facecolor=fig.get_facecolor())
     print("->", a.out, f"{W:.0f} x {H:.1f} mm")
 

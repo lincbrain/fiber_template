@@ -5,7 +5,8 @@
     T2 (z-units), the soma fraction (percentage points; the neurite fraction gives the same value) and the
     principal direction (degrees), on the coronal section through the anterior commissure, in the voxels covered by all inputs (the
     template's T2 core); brain voxels outside the core dark gray; one color scale per measure; white outline = the template brain;
-    one 10 mm scale bar, its length above it, at the top left (below the letter, above the first row's label).
+    L and R beside every row (figstyle.orient_letters: 1 mm from the brain, at the middle of the row); one 5 mm scale bar, its length
+    above it, top right at the column titles' level (figstyle.scalebar_title, the standard place).
 (b) The core mean of every one of the seven variants; open = in sample (the variant was built with that channel), filled = out of
     sample; rings = the three variants shown in (a).
 Reads (settings/internal/products_mri.yaml): the deviation maps mri_runs/_variability/<arm>_four__<T2|FRAC1|DTI>.nii.gz (written by
@@ -76,8 +77,11 @@ def main():
     # the space (the author, 12 Nov 2026: "optimize space"): one gap between the columns and between the rows, nothing between the
     # panels needing more; the left margin as wide as the row labels or (b)'s variant names need; (b) one gap below the color
     # bars' tick labels; the page margin below
-    GAP, RIGHT, TOP, B_IN = 1.5, 4.0, 6.0, 2.0                     # B_IN: (b)'s plots inset in their column (mm)
+    GAP, B_IN = 1.5, 2.0                                           # B_IN: (b)'s plots inset in their column (mm)
+    RIGHT = S.MARGIN_MM + S.orient_room("R")                       # the R beside every row
     f_ = plt.figure(); r_ = f_.canvas.get_renderer(); tw_ = lambda t: f_.text(0, 0, t, fontsize=S.MIN_PT).get_window_extent(r_).width / f_.dpi * 25.4  # noqa: E731
+    line_h = f_.text(0, 0, f"{SCALEBAR_MM} mm", fontsize=S.MIN_PT).get_window_extent(r_).height / f_.dpi * 25.4
+    TOP = max(6.0, S.MARGIN_MM + (2.0 + 1.2 + 2.0) / 72 * 25.4 + line_h)   # the bar on the titles' baseline, its length above it
     need_rows = S.MARGIN_MM + max(tw_(l_) for l_ in ("T2", "SANDI", "T2 + SANDI", "+ tensor")) + 16 / 72 * 25.4
     need_b = S.MARGIN_MM + max(tw_(LABEL[a_]) for a_ in ARMS) + (2.5 + 2.0) / 72 * 25.4 - B_IN     # tick length + pad
     plt.close(f_)
@@ -89,7 +93,7 @@ def main():
 
     def draw(yb, H):
         """The figure, (b)'s plots at yb (mm), H mm tall; returns it, the color bars' and (b)'s axes."""
-        fig = plt.figure(figsize=(S.FULL_W_IN, H / 25.4)); cbs, bs_ = [], []
+        fig = plt.figure(figsize=(S.FULL_W_IN, H / 25.4)); cbs, bs_ = [], []; grid, heads = {}, {}
         for j, (k, _l) in enumerate(FIG_METRICS):
             x = LEFT + j * (pw + GAP)
             vmax = float(np.percentile(np.concatenate([maps[arm][k][core] for arm in show]), 99))
@@ -102,19 +106,14 @@ def main():
                 im = ax.imshow(m, cmap=cm, vmin=0, vmax=vmax, interpolation_stage="rgba")
                 S.outline(ax, bs[r0:r1, c0:c1], lw=0.4)
                 ax.set_xticks([]); ax.set_yticks([]); [s_.set_visible(False) for s_ in ax.spines.values()]
+                grid[(i, j)] = ax
                 if i == 0:
-                    S.header(ax, HEADS[k], dx=0, dy=2)
+                    heads[j] = S.header(ax, HEADS[k], dx=0, dy=2)
                     if j == 0:
                         S.letter(ax, "a", dx=-12, dy=2)
-                if j == 0 and i == 0:
-                    ax.annotate("L", xy=(0, 0.5), xycoords="axes fraction", xytext=(-2, 0), textcoords="offset points", ha="right",
-                                va="center", color=S.FRAME, annotation_clip=False)
                 if j == 0:
                     ax.annotate(LABEL[arm].replace("T2 + SANDI + tensor", "T2 + SANDI\n+ tensor"), xy=(0, 0.5), xycoords="axes fraction",
                                 xytext=(-16, 0), textcoords="offset points", ha="right", va="center", color=S.FG, annotation_clip=False)
-                if j == nm - 1 and i == 0:
-                    ax.annotate("R", xy=(1, 0.5), xycoords="axes fraction", xytext=(2, 0), textcoords="offset points", ha="left",
-                                va="center", color=S.FRAME, annotation_clip=False)
             cax = S.axes_mm(fig, x + 0.1 * pw, ycb, 0.8 * pw, CBH); cbs.append(cax)
             cb = fig.colorbar(im, cax=cax, orientation="horizontal"); cb.outline.set_edgecolor(S.FRAME); cb.ax.tick_params(length=2, pad=1)
             cb.ax.xaxis.set_major_formatter("{x:.1f}" if k == "T2" else "{x:.0f}")
@@ -134,8 +133,8 @@ def main():
             ax.set_xlim(lo - 0.15 * d, hi + 0.15 * d)
             if j == 0:
                 S.letter(ax, "b", dx=-(LEFT + B_IN - S.MARGIN_MM) / 25.4 * 72, dy=2)   # at the page margin
-        # ONE scale bar, at the top left: right-aligned with the row labels, a quarter down the first row (below "a", above "T2")
-        S.scalebar_mm(fig, LEFT - 16 / 72 * 25.4, TOP + ph / 4, SCALEBAR_MM, scale, anchor="right")
+        S.orient_letters(fig, [(grid[(i, 0)], grid[(i, nm - 1)], "coronal") for i in range(len(show))])   # L and R on every row
+        S.scalebar_title(grid[(0, nm - 1)], 1 / vx, SCALEBAR_MM, heads[nm - 1])     # ONE bar: top right, at the titles' level
         return fig, cbs, bs_
 
     def box(fig, axs):

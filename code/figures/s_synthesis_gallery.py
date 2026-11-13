@@ -19,7 +19,8 @@ Per brain, from the completed volumes of record (products `completed`) and the p
            tissue colored with the brain's own luminance -> color lookup fitted on its photographs (code/blockface/synthesis/views.py)
   header   name, and the synthesized share of the brain ($LINC_NUMBERS/d3_predicted_share.json; gray: the 8 brains synthesized from
            the stand-in b0, canon_d3n_prod)
-  letters  L and R once beside the first row, A above and P below its first tile
+  letters  L and R beside every row (figstyle.orient_letters: 1 mm from the brains, at the middle of the row; the author, 12 Nov
+           2026), none above or below: the caption states anterior up
   gaps     the brain mask's gaps (holes) are not filled; counted per brain in the provenance
 Writes the PDF and a PNG beside it.
 The earlier versions, as options:
@@ -32,8 +33,8 @@ The earlier versions, as options:
                         the one with the fewest gaps of the brain mask in the shown part rostral of the junction
   --view sagittal       (with --frame canonical) the whole sagittal plane at x = --x-mm (4.5 mm, as Fig. 2), uncropped, the same
                         world plane for all 21; letters P/A beside the first row
-  --ncol, --letters     tiles per row; orientation letters once (axial: L/R beside row 1, A/P above and below the first tile), in
-                        3 mm gutters
+  --ncol, --letters     tiles per row; orientation letters beside every row (axial L/R, sagittal P/A), in side gutters as wide as
+                        the page margin and the letters need
   --z-mm, --planes-json, --plane-label   (canonical axial) one given world plane for all 21, or one plane per brain from a JSON
                         {subject: z mm}; each tile's plane height on its header line
 """
@@ -206,7 +207,7 @@ def main():
         T[S] = tile(S, brains[S], OUT, a.plane) if a.frame == "flat" else tile_canon(S, brains[S], OUT, a.view, coords[S])
         print(lab[S], S, "plane", T[S]["z"], "gaps", T[S]["gaps_shown"], flush=True)
     ncol, gap, hdr = a.ncol, 1.2, 4.0                                  # mm
-    G = 3.0 if a.letters else 0.0                                      # side gutters for the letters
+    G = FS.MARGIN_MM + FS.orient_room("sagittal" if sag else "axial") if a.letters else 0.0    # side gutters for the letters
     nrow = int(np.ceil(len(order) / ncol))
     tw = (FS.FULL_W_IN * 25.4 - 2 * G - gap * (ncol - 1)) / ncol
     mm_per_vox = tw / max(t["img"].shape[1] for t in T.values())
@@ -258,12 +259,8 @@ def main():
     assert bar_at is not None, "no tile has an empty bottom corner for the scale bar"
     FS.scalebar_in(AXS[bar_at[0]], mm_per_vox / VOX, 10.0, corner=bar_at[1], lw=1.0)
     extra["scale_bar_at"] = dict(tile=lab[order[bar_at[0]]], corner=bar_at[1])
-    if a.letters:                                                      # once: beside row 1, and A/P on the first axial tile
-        FS.dirs_row(AXS[0], AXS[min(ncol, len(AXS)) - 1], a.view, color=FS.FG)
-        if not sag:
-            for s_, xy, off, va in (("A", (0.5, 1), (0, 3), "bottom"), ("P", (0.5, 0), (0, -2), "top")):
-                AXS[0].annotate(s_, xy=xy, xycoords="axes fraction", xytext=off, textcoords="offset points", ha="center", va=va,
-                                fontsize=FS.MIN_PT, color=FS.FG, annotation_clip=False)
+    if a.letters:                                                      # beside every row, on one line at its brains' middle
+        FS.orient_letters(fig, [(AXS[r * ncol], AXS[min((r + 1) * ncol, len(AXS)) - 1], a.view) for r in range(nrow)])
     ins = sorted({str(p) for t in T.values() for p in t["inputs"]} | {str(lp), str(sp)} | set(extra_inputs))
     if a.plane != "record" or a.frame != "flat" or a.letters or a.ncol != 7:
         extra.update(options=dict(plane=a.plane, frame=a.frame, view=a.view, ncol=a.ncol, letters=a.letters),

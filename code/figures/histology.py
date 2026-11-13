@@ -5,6 +5,8 @@
 
 Needs glymur (the raw histology is JPEG 2000). --jp2-root is the LINC source-data tree that holds sub-<ID>/micr/<section>.jp2.
 Layout (the author, 12 Nov 2026): two rows and four columns, the first wider; the blockface on the top row, the histology on the bottom.
+Orientation letters (the author, 12 Nov 2026: "the histo doesn't have the L R"; figstyle.orient_letters): L and R beside each of
+(a)'s two images, ORIENT_GAP_MM from its tissue, at its tissue's middle.
   a  (first column) one section registered to its blockface slice: a fixed, intact MM3 piece with a detected tube hole
      (settings/figures.yaml histology panel_a_piece; its nonlinear tissue Dice and MM3's median, numbers_of_record/
      registration_qc_histo2bf_h9.json, family histo2bf, go in the provenance; with the setting empty, the piece whose Dice is closest
@@ -265,8 +267,8 @@ def main():
     h_px, w_px = pa[0].shape[:2]
     GUT, MG, pt = S.GUTTER_MM, S.MARGIN_MM, 25.4 / 72                # space (the author, 12 Nov 2026): one gutter, the page's margin
     T = text_mm(plt); pad = 2.0 * pt
-    xa = MG + T("L")[0] + pad                                      # (a)'s column: the L left of it, the R right of it
-    ga = pad + T("R")[0] + GUT                                     # (a) to (b): the R, then one gutter
+    xa = MG + S.orient_room("L")                                  # (a)'s column: the L left of it, the R right of it (figstyle)
+    ga = S.orient_room("R") + GUT                                 # (a) to (b): the R, then one gutter
     bw = (W - xa - ga - 2 * GUT - MG) / (w_px / h_px + 3)          # a row's height: (b)'s square windows = (a)'s images
     wa, ph = bw * w_px / h_px, bw
     scale_a = wa / (w_px * fmm_a)                                  # (a): print mm per tissue mm
@@ -288,8 +290,9 @@ def main():
         r_, c_ = t_[2][0] - cr[0].start, (cr[1].stop - cr[1].start) - 1 - (t_[2][1] - cr[1].start)
         if 0 <= r_ < h_px and 0 <= c_ < w_px:
             a_marks.append((r_, c_, np.sqrt(t_[4] / np.pi) * fmm_a))     # (row, column, the dark hole's radius mm) in the panel
+    ax_ab = []
     for k, img in enumerate(pa):
-        ax = S.axes_mm(fig, xa, TOP if k == 0 else Y2, wa, ph)
+        ax = S.axes_mm(fig, xa, TOP if k == 0 else Y2, wa, ph); ax_ab.append(ax)
         ax.imshow(img, cmap="gray", vmin=0, vmax=1)
         if k == 0:
             S.outline(ax, outl, lw=0.6)
@@ -300,11 +303,9 @@ def main():
         if k == 0:
             S.letter(ax, "a", dx=(MG - xa) / pt, dy=L1_PT); ta = S.header(ax, heads[0], dx=(MG - xa) / pt + 11, dy=L1_PT); ax_a = ax
             S.header(ax, heads[1], dx=0, dy=L2_PT)                # on (b)'s two lines: its title's, its sub-labels'
-            for s_, x_, dx_, ha_ in (("L", 0, -2, "right"), ("R", 1, 2, "left")):
-                ax.annotate(s_, xy=(x_, 0.5), xycoords="axes fraction", xytext=(dx_, 0), textcoords="offset points", ha=ha_,
-                            va="center", color=S.FRAME, annotation_clip=False)
         else:
             S.header(ax, heads[2], dx=0, dy=L2_PT)
+    S.orient_letters(fig, [(ax_, ax_, "coronal") for ax_ in ax_ab])   # L and R beside each of (a)'s images, each at its tissue's middle
     # (b): per quantile, the blockface window on top, the histology window below; one window of WIN_MM tissue
     half = int(WIN_MM / 2 / PX_MM); f = JP2_LEVEL; hm = WIN_MM / 2
     for k, ((S_, r), q, qq, v) in enumerate(zip(ex, qv, QUANT, bfv)):

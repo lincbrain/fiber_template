@@ -19,7 +19,11 @@
   The default line cycle is white/grays, so any hue in a figure comes from this lookup.
 - One orientation convention, stated once in the paper: neurological (the subject's left on the image's left); sagittal views
   anterior to the right; coronal and sagittal views superior up; axial views anterior up. section() returns that display
-  array from a volume in canonical RAS order (canonical()); dirs() writes the direction letters outside the frame.
+  array from a volume in canonical RAS order (canonical()). The direction letters (the author, 12 Nov 2026), by orient_letters():
+  left and right of the images only, never above or below; each letter's ink ORIENT_GAP_MM (1 mm) from its image's tissue; the
+  letters of one image row on one line, centered on the row's images; one size (7 pt) and one color (FRAME) in every figure;
+  check() measures the gap, the level, the size and the color; orient_room() is the room a layout reserves for them. dirs(),
+  dirs_row() and lr() are the earlier placement (2 pt off the frame), kept for figures not yet moved.
 - True scale: place panels in physical mm (axes_mm) at one print scale per figure for whole brains (SCALE) and one for zooms;
   scale bars outside the tissue (scalebar): plain bars, each with its length centered above it, 2 pt over the bar.
 - Display interpolation is bilinear for anatomy (rcParams; pass interpolation="nearest" for label maps); contours of masks
@@ -30,6 +34,7 @@ v1 (29 Sep, white background) is in _sessionbak/2026-09-30/L1/figstyle.py.v1_230
 lr, scalebar, to_nmt, save, COL["A"/"B"/"photo"/"pred"/"band"/"b1"/"b2"], FULL_W_IN, DPI, MIN_PT, LETTER_PT.
 """
 import glob
+import itertools
 import json
 import os
 import sys
@@ -191,6 +196,153 @@ def lr(ax, left, right, fs=MIN_PT, color=FRAME):
                     fontsize=fs, color=color, annotation_clip=False)
 
 
+ORIENT_GID = "orientation_letter"               # the letters orient_letters() writes (check() measures them)
+ORIENT_GAP_MM = 1.0                             # every orientation letter: this much print space from its image's nearest edge
+ORIENT_TOL_MM = 0.2                             # check(): the gap and the level, to within this
+_ORIENT_CALLS = itertools.count()                # one row key per orient_letters() call
+
+
+def content_boxes(fig, axes, dpi=200):
+    """What a reader sees of each image panel: the bounding box of its non-background pixels (anything not PAPER or TILE), drawn once
+    at `dpi` with every text and scale bar line hidden, as {axes: (x0, x1, y0, y1)} in figure fractions from the bottom left (the
+    axes' frame when the panel is empty)."""
+    from matplotlib.lines import Line2D
+    from matplotlib.text import Text
+    hide = [t for t in fig.findobj(Text) if t.get_visible() and t.get_text().strip()]
+    hide += [ln for ln in fig.findobj(Line2D) if ln.get_gid() == SCALEBAR_LINE_GID and ln.get_visible()]
+    dpi0 = fig.dpi; fig.set_dpi(dpi)
+    for a_ in hide:
+        a_.set_visible(False)
+    try:
+        fig.canvas.draw(); buf = np.asarray(fig.canvas.buffer_rgba())[..., :3].astype(np.float32) / 255.0
+        r = fig.canvas.get_renderer()
+        out = {ax: _content_box(buf, ax.get_window_extent(r)) for ax in axes}
+    finally:
+        for a_ in hide:
+            a_.set_visible(True)
+        fig.set_dpi(dpi0)
+        fig.canvas.draw()                    # positions drawn at draw time (axes titles) back to the figure as it is, at its dpi
+    Wp, Hp = buf.shape[1], buf.shape[0]
+    return {ax: (b[0] / Wp, b[1] / Wp, b[2] / Hp, b[3] / Hp) for ax, b in out.items()}
+
+
+def _content_box(buf, bb):
+    """(x0, x1, y0, y1), display pixels from the bottom left, of the non-background pixels of a rendered figure `buf` (rows from the
+    top) inside the box `bb`; `bb` itself when there are none."""
+    from matplotlib.colors import to_rgb
+    Hp = buf.shape[0]
+    c0, c1 = max(int(np.floor(bb.x0)), 0), min(int(np.ceil(bb.x1)), buf.shape[1])
+    r0, r1 = max(int(np.floor(Hp - bb.y1)), 0), min(int(np.ceil(Hp - bb.y0)), Hp)
+    sub = buf[r0:r1, c0:c1]
+    on = np.ones(sub.shape[:2], bool)
+    for c_ in {to_rgb(PAPER), to_rgb(TILE)}:
+        on &= np.abs(sub - np.asarray(c_, np.float32)).max(-1) > 0.08
+    if not on.any():
+        return bb.x0, bb.x1, bb.y0, bb.y1
+    cols, rows_ = np.flatnonzero(on.any(0)), np.flatnonzero(on.any(1))
+    return c0 + cols[0], c0 + cols[-1] + 1, Hp - (r0 + rows_[-1] + 1), Hp - (r0 + rows_[0])
+
+
+def ink_pt(s, fs=MIN_PT):
+    """A text's ink (its glyphs' outlines) relative to its origin on the baseline, (x0, x1, y0, y1) in points at fs points: the
+    letters are placed and checked by their ink, so a side bearing (0 to 0.21 mm at 7 pt) does not change a gap."""
+    from matplotlib.font_manager import FontProperties
+    from matplotlib.textpath import TextPath
+    e = TextPath((0, 0), s, size=fs, prop=FontProperties(family=FONT)).get_extents()
+    return e.x0, e.x1, e.y0, e.y1
+
+
+def _cap_pt(fs):
+    """The height of a capital letter (its ink, "H") at fs points, in points."""
+    e = ink_pt("H", fs)
+    return e[3] - e[2]
+
+
+def orient_room(letters, gap_mm=ORIENT_GAP_MM, fs=MIN_PT):
+    """The print room (mm) orient_letters() takes beside a panel's tissue for the widest of `letters` (a plane name of DIRS, or a
+    string or list of letters): the gap plus the letter's ink width, from the tissue's edge to the letter's outer ink. A layout that
+    keeps MARGIN_MM at the page's edge reserves this plus MARGIN_MM beyond the outermost tissue."""
+    ls = DIRS[letters][:2] if isinstance(letters, str) and letters in DIRS else list(letters)
+    return gap_mm + max((lambda e: e[1] - e[0])(ink_pt(c, fs)) for c in ls) / 72 * 25.4
+
+
+def orient_letters(fig, rows, gap_mm=ORIENT_GAP_MM, color=FRAME, fs=MIN_PT):
+    """The orientation letters of a figure, one rule for every figure (the author, 12 Nov 2026): each pair left and right of its
+    images, never above or below; every letter's ink ORIENT_GAP_MM (1 mm) of print from the nearest edge of what its panel shows (the
+    panel's tissue, measured: content_boxes()); the letters of one image row on ONE horizontal line, their capitals vertically centered on
+    the row's images (the middle of the row's tissue from its top to its bottom); one size (7 pt) and one color (FRAME) in every figure.
+
+    rows: a list of rows; a row is one pair (a tuple) or a list of pairs sharing the row's level; a pair is (ax_left, ax_right,
+    letters), the left letter outside ax_left and the right letter outside ax_right (the same axes for a single panel; the row's first
+    and last for a row in one view; a list of axes for a column of panels, e.g. a 2 x 2 block's left and right columns: the letter
+    then keeps the gap from the column's outermost tissue), letters a plane name of DIRS ("coronal" L/R, "sagittal" P/A, "axial" L/R)
+    or two letters. Call it once the layout and the images are final (it draws the figure once). save() checks every letter's gap,
+    its row's level, and one size and color. orient_room() gives the room a layout reserves for them. Returns the letters (figure
+    texts, ha="left", placed by their ink)."""
+    if isinstance(rows, tuple):
+        rows = [rows]
+    rows = [[r] if isinstance(r, tuple) else list(r) for r in rows]
+    grp = lambda a_: tuple(a_) if isinstance(a_, (list, tuple)) else (a_,)                     # noqa: E731
+    rows = [[(grp(p[0]), grp(p[1]), p[2]) for p in row] for row in rows]
+    boxes = content_boxes(fig, {ax for row in rows for p in row for g in p[:2] for ax in g})
+    union = lambda g: (min(boxes[a_][0] for a_ in g), max(boxes[a_][1] for a_ in g),           # noqa: E731
+                       min(boxes[a_][2] for a_ in g), max(boxes[a_][3] for a_ in g))
+    W, H = (v * 25.4 for v in fig.get_size_inches())
+    cap = _cap_pt(fs) / 72 * 25.4 / H                                       # the capital's height, figure fraction
+    call = next(_ORIENT_CALLS); out = []
+    for k, row in enumerate(rows):
+        axs = {ax for p in row for g in p[:2] for ax in g}
+        y0, y1 = min(boxes[a][2] for a in axs), max(boxes[a][3] for a in axs)
+        base = (y0 + y1) / 2 - cap / 2
+        for ax_l, ax_r, letters in row:
+            lft, rgt = DIRS[letters][:2] if isinstance(letters, str) else letters
+            for s, ax, side in ((lft, ax_l, "left"), (rgt, ax_r, "right")):
+                b = union(ax); e = ink_pt(s, fs)
+                x = (b[0] - gap_mm / W - e[1] / 72 * 25.4 / W if side == "left"                # the ink's right edge at the gap
+                     else b[1] + gap_mm / W - e[0] / 72 * 25.4 / W)                           # the ink's left edge at the gap
+                t = fig.text(x, base, s, ha="left", va="baseline", fontsize=fs, color=color, gid=ORIENT_GID)
+                t._orient = dict(row=(call, k), side=side, ax=ax, axes=axs)
+                out.append(t)
+    return out
+
+
+def _check_orient(fig, buf, r):
+    """check()'s part for orient_letters(): one size and color; each letter's gap to its panel's content; one level per row, the
+    middle of the row's content. `buf`: the figure drawn with every text and bar hidden (check()), r its renderer."""
+    from matplotlib.colors import to_hex
+    L = [t for t in fig.texts if t.get_gid() == ORIENT_GID and t.get_visible() and hasattr(t, "_orient")]
+    if not L:
+        return []
+    bad = []
+    if len({(round(t.get_fontsize(), 3), to_hex(t.get_color())) for t in L}) > 1:
+        bad.append("orientation letters in more than one size or color")
+    px = fig.dpi / 25.4
+    box = {}
+    for t in L:
+        for ax in t._orient["axes"]:
+            if ax not in box:
+                box[ax] = _content_box(buf, ax.get_window_extent(r))
+    cap = _cap_pt(L[0].get_fontsize()) * fig.dpi / 72
+    rows = {}
+    for t in L:
+        rows.setdefault(t._orient["row"], []).append(t)
+        g = t._orient["ax"]; b = (min(box[a][0] for a in g), max(box[a][1] for a in g))
+        x0 = fig.transFigure.transform(t.get_position())[0]; e = ink_pt(t.get_text(), t.get_fontsize())   # the origin; the ink
+        g = (b[0] - (x0 + e[1] * fig.dpi / 72) if t._orient["side"] == "left" else (x0 + e[0] * fig.dpi / 72) - b[1]) / px
+        if abs(g - ORIENT_GAP_MM) > ORIENT_TOL_MM:
+            bad.append(f"orientation letter {t.get_text()!r} {g:.2f} mm from its image (not {ORIENT_GAP_MM:g} mm)")
+    for ts in rows.values():
+        ys = [t.get_position()[1] for t in ts]
+        if max(ys) - min(ys) > 1e-9:
+            bad.append(f"orientation letters {''.join(t.get_text() for t in ts)!r} not on one line")
+        axs = ts[0]._orient["axes"]
+        mid = (min(box[a][2] for a in axs) + max(box[a][3] for a in axs)) / 2
+        lev = fig.transFigure.transform((0, ys[0]))[1] + cap / 2
+        if abs(lev - mid) / px > ORIENT_TOL_MM:
+            bad.append(f"orientation letters {''.join(t.get_text() for t in ts)!r} {(lev - mid) / px:+.2f} mm off their row's middle")
+    return bad
+
+
 SCALEBAR_GID = "scalebar_length"                # marks a scale bar's length for check()
 SCALEBAR_LINE_GID = "scalebar_line"             # ... and its line
 CLEAR_MM = 1.5                                  # every bar and its length keep this much print space from every other text (the
@@ -228,7 +380,8 @@ def scalebar(ax, px_per_mm, mm, y_frac=0.04, x0_px=None, color=FG, fs=MIN_PT, la
 def scalebar_mm(fig, x_mm, y_mm, mm, print_mm_per_mm, anchor="left", color=FG, fs=MIN_PT, lw=1.2, panels=True):
     """A plain scale bar placed in figure mm (from the top-left corner, y down, as axes_mm), for a bar outside every panel: its
     line at height y_mm, `mm` tissue millimeters long at the print scale print_mm_per_mm, its length centered above it as
-    scalebar() prints it. The bar and its length start at x_mm (anchor="left") or end there ("right"), by the wider of the two.
+    scalebar() prints it. The bar and its length start at x_mm (anchor="left"), end there ("right") or are
+    centered on it ("center"), by the wider of the two.
     Asserts the pair overlaps none of the figure's panels placed so far (axes with an image, or drawn axes; draw it last), unless
     panels=False (scalebar_free: a place measured empty, which may be an image's empty background).
     Returns the text and the pair's box (x0, x1, top, bottom; mm)."""
@@ -239,7 +392,7 @@ def scalebar_mm(fig, x_mm, y_mm, mm, print_mm_per_mm, anchor="left", color=FG, f
                  gid=SCALEBAR_GID)
     r = fig.canvas.get_renderer()
     wu = max(L, t.get_window_extent(r).width / fig.dpi * 25.4)
-    xc = x_mm + wu / 2 if anchor == "left" else x_mm - wu / 2
+    xc = x_mm + wu / 2 if anchor == "left" else x_mm if anchor == "center" else x_mm - wu / 2
     t.set_x(xc / W)
     fig.add_artist(Line2D([(xc - L / 2) / W, (xc + L / 2) / W], [1 - y_mm / H] * 2, transform=fig.transFigure, color=color, lw=lw,
                           solid_capstyle="butt", gid=SCALEBAR_LINE_GID))
@@ -448,6 +601,7 @@ def check(fig):
     for ln in bars:
         if on_tissue(ln.get_window_extent(r)):
             bad.append("scale bar over tissue")
+    bad += _check_orient(fig, buf, r)                          # the orientation letters: gap, level, one size and color
     # a scale bar's length: inside the figure and clear of every other text (texts, titles, and the drawn axes' tick and axis labels)
     others = [t for t in fig.texts if t.get_visible() and t.get_text().strip()]
     for ax in fig.axes:

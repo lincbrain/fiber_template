@@ -36,7 +36,7 @@ reconstruction:
   subject: MR252                      # MM2, the brain shown
   axial_z_mm: 30.12                   # (g) the axial plane (world mm): 1 mm above the fullest level, a clean outline (the author, 2 Oct)
   luminance_weights: [0.299, 0.587, 0.114]   # RGB -> luminance (Rec. 601)
-  jump_half_mm: 6.0                   # (b) at most this far on either side of the camera jump
+  jump_half_mm: 8.0                   # (b) the sections read on either side of the camera jump (mm); the panel shows as many as (e)'s width lets
   step_half_mm: 6.0                   # (e) the half window around the brightness step
   print_scale_whole: 0.6              # print mm per tissue mm, whole-brain views (a, c, d, g), before the factor that fills the page
   print_scale_zoom: 1.2               # print mm per tissue mm, zoomed views (b, e, f)

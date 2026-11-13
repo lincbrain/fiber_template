@@ -9,7 +9,8 @@ tissue that is not fully photographed is colored. Rows: sagittal, coronal and ax
 MRI channels figure (NMT v2 x = 2, y = 19.5, z = 15.5 mm, transformed into the blockface template by the link's pull map), in the stated
 convention (sagittal anterior right; coronal and axial neurological; axial anterior up), the template's own 0.25 mm voxels (nothing
 resampled; bilinear display). No row headers: the caption names the planes and the direction letters show the view (the author,
-12 Nov 2026); the sections' NMT v2 coordinates (mm), carried through the template's link of record, are in the provenance. Each view is cropped to its own section's brain box + 0.5
+12 Nov 2026), left of (a) and right of (c) on one line per row, at the middle of the row's brains, 1 mm from them
+(figstyle.orient_letters); the sections' NMT v2 coordinates (mm), carried through the template's link of record, are in the provenance. Each view is cropped to its own section's brain box + 0.5
 mm, and one print scale makes the three columns and the color bar fill the page width (or, when the figure would be taller, its
 max_height_mm), with one gutter between the columns and between the rows; one 10 mm scale bar, its length above it, at the bottom right.
 The color bar (--colorbar): right = vertical, in its own column beside (c), the bar at the figure's bottom-right corner beside the last
@@ -91,7 +92,6 @@ def main():
     # the space (the author, 12 Nov 2026): one gutter between the columns and between a row and the next row's header, the left
     # margin as wide as the direction letters need, the page margin below the last row
     f_ = plt.figure(); r_ = f_.canvas.get_renderer()
-    wl = max(f_.text(0, 0, s_, fontsize=FS.MIN_PT).get_window_extent(r_).width for s_ in "PL") / f_.dpi * 25.4
     hl = f_.text(0, 0, "a", fontsize=FS.LETTER_PT, fontweight="bold").get_window_extent(r_).height / f_.dpi * 25.4
     txt = lambda s_: f_.text(0, 0, s_, fontsize=FS.MIN_PT).get_window_extent(r_)                       # noqa: E731
     tick_mm = (2.0 + 3.5 + 4.0) / 72 * 25.4                          # tick length, tick pad, label pad (pt)
@@ -100,12 +100,12 @@ def main():
                  + FS.MARGIN_MM)
         cbh = 0.0
     else:                        # under (c): its gap, thickness, ticks, tick labels and title; the right letters as the left ones
-        RIGHT = FS.MARGIN_MM + wl + 2.0 / 72 * 25.4
+        RIGHT = FS.MARGIN_MM + FS.orient_room("AR")
         cbh = CB_GAP_BELOW + CB_T + tick_mm + (txt("0.5").height + txt("Photographed fraction").height) / f_.dpi * 25.4
     plt.close(f_)
     GAP = FS.GUTTER_MM
     TOP = FS.MARGIN_MM + 2.0 / 72 * 25.4 + hl                          # the column headers 2 pt above the first row
-    LEFT = FS.MARGIN_MM + wl + 2.0 / 72 * 25.4                        # the left letters sit 2 pt off the first column
+    LEFT = FS.MARGIN_MM + FS.orient_room("PL")                       # the left letters, 1 mm from the first column's brain
     ROWGAP = GAP                                                       # no row headers: the caption names the planes
     ws = (FS.FULL_W_IN / FS.MM - LEFT - 2 * GAP - RIGHT) / (3 * max(v[0] for v in size.values()))  # columns + color bar fill the page
     hsum = sum(size[pl][1] for pl in ("sagittal", "coronal", "axial"))
@@ -138,8 +138,8 @@ def main():
                             fontsize=FS.LETTER_PT, fontweight="bold", ha="left", va="bottom", annotation_clip=False)
                 ax.annotate(cname, xy=(0, 1), xycoords="axes fraction", xytext=(11, 2), textcoords="offset points",
                             fontsize=FS.MIN_PT, ha="left", va="bottom", annotation_clip=False)
-        FS.dirs_row(axes[(plane, 0)], axes[(plane, 2)], plane, y=0.85 if plane == "sagittal" else 0.5)
-    pc = axes[("coronal", 2)].get_position(); fw, fh = fig.get_size_inches() * 25.4
+    FS.orient_letters(fig, [(axes[(pl, 0)], axes[(pl, 2)], pl) for pl in ("sagittal", "coronal", "axial")])   # one line per row,
+    pc = axes[("coronal", 2)].get_position(); fw, fh = fig.get_size_inches() * 25.4                        # its brains' middle
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(0, 1))
     if a.colorbar == "right":
         cx = (LEFT + 2 * (colw + GAP) + colw + CB_GAP) / fw

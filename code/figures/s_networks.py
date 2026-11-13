@@ -25,7 +25,7 @@ What it does
              network's mask in one piece (whole_plane)
     scale    one physical scale for every panel, the largest that leaves the widest text line room in its box and keeps the
              figure within networks.max_height_mm; the dashed frame on each input is the network's patch (the whole photograph
-             for the 2D network) at that scale; one 10 mm bar, its length above it, in the last output's empty bottom-left corner
+             for the 2D network) at that scale; one 10 mm bar, its length above it, in the empty place nearest the bottom right of the last output (figstyle.scalebar_free)
     box      one template for all six (the author, 12 Nov 2026): architecture, levels and parameters; Input; Grid (voxel or pixel
              size, patch or image size); Output; Loss; Training (iterations of a batch); Data (N volumes or photographs of M
              brains), every value read from the records above
@@ -396,9 +396,10 @@ def main():
             for xx_, s_ in ((x_in, "Input"), (x_box, "Network"), (x_out, "Output")):
                 hx = FS.axes_mm(fig, xx_, 0.4, 30, 3.5); hx.axis("off")
                 hx.text(0, 0.5, s_, fontsize=FS.MIN_PT, color=FS.GRAY, ha="left", va="center")
-        if k == len(rows) - 1:                                         # the bar in the last output's empty bottom-left corner
-            FS.scalebar_in(ao, 1.0, SCALE_BAR_MM, corner="bottom left", lw=1.0)
 
+    # ONE scale bar, bottom right (the author, 12 Nov 2026): the empty place nearest the figure's bottom-right corner in the last row's
+    # output column, 1.5 mm clear of the tissue and of every text (figstyle.scalebar_free, measured)
+    FS.scalebar_free(fig, SCALE_BAR_MM, PS, (x_out, PAGE - M_, ys[-1] + title_h, Htot - M_), corner="bottom right")
     used = sorted(set(used))
     cmd = " ".join(["code/figures/s_networks.py"] + sys.argv[1:])
     drawn = {k: dict(title=t, lines=l) for k, (t, _, _, l) in F.items()}

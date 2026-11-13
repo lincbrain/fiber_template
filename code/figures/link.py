@@ -13,8 +13,9 @@ average over the brains of each brain's construction warp composed with its own 
   b  per-voxel distance between the registration and the composed registrations (mm), on the same sections, inside the MRI brain mask.
 Two columns, each as wide as its widest cell (its images and the letters beside them; (b)'s coronal with its color bar), one gutter
 between them and between the rows, at the print scale that fills the page's width (lowered if the figure would pass MAX_H); coronal
-panels centered in their column; the color bar right of the coronal distance map; the 5 mm scale bar in (b)'s sagittal map's
-empty bottom-right corner, its length above it.
+panels centered in their column; the color bar right of the coronal distance map; the 5 mm scale bar, its length above it, at the
+column titles' level, top right (figstyle.scalebar_title: it holds for every panel); orientation letters left and right of each row
+(figstyle.orient_letters: 1 mm from the brain, one line per row; (b)'s two views each with its pair on the row's line).
 Reads (settings/internal/products_mri*.yaml): template_mri/linc_mri_{T2,brainmask}.nii.gz, bftemplate_step8/d2bs8_grey.nii.gz, the two maps
 above, numbers_of_record/s5_link_d2bs8.json (recorded as an input: the caption's values). Writes the PNG and its provenance.json.
 """
@@ -113,7 +114,7 @@ def main():
         T = T or (TOP, TOP + hs + GAPR, TOP + hs + GAPR + hc + GAPR + 4)  # the three rows' tops (mm)
         Hf = Hf or T[2] + max(hs, hc) + 9
         fig = plt.figure(figsize=(S.FULL_W_IN, Hf / 25.4), facecolor=S.BG)
-        col, row, first = ([], []), ([], [], []), {}
+        col, row, first, pairs = ([], []), ([], [], []), {}, ([], [], [])
         for r_, (kind, plane_name) in enumerate((("sag", "sagittal"), ("cor", "coronal"))):
             r = rows[kind]; w, h = r["mm"][0] * scale, r["mm"][1] * scale
             for j, key in enumerate(("t2", "sym")):
@@ -130,7 +131,7 @@ def main():
                 if j == 0:
                     first[kind] = ax
                 last = ax; col[j].append(ax); row[r_].append(ax)
-            S.dirs_row(first[kind], last, plane_name)              # direction letters on the row's outer edges only
+            pairs[r_].append((first[kind], last, plane_name))       # direction letters on the row's outer edges only
         S.letter(first["sag"], "a", dx=-14, dy=10)
         b_axes, head = [], None
         for k, (kind, plane_name) in enumerate((("sag", "sagittal"), ("cor", "coronal"))):
@@ -140,7 +141,7 @@ def main():
                            aspect="equal")
             ax.contour(r["m"][r["crop"]].T.astype(float), [0.5], colors=[S.OKABE["sky"]], linewidths=0.5)
             ax.set_xticks([]); ax.set_yticks([]); [s_.set_visible(False) for s_ in ax.spines.values()]
-            S.dirs(ax, plane_name)
+            pairs[2].append((ax, ax, plane_name))
             if k == 0:
                 S.letter(ax, "b", dx=-14, dy=4)
                 head = S.header(ax, "Distance between the registration and the composed registrations", dx=-3, dy=4)
@@ -151,17 +152,28 @@ def main():
         cb = fig.colorbar(im, cax=cax); cb.set_label("Distance (mm)", color=S.FG, fontsize=S.MIN_PT)
         cb.ax.tick_params(colors=S.FG, labelsize=S.MIN_PT); cb.outline.set_edgecolor(S.FRAME)
         col[1].append(cax); row[2].append(cax)
-        return fig, col, row, b_axes, head
+        return fig, col, row, b_axes, head, pairs
 
     def ext(fig, axs, extra=()):
         r_ = fig.canvas.get_renderer(); Hf = fig.get_size_inches()[1] * 25.4
         bb = mtrans.Bbox.union([a_.get_tightbbox(r_) for a_ in axs] + [t.get_window_extent(r_) for t in extra])
         return bb.x0 / fig.dpi * 25.4, bb.x1 / fig.dpi * 25.4, Hf - bb.y1 / fig.dpi * 25.4, Hf - bb.y0 / fig.dpi * 25.4
 
+    def lext(fig, j, col, pairs):
+        """Column j's extent with the room its orientation letters take beside its images (orient_room; they are placed after the
+        layout)."""
+        x0, x1, y0, y1 = ext(fig, col[j]); r_ = fig.canvas.get_renderer(); f = lambda v: v / fig.dpi * 25.4    # noqa: E731
+        for axl, axr, pl in (p_ for row_ in pairs for p_ in row_):
+            if axl in col[j]:
+                x0 = min(x0, f(axl.get_window_extent(r_).x0) - S.orient_room(S.DIRS[pl][0]))
+            if axr in col[j]:
+                x1 = max(x1, f(axr.get_window_extent(r_).x1) + S.orient_room(S.DIRS[pl][1]))
+        return x0, x1, y0, y1
+
     def measure(scale):
-        fig, col, row, _, head = render(scale)
+        fig, col, row, _, head, pairs = render(scale)
         X0 = (PAGE_W / 4, 3 * PAGE_W / 4)
-        sp = [ext(fig, c) for c in col]
+        sp = [lext(fig, j, col, pairs) for j in range(2)]
         T0 = (TOP, TOP + rows["sag"]["mm"][1] * scale + GAPR, TOP + (rows["sag"]["mm"][1] + rows["cor"]["mm"][1]) * scale + 2 * GAPR + 4)
         rx = [ext(fig, row[k], (head,) if k == 2 else ()) for k in range(3)]
         plt.close(fig)
@@ -176,8 +188,9 @@ def main():
     wd, Xc, T, Hf = measure(scale)
     if Hf > MAX_H:                                                     # the height binds
         H0 = measure(0.9 * scale)[3]; scale = 0.9 * scale + (MAX_H - H0) / ((Hf - H0) / (0.1 * scale)); wd, Xc, T, Hf = measure(scale)
-    fig, col, row, b_axes, head = render(scale, Xc, T, Hf)
-    S.scalebar_in(b_axes[0], 1 / VOX, SCALEBAR_MM, corner="bottom right")   # in (b)'s sagittal map's empty bottom-right corner
+    fig, col, row, b_axes, head, pairs = render(scale, Xc, T, Hf)
+    S.orient_letters(fig, [pairs[0][0], pairs[1][0], pairs[2]])        # one line per row, 1 mm from the brain
+    S.scalebar_title(col[1][0], 1 / VOX, SCALEBAR_MM, col[1][0].title)   # top right, at the column titles' level: for every panel
     hs, hc = rows["sag"]["mm"][1] * scale, rows["cor"]["mm"][1] * scale
     S.save(fig, str(a.out), [T2P, MSKP, GREYP, LINK / "maps.json", LINK / "full_d.nii.gz", COMP / "link_ras_disp.nii.gz", NUM],
            cmd=" ".join(["python"] + sys.argv),

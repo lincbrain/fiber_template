@@ -11,9 +11,12 @@ registration of each brain to its own MRI), for one brain in one sagittal plane,
   d  step 3, the deformable registration (anatomix + MIND-SSC features, FireANTs): the blockface volume after it
      (nonlinear_<variant>/<ID>_bf_nonlin), with the outline of the cut b0 (nonlinear_<variant>/<ID>_mri, 0.25 mm)
 Gray scales are linear, 0 to the 99.5th percentile inside each image's own tissue; nothing is smoothed, cut or filled for display.
-Outlines are each mask's 0.5 contour on its own grid. The 10 mm bar in (a)'s empty bottom-right corner (under the frontal lobe), its length above it.
+Outlines are each mask's 0.5 contour on its own grid. One 10 mm bar for all four panels (one world scale), in the last panel's empty
+bottom-right corner (under the frontal lobe), its length above it (the author, 12 Nov 2026; before, in (a)'s).
 Space (the author, 12 Nov 2026): the view box is the b0 brain's extent here plus BOX_VOX voxels; one gutter (figstyle GUTTER_MM)
 between the panels and MARGIN_MM from the outermost ink (the direction letters, the panel letters) to the page's edges.
+Orientation letters (the author, 12 Nov 2026; figstyle.orient_letters): P and A beside the row, ORIENT_GAP_MM from the tissue, at the
+middle of the row's tissue; the panels widen into the room the letters leave inside the outer panels.
 
 You need (settings/internal/products_blockface.yaml data): sub-<ID>/mri/<variant>/<ID>_b0_masked, <ID>_mri_fixed_<variant>, and
 sub-<ID>/mri/nonlinear_<variant>/<ID>_bf_rigid, <ID>_bf_nonlin, <ID>_mri. The brain, its registration variant and the plane:
@@ -77,10 +80,10 @@ def cut_line(ax, kept, whole, ext, **kw):
 
 
 def text_room(fig):
-    """(side, top) mm: the widest outer direction letter with figstyle.dirs_row's 2 pt pad; the panel letters' height with
-    figstyle.letter's 3 pt offset (the tallest ink above the panels)"""
+    """(side, top): side, the (left, right) room of the outer direction letters beside the tissue (figstyle.orient_room, mm); top,
+    the panel letters' height with figstyle.letter's 3 pt offset (the tallest ink above the panels, mm)"""
     r = fig.canvas.get_renderer(); mm = lambda px: px / fig.dpi * 25.4  # noqa: E731
-    side = max(mm(fig.text(0, 0, s_, fontsize=FS.MIN_PT).get_window_extent(r).width) for s_ in FS.DIRS["sagittal"][:2]) + 2.0 / 72 * 25.4
+    side = (FS.orient_room(FS.DIRS["sagittal"][0]), FS.orient_room(FS.DIRS["sagittal"][1]))   # P and A: gap + ink (figstyle)
     top = mm(fig.text(0, 0, "abcd", fontsize=FS.LETTER_PT, fontweight="bold").get_window_extent(r).height) + 3.0 / 72 * 25.4
     for t in list(fig.texts):
         t.remove()
@@ -113,18 +116,26 @@ def main():
     ncol, gap, MG = 4, FS.GUTTER_MM, FS.MARGIN_MM
     W = FS.FULL_W_IN / FS.MM
     side, top = text_room(plt.figure(figsize=(W * FS.MM, 1.0))); plt.close("all")
-    tw = (W - 2 * (MG + side) - gap * (ncol - 1)) / ncol
-    th = tw * (Z1 - Z0) / (Y1 - Y0)
-    hdr, mg = MG + top, MG + side
-    H = hdr + th + MG
-    fig = plt.figure(figsize=(W * FS.MM, H * FS.MM))
+    hdr = MG + top
     panels = [("a", "b0 image", b0, e_b0, []),
               ("b", "1  FLIRT (7, then 9 dof)", rg, e_rg, [(b0, e_b0, dict(colors=[LINE], linewidths=0.6))]),
               ("c", "2  Cut to the photographed slab", fx, e_fx, [(b0, e_b0, dict(colors=[FS.ON_IMG2], linewidths=0.4, linestyles="dashed"))]),
               ("d", "3  Deformable registration", nl, e_nl, [(f25, e_f25, dict(colors=[LINE], linewidths=0.6))])]
-    axs = []
-    for k, (letter, title, img, ext, outs) in enumerate(panels):
-        ax = FS.axes_mm(fig, mg + k * (tw + gap), hdr, tw, th); axs.append(ax)
+
+    def draw(sl, sr):
+        """the row with sl and sr mm beside it (inside the margins): (figure, panels, height mm)"""
+        tw = (W - 2 * MG - sl - sr - gap * (ncol - 1)) / ncol
+        th = tw * (Z1 - Z0) / (Y1 - Y0)
+        H = hdr + th + MG
+        fig = plt.figure(figsize=(W * FS.MM, H * FS.MM))
+        axs = []
+        for k, p_ in enumerate(panels):
+            axs.append(panel(fig, k, p_, MG + sl + k * (tw + gap), tw, th))
+        return fig, axs, H
+
+    def panel(fig, k, p_, x0, tw, th):
+        letter, title, img, ext, outs = p_
+        ax = FS.axes_mm(fig, x0, hdr, tw, th)
         ax.set_facecolor(FS.BG)
         ax.imshow(gray(img), extent=ext, origin="lower", cmap="gray", vmin=0, vmax=1, interpolation="nearest")
         for d, e, kw in outs:
@@ -133,9 +144,19 @@ def main():
         if letter == "c":
             cut_line(ax, fx > 0, b0 > 0, e_b0, colors=[FS.COL["pred"]], linewidths=1.0)
         FS.letter(ax, letter); FS.header(ax, title)
-        if k == 0:
+        if k == ncol - 1:                                             # one bar for all (one scale): the figure's bottom right
             FS.scalebar_in(ax, 1.0, SB_MM, corner="bottom right")         # world-mm axes: 1 unit = 1 mm
-    FS.dirs_row(axs[0], axs[-1], "sagittal")
+        return ax
+
+    sl, sr = side
+    for _ in range(4):                                                # the P and A sit by the tissue, which starts inside its panel:
+        fig, axs, H = draw(sl, sr)                                    # the panels widen into that room, so the outer letters keep
+        cb = FS.content_boxes(fig, [axs[0], axs[-1]])                 # MARGIN_MM from the page's edges
+        ol, or_ = (cb[axs[0]][0] - axs[0].get_position().x0) * W, (axs[-1].get_position().x1 - cb[axs[-1]][1]) * W
+        if abs(side[0] - ol - sl) < 0.1 and abs(side[1] - or_ - sr) < 0.1:
+            break
+        plt.close(fig); sl, sr = max(side[0] - ol, 0.0), max(side[1] - or_, 0.0)
+    FS.orient_letters(fig, [(axs[0], axs[-1], "sagittal")])           # one level, the row's tissue middle (the author, 12 Nov 2026)
     out = Path(a.out).with_suffix(".pdf")
     FS.save(fig, str(out), [str(p) for p in P.values()], " ".join(["code/figures/s_bf2mri_steps.py"] + sys.argv[1:]),
             extra=dict(subject=S, label=FS.label(S), variant=V, x_mm_b0_grid=xs, x_mm_025_grid=xr, scale_bar_mm=SB_MM,

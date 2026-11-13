@@ -15,7 +15,9 @@ What it does
       joined, smoothed, thinned or cut. MF8's case is in the left hemisphere and is mirrored onto the right (x -> -x; the grid is
       centered on x = 0). Parallel projection from the right and front (turned 15 degrees toward the front and 15 up, so the
       coronal plane shows its face without hiding MM2's labels behind it: at 30 degrees it hid 77 % of them, at 15 46 %, in
-      the old view, 8 and 10, 18 %; the author, 12 Nov 2026); a turned view has no single scale, so (a) has no scale bar. The T2 on the midline plane and on one coronal plane (right half, y = 18 mm, the middle slab of b), brain cells only,
+      the old view, 8 and 10, 18 %; the author, 12 Nov 2026). The projection is parallel, so (a)'s 10 mm bar (on its title line,
+      top right; the author, 12 Nov 2026) holds for every length parallel to the view plane; lengths along the view are shortened.
+      The T2 on the midline plane and on one coronal plane (right half, y = 18 mm, the middle slab of b), brain cells only,
       on a dimmed linear window; the planes hide what lies behind them. The cases are drawn in layers, MM2 over MM1 over MF8 (each
       case rendered alone with the planes, then stacked), so the smaller cases are not hidden by MF8; within a case, nearer points
       hide farther ones (--by-depth draws all three by depth instead). A thin gray line is the outline of the whole brain as the
@@ -43,6 +45,9 @@ annotated injection site, so no marker and no tag, and its key says so. The laye
 (LAYER_ORDER). (a) can show the cases in groups, one view per group at the same camera, crop and scale
 (tracer_sections3d.views, e.g. [[MR243, MR252, MR256], [MF191]], arrange: side or stack; the author's option C, 12 Nov 2026: the
 dense MF8 apart); (b) and the key always hold every case. One group (the default) is the single view above.
+Orientation letters (the author, 12 Nov 2026, one rule for every figure: figstyle.orient_letters): (a)'s P and A and (b)'s L and R
+beside their row, ORIENT_GAP_MM from the tissue, at the middle of the row's tissue (before, (a)'s were low, under the area tags); a
+tag right of a view with the A moves up or down TAG_CLEAR_MM clear of it, its leader angled to the site.
 """
 import argparse
 import csv
@@ -88,6 +93,8 @@ VIEW_POS = tuple(round(float(f_ + _R * d), 3) for f_, d in zip(VIEW_FOC, (np.cos
 PSCALE = 26.0                                                        # mm, half the window's height (parallel projection)
 FILL_A = 0.8
 A_HEAD = "Every charted section's labels in the template, seen from the right and front"   # (a)'s title
+SB_A_MM = 10.0                                                       # (a)'s bar (the author, 12 Nov 2026): the parallel view keeps one
+                                                                     #   scale for lengths parallel to the view plane
 MAX_H_MM = 205.0                                                     # stacked views: the figure at most this tall
 EDGE_UP = 8                                                           # (b) outlines traced on an 8x finer copy of the voxel grid
 LAYER_ORDER = ["MF191", "MR243", "MR256", "MR252"]                  # --layered: bottom to top, the largest case first (bundle voxels
@@ -283,6 +290,8 @@ LAB_SIDE = {"MR243": "right", "MF191": "right", "MR252": "top"}               # 
 TAG = {S: a_[0].upper() + a_[1:] for S, a_ in AREA.items()}                         # the tags start with a capital (sentence case)
 TAG_X, TAG_Y = 0.015, 0.03                                                          # the tags' offsets outside (a)'s frame (axes fraction)
 CROP_PAD = 0.0015                                                                   # (a)'s crop around the brain's outline (of the window): the line's width, no more
+TAG_CLEAR_MM = 2.5                                                                 # a tag right of a view: this far from its A
+                                                                                   #   (so the two do not read as one label)
 KEY_X = 0.08                                                                        # the key's texts start here (its width's fraction)
 KEY_TEXTS = ["Injection site, white edge (a)", "Outline of the whole brain (a)", "Internal capsule, SARM atlas (b)",
              "One square per charted voxel (b)"]
@@ -323,14 +332,15 @@ def compose(sd, stills, views, sil, cap, rec, args, arrange="side"):
     let_h = T("ab", FS.LETTER_PT, fontweight="bold")[1]
     subs = [", ".join(FS.label(S) for S in g) for g in views] if nv > 1 else None   # the views' sub-labels
     sub_h = T("MM1")[1] + 2.0 * pt if subs else 0.0                                   # their line, 4 pt above each view
-    LM = MG + T("P")[0] + pad                                                       # (a): the P left of it, the tags right of it
+    LM = MG + FS.orient_room("P")                                                  # (a): the P left of it (figstyle), the tags right of it
     keys_k = [f"{FS.label(S)}, {AREA.get(S) or KEY_NOTE[S]}" + (" (mirrored from the left)" if S in MIRROR else "") for S in CASES] + KEY_TEXTS
     KW = max(T(t)[0] for t in keys_k) / (1 - KEY_X)                                  # the key: its texts start at KEY_X of its width
-    nb = len(cap); gapb = GUT; LB = MG + T("L")[0] + pad
-    wb = (FW - LB - (nb - 1) * GUT - (T("R")[0] + pad) - GUT - KW - MG) / nb       # (b)'s tiles fill the row beside the key
+    nb = len(cap); gapb = GUT; LB = MG + FS.orient_room("L")
+    wb = (FW - LB - (nb - 1) * GUT - FS.orient_room("R") - GUT - KW - MG) / nb       # (b)'s tiles fill the row beside the key
     hb = wb * (ALIC_Z[1] - ALIC_Z[0]) / (ALIC_X[1] - ALIC_X[0])
     head_b = 12.0 / 72 * 25.4 + max(let_h, (2.0 + 1.2) / 72 * 25.4 + T("2 mm")[1])   # (b)'s title line 12 pt above its tiles, or its bar
     title_h = let_h if not subs else max(T.ink("a", FS.LETTER_PT, fontweight="bold"), T.ink(A_HEAD))   # several views: the title line's ink
+    title_h = max(title_h, T.ink(f"{SB_A_MM:g} mm") + (2.0 + 1.2) / 72 * 25.4)     # or (a)'s bar's length over it (scalebar_title)
     top_a = lambda ha_: max(title_h + 4.0 / 72 * 25.4 + sub_h, TAG_Y * ha_ + tag_h)  # noqa: E731  a view's band: letter (+ sub-label) or top tag
     if arrange == "side" or nv == 1:                                                # the views in one row, each with its tags at its right
         wa = (FW - LM - MG - sum(tag_ws) - (nv - 1) * GUT) / (nv * (1 + TAG_X)); ha = wa * ratio
@@ -352,7 +362,7 @@ def compose(sd, stills, views, sil, cap, rec, args, arrange="side"):
     FH = TOPB + hb + MG
     fig = plt.figure(figsize=(FW / 25.4, FH / 25.4))
     rec["injection_label_anchor_px"] = {}
-    axa = []
+    axa, lr_rows = [], []
     for vi, (g, crop, (xa, ya)) in enumerate(zip(views, crops, boxes)):
         ax = FS.axes_mm(fig, xa, ya, wa, ha); axa.append(ax)
         ax.imshow(crop, interpolation="lanczos"); ax.set_axis_off()
@@ -367,11 +377,11 @@ def compose(sd, stills, views, sil, cap, rec, args, arrange="side"):
         if vi == 0:
             dy_t = 4.0 + sub_h / pt
             FS.letter(ax, "a", dx=(MG - LM) * 72 / 25.4, dy=dy_t)
-            FS.header(ax, A_HEAD, dx=(MG - LM) * 72 / 25.4 + 11, dy=dy_t)
+            ta = FS.header(ax, A_HEAD, dx=(MG - LM) * 72 / 25.4 + 11, dy=dy_t)
         if subs:
             FS.header(ax, subs[vi], dx=0, dy=4.0, color=FS.GRAY)
         if nv == 1 or arrange != "side":
-            FS.dirs(ax, "sagittal", y=0.25)                                         # P and A only (no dorsal-ventral letters), low: the area tags
+            lr_rows.append((ax, ax, "sagittal"))                                    # P and A only (no dorsal-ventral letters)
         # injection sites: the label outside the image, a thin line to the site's center (its points' mean, projected)
         for S in g:
             xyz = sd["pts"][S]["Injection_site"]
@@ -381,14 +391,19 @@ def compose(sd, stills, views, sil, cap, rec, args, arrange="side"):
             rec["injection_label_anchor_px"][S] = [round(float(u), 1), round(float(v), 1)]
             fu, fv = u / crop.shape[1], 1 - v / crop.shape[0]
             if LAB_SIDE[S] == "right":
-                yl = min(max(fv, 0.05), 0.95); xl, xt, ha_, va_ = (1 + TAG_X / 2, yl), (1 + TAG_X, yl), "left", "center"
+                yl = min(max(fv, 0.05), 0.95)
+                if vi == nv - 1 or arrange != "side":                               # this view has the A at its right, at the
+                    dA = (tag_h / 2 + T.ink("A") / 2 + TAG_CLEAR_MM) / ha            # tissue's middle (orient_letters): the tag
+                    if abs(yl - 0.5) < dA:                                         # clears it, its leader angled to the site
+                        yl = 0.5 + (dA if yl >= 0.5 else -dA)
+                xl, xt, ha_, va_ = (1 + TAG_X / 2, yl), (1 + TAG_X, yl), "left", "center"
             else:
                 xl0 = min(max(fu, 0.05), 0.95); xl, xt, ha_, va_ = (xl0, 1 + TAG_Y * 2 / 3), (xl0, 1 + TAG_Y), "center", "bottom"
             ax.annotate("", xy=(u, v), xycoords="data", xytext=xl, textcoords="axes fraction", annotation_clip=False,
                         arrowprops=dict(arrowstyle="-", lw=0.5, color=FS.FG, shrinkA=0, shrinkB=3))   # the leader line, no text
             ax.text(*xt, TAG[S], transform=ax.transAxes, fontsize=FS.MIN_PT, color=FS.FG, ha=ha_, va=va_, clip_on=False)
     if nv > 1 and arrange == "side":
-        FS.dirs_row(axa[0], axa[-1], "sagittal", y=0.25)                            # once for the row: P left, A right
+        lr_rows.append((axa[0], axa[-1], "sagittal"))                                # once for the row: P left, A right
     crop = crops[0]
     # panel b
     axs = []
@@ -411,8 +426,11 @@ def compose(sd, stills, views, sil, cap, rec, args, arrange="side"):
         if q == 0:
             FS.letter(bx, "b", dx=(MG - LB) * 72 / 25.4, dy=12.0); tb = FS.header(bx, "The charted labels at the right internal capsule, on FA", dx=(MG - LB) * 72 / 25.4 + 11, dy=12.0)
         FS.header(bx, f"y = {c['y']:g} mm", dx=0, dy=2.5, color=FS.GRAY)
-    FS.dirs_row(axs[0], axs[-1], "coronal")
+    lr_rows.append((axs[0], axs[-1], "coronal"))
+    FS.orient_letters(fig, lr_rows)                                                 # each row's letters on one level, its tissue's middle
+    fig.canvas.draw()                                                               # (the author, 12 Nov 2026); the texts' places final
     FS.scalebar_title(axs[-1], 1.0 / sd["vox"], 2.0, tb)                             # zoomed: the bar in its standard place, on (b)'s title line
+    FS.scalebar_title(axa[-1], k, SB_A_MM, ta)                                       # (a)'s, on its title line, top right (k px per mm)
     # the key, right of (b)
     kx = FW - MG - KW
     axk = FS.axes_mm(fig, kx, TOPB, KW, hb); axk.set_xlim(0, 1); axk.set_ylim(0, 1); axk.set_axis_off()
@@ -426,7 +444,7 @@ def compose(sd, stills, views, sil, cap, rec, args, arrange="side"):
     axk.text(KEY_X, yk, KEY_TEXTS[3], va="center", fontsize=FS.MIN_PT, color=FS.GRAY)
     rec["layout_mm"] = dict(width=FW, height=round(FH, 1), a=[round(LM, 2), round(TOPA, 2), round(wa, 2), round(ha, 2)], b_panel=[round(wb, 2), round(hb, 2)],
                             **({"a_views": [[round(x_, 2), round(y_, 2)] for x_, y_ in boxes], "arrange": arrange} if nv > 1 else {}),
-                            a_print_mm_per_tissue_mm=round(wa / crop.shape[1] * k, 4), b_print_mm_per_tissue_mm=round(wb / (ALIC_X[1] - ALIC_X[0]), 4),
+                            a_print_mm_per_tissue_mm=round(wa / crop.shape[1] * k, 4), a_scale_bar_mm=SB_A_MM, b_print_mm_per_tissue_mm=round(wb / (ALIC_X[1] - ALIC_X[0]), 4),
                             crop_px=dict(rows=[int(r0), int(r1)], cols=[int(c0), int(c1)]))
     return fig
 

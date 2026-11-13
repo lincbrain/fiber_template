@@ -48,6 +48,14 @@ fig_tracer_sections3d_v6_h9:
   compare: ["alic_slab_mm", "alic_y_mm", "capsule", "capsule_box_mm", "capsule_rule", "capsule_totals", "cases", "drawing",
             "footprint_min_carried_fraction", "injection_point_factor", "mirror", "mirrored", "planes", "point_px_at_window", "projection",
             "protocol", "video", "window_px"]
+fig_tracer_sections3d_v6_h9_c:
+  reason: "the figure's layout changed after the record (12 Nov 2026, evening: (a)'s 10 mm bar on its title line and the orientation
+    letters' room, figstyle.orient_letters); layout_mm (print mm of the panels) is not compared, every other field is"
+  # the paper reads: fig_tracer_sections3d_v6_h9_c.alic_slab_mm, .alic_y_mm.{0,1,2}, .capsule_totals.<ID>.charted_voxels(_in_capsule),
+  # .footprint_min_carried_fraction, .planes.coronal_y_mm (as the record above)
+  compare: ["alic_slab_mm", "alic_y_mm", "arrange", "capsule", "capsule_box_mm", "capsule_rule", "capsule_totals", "cases", "drawing",
+            "footprint_min_carried_fraction", "injection_label_anchor_px", "injection_point_factor", "mirror", "mirrored", "planes",
+            "point_px_at_window", "projection", "protocol", "still_visibility_pixels", "video", "view", "views", "window_px"]
 
 # Reference only: records of a test whose inputs this release does not ship. No script in code/figures/paper_numbers writes them, so
 # `make check` does not compare them. A record regenerated elsewhere is compared on the fields below.

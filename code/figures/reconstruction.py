@@ -6,6 +6,9 @@
   a  a photograph with its 2D brain mask (white), shown neurological (the photograph's side decided by correlation with the
      reconstructed section)
   b  the largest camera jump (the step of the 2D-mask centroid): a sagittal reslice of the photographs as taken | of the aligned stack
+     before interpolation (its interpolated sections, label 2 of 02_blockface_mask, left empty as they were: the same dark line as
+     the photographs' frames without a usable photograph; interpolation is shown in c only), the jump centered, both reslices as
+     wide as the column lets (b exactly as wide as e)
   c  every interpolated section of the stack (orange ticks) under a sagittal reslice of the aligned stack
   d  the 3D brain mask on the aligned stack
   e  a brightness step between imaging sessions in a jump-free stretch: reslices of the photographs | of the corrected stack, and each
@@ -16,7 +19,9 @@ Two print scales, whole-brain views (a, c, d, g) and zoomed views (b, e, f) at t
 columns fill the page with one gutter between them and between the rows (figstyle GUTTER_MM, MARGIN_MM; settings/figures.yaml
 reconstruction max_height_mm). The whole-brain views share one 10 mm scale bar in the bottom-left corner of g's row, beside the
 coronal view; the zoomed b, e and f have their 5 mm bars in the standard place, at their title's level, top right (figstyle
-scalebar_title; e's trace keeps its mm axis). Each bar has its length above it, and none adds room to the figure.
+scalebar_title; e's trace keeps its mm axis). Each bar has its length above it, and none adds room to the figure. Orientation
+letters left and right of each view only (figstyle.orient_letters: 1 mm from the tissue; a, b and c on one line, the middle of the
+first row's images; d and e each at the middle of its own images, e's reslices sitting above its trace; g's three views on one line).
 A grid of three columns, (a, d, g coronal), (b, e, g sagittal), (c, f, g axial): each cell is a rectangle of its column's width, its
 content centered in it and its letter and topic at its left edge.
 Reads one brain's reconstruction ($LINC_PRODUCTS data/sub-<ID>/blockface: the photographs, 2D masks, the aligned stack, the color
@@ -51,7 +56,7 @@ from blockface import zarrio  # noqa: E402
 
 CFG = yaml.safe_load((REPO / "settings" / "figures.yaml").read_text())["reconstruction"]
 W_LUM = np.asarray(CFG["luminance_weights"], np.float32)              # RGB -> luminance (Rec. 601)
-HALF_MM = CFG["jump_half_mm"]                                           # (b): at most this far on either side of the jump
+HALF_MM = CFG["jump_half_mm"]                                           # (b): the sections read on either side of the jump (mm)
 E_HALF = CFG["step_half_mm"]                                            # (e): the symmetric half window around the step (mm)
 WS, ZS = CFG["print_scale_whole"], CFG["print_scale_zoom"]              # print mm per tissue mm: whole brain, zoom
 PLANE_MM = CFG["plane_window_mm"]                                       # (g): crack-free plane window
@@ -171,13 +176,14 @@ def window(ax, center, w, h):
     ax.set_axis_off()
 
 
-def strip(ax, img, y_sorted, v_top, v_bot, w_mm, h_mm, top_pad=0.5):
-    """A reslice drawn in mm (columns at ascending world y; rows from v_top to v_bot), windowed to w_mm x h_mm: the full span
-    of sections, from just above the tissue's dorsal edge downwards."""
+def strip(ax, img, y_sorted, v_top, v_bot, w_mm, h_mm, top_pad=0.5, x_center=None):
+    """A reslice drawn in mm (columns at ascending world y; rows from v_top to v_bot), windowed to w_mm x h_mm around x_center
+    (default: the middle of the span of sections), from just above the tissue's dorsal edge downwards."""
     ax.imshow(img, extent=(y_sorted[0], y_sorted[-1], v_bot, v_top), origin="upper", aspect="auto")
     rows = np.where(img.sum(-1).sum(1) > 0)[0]
     v_hi = v_top - (v_top - v_bot) * rows[0] / img.shape[0] + top_pad
-    window(ax, (0.5 * (y_sorted[0] + y_sorted[-1]), v_hi - h_mm / 2), w_mm, h_mm)
+    xc = 0.5 * (y_sorted[0] + y_sorted[-1]) if x_center is None else x_center
+    window(ax, (xc, v_hi - h_mm / 2), w_mm, h_mm)
 
 
 def arrow_up(ax, x, gap=0.4, size=4.5, color=None):
@@ -259,7 +265,7 @@ def main():
     x_t = (bx + bw / 2 - 0.3 * bw) if mirrored else (bx - bw / 2 + 0.3 * bw)   # the same place in the brain, in the stack
     x0 = int(np.argmin(np.abs(As[0, 3] + As[0, 0] * np.arange(st.shape[0]) - x_t)))
     rec.update(jump=dict(sections=[int(j0), int(j1)], centroid_step_px=round(dj, 1), centroid_step_mm=round(dj * mm_px, 2),
-                         shown=[int(kb[0]), int(kb[-1])], camera_column=cam_col, stack_x_mm=round(float(As[0, 3] + As[0, 0] * x0), 2)))
+                         read=[int(kb[0]), int(kb[-1])], camera_column=cam_col, stack_x_mm=round(float(As[0, 3] + As[0, 0] * x0), 2)))
 
     # ---- (c) the longest filled run ----
     runs = sorted(((b - a_ - 1, a_, b) for a_, b in c.missing if b > a_ + 1 and a_ >= 0), reverse=True)
@@ -314,6 +320,7 @@ def main():
     # (a) window: the brain box x 1.12; (c): the whole aligned stack, sagittal, its tissue box + 1 mm; reslices: the shown span
     ztop, zbot = As[2, 3] + As[2, 2] * (st.shape[2] - 1), As[2, 3]
     sgc = np.rot90(st[x0]); yall = section_y(As, np.arange(nsec)); oa = np.argsort(yall)    # (z rows, all sections)
+    yj = yj_ = float(np.mean(section_y(As, [j0, j1])))                  # (b): the jump's place along the stack (mm)
     occ = sgc.sum(-1) > 0                                              # the window: rows / columns with substantial tissue
     rnz = np.where(occ.sum(1) > 0.05 * occ.sum(1).max())[0]
     cl, _ = ndi.label(occ.sum(0) > 0.05 * occ.sum(0).max())           # the contiguous run of tissue columns around the
@@ -323,7 +330,9 @@ def main():
     interp = sorted({k for a_, b in c.missing if b > a_ + 1 and a_ >= 0 for k in range(a_ + 1, b)})
     rec["interpolated"] = dict(n_sections=len(interp), n_runs=len([1 for a_, b in c.missing if b > a_ + 1 and a_ >= 0]),
                                fraction_of_stack=round(len(interp) / nsec, 4))
-    yb = section_y(As, kb); ob = np.argsort(yb); bspan = yb.max() - yb.min()
+    yb = section_y(As, kb); ob = np.argsort(yb)
+    bhalf = min(yj_ - yb.min(), yb.max() - yj_)                           # (b): the most each reslice can show either side of the jump
+    bshow = 2 * min(bhalf, 6.0)                                         # drawn first at +-6 mm; build() widens both to e's width
     ye = section_y(As, ke); oe = np.argsort(ye); espan = ye.max() - ye.min()
     import matplotlib.transforms as mtrans
 
@@ -339,8 +348,13 @@ def main():
     red = 4
     rs = raw_strip(bd, kb, cam_col, red)
     v_top = (rs.shape[0] - 1) * red * mm_px
-    sg = np.rot90(st[x0, kb[0]:kb[-1] + 1])                             # rows: z from the top; columns: sections
-    yj = float(np.mean(section_y(As, [j0, j1])))
+    sg = np.rot90(st[x0, kb[0]:kb[-1] + 1]).copy()                      # rows: z from the top; columns: sections
+    # the aligned stack BEFORE interpolation: the sections interpolate_missing filled (label 2 of the stack's mask, the same grid)
+    # back to empty, as they were (black frames: no usable photograph)
+    lab_b = np.asarray(zarrio.read_group(f"{bd}/02_blockface_mask.ome.zarr")["2"][0, :, kb[0]:kb[-1] + 1, :])   # (rows, sections, cols)
+    blank_b = [int(k) for i_, k in enumerate(kb) if (lab_b[:, i_, :] == 2).any()]; del lab_b
+    sg[:, [k - kb[0] for k in blank_b]] = 0
+    rec["jump"].update(read_mm=HALF_MM, aligned_before_interpolation=dict(sections_left_empty=blank_b))
     # (d) the mask's box x (1.1, 1.25)
     bgi = nib.load(f"{bd}/curated/{S}_bg.nii.gz"); bg = np.asanyarray(bgi.dataobj); Ab = bgi.affine
     mki = nib.load(f"{bd}/curated/{S}_mask_edited.nii.gz"); mk = np.asanyarray(mki.dataobj) > 0
@@ -434,7 +448,7 @@ def main():
         ws, zs = WS * K, ZS * K
         aw, ah = sw * 1.12 * ws, sh * 1.12 * ws
         cpw, cph = (yc1 - yc0 + 2.0) * ws, (zt_c - zb_c + 2.0) * ws
-        H1 = max(ah, cph); bw_, bh_ = bspan * zs, H1
+        H1 = max(ah, cph); bw_, bh_ = bshow * zs, H1
         dw, dh = wb * 1.1 * ws, hb * 1.25 * ws
         fw, fh = max(wh + 4, 0.75 * (hh + 4)) * zs, (hh + 4) * zs
         ew, eh = espan * zs, max(16.0, max(dh, fh) - TR - 7.0)          # (e): reslice height leaves room for the trace
@@ -450,17 +464,17 @@ def main():
         ax.imshow(np.asarray(th), extent=pext, origin="upper", aspect="auto")
         ax.contour(np.linspace(0, pext[1], th.size[0]), np.linspace(pext[3], 0, th.size[1]), pm_th.astype(float), levels=[0.5],
                    colors=[FS.COL["outline"]], linewidths=0.6)
-        window(ax, pc, aw / ws, ah / ws); FS.dirs(ax, "coronal")
+        window(ax, pc, aw / ws, ah / ws)
 
         # (b)
         axb = []
         for n, (img, vt, vb, lab) in enumerate(((P.rgb01(rs[:, ob]), v_top, 0.0, "Photographs"),
                                                  (P.rgb01(sg[:, ob]), ztop, zbot, "Aligned"))):
             ax = FS.axes_mm(fig, x_ + n * (bw_ + SUB), T1, bw_, bh_); axb.append(ax)
-            strip(ax, img, yb[ob], vt, vb, bspan, bh_ / zs)
+            strip(ax, img, yb[ob], vt, vb, bshow, bh_ / zs, x_center=yj)          # the jump at the reslice's middle
             arrow_up(ax, yj)
             sublab(ax, lab)
-        FS.dirs_row(axb[0], axb[1], "sagittal"); cell["b"] = axb
+        cell["b"] = axb
 
         # (c) every interpolated section of the stack: orange ticks below a sagittal reslice of the aligned stack (camera column)
         ax = FS.axes_mm(fig, x_, T1, cpw, cph); cell["c"] = [ax]
@@ -468,7 +482,6 @@ def main():
         window(ax, (0.5 * (yc0 + yc1), 0.5 * (zt_c + zb_c)), cpw / ws, cph / ws)
         ax.vlines(section_y(As, interp), -0.10, -0.015, transform=mtrans.blended_transform_factory(ax.transData, ax.transAxes),
                   colors=[FS.COL["pred"]], lw=0.6, clip_on=False)                # item 12: thicker, taller ticks
-        FS.dirs(ax, "sagittal")
 
         # (d) the 3D mask on the unmasked aligned stack (the 3D model's grid), sagittal
         ax = FS.axes_mm(fig, x_, T2, dw, dh); cell["d"] = [ax]
@@ -476,7 +489,7 @@ def main():
                   aspect="auto")
         ys_ = np.linspace(ext_b[0], ext_b[1], bg.shape[1]); zz_ = np.linspace(ext_b[3], ext_b[2], bg.shape[2])
         ax.contour(ys_, zz_, np.rot90(mk[xm]).astype(float), levels=[0.5], colors=[FS.COL["outline"]], linewidths=0.6)
-        window(ax, (cxb, czb), dw / ws, dh / ws); FS.dirs(ax, "sagittal")
+        window(ax, (cxb, czb), dw / ws, dh / ws)
 
         # (e)
         axe = []
@@ -486,7 +499,6 @@ def main():
             strip(ax, img, ye[oe], vt, vb, espan, eh / zs)
             sublab(ax, lab, swatch=(FS.COL["uncorrected"], 0.7) if n == 0 else (FS.COL["corrected"], 0.9))   # the headers are the key
             arrow_up(ax, ys0, gap=0.2 if n == 0 else 0.4, size=4.0 if n == 0 else 4.5)
-        FS.dirs_row(axe[0], axe[1], "sagittal")
         axp = FS.axes_mm(fig, x_, T2 + eh + 2.0, ew, TR)
         axp.plot(ye[oe], rel_raw[oe], color=FS.COL["uncorrected"], lw=0.7)          # item 12: distinct lookup colors
         axp.plot(ye[oe], rel_cor[oe], color=FS.COL["corrected"], lw=0.9)
@@ -527,40 +539,53 @@ def main():
             ax = FS.axes_mm(fig, x_, T3 + (H3 - hh_) / 2, ww_, hh_); cell[f"g{q}"] = [ax]
             ax.imshow(soft(P.rgb01(img), *SOFT_G), extent=e_, origin="upper", aspect="auto")
             window(ax, ctr, ww_ / ws, hh_ / ws)
-            if q == 0:
-                FS.dirs(ax, "coronal")
-            elif nm == "sagittal":
-                FS.dirs(ax, "sagittal")
-            else:                                                      # axial: anterior up, letters above and below
-                for xy, off, t_, va in (((0.5, 1), (0, 2), "A", "bottom"), ((0.5, 0), (0, -2), "P", "top")):
-                    ax.annotate(t_, xy=xy, xycoords="axes fraction", xytext=off, textcoords="offset points", ha="center", va=va,
-                                fontsize=FS.MIN_PT, color=FS.GRAY, annotation_clip=False)
         return fig, cell, dict(top=(T1, T2, T3), h=(H1, H2, H3))
 
-    def span(fig, axs, frames_only=False):
-        """A cell's horizontal extent (print mm): its frames and everything printed beside them (letters, ticks, labels, key);
-        the sub-labels above two-image cells are left out (not in layout)."""
+    LET = dict(a="coronal", b="sagittal", c="sagittal", d="sagittal", e="sagittal", g0="coronal", g1="sagittal", g2="axial")
+
+    def span(fig, axs, frames_only=False, letters=None):
+        """A cell's horizontal extent (print mm): its frames and everything printed beside them (ticks, labels, key), and the room
+        its orientation letters take beside its first and last image frames (orient_room: they are placed after the layout); the
+        sub-labels above two-image cells are left out (not in layout)."""
         r_ = fig.canvas.get_renderer()
         bb_ = mtrans.Bbox.union([ax.get_window_extent(r_) if frames_only else ax.get_tightbbox(r_) for ax in axs])
-        return bb_.x0 / fig.dpi * 25.4, bb_.x1 / fig.dpi * 25.4
+        x0, x1 = bb_.x0 / fig.dpi * 25.4, bb_.x1 / fig.dpi * 25.4
+        if letters:
+            ims = [ax for ax in axs if ax.images]; f0, f1 = ims[0].get_window_extent(r_), ims[-1].get_window_extent(r_)
+            x0 = min(x0, f0.x0 / fig.dpi * 25.4 - FS.orient_room(FS.DIRS[letters][0]))
+            x1 = max(x1, f1.x1 / fig.dpi * 25.4 + FS.orient_room(FS.DIRS[letters][1]))
+        return x0, x1
 
     HEAD = dict(a=("Photograph", ""), b=("Camera jump", ""), c=("Interpolated sections", "Aligned stack"), d=("3D mask", ""),
                 e=("Intensity correction", ""), f=("Marker tubes", ""), g0=("Reconstructed volume", ""), g1=("", ""), g2=("", ""))
     # the planes are in the caption; the direction letters show each view (the author, 12 Nov 2026)
     PAGE = FS.FULL_W_IN / FS.MM
 
-    def build(K, tops=None, Hf=None):
+    def build(K, tops=None, Hf=None, final=False):
         """render(K, tops, Hf), then the grid: each column as wide as its widest cell, the columns between the margins with equal
         spaces G, each cell's content centered in its rectangle, each rectangle's header (letter and topic at its left edge; a
         one-image cell's sub-label under them, the two-image cells' sub-labels above their own images)."""
         fig, cell, rows = render(K, tops, Hf)
-        ext = {s_: span(fig, v) for s_, v in cell.items()}
+        ext = {s_: span(fig, v, letters=LET.get(s_)) for s_, v in cell.items()}
         Wf = fig.get_size_inches()[0] * 25.4
-        extra = (ext["e"][1] - ext["e"][0]) - (ext["b"][1] - ext["b"][0])  # (b) exactly as wide as (e), the space between its two
-        if extra > 0:                                                    # reslices grown (the author, 12 Nov 2026): centered in one
-            p_ = cell["b"][1].get_position()                             # column, their right edges and title-level bars line up
-            cell["b"][1].set_position([p_.x0 + extra / Wf, p_.y0, p_.width, p_.height])
-            ext["b"] = span(fig, cell["b"])
+        extra = (ext["e"][1] - ext["e"][0]) - (ext["b"][1] - ext["b"][0])  # (b) exactly as wide as (e): both reslices widened (or
+        p0_, p1_ = cell["b"][0].get_position(), cell["b"][1].get_position()   # narrowed) by half of it, more sections either side of
+        dw_ = extra / 2 / Wf                                              # the jump (the author, 12 Nov 2026: fill the gap)
+        cell["b"][0].set_position([p0_.x0, p0_.y0, p0_.width + dw_, p0_.height])
+        cell["b"][1].set_position([p1_.x0 + dw_, p1_.y0, p1_.width + dw_, p1_.height])
+        wmm = (p0_.width + dw_) * Wf / (ZS * K)                           # each reslice's tissue span (mm), centered on the jump
+        if final:                                                         # (the trial scales of the search may ask for more)
+            assert wmm / 2 <= bhalf + 1e-6, f"(b) needs {wmm / 2:.2f} mm either side of the jump; {bhalf:.2f} mm are read (jump_half_mm)"
+        inwin = np.abs(yb[ob] - yj) <= wmm / 2                            # the sections the window shows: its top just above
+        for ax, (img_, vt_, vb_) in zip(cell["b"], ((rs[:, ob], v_top, 0.0), (sg[:, ob], ztop, zbot))):   # THEIR tissue (as strip())
+            ax.set_xlim(yj - wmm / 2, yj + wmm / 2)
+            rows_ = np.where(img_[:, inwin].sum(-1).sum(1) > 0)[0]; h_ = np.diff(ax.get_ylim())[0]
+            v_hi = vt_ - (vt_ - vb_) * rows_[0] / img_.shape[0] + 0.5
+            ax.set_ylim(v_hi - h_, v_hi)
+        ext["b"] = span(fig, cell["b"], letters=LET["b"])
+        if final:                                                         # the sections the two reslices show
+            ks_ = [int(k) for k, y_ in zip(kb, yb) if abs(y_ - yj) <= wmm / 2]
+            rec["jump"].update(shown=[min(ks_), max(ks_)], shown_mm_either_side=round(wmm / 2, 2))
         Wc = [max(ext[s_][1] - ext[s_][0] for s_ in col_) for col_ in COLS]
         G = (PAGE - 2 * MARGIN - sum(Wc)) / 2
         Xc = [MARGIN, MARGIN + Wc[0] + G, MARGIN + Wc[0] + G + Wc[1] + G]
@@ -569,7 +594,10 @@ def main():
                 dx = Xc[i] + Wc[i] / 2 - (ext[s_][0] + ext[s_][1]) / 2         # the cell's content centered in its rectangle
                 for ax in cell[s_]:
                     p_ = ax.get_position(); ax.set_position([p_.x0 + dx / Wf, p_.y0, p_.width, p_.height])
-        FS.dirs(cell["g2"][0], "axial")                                # (g) the axial view's L and R, after the layout: the grid is unchanged
+        FS.orient_letters(fig, [[(cell["a"][0], cell["a"][0], "coronal"), (cell["b"][0], cell["b"][1], "sagittal"),   # after the
+                                 (cell["c"][0], cell["c"][0], "sagittal")],                                         # layout (it
+                                (cell["d"][0], cell["d"][0], "sagittal"), (cell["e"][0], cell["e"][1], "sagittal"),   # measures the
+                                [(cell[g_][0], cell[g_][0], LET[g_]) for g_ in ("g0", "g1", "g2")]])                  # tissue)
         rects, titles = [[], [], []], {}
         for r_, row in enumerate(zip(*COLS)):
             for i, s_ in enumerate(row):
@@ -615,7 +643,7 @@ def main():
     if Hf > HMAX:                                                       # the height binds: K from the packed height, affine in K too
         t_lo, H_lo = packed(0.9 * K)
         K = 0.9 * K + (HMAX - H_lo) / ((Hf - H_lo) / (0.1 * K)); tops, Hf = packed(K)
-    fig, cell, rows, Xc, Wc, G, rects = build(K, tops, Hf)
+    fig, cell, rows, Xc, Wc, G, rects = build(K, tops, Hf, final=True)
     assert G >= GUT - 0.05, f"columns too wide: spaces {G:.2f} mm"
     # ONE 10 mm bar for every whole-brain view (a, c, d, g): the bottom-left corner of g's row beside its coronal view, which is
     # shorter than the row (the axial view sets its height), so the bar adds no room; inside the coronal panel's empty corner if
@@ -629,7 +657,8 @@ def main():
     rec["print_scale"] = dict(whole=round(WS * K, 4), zoom=round(ZS * K, 4), factor=round(K, 4), house=dict(whole=WS, zoom=ZS))
     rec["grid"] = dict(columns_mm=[round(w, 2) for w in Wc], space_mm=round(G, 2), margin_mm=MARGIN, gutter_mm=GUT,
                        row_tops_mm=[round(t, 2) for t in tops], height_mm=round(Hf, 1), max_height_mm=HMAX, shared_bar=shared_bar)
-    ins = [f"{bd}/00_slices", f"{bd}/01_brainmask/01_final", f"{bd}/{S}.info", f"{bd}/02_blockface.ome.zarr", c.color_store,
+    ins = [f"{bd}/00_slices", f"{bd}/01_brainmask/01_final", f"{bd}/{S}.info", f"{bd}/02_blockface.ome.zarr",
+           f"{bd}/02_blockface_mask.ome.zarr", c.color_store,
            c.final_zarr("blockface"), c.final("holes"), f"{bd}/curated/{S}_bg.nii.gz", f"{bd}/curated/{S}_mask_edited.nii.gz"]
     FS.save(fig, a.out, ins, " ".join(["code/figures/reconstruction.py"] + sys.argv[1:]), md5=False, extra=rec)
     print(json.dumps(rec, indent=1, default=float))

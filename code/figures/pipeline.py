@@ -26,14 +26,13 @@ Planes (the sagittal plane of the template figure, x = 2.0 mm):
   the photograph it was registered to, in color from the store (histology_photo_slice; its gray is TIRL's fixed image, checked),
   on the fixed image's pixels and crop, displayed as the blockface volume is (the record's color scale: the record_color_pct
   percentile of the brightest channel over its tissue to 1, the whole photograph alike); the raw photograph above stays raw.
-Orientation letters: L and R on the coronal views (neurological), P and A on the sagittal views (anterior right). One pair per block
-where one convention holds (Ex vivo MRI, MRI template, Blockface template, Histology): the first letter left of the block's leftmost
-image column, the second right of its rightmost, 2 pt off the images (as figstyle.dirs) and at least 0.5 mm inside the box, at
-mid-height of the block's images; a block whose images leave less room than that gets that much side margin (the two templates).
-Histology's L and R sit 0.5 mm inside its box's sides, as in the templates, with its two images equally spaced between them.
-The Blockface block (photograph and volume, two views) has its letters per view, at the bottom corners of each image, on its label
-line. The blockface stores are +x = right: the tubes, which mark the left hemisphere, lie at lower x (checked on MM6 and MM2,
-11 Nov 2026).
+Orientation letters (figstyle.orient_letters, the rule of every figure): L and R on the coronal views (neurological), P and A on
+the sagittal views (anterior right), each 1 mm from its image's tissue, the two of a row on one line at the middle of the row's
+images, and at least 0.5 mm inside the block's box. One pair per block where one convention holds (Ex vivo MRI, MRI template,
+Blockface template, Histology): the first letter left of the block's leftmost image column, the second right of its rightmost. The
+Blockface block (photograph and volume, two views) has a pair per view, the four letters on one line; its arrow runs between the
+photograph's R and the volume's P. Each block's images and letters are centered in its box. The blockface stores are +x = right:
+the tubes, which mark the left hemisphere, lie at lower x (checked on MM6 and MM2, 11 Nov 2026).
 One print scale for every image (the largest that fits the 178 mm width, lowered in 0.01 steps while the figure is taller than
 max_height_mm); one 10 mm scale bar, outside every block (the bottom-right corner), its length centered above it. Writes the
 PNG, a PDF beside it, and provenance.json.
@@ -374,21 +373,19 @@ def main():
     I["slice"] = (np.clip(col[q0:q1, q2:q3] / hscale, 0, 1), px, px, None)
 
     # ---- the largest print scale that fits ------------------------------------------------------------------------------------
-    W, PAD, GAP, MIDW, AGAP = 178.0, 1.8, 2.6, 22.0, 8.0      # box padding, image gap, middle column, arrow gap in a box (mm)
+    W, PAD, GAP, MIDW, AGAP = 178.0, 1.8, 2.6, 17.0, 8.0      # box padding, image gap, middle column (its 14.2 mm labels + 1.4 mm each
+                                                              # side: the room the side letters take, 12 Nov 2026), arrow gap in a box (mm)
     wd = lambda k, s: I[k][0].shape[1] * I[k][2] * s
     ht = lambda k, s: I[k][0].shape[0] * I[k][1] * s
-    LPAD, LCLR = 2.0 / 72 * 25.4, 0.5                          # a side letter's distance from the images (2 pt) and from the box (mm)
-    f_ = plt.figure(); r_ = f_.canvas.get_renderer()
-    wlet = {s: f_.text(0, 0, s, fontsize=FS.MIN_PT).get_window_extent(r_).width / f_.dpi / FS.MM
-            for s in FS.DIRS["sagittal"][:2] + FS.DIRS["coronal"][:2]}   # the letters' widths (mm)
-    plt.close(f_)
-    room = {s: LPAD + LCLR + w_ for s, w_ in wlet.items()}         # the side room a letter needs (mm)
+    LCLR, ARROW = 0.5, 4.0                                     # a side letter's distance from the box; the shortest arrow between letters (mm)
+    room = {s: FS.orient_room(s) + LCLR for s in FS.DIRS["sagittal"][:2] + FS.DIRS["coronal"][:2]}   # a letter's side room (mm)
     SIDE = max(PAD, *(room[s] for s in FS.DIRS["sagittal"][:2]))   # the sagittal blocks' side margin
+    BGAP = max(AGAP, room["R"] + room["P"] - 2 * LCLR + ARROW + 2.0)    # the Blockface block: R, the arrow (1 mm clear each end), P
 
     def widths(s):
         mri = 2 * max(wd(k, s) for k in ("i_t2", "i_dec", "i_f1", "i_f2")) + GAP + 2 * SIDE
-        bf = wd("photo", s) + AGAP + wd("bfvol", s) + 2 * PAD
-        hist = wd("histo", s) + AGAP + wd("slice", s) + room["L"] + room["R"]
+        bf = room["L"] + wd("photo", s) + BGAP + wd("bfvol", s) + room["A"]
+        hist = room["L"] + wd("histo", s) + AGAP + wd("slice", s) + room["R"]
         tpl = 2 * max(wd(k, s) for k in ("t_t2", "t_dec", "t_f1", "t_f2")) + GAP + 2 * SIDE
         return max(mri, bf, hist), tpl
     s_hi, s_lo = cfg["print_scale_range"]
@@ -415,11 +412,10 @@ def main():
     wm = max(wd(k, SC) for k in ("i_t2", "i_dec", "i_f1", "i_f2")); wt = max(wd(k, SC) for k in ("t_t2", "t_dec", "t_f1", "t_f2"))
     C1 = LX0 + (lw - (2 * wm + GAP)) / 2 + wm / 2; C2 = C1 + wm + GAP
     T1c = TX0 + SIDE + wt / 2; T2c = T1c + wt + GAP
-    xp = LX0 + PAD + wd("photo", SC) / 2; xv = LX1 - PAD - wd("bfvol", SC) / 2
-    hl0, hl1 = LX0 + LCLR + wlet["L"], LX1 - LCLR - wlet["R"]      # histology: its letters at the box's sides, and between them
-    hg = (hl1 - hl0 - wd("histo", SC) - wd("slice", SC)) / 3       # the section and its photograph equally spaced
-    xh = hl0 + hg + wd("histo", SC) / 2; xs = xh + wd("histo", SC) / 2 + hg + wd("slice", SC) / 2
-    assert hg >= AGAP - 1.0, f"histology: {hg:.2f} mm between the images leaves too short an arrow"
+    x_ = (LX0 + LX1) / 2 - (room["L"] + wd("photo", SC) + BGAP + wd("bfvol", SC) + room["A"]) / 2 + room["L"]   # centered in the box
+    xp = x_ + wd("photo", SC) / 2; xv = x_ + wd("photo", SC) + BGAP + wd("bfvol", SC) / 2
+    x_ = (LX0 + LX1) / 2 - (room["L"] + wd("histo", SC) + AGAP + wd("slice", SC) + room["R"]) / 2 + room["L"]   # histology, the same
+    xh = x_ + wd("histo", SC) / 2; xs = x_ + wd("histo", SC) + AGAP + wd("slice", SC) / 2
     bx0, bx1 = TX0, TX0 + wd("bft", SC) + 2 * SIDE              # the blockface template's box, from the MRI template's left edge
     xbt = (bx0 + bx1) / 2                                         # its image, the registration and the blockface-based arrowhead
     assert bx1 < T2c - 4.0, "the MRI-based alignment's arrow must pass right of the blockface template"
@@ -469,35 +465,22 @@ def main():
     def label(k, s):
         LBL[k] = ax.text(cx(k), bot(k) + 0.5, s, fontsize=FS.MIN_PT, ha="center", va="top", color=FG, linespacing=1.15)
 
-    def letters(k, plane):
-        """The plane's two direction letters at the bottom corners of image k, on its label line; asserts they keep clear of
-        the label."""
-        r_ = fig.canvas.get_renderer()
-        ext = lambda t: [v / fig.dpi / FS.MM for v in (t.get_window_extent(r_).x0, t.get_window_extent(r_).x1)]  # noqa: E731
-        for s, x, ha in ((FS.DIRS[plane][0], left(k), "left"), (FS.DIRS[plane][1], rgt(k), "right")):
-            t = ax.text(x, bot(k) + 0.5, s, fontsize=FS.MIN_PT, ha=ha, va="top", color=FG)
-            if k in LBL:
-                (a0, a1), (b0, b1) = ext(t), ext(LBL[k])
-                assert a1 < b0 - 0.5 or b1 < a0 - 0.5, f"direction letter {s} touches the label of {k}"
+    def box_mm(t):                                                  # a text's (x0, x1, y0, y1), figure mm, y down
+        e = t.get_window_extent(fig.canvas.get_renderer()); f = lambda v: v / fig.dpi / FS.MM  # noqa: E731
+        return f(e.x0), f(e.x1), H - f(e.y1), H - f(e.y0)
 
-    def side_letters(keys, plane, x0, x1, at_box=False):
-        """The plane's two direction letters for a block of one convention (its images `keys`, its box x0..x1): the first left of
-        the leftmost image column, the second right of the rightmost, LPAD off them (at_box: LCLR inside the box's sides), at
-        mid-height of the images; asserts they lie inside the box and clear of every image and label."""
-        r_ = fig.canvas.get_renderer()
-        yc = (min(B[k][1] for k in keys) + max(bot(k) for k in keys)) / 2
+    def ink_mm(t):                                                  # an orientation letter's ink (x0, x1, y0, y1), figure mm, y down
+        (x, y), e, k = t.get_position(), FS.ink_pt(t.get_text(), t.get_fontsize()), 25.4 / 72
+        return x * W + e[0] * k, x * W + e[1] * k, (1 - y) * H - e[3] * k, (1 - y) * H - e[2] * k
 
-        def box_mm(t):                                              # (x0, x1, y0, y1), figure mm, y down
-            e = t.get_window_extent(r_); f = lambda v: v / fig.dpi / FS.MM  # noqa: E731
-            return f(e.x0), f(e.x1), H - f(e.y1), H - f(e.y0)
-        pos = (((x0 + LCLR, "left"), (x1 - LCLR, "right")) if at_box else
-               ((min(left(k) for k in keys) - LPAD, "right"), (max(rgt(k) for k in keys) + LPAD, "left")))
-        for s, (x, ha) in zip(FS.DIRS[plane][:2], pos):
-            a0, a1, a2, a3 = box_mm(ax.text(x, yc, s, fontsize=FS.MIN_PT, ha=ha, va="center", color=FG))
-            assert a0 >= x0 + LCLR - 0.01 and a1 <= x1 - LCLR + 0.01, f"direction letter {s} of {keys[0]}'s block leaves its box"
-            others = [(B[k][0], B[k][0] + B[k][2], B[k][1], B[k][1] + B[k][3]) for k in B] + [box_mm(t) for t in LBL.values()]
+    def letters_clear(ts, x0, x1):
+        """Asserts a block's letters (their ink) lie LCLR inside its box (x0..x1) and clear of every image and label."""
+        for t in ts:
+            a0, a1, a2, a3 = ink_mm(t)
+            assert a0 >= x0 + LCLR - 0.02 and a1 <= x1 - LCLR + 0.02, f"direction letter {t.get_text()} leaves its block's box"
+            others = [(B[k][0], B[k][0] + B[k][2], B[k][1], B[k][1] + B[k][3]) for k in B] + [box_mm(u) for u in LBL.values()]
             for b0, b1, b2, b3 in others:
-                assert a1 <= b0 or b1 <= a0 or a3 <= b2 or b3 <= a2, f"direction letter {s} of {keys[0]}'s block touches an image or a label"
+                assert a1 <= b0 or b1 <= a0 or a3 <= b2 or b3 <= a2, f"direction letter {t.get_text()} touches an image or a label"
 
     # (1) two constructions of one style
     for k, x, y, s in (("i_t2", C1, R1, "T2-weighted"), ("i_dec", C2, R1, "Tensor"), ("i_f1", C1, R2, "Soma fraction"),
@@ -518,10 +501,11 @@ def main():
     box(LX0, by0, LX1, by1); header(LX0, LX1, by0, "Blockface", f"{N['n_bf']} brains + their L-R mirrors")
     box(TX0, top, TX1, my1, ec=FG, lw_=0.9); header(TX0, TX1, top, "MRI template")
     box(bx0, by0, bx1, by1, ec=FG, lw_=0.9); header(bx0, bx1, by0, "Blockface template")
-    arrow((rgt("photo") + 1.2, R3), (left("bfvol") - 1.2, R3), lw_=0.8)
     yA = (R1 + R2) / 2
-    arrow((LX1 + 1.5, yA), (TX0 - 1.0, yA)); text((LX1 + TX0) / 2, yA - 1.4, "Groupwise\nconstruction", va="bottom")
-    arrow((LX1 + 1.5, R3), (bx0 - 1.0, R3)); text((LX1 + bx0) / 2, R3 - 1.4, "Groupwise\nconstruction", va="bottom")
+    arrow((LX1 + 1.5, yA), (TX0 - 1.0, yA)); g1 = text((LX1 + TX0) / 2, yA - 1.4, "Groupwise\nconstruction", va="bottom")
+    arrow((LX1 + 1.5, R3), (bx0 - 1.0, R3)); g2 = text((LX1 + bx0) / 2, R3 - 1.4, "Groupwise\nconstruction", va="bottom")
+    for g_ in (g1, g2):                                             # the middle column's labels keep 1 mm from the boxes
+        assert box_mm(g_)[0] >= LX1 + 1.0 and box_mm(g_)[1] <= TX0 - 1.0, "a middle-column label is closer than 1 mm to a box"
     # (2) their registration
     arrow((xbt, by0 - 0.4), (xbt, my1 + 0.4)); text(xbt + 1.5, (my1 + by0) / 2, "Registration", ha="left", va="center")
     # (3) histology: a section, its blockface photograph, and the two alignments to the template
@@ -549,13 +533,19 @@ def main():
     assert sl_top > by1 + 3.0 and sby > ym + 3.0, "the scale bar must sit below the blockface template and the MRI-based line"
     assert sl0 > lab_x1 + 3.0 or sl_top > lab_y1 + 2.0, "the scale bar must keep clear of the MRI-based alignment's label"
     assert sl0 > LX1 + 3.0 and sl_top > my1 + 3.0, "the scale bar must lie outside the histology and MRI template blocks"
-    # orientation letters: one pair per block of one convention, at its sides; the Blockface block's per view
-    side_letters(("i_t2", "i_dec", "i_f1", "i_f2"), "sagittal", LX0, LX1)
-    side_letters(("t_t2", "t_dec", "t_f1", "t_f2"), "sagittal", TX0, TX1)
-    side_letters(("bft",), "sagittal", bx0, bx1)
-    side_letters(("histo", "slice"), "coronal", LX0, LX1, at_box=True)
-    for k, plane in (("photo", "coronal"), ("bfvol", "sagittal")):
-        letters(k, plane)
+    # orientation letters (figstyle.orient_letters): one pair per block of one convention, at its sides; the Blockface block's per
+    # view, the four on one line; then the Blockface block's arrow, between the photograph's R and the volume's P
+    OL = FS.orient_letters(fig, [((AX["i_t2"], AX["i_f1"]), (AX["i_dec"], AX["i_f2"]), "sagittal"),
+                                 ((AX["t_t2"], AX["t_f1"]), (AX["t_dec"], AX["t_f2"]), "sagittal"),
+                                 (AX["bft"], AX["bft"], "sagittal"),
+                                 [(AX["photo"], AX["photo"], "coronal"), (AX["bfvol"], AX["bfvol"], "sagittal")],
+                                 (AX["histo"], AX["slice"], "coronal")])
+    letters_clear(OL[0:2], LX0, LX1); letters_clear(OL[2:4], TX0, TX1); letters_clear(OL[4:6], bx0, bx1)
+    letters_clear(OL[6:10], LX0, LX1); letters_clear(OL[10:12], LX0, LX1)
+    yR = H - (OL[7].get_position()[1] * H + FS._cap_pt(FS.MIN_PT) / 72 * 25.4 / 2)       # the letters' middle (mm, y down)
+    a0_, a1_ = ink_mm(OL[7])[1] + 1.0, ink_mm(OL[8])[0] - 1.0
+    assert a1_ - a0_ >= ARROW - 0.01, f"the Blockface block's arrow, {a1_ - a0_:.2f} mm, is shorter than {ARROW} mm"
+    arrow((a0_, yR), (a1_, yR), lw_=0.8)
 
     inputs = [P[k] for k in ("template_t2", "template_mask", "template_dec", "template_frac1", "template_frac2", "bft_rgb", "bft_mask",
                              "bft_pull_map", "blockface_completed_rgb", "blockface_synth_mask", "blockface_seam_depth",
