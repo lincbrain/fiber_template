@@ -31,7 +31,10 @@ _O=$_FT/outputs; _IN=$_O/in; _L=$_O/local_data; _LOG=$_O/local_data.log; mkdir -
 # the path prefixes recorded inside the products, kept with the data (settings/internal/path_placeholders.yaml explains them)
 [ -f "$LINC_DATA_TREE/paper/recorded_path_prefixes.yaml" ] && cp -f "$LINC_DATA_TREE/paper/recorded_path_prefixes.yaml" "$_FT/settings/internal/path_placeholders.local.yaml"
 
-export LINC_RECORDS=$_IN LINC_PRODUCTS=$_IN LINC_MODELS=$_IN/models_of_record
+# the trained networks, from the repository's models/: files over 100 MB are kept there in parts; joined once into outputs/models and
+# checked against settings/models/*.sha256 (code/shared/join_weights.sh)
+bash "$_FT/code/shared/join_weights.sh" "$_O/models" >> "$_LOG" 2>&1 || echo "settings/roots.sh: putting the network weights together FAILED, see $_LOG" >&2
+export LINC_RECORDS=$_IN LINC_PRODUCTS=$_IN LINC_MODELS=$_O/models
 export LINC_COMPLETION_PREPARED=$_IN/isbi2027/data/canon_d3                    # the 13 brains with MRI
 export LINC_COMPLETION_PREPARED_STANDIN=$_IN/isbi2027/data/canon_d3n_prod_lo0  # the 8 brains without MRI (stand-in b0)
 
@@ -56,13 +59,13 @@ if [ ! -e "$_O/local_mri/.complete" ]; then
   _M=""
   for _S in MF283 MF284 MF285 MF286; do
     for _K in dwi t2 micro; do _M="$_M --copy $_S:mri/masks/${_K}_brain_mask.nii.gz=$_IN/mri/data/sub-$_S/masks/${_K}_brain_mask.nii.gz"; done
-    _M="$_M --copy $_S:mri/masks/final_brain_mask.nii.gz=$_IN/mri/data/sub-$_S/canonical_rebuild_handfrac/model_mask_source_uint8.nii.gz"
+    _M="$_M --copy $_S:mri/masks/final_brain_mask.nii.gz=$_IN/mri/data/sub-$_S/canonical_rebuild_manual_annotations_frac/model_mask_source_uint8.nii.gz"
   done
   echo "settings/roots.sh: building $_O/local_mri (once; log: $_LOG)" >&2
   "$_FT/code/shared/make_local_data.sh" "$_O/local_mri" MF283 MF284 MF285 MF286 $_M >> "$_LOG" 2>&1 || echo "settings/roots.sh: FAILED, see $_LOG" >&2
   unset _M _S _K
 fi
-[ -e "$_L/raw/match_tables_hand" ] || ln -s "$_IN/raw/match_tables_hand" "$_L/raw/match_tables_hand"   # the hand-made match tables (num_<ID>.txt) of MM1 and MM3
+[ -e "$_L/raw/match_tables_manual_annotations" ] || ln -s "$_IN/raw/match_tables_manual_annotations" "$_L/raw/match_tables_manual_annotations"   # the manual match tables (num_<ID>.txt) of MM1 and MM3
 export LINC_DATA=$_L/data LINC_TEMPLATE=$_L/template LINC_RAW=$_L/raw
 export LINC_PARTICIPANTS=$LINC_RAW/linc_000003/participants.tsv
 export LINC_REBUILD_DATA=$_O/local_rebuild/data      # for linc-reconstruct: LINC_DATA=$LINC_REBUILD_DATA code/blockface/linc-reconstruct ...

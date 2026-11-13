@@ -1,0 +1,88 @@
+{
+ "task": "bf_holes",
+ "fold": "all",
+ "net": {
+  "dim": 3,
+  "in_channels": 3,
+  "n_classes": 2,
+  "features": [
+   32,
+   64,
+   128,
+   256,
+   320,
+   320
+  ],
+  "strides": [
+   [
+    1,
+    1,
+    1
+   ],
+   [
+    2,
+    2,
+    2
+   ],
+   [
+    2,
+    2,
+    2
+   ],
+   [
+    2,
+    2,
+    2
+   ],
+   [
+    2,
+    2,
+    2
+   ],
+   [
+    2,
+    2,
+    2
+   ]
+  ],
+  "deep_supervision": true
+ },
+ "patch": [
+  128,
+  128,
+  128
+ ],
+ "classes": {
+  "0": "background",
+  "1": "tube"
+ },
+ "channels": 3,
+ "normalization": "zscore",
+ "spacing": null,
+ "target_spacing": [
+  0.3199999928474426,
+  0.3659999966621399,
+  0.3199999928474426
+ ],
+ "whole_image": false,
+ "native_downsample": null,
+ "inference": {
+  "step": 0.5,
+  "mirror": true,
+  "postprocess": {
+   "kind": "tubes_left_hemisphere",
+   "mask_key": "mask",
+   "left_tol_vox": 3.0,
+   "min_vox": 3,
+   "note": "x axis 0 increasing = anatomical right; tubes are drilled in the left hemisphere"
+  }
+ },
+ "trained": {
+  "epochs": 200,
+  "iterations_per_epoch": 250,
+  "batch": 2,
+  "train_cases": 21,
+  "train_subjects": 21,
+  "finished": "2026-11-03T07:10:44-05:00"
+ }
+}

@@ -1,8 +1,8 @@
 # Segmentation networks
 
-Four networks, one recipe, one code path. Environment: `settings/env/deep.yml`. The weights are in the
-data, under `models/`; each folder has a `card.txt` with its training data, held-out results
-and known limitations (Supplementary Section S5 of the paper).
+Four networks, one recipe, one code path. Environment: `settings/env/deep.yml`. The weights are in this
+repository, under `models/segment/` (a file over 100 MB in two parts, which `settings/roots.sh` joins); each network's `card.txt`,
+with its training data, held-out results and known limitations (Supplementary Section S5 of the paper), is in the data folder's `models/`.
 
 | Network          | Input                                          | Output         | GPU free |
 |---|---|---|---|

@@ -14,5 +14,5 @@ these files and does not repeat their values.
 | `segment/`                | the segmentation networks' training tasks |
 | `tirl/`                   | the TIRL settings of the camera-jump registrations |
 | `env/`                    | the Python environments |
-| `models/`                 | the networks' checksums |
+| `models/`                 | the networks' checksums (the weights: `models/` at the top) |
 | `internal/`               | maps from the code's names to the data tree |

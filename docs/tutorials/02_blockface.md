@@ -183,7 +183,7 @@ $PY_DEEP code/blockface/synthesis/linc-complete --brain $LINC_WORK/prepared/<ID>
   It fits one monotonic brightness map from the prediction to the photographs, on the 8 mm of fully photographed tissue next to the junction plane, the plane where the photographs end.
   It cross-fades from the photographs into the mapped prediction over the 2 mm on the photographed side of that plane, so that no seam shows.
   It colors the predicted tissue with the photographs' mean color, the same everywhere.
-  The two networks, one for a brain with its own b0 and one for the stand-in b0, are in the data folder's `models/synthesis/own_b0/` and `models/synthesis/stand_in_b0/`.
+  The two networks, one for a brain with its own b0 and one for the stand-in b0, are in the code folder's `models/completion/d3_full_A_s0/` and `models/completion/d3p_full_A_s0/`.
 - **Runs on:** `prepare` on a CPU, about a minute (5 GB of RAM for MR252); the prediction on a GPU with 2 GB free, about 20 seconds.
 - **Writes:** in `$LINC_WORK/complete/<ID>/`, on the brain's 0.25 mm grid: `<ID>_bf_completed.nii.gz` (the whole brain; `_rgb` in color), `<ID>_bf_synth` (the prediction), `<ID>_bf_real` (the photographs used), `<ID>_photo_fraction` (the photographed fraction of each voxel), `<ID>_synth_mask` (the predicted voxels), `<ID>_seam_ramp` and `<ID>_seam_depth` (the cross-fade's weight, and the distance from the junction plane), and `<ID>_b0_input_0p5` (the network's input).
 

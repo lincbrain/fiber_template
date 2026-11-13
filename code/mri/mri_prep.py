@@ -394,11 +394,11 @@ def prepare(b, final_mask, tensor, out, canonical_json=None, check_inputs=True):
     bh = nib.load(str(out / "b0_head.nii.gz"))
     nib.save(nib.Nifti1Image(C.extract(bh, mm), bh.affine, bh.header), str(out / "b0.nii.gz"))
     for k in (1, 2):                                                            # session-mask fractions x final mask
-        os.replace(out / f"frac{k}.nii.gz", out / f"frac{k}_handmask.nii.gz")
-        fi = nib.load(str(out / f"frac{k}_handmask.nii.gz")); a = np.asanyarray(fi.dataobj).astype(np.float32)
+        os.replace(out / f"frac{k}.nii.gz", out / f"frac{k}_manual_annotations_mask.nii.gz")
+        fi = nib.load(str(out / f"frac{k}_manual_annotations_mask.nii.gz")); a = np.asanyarray(fi.dataobj).astype(np.float32)
         a[~mm] = 0
         nib.save(nib.Nifti1Image(a, fi.affine, fi.header), str(out / f"frac{k}.nii.gz"))
-    extra = ["b0_dwimask.nii.gz", "frac1_handmask.nii.gz", "frac2_handmask.nii.gz", "b0_head.nii.gz"]
+    extra = ["b0_dwimask.nii.gz", "frac1_manual_annotations_mask.nii.gz", "frac2_manual_annotations_mask.nii.gz", "b0_head.nii.gz"]
 
     # tensor: vecreg with the canonical rigid as a FLIRT matrix (vecreg reorients), then cut to the final mask
     tn, g = nib.load(str(tensor)), nib.load(str(out / "grid.nii.gz"))
@@ -414,7 +414,7 @@ def prepare(b, final_mask, tensor, out, canonical_json=None, check_inputs=True):
 
     has = dict(frac=(rd("frac1.nii.gz") + rd("frac2.nii.gz")) > 0, tensor=np.abs(tvd).sum(-1) > 0,
                t2=rd("t2_modelmask.nii.gz") > 0, t2_head=rd("t2_head.nii.gz") > 0, b0=rd("b0.nii.gz") > 0,
-               frac_handmask_old=(rd("frac1_handmask.nii.gz") + rd("frac2_handmask.nii.gz")) > 0, b0_dwimask_old=rd("b0_dwimask.nii.gz") > 0)
+               frac_manual_annotations_mask_old=(rd("frac1_manual_annotations_mask.nii.gz") + rd("frac2_manual_annotations_mask.nii.gz")) > 0, b0_dwimask_old=rd("b0_dwimask.nii.gz") > 0)
     vx = float(np.prod(nib.load(str(out / "model_mask.nii.gz")).header.get_zooms()[:3]))
     cov = dict(model_mask_voxels=int(mm.sum()), voxel_mm3=vx,
                **{f"{k}_covered": float(v[mm].mean()) for k, v in has.items()},

@@ -34,8 +34,8 @@ inputs:
     place_ref: data/sub-{ID}/mri/{ID}_mri.nii.gz
     r5_entry: data/sub-{ID}/xfm/b0-native__to__mri-template  # the paper's own b0 -> template registration (reference row)
   template:                                                  # the construction's own b0 inputs and the author's final masks
-    b0: mri/data/sub-{ID}/canonical_rebuild_handfrac/_native/b0_head_n4.nii.gz
-    mask: mri/data/sub-{ID}/canonical_rebuild_handfrac/model_mask_source_uint8.nii.gz
+    b0: mri/data/sub-{ID}/canonical_rebuild_manual_annotations_frac/_native/b0_head_n4.nii.gz
+    mask: mri/data/sub-{ID}/canonical_rebuild_manual_annotations_frac/model_mask_source_uint8.nii.gz
     canonical: mri/data/sub-{ID}/landmarks/canonical.json    # T_subject_to_canonical -> upright P0
     t2: mri/data/sub-{ID}/t2/echo_n4.nii.gz                  # pulled to b0-native by the within-brain registration of record:
     t2_reg: mri/data/sub-{ID}/reg/t2_to_dwi_v3               #   meta.json pull_chain

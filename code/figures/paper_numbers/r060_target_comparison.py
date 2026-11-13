@@ -32,7 +32,7 @@ against NMT v2 (sym, in vivo T1w) and CIVM-R (ex vivo b0), with ONE engine and O
 
 Brains
   sectioned (13; out of sample for every target; the headline table): data/sub-<ID>/mri/<ID>_mri_b0_native x <ID>_mri_mask_native
-  template  (4, MF283-MF286; in sample for ours): mri/data/sub-<ID>/canonical_rebuild_handfrac/_native/b0_head_n4 x
+  template  (4, MF283-MF286; in sample for ours): mri/data/sub-<ID>/canonical_rebuild_manual_annotations_frac/_native/b0_head_n4 x
             model_mask_source_uint8 (the author's final masks; the construction's own b0 inputs)
 Targets (as the paper's mappings used them: mri/code/atlas_v2.py ATL; 30 Oct 2026), every channel multiplied by its brain mask here
   nmt    NMT_v2.0_sym_SS (T1w) + NMT_v2.0_sym_brainmask

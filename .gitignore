@@ -9,6 +9,7 @@ __pycache__/
 *.zarr/
 *.pth
 *.pt
+!/models/**/*.pt
 *.ckpt
 models/weights/
 .ipynb_checkpoints/

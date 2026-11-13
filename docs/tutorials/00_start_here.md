@@ -33,6 +33,7 @@ It builds the templates, brings new brains into them, and rewrites the paper's n
 | `steps.yaml` | every step: what it reads and writes, its command, its check, and what it needs (GPU memory, RAM, time) |
 | `code/` | the pipeline, one folder per stage |
 | `settings/` | every parameter, one file per brain and one per stage |
+| `models/` | the trained networks' weights; a file over 100 MB is kept in two parts, which `settings/roots.sh` joins and checks |
 | `tests/` | checks of the installation and of the results |
 
 **The data folder.**
@@ -42,7 +43,7 @@ It builds the templates, brings new brains into them, and rewrites the paper's n
 |---|---|
 | `brains/sub-<ID>/` | one folder per brain |
 | `template/` | the template |
-| `models/` | the trained networks |
+| `models/` | the trained networks, with each one's card (its training data, held-out results and limits) |
 | `paper/` | files only the paper's numbers and figures read |
 | `brains.tsv` | every brain: its ID, its name in the paper, its species and its data |
 | `MRI_INPUTS.txt` | each MRI input, what the code applies to it and what comes out |
@@ -218,7 +219,7 @@ The paper's numbers and figures have their own commands (`make -C code/figures n
 |---|---|
 | The paper's finished files, for each brain | `brains/sub-<ID>/outputs/` in the data folder |
 | The finished template | `template/outputs/` in the data folder |
-| The trained networks | `models/` in the data folder |
+| The trained networks | `models/` in the code folder, joined into `outputs/models/` (`$LINC_MODELS`) |
 | What you run: a brain's MRI, blockface volume, transforms, histology and labels | `$LINC_DATA/sub-<ID>/` (that is, `outputs/local_data/data/sub-<ID>/` in the code folder) |
 | What you run: working results, such as an image moved into the template | `$LINC_WORK/` (`outputs/work/` in the code folder) |
 | A `run.py` run: each step's command, log and check | `outputs/build_everything/` in the code folder |

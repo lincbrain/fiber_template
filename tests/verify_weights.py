@@ -3,8 +3,13 @@
 
     python tests/verify_weights.py settings/models/segmentation.sha256 --root $LINC_MODELS/segment
 
-Each line of the list is "<sha256>  <path relative to the root>"; lines starting with # are comments. Prints one line per file
-(OK, MISSING or DIFFERS) and exits 0 only when every file is present and matches.
+Each line of the list is "<sha256>  <path relative to the root>"; lines starting with # are comments. A file kept in parts
+(<file>.part1, <file>.part2, ..., as in the repository's models/) is checked as its parts joined in order, so the repository's
+models/ can be checked directly:
+
+    python tests/verify_weights.py settings/models/segmentation.sha256 --root models/segment
+
+Prints one line per file (OK, MISSING or DIFFERS) and exits 0 only when every file is present and matches.
 """
 import argparse
 import hashlib
@@ -12,11 +17,22 @@ import sys
 from pathlib import Path
 
 
-def sha256(path, block=1 << 24):
+def parts(path):
+    """the file itself, or its parts <file>.part1, <file>.part2, ... in order; [] when neither exists"""
+    if path.exists():
+        return [path]
+    out, i = [], 1
+    while path.with_name("%s.part%d" % (path.name, i)).exists():
+        out.append(path.with_name("%s.part%d" % (path.name, i))); i += 1
+    return out
+
+
+def sha256(paths, block=1 << 24):
     h = hashlib.sha256()
-    with open(path, "rb") as fh:
-        for chunk in iter(lambda: fh.read(block), b""):
-            h.update(chunk)
+    for path in paths:
+        with open(path, "rb") as fh:
+            for chunk in iter(lambda: fh.read(block), b""):
+                h.update(chunk)
     return h.hexdigest()
 
 
@@ -31,8 +47,8 @@ def main():
         if not line.strip() or line.startswith("#"):
             continue
         want, rel = line.split(None, 1)
-        p = root / rel.strip()
-        if not p.exists():
+        p = parts(root / rel.strip())
+        if not p:
             print(f"MISSING  {rel}"); bad += 1
         elif sha256(p) != want:
             print(f"DIFFERS  {rel}"); bad += 1

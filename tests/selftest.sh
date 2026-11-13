@@ -7,7 +7,7 @@
 #     PY_DEEP  settings/env/deep.yml        (default: PY)
 #     PY_TIRL  settings/env/tirl.yml        for the reconstruction and histology steps; without it or without TIRL those two steps SKIP and name the
 #                                  install command, because PY would test the wrong environment
-#   No release data, no weights, no GPU, no network. A few minutes.
+#   No release data, no GPU, no network; the weights checked are the repository's own (models/). A few minutes.
 #
 # What it does
 #   1. runs the repository's tests, each in the environment its code runs in (tests/run.py, no pytest needed)
@@ -43,6 +43,7 @@ tirl_py() {                                     # the settings/env/tirl.yml step
 
 # --- the tests (tests/), each in its environment
 step test_paths            "$PY"      tests/run.py tests/test_paths.py tests/test_subjects_overview.py
+step weights               bash -c "$PY tests/verify_weights.py settings/models/segmentation.sha256 --root models/segment && $PY tests/verify_weights.py settings/models/completion_public.sha256 --root models/completion"
 step test_segment          "$PY_DEEP" tests/run.py tests/test_segment.py
 step test_completion       "$PY_DEEP" tests/run.py tests/test_completion.py
 step test_blockface_rules  "$PY_DEEP" tests/run.py tests/test_blockface_rules.py

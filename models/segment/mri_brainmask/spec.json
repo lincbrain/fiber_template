@@ -1,0 +1,82 @@
+{
+ "task": "mri_brainmask",
+ "fold": "all",
+ "net": {
+  "dim": 3,
+  "in_channels": 1,
+  "n_classes": 2,
+  "features": [
+   32,
+   64,
+   128,
+   256,
+   320,
+   320
+  ],
+  "strides": [
+   [
+    1,
+    1,
+    1
+   ],
+   [
+    2,
+    2,
+    2
+   ],
+   [
+    2,
+    2,
+    2
+   ],
+   [
+    2,
+    2,
+    2
+   ],
+   [
+    2,
+    2,
+    2
+   ],
+   [
+    2,
+    2,
+    2
+   ]
+  ],
+  "deep_supervision": true
+ },
+ "patch": [
+  128,
+  128,
+  128
+ ],
+ "classes": {
+  "0": "background",
+  "1": "brain"
+ },
+ "channels": 1,
+ "normalization": "zscore",
+ "spacing": null,
+ "target_spacing": [
+  0.5,
+  0.5,
+  0.5
+ ],
+ "whole_image": false,
+ "native_downsample": null,
+ "inference": {
+  "step": 0.5,
+  "mirror": true,
+  "postprocess": null
+ },
+ "trained": {
+  "epochs": 200,
+  "iterations_per_epoch": 250,
+  "batch": 2,
+  "train_cases": 47,
+  "train_subjects": 23,
+  "finished": "2026-11-03T05:11:46-05:00"
+ }
+}

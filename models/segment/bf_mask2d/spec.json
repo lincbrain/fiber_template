@@ -1,0 +1,74 @@
+{
+ "task": "bf_mask2d",
+ "fold": "all",
+ "net": {
+  "dim": 2,
+  "in_channels": 3,
+  "n_classes": 2,
+  "features": [
+   32,
+   64,
+   128,
+   256,
+   512,
+   512
+  ],
+  "strides": [
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "deep_supervision": true
+ },
+ "patch": [
+  736,
+  992
+ ],
+ "classes": {
+  "0": "background",
+  "1": "brain"
+ },
+ "channels": 3,
+ "normalization": "zscore",
+ "spacing": null,
+ "target_spacing": null,
+ "whole_image": true,
+ "native_downsample": 4,
+ "inference": {
+  "step": 0.5,
+  "mirror": true,
+  "postprocess": {
+   "kind": "fill_holes"
+  },
+  "postprocess_decision": "decided on 3 Nov 2026, after training: the pipeline's rule of record (code/tasks.py normalize_masks: binary_fill_holes on every mask of the earlier network at native size); reconstruction has only read filled masks"
+ },
+ "trained": {
+  "epochs": 200,
+  "iterations_per_epoch": 250,
+  "batch": 4,
+  "train_cases": 16078,
+  "train_subjects": 19,
+  "finished": "2026-11-03T06:57:46-05:00"
+ }
+}

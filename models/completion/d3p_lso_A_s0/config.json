@@ -1,0 +1,463 @@
+{
+ "version": "d3",
+ "frame": "run113",
+ "in_res_mm": 0.5,
+ "out_res_mm": 0.25,
+ "features": [
+  32,
+  32,
+  64,
+  128,
+  256,
+  32
+ ],
+ "head": 32,
+ "patch_coarse": 64,
+ "batch": 2,
+ "length": 500,
+ "epochs": 80,
+ "lr": 0.0002,
+ "num_workers": 8,
+ "w_l1": 1.0,
+ "w_ssim": 0.6,
+ "w_grad": 0.2,
+ "cosine": true,
+ "warmup": 5,
+ "ema": true,
+ "ema_decay": 0.999,
+ "clip": 1.0,
+ "in_channels": 1,
+ "aug_params": {
+  "rot": 0.17,
+  "scale": 0.12,
+  "trans_mm": 0.7,
+  "elastic_mm": 0.42,
+  "intens": true
+ },
+ "protocol": "lso",
+ "fold": null,
+ "held_out": [],
+ "seed": 0,
+ "train_subs": [
+  "MF278",
+  "MF282",
+  "MR243",
+  "MR249",
+  "MR250",
+  "MR251",
+  "MR252",
+  "MR253",
+  "MR254",
+  "MR256",
+  "MR257",
+  "MR261",
+  "MF275"
+ ],
+ "extra_train": [
+  "MF275"
+ ],
+ "photographed_only": 0.5,
+ "root": "$LINC_PRODUCTS/isbi2027/data/canon_d3p_dev",
+ "canon_root": {
+  "what": "d3p cache: canon_d3 with the S2 pseudo-b0 as input (nonlinear_s2val); targets unchanged",
+  "frame": "run113",
+  "brains": {
+   "MF275": {
+    "batch": "d2_mf275",
+    "nonlin": "nonlinear_r1v3",
+    "pseudo_md5": "73d7b67965e3bbde349c6e251c079669"
+   },
+   "MF278": {
+    "batch": "d3_mf278",
+    "nonlin": "nonlinear_r1v3mr",
+    "pseudo_md5": "d4bfa11ecdf3761586f604d31b5f67a7"
+   },
+   "MF282": {
+    "batch": "1c2_a",
+    "nonlin": "nonlinear_r1v3",
+    "pseudo_md5": "136ff05a8742d1741bba8c173d122113"
+   },
+   "MR243": {
+    "batch": "1c2_a",
+    "nonlin": "nonlinear_r1v3",
+    "pseudo_md5": "4e0cc62da98b7fa88554bb55d52eeff4"
+   },
+   "MR249": {
+    "batch": "1c2_c",
+    "nonlin": "nonlinear_r1v3mr",
+    "pseudo_md5": "efe94d89b84255563db6f9ad4cdd5d96"
+   },
+   "MR250": {
+    "batch": "1c2_a",
+    "nonlin": "nonlinear_r1v3",
+    "pseudo_md5": "a67ae21cea561e2c2c802dc081f7577d"
+   },
+   "MR251": {
+    "batch": "1c2_a",
+    "nonlin": "nonlinear_r1v3",
+    "pseudo_md5": "20948aa6c50984313841bcdbd6eeeebb"
+   },
+   "MR252": {
+    "batch": "1c2_c",
+    "nonlin": "nonlinear_r1v3mr",
+    "pseudo_md5": "8ac305ee0c84d6d1e77f025eb3d08580"
+   },
+   "MR253": {
+    "batch": "1c2_a",
+    "nonlin": "nonlinear_r1v3",
+    "pseudo_md5": "14328a43bb92448575a25a76829125c5"
+   },
+   "MR254": {
+    "batch": "1c2_d",
+    "nonlin": "nonlinear_r1v3mr",
+    "pseudo_md5": "9ff6725390f6193817a0bae8ba1df4ca"
+   },
+   "MR256": {
+    "batch": "1c2_c",
+    "nonlin": "nonlinear_r1v3mr",
+    "pseudo_md5": "3d2bafc0c227c95e0520874e063f04c1"
+   },
+   "MR257": {
+    "batch": "1c2_b",
+    "nonlin": "nonlinear_r1v3m",
+    "pseudo_md5": "4937908de5ce398a80c5371748f3e816"
+   },
+   "MR261": {
+    "batch": "1c2_c",
+    "nonlin": "nonlinear_r1v3mr",
+    "pseudo_md5": "8a33dde5ea4d55959efcc2d00ddb7403"
+   }
+  },
+  "updated": "2026-10-03T23:12:56-04:00",
+  "source_root": "$LINC_PRODUCTS/isbi2027/data/canon_d3",
+  "created": "2026-10-04T01:41:13-04:00"
+ },
+ "subjects": {
+  "MF278": {
+   "valid": 2985917,
+   "after_keep": 2423825,
+   "after_all": 2413682,
+   "slab_vox": 1197010,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 10143,
+    "removed_pct": 0.418
+   },
+   "target_norm": [
+    0.003119093293789781,
+    0.978227555155754
+   ],
+   "coarse_shape": [
+    122,
+    141,
+    98
+   ],
+   "fine_shape": [
+    244,
+    282,
+    196
+   ]
+  },
+  "MF282": {
+   "valid": 3335629,
+   "after_keep": 2446432,
+   "after_all": 2328529,
+   "slab_vox": 1694048,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 117903,
+    "removed_pct": 4.819
+   },
+   "target_norm": [
+    0.01677577786147594,
+    1.0
+   ],
+   "coarse_shape": [
+    127,
+    152,
+    92
+   ],
+   "fine_shape": [
+    254,
+    304,
+    184
+   ]
+  },
+  "MR243": {
+   "valid": 4184396,
+   "after_keep": 3509502,
+   "after_all": 3506025,
+   "slab_vox": 1434542,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 3477,
+    "removed_pct": 0.099
+   },
+   "target_norm": [
+    0.0,
+    1.0
+   ],
+   "coarse_shape": [
+    123,
+    161,
+    115
+   ],
+   "fine_shape": [
+    246,
+    322,
+    230
+   ]
+  },
+  "MR249": {
+   "valid": 4500835,
+   "after_keep": 3956448,
+   "after_all": 3884237,
+   "slab_vox": 1196320,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 72211,
+    "removed_pct": 1.825
+   },
+   "target_norm": [
+    0.0,
+    0.998736546039582
+   ],
+   "coarse_shape": [
+    127,
+    164,
+    107
+   ],
+   "fine_shape": [
+    254,
+    328,
+    214
+   ]
+  },
+  "MR250": {
+   "valid": 4696902,
+   "after_keep": 3981246,
+   "after_all": 3922065,
+   "slab_vox": 1621900,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 59181,
+    "removed_pct": 1.486
+   },
+   "target_norm": [
+    0.020620183423161506,
+    0.9861972117424009
+   ],
+   "coarse_shape": [
+    127,
+    170,
+    121
+   ],
+   "fine_shape": [
+    254,
+    340,
+    242
+   ]
+  },
+  "MR251": {
+   "valid": 3645293,
+   "after_keep": 3120105,
+   "after_all": 3112050,
+   "slab_vox": 1182501,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 8055,
+    "removed_pct": 0.258
+   },
+   "target_norm": [
+    0.0,
+    1.0
+   ],
+   "coarse_shape": [
+    125,
+    156,
+    107
+   ],
+   "fine_shape": [
+    250,
+    312,
+    214
+   ]
+  },
+  "MR252": {
+   "valid": 4777773,
+   "after_keep": 4273618,
+   "after_all": 4205879,
+   "slab_vox": 1107348,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 67739,
+    "removed_pct": 1.585
+   },
+   "target_norm": [
+    0.0,
+    1.0
+   ],
+   "coarse_shape": [
+    129,
+    165,
+    107
+   ],
+   "fine_shape": [
+    258,
+    330,
+    214
+   ]
+  },
+  "MR253": {
+   "valid": 3310267,
+   "after_keep": 2936392,
+   "after_all": 2928603,
+   "slab_vox": 1024925,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 7789,
+    "removed_pct": 0.265
+   },
+   "target_norm": [
+    0.009749612547457221,
+    0.9902981400489805
+   ],
+   "coarse_shape": [
+    119,
+    154,
+    100
+   ],
+   "fine_shape": [
+    238,
+    308,
+    200
+   ]
+  },
+  "MR254": {
+   "valid": 4468299,
+   "after_keep": 3509233,
+   "after_all": 3493776,
+   "slab_vox": 2303084,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 15457,
+    "removed_pct": 0.44
+   },
+   "target_norm": [
+    0.0,
+    0.9817865639925003
+   ],
+   "coarse_shape": [
+    131,
+    166,
+    125
+   ],
+   "fine_shape": [
+    262,
+    332,
+    250
+   ]
+  },
+  "MR256": {
+   "valid": 3925388,
+   "after_keep": 3328323,
+   "after_all": 3321074,
+   "slab_vox": 1201747,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 7249,
+    "removed_pct": 0.218
+   },
+   "target_norm": [
+    0.0,
+    1.0
+   ],
+   "coarse_shape": [
+    122,
+    155,
+    107
+   ],
+   "fine_shape": [
+    244,
+    310,
+    214
+   ]
+  },
+  "MR257": {
+   "valid": 3890898,
+   "after_keep": 3081753,
+   "after_all": 3071405,
+   "slab_vox": 1696291,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 10348,
+    "removed_pct": 0.336
+   },
+   "target_norm": [
+    0.0,
+    0.9914957427978515
+   ],
+   "coarse_shape": [
+    126,
+    167,
+    105
+   ],
+   "fine_shape": [
+    252,
+    334,
+    210
+   ]
+  },
+  "MR261": {
+   "valid": 4020501,
+   "after_keep": 3594817,
+   "after_all": 3558781,
+   "slab_vox": 1050546,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 36036,
+    "removed_pct": 1.002
+   },
+   "target_norm": [
+    0.0,
+    1.0
+   ],
+   "coarse_shape": [
+    126,
+    162,
+    104
+   ],
+   "fine_shape": [
+    252,
+    324,
+    208
+   ]
+  },
+  "MF275": {
+   "valid": 2647520,
+   "after_keep": 1721701,
+   "after_all": 1368134,
+   "slab_vox": 1961789,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 353567,
+    "removed_pct": 20.536
+   },
+   "target_norm": [
+    0.02237246451899409,
+    0.9801763892173763
+   ],
+   "coarse_shape": [
+    120,
+    141,
+    97
+   ],
+   "fine_shape": [
+    240,
+    282,
+    194
+   ]
+  }
+ },
+ "name": "d3p_lso_A_s0"
+}

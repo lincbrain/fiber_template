@@ -18,7 +18,8 @@ $PY_DEEP code/blockface/synthesis/linc-complete train --root <prepared folders> 
 ```
 
 About 1 hour on a GPU with 8 GB free, on the 13 brains with MRI. A retrained network has the same recipe but not the same bits.
-The trained networks are in the data, under `models/`.
+The trained networks are in this repository: `models/completion/d3_full_A_s0` (own b0) and `d3p_full_A_s0` (stand-in b0), with the two
+leave-slab-out networks of the paper's evaluation, `d3_lso_A_s0` and `d3p_lso_A_s0`, beside them.
 
 | | |
 |---|---|

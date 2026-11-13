@@ -1,0 +1,463 @@
+{
+ "version": "d3",
+ "frame": "run113",
+ "in_res_mm": 0.5,
+ "out_res_mm": 0.25,
+ "features": [
+  32,
+  32,
+  64,
+  128,
+  256,
+  32
+ ],
+ "head": 32,
+ "patch_coarse": 64,
+ "batch": 2,
+ "length": 500,
+ "epochs": 80,
+ "lr": 0.0002,
+ "num_workers": 8,
+ "w_l1": 1.0,
+ "w_ssim": 0.6,
+ "w_grad": 0.2,
+ "cosine": true,
+ "warmup": 5,
+ "ema": true,
+ "ema_decay": 0.999,
+ "clip": 1.0,
+ "in_channels": 1,
+ "aug_params": {
+  "rot": 0.17,
+  "scale": 0.12,
+  "trans_mm": 0.7,
+  "elastic_mm": 0.42,
+  "intens": true
+ },
+ "protocol": "full",
+ "fold": null,
+ "held_out": [],
+ "seed": 0,
+ "train_subs": [
+  "MF278",
+  "MF282",
+  "MR243",
+  "MR249",
+  "MR250",
+  "MR251",
+  "MR252",
+  "MR253",
+  "MR254",
+  "MR256",
+  "MR257",
+  "MR261",
+  "MF275"
+ ],
+ "extra_train": [
+  "MF275"
+ ],
+ "photographed_only": 0.5,
+ "root": "$LINC_PRODUCTS/isbi2027/data/canon_d3p_prod",
+ "canon_root": {
+  "what": "d3p cache: canon_d3 with the S2 pseudo-b0 as input (nonlinear_s2val_prod); targets unchanged",
+  "frame": "run113",
+  "brains": {
+   "MF275": {
+    "batch": "d2_mf275",
+    "nonlin": "nonlinear_r1v3",
+    "pseudo_md5": "e83038ae28dfc85773490ce676f14d2f"
+   },
+   "MF278": {
+    "batch": "d3_mf278",
+    "nonlin": "nonlinear_r1v3mr",
+    "pseudo_md5": "c68aef6c582683fe28aed0acfa7bad68"
+   },
+   "MF282": {
+    "batch": "1c2_a",
+    "nonlin": "nonlinear_r1v3",
+    "pseudo_md5": "ee407361418896a6dd0eb792ae3f4f5a"
+   },
+   "MR243": {
+    "batch": "1c2_a",
+    "nonlin": "nonlinear_r1v3",
+    "pseudo_md5": "1c3274a306f02297600da0a54b04ea35"
+   },
+   "MR249": {
+    "batch": "1c2_c",
+    "nonlin": "nonlinear_r1v3mr",
+    "pseudo_md5": "f2dcfdc69f13d3790958b2c638f696ea"
+   },
+   "MR250": {
+    "batch": "1c2_a",
+    "nonlin": "nonlinear_r1v3",
+    "pseudo_md5": "f56c94d17b8c6df2ab713180b564b825"
+   },
+   "MR251": {
+    "batch": "1c2_a",
+    "nonlin": "nonlinear_r1v3",
+    "pseudo_md5": "e017b1a5684c7b6322ec32151a79252c"
+   },
+   "MR252": {
+    "batch": "1c2_c",
+    "nonlin": "nonlinear_r1v3mr",
+    "pseudo_md5": "7eec056a43d712f43194477ad6d668e6"
+   },
+   "MR253": {
+    "batch": "1c2_a",
+    "nonlin": "nonlinear_r1v3",
+    "pseudo_md5": "3baba4883a4b92f813bd45b9ce03609a"
+   },
+   "MR254": {
+    "batch": "1c2_d",
+    "nonlin": "nonlinear_r1v3mr",
+    "pseudo_md5": "50ca8c4bc4a78400f2b927b531bb1f90"
+   },
+   "MR256": {
+    "batch": "1c2_c",
+    "nonlin": "nonlinear_r1v3mr",
+    "pseudo_md5": "b87a6bd740b1e1af40f934b09dd913fe"
+   },
+   "MR257": {
+    "batch": "1c2_b",
+    "nonlin": "nonlinear_r1v3m",
+    "pseudo_md5": "59b31455810701e782cf5936748d90f6"
+   },
+   "MR261": {
+    "batch": "1c2_c",
+    "nonlin": "nonlinear_r1v3mr",
+    "pseudo_md5": "d6e71f744cbcff7191120aa787162b00"
+   }
+  },
+  "updated": "2026-10-03T23:12:56-04:00",
+  "source_root": "$LINC_PRODUCTS/isbi2027/data/canon_d3",
+  "created": "2026-10-04T04:35:04-04:00"
+ },
+ "subjects": {
+  "MF278": {
+   "valid": 2985917,
+   "after_keep": 2891996,
+   "after_all": 2879432,
+   "slab_vox": 0,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 12564,
+    "removed_pct": 0.434
+   },
+   "target_norm": [
+    0.0019961632927879757,
+    0.9951185524463653
+   ],
+   "coarse_shape": [
+    122,
+    141,
+    98
+   ],
+   "fine_shape": [
+    244,
+    282,
+    196
+   ]
+  },
+  "MF282": {
+   "valid": 3335629,
+   "after_keep": 3186380,
+   "after_all": 3056331,
+   "slab_vox": 0,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 130049,
+    "removed_pct": 4.081
+   },
+   "target_norm": [
+    0.0030813928693532926,
+    1.0
+   ],
+   "coarse_shape": [
+    127,
+    152,
+    92
+   ],
+   "fine_shape": [
+    254,
+    304,
+    184
+   ]
+  },
+  "MR243": {
+   "valid": 4184396,
+   "after_keep": 4072737,
+   "after_all": 4068414,
+   "slab_vox": 0,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 4323,
+    "removed_pct": 0.106
+   },
+   "target_norm": [
+    0.0,
+    1.0
+   ],
+   "coarse_shape": [
+    123,
+    161,
+    115
+   ],
+   "fine_shape": [
+    246,
+    322,
+    230
+   ]
+  },
+  "MR249": {
+   "valid": 4500835,
+   "after_keep": 4401185,
+   "after_all": 4328437,
+   "slab_vox": 0,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 72748,
+    "removed_pct": 1.653
+   },
+   "target_norm": [
+    0.0,
+    1.0
+   ],
+   "coarse_shape": [
+    127,
+    164,
+    107
+   ],
+   "fine_shape": [
+    254,
+    328,
+    214
+   ]
+  },
+  "MR250": {
+   "valid": 4696902,
+   "after_keep": 4589064,
+   "after_all": 4528828,
+   "slab_vox": 0,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 60236,
+    "removed_pct": 1.313
+   },
+   "target_norm": [
+    0.0006110620044637566,
+    0.9983692580461487
+   ],
+   "coarse_shape": [
+    127,
+    170,
+    121
+   ],
+   "fine_shape": [
+    254,
+    340,
+    242
+   ]
+  },
+  "MR251": {
+   "valid": 3645293,
+   "after_keep": 3550618,
+   "after_all": 3541906,
+   "slab_vox": 0,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 8712,
+    "removed_pct": 0.245
+   },
+   "target_norm": [
+    0.0,
+    1.0
+   ],
+   "coarse_shape": [
+    125,
+    156,
+    107
+   ],
+   "fine_shape": [
+    250,
+    312,
+    214
+   ]
+  },
+  "MR252": {
+   "valid": 4777773,
+   "after_keep": 4681976,
+   "after_all": 4605069,
+   "slab_vox": 0,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 76907,
+    "removed_pct": 1.643
+   },
+   "target_norm": [
+    0.0,
+    1.0
+   ],
+   "coarse_shape": [
+    129,
+    165,
+    107
+   ],
+   "fine_shape": [
+    258,
+    330,
+    214
+   ]
+  },
+  "MR253": {
+   "valid": 3310267,
+   "after_keep": 3248164,
+   "after_all": 3234963,
+   "slab_vox": 0,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 13201,
+    "removed_pct": 0.406
+   },
+   "target_norm": [
+    0.0014017156767658838,
+    0.9983397340774535
+   ],
+   "coarse_shape": [
+    119,
+    154,
+    100
+   ],
+   "fine_shape": [
+    238,
+    308,
+    200
+   ]
+  },
+  "MR254": {
+   "valid": 4468299,
+   "after_keep": 4350401,
+   "after_all": 4333528,
+   "slab_vox": 0,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 16873,
+    "removed_pct": 0.388
+   },
+   "target_norm": [
+    0.0,
+    1.0
+   ],
+   "coarse_shape": [
+    131,
+    166,
+    125
+   ],
+   "fine_shape": [
+    262,
+    332,
+    250
+   ]
+  },
+  "MR256": {
+   "valid": 3925388,
+   "after_keep": 3823995,
+   "after_all": 3814877,
+   "slab_vox": 0,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 9118,
+    "removed_pct": 0.238
+   },
+   "target_norm": [
+    0.0,
+    1.0
+   ],
+   "coarse_shape": [
+    122,
+    155,
+    107
+   ],
+   "fine_shape": [
+    244,
+    310,
+    214
+   ]
+  },
+  "MR257": {
+   "valid": 3890898,
+   "after_keep": 3777297,
+   "after_all": 3764675,
+   "slab_vox": 0,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 12622,
+    "removed_pct": 0.334
+   },
+   "target_norm": [
+    0.0,
+    0.999440985918045
+   ],
+   "coarse_shape": [
+    126,
+    167,
+    105
+   ],
+   "fine_shape": [
+    252,
+    334,
+    210
+   ]
+  },
+  "MR261": {
+   "valid": 4020501,
+   "after_keep": 3944482,
+   "after_all": 3847129,
+   "slab_vox": 0,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 97353,
+    "removed_pct": 2.468
+   },
+   "target_norm": [
+    0.0,
+    1.0
+   ],
+   "coarse_shape": [
+    126,
+    162,
+    104
+   ],
+   "fine_shape": [
+    252,
+    324,
+    208
+   ]
+  },
+  "MF275": {
+   "valid": 2647520,
+   "after_keep": 2548422,
+   "after_all": 2083017,
+   "slab_vox": 0,
+   "photographed_only": {
+    "threshold": 0.5,
+    "removed": 465405,
+    "removed_pct": 18.262
+   },
+   "target_norm": [
+    0.003386089587584137,
+    0.9908262062072756
+   ],
+   "coarse_shape": [
+    120,
+    141,
+    97
+   ],
+   "fine_shape": [
+    240,
+    282,
+    194
+   ]
+  }
+ },
+ "name": "d3p_full_A_s0"
+}

@@ -3,8 +3,8 @@
 settings/models/README.md describes the networks).
 
 You need
-  the environment settings/env/deep.yml ($PY_DEEP) and a GPU for a whole volume; the trained weights in $LINC_MODELS/segment/<model>/, which come
-  with the data release (check them with tests/verify_weights.py); and the input of the model you run:
+  the environment settings/env/deep.yml ($PY_DEEP) and a GPU for a whole volume; the trained weights in $LINC_MODELS/segment/<model>/, which are
+  in the repository's models/segment/ and joined by settings/roots.sh (check them with tests/verify_weights.py); and the input of the model you run:
     mri_brainmask   one ex vivo MRI image (a b0 or a T2-weighted image), NIfTI
     bf_mask2d       one blockface photograph (RGB PNG; --native for a photograph at its native size), or a folder of them (--in)
     bf_mask3d       the blockface volume with its background: three NIfTI files, one per color channel

@@ -8,7 +8,7 @@ numbers_of_record: paper/numbers                 # d3_methods.json (read by d3_p
 
 # --- the networks: one folder per network with last.pt (weights + training configuration), config.json, train_log.jsonl ---
 completion_runs: isbi2027/runs                   # d3_full_A_s0 (brains with MRI), d3p_full_A_s0 (stand-in b0), d3_lso_A_s0 / d3p_lso_A_s0
-                                                 # (leave slab out: the withheld-slab evaluation). A data release ships the copies
+                                                 # (leave slab out: the withheld-slab evaluation). The repository's models/completion/ holds the copies
                                                  # without machine paths, isbi2027/runs_public (settings/models/completion_checksum_map.tsv).
                                                  # d3p_lso_prod_A_s0: d3p_lso_A_s0's recipe on the final stand-ins (canon_d3p_prod),
                                                  # the paper's stand-in test; its evaluation is released, its weights are not
