@@ -5,9 +5,12 @@
 
   a  a photograph with its 2D brain mask (white), shown neurological (the photograph's side decided by correlation with the
      reconstructed section)
-  b  the largest camera jump (the step of the 2D-mask centroid): a sagittal reslice of the photographs as taken | of the aligned stack
-     before interpolation (its interpolated sections, label 2 of 02_blockface_mask, left empty as they were: the same dark line as
-     the photographs' frames without a usable photograph; interpolation is shown in c only), the jump centered, both reslices as
+  b  the largest camera jump (the step of the 2D-mask centroid): a sagittal reslice of the photographs as taken | of the same
+     photographs through the camera-jump correction only (the reconstruction's step 2: no illumination, brightness or color correction,
+     no interpolation, which are e and c): the sections after the jump as taken, those up to it pulled into their frame by the jump's
+     registration ($LINC_NUMBERS/bf_jump_pullback.json: the step's TIRL registration run again, as the reconstruction keeps no working
+     files), on the same camera column and pixels, one display window for both; so the two differ only by the jump. The sections
+     interpolation filled later (label 2 of 02_blockface_mask) stay empty, a dark line in both. The jump centered, both reslices as
      wide as the column lets (b exactly as wide as e)
   c  every interpolated section of the stack (orange ticks) under a sagittal reslice of the aligned stack
   d  the 3D brain mask on the aligned stack
@@ -161,6 +164,31 @@ def raw_strip(bd, ks, col, reduce):
     return np.stack(out, 1)                                             # (rows, sections, 3)
 
 
+def aligned_strip(bd, ks, col, reduce, j0, A, pad, rs):
+    """The camera column of raw_strip(bd, ks, col, reduce) (rs, as it returned) after the camera-jump correction of the jump after
+    section j0 only: the sections up to j0 resampled into the frame of the sections after it through A, the jump's pullback (2 x 3,
+    (row, col, 1) of the padded upright frame after the jump -> (row, col) before it; bilinear, the 2D mask nearest, as register_jumps
+    resamples the stacks), at full resolution and then reduced as raw_strip reduces (block mean, mask any); the sections after j0 as
+    taken (rs's own columns)."""
+    import cv2
+    out = rs.copy()
+    c0 = int(round(col / reduce)) * reduce                              # the full-resolution columns of raw_strip's reduced column
+    for i, k in enumerate(ks):
+        if k > j0:
+            continue
+        im, m = photo(bd, k)
+        H = im.shape[0] // reduce * reduce
+        yy, xx = np.mgrid[0:H, c0:c0 + reduce].astype(np.float64) + pad
+        my = (A[0, 0] * yy + A[0, 1] * xx + A[0, 2] - pad).astype(np.float32)
+        mx = (A[1, 0] * yy + A[1, 1] * xx + A[1, 2] - pad).astype(np.float32)
+        a_ = cv2.remap(im, mx, my, cv2.INTER_LINEAR, borderValue=0).astype(np.float32)
+        b_ = cv2.remap(m.astype(np.uint8), mx, my, cv2.INTER_NEAREST, borderValue=0)
+        a_ = np.round(a_.reshape(H // reduce, reduce, reduce, 3).mean((1, 2)))           # PIL reduce: the block mean, as uint8
+        b_ = b_.reshape(H // reduce, reduce, reduce).max((1, 2)) > 0
+        out[:, i] = a_ * b_[:, None]
+    return out
+
+
 def section_y(A, k):
     return A[1, 3] + A[1, 1] * np.asarray(k, float)
 
@@ -254,6 +282,7 @@ def main():
         except Exception:
             pass
     dj, j0, j1 = max(steps)
+    assert [int(j0), int(j1)] == list(CFG["jump_shown"]), f"the largest jump is {(j0, j1)}, settings jump_shown {CFG['jump_shown']}"
     nh = int(HALF_MM / dsec)
     lo = max([0, j0 - nh] + [s1 + 5 for s0, s1 in c.jumps if s1 <= j0])
     hi = min([nsec - 1, j1 + nh] + [s0 - 5 for s0, s1 in c.jumps if s0 >= j1 and (s0, s1) != (j0, j1)])
@@ -348,13 +377,19 @@ def main():
     red = 4
     rs = raw_strip(bd, kb, cam_col, red)
     v_top = (rs.shape[0] - 1) * red * mm_px
-    sg = np.rot90(st[x0, kb[0]:kb[-1] + 1]).copy()                      # rows: z from the top; columns: sections
-    # the aligned stack BEFORE interpolation: the sections interpolate_missing filled (label 2 of the stack's mask, the same grid)
-    # back to empty, as they were (black frames: no usable photograph)
+    # "Aligned": the camera-jump correction only (the reconstruction's step 2), on the photographs' own column and pixels
+    jrp = paths.numbers_root() / "bf_jump_pullback.json"; jr = json.load(open(jrp))["data"]
+    assert jr["subject"] == S and jr["jump"] == [int(j0), int(j1)], f"{jrp.name} is {jr['subject']} {jr['jump']}, not {S} {(j0, j1)}"
+    sg = aligned_strip(bd, kb, cam_col, red, j0, np.asarray(jr["pullback_rowcol_affine"]), int(jr["pad_px"]), rs)
+    # the sections interpolate_missing filled later (label 2 of the stack's mask) stay empty, as they were (no usable photograph)
     lab_b = np.asarray(zarrio.read_group(f"{bd}/02_blockface_mask.ome.zarr")["2"][0, :, kb[0]:kb[-1] + 1, :])   # (rows, sections, cols)
     blank_b = [int(k) for i_, k in enumerate(kb) if (lab_b[:, i_, :] == 2).any()]; del lab_b
     sg[:, [k - kb[0] for k in blank_b]] = 0
-    rec["jump"].update(read_mm=HALF_MM, aligned_before_interpolation=dict(sections_left_empty=blank_b))
+    bhi = float(np.percentile(np.concatenate([rs[rs > 0], sg[sg > 0]]), 99.5))     # ONE display window for both reslices
+    rec["jump"].update(read_mm=HALF_MM, aligned=dict(
+        correction="the camera-jump registration only (step 2), in the frame of the sections after the jump", record=jrp.name,
+        sections_resampled=[int(kb[0]), int(j0)], rotation_deg=jr["rotation_deg"], scale=jr["scale"], check=jr["check"],
+        sections_left_empty=blank_b, display_max=round(bhi, 2)))
     # (d) the mask's box x (1.1, 1.25)
     bgi = nib.load(f"{bd}/curated/{S}_bg.nii.gz"); bg = np.asanyarray(bgi.dataobj); Ab = bgi.affine
     mki = nib.load(f"{bd}/curated/{S}_mask_edited.nii.gz"); mk = np.asanyarray(mki.dataobj) > 0
@@ -468,8 +503,8 @@ def main():
 
         # (b)
         axb = []
-        for n, (img, vt, vb, lab) in enumerate(((P.rgb01(rs[:, ob]), v_top, 0.0, "Photographs"),
-                                                 (P.rgb01(sg[:, ob]), ztop, zbot, "Aligned"))):
+        for n, (img, vt, vb, lab) in enumerate(((np.clip(rs[:, ob] / bhi, 0, 1), v_top, 0.0, "Photographs"),
+                                                 (np.clip(sg[:, ob] / bhi, 0, 1), v_top, 0.0, "Aligned"))):
             ax = FS.axes_mm(fig, x_ + n * (bw_ + SUB), T1, bw_, bh_); axb.append(ax)
             strip(ax, img, yb[ob], vt, vb, bshow, bh_ / zs, x_center=yj)          # the jump at the reslice's middle
             arrow_up(ax, yj)
@@ -576,12 +611,12 @@ def main():
         wmm = (p0_.width + dw_) * Wf / (ZS * K)                           # each reslice's tissue span (mm), centered on the jump
         if final:                                                         # (the trial scales of the search may ask for more)
             assert wmm / 2 <= bhalf + 1e-6, f"(b) needs {wmm / 2:.2f} mm either side of the jump; {bhalf:.2f} mm are read (jump_half_mm)"
-        inwin = np.abs(yb[ob] - yj) <= wmm / 2                            # the sections the window shows: its top just above
-        for ax, (img_, vt_, vb_) in zip(cell["b"], ((rs[:, ob], v_top, 0.0), (sg[:, ob], ztop, zbot))):   # THEIR tissue (as strip())
-            ax.set_xlim(yj - wmm / 2, yj + wmm / 2)
-            rows_ = np.where(img_[:, inwin].sum(-1).sum(1) > 0)[0]; h_ = np.diff(ax.get_ylim())[0]
-            v_hi = vt_ - (vt_ - vb_) * rows_[0] / img_.shape[0] + 0.5
-            ax.set_ylim(v_hi - h_, v_hi)
+        inwin = np.abs(yb[ob] - yj) <= wmm / 2                            # the sections the window shows: one top for both, just
+        rows_ = min(np.where(img_[:, inwin].sum(-1).sum(1) > 0)[0][0] for img_ in (rs[:, ob], sg[:, ob]))   # above their tissue
+        v_hi = v_top - v_top * rows_ / rs.shape[0] + 0.5                  # (as strip()), both on the photographs' rows
+        for ax in cell["b"]:
+            h_ = np.diff(ax.get_ylim())[0]
+            ax.set_xlim(yj - wmm / 2, yj + wmm / 2); ax.set_ylim(v_hi - h_, v_hi)
         ext["b"] = span(fig, cell["b"], letters=LET["b"])
         if final:                                                         # the sections the two reslices show
             ks_ = [int(k) for k, y_ in zip(kb, yb) if abs(y_ - yj) <= wmm / 2]
@@ -657,7 +692,7 @@ def main():
     rec["print_scale"] = dict(whole=round(WS * K, 4), zoom=round(ZS * K, 4), factor=round(K, 4), house=dict(whole=WS, zoom=ZS))
     rec["grid"] = dict(columns_mm=[round(w, 2) for w in Wc], space_mm=round(G, 2), margin_mm=MARGIN, gutter_mm=GUT,
                        row_tops_mm=[round(t, 2) for t in tops], height_mm=round(Hf, 1), max_height_mm=HMAX, shared_bar=shared_bar)
-    ins = [f"{bd}/00_slices", f"{bd}/01_brainmask/01_final", f"{bd}/{S}.info", f"{bd}/02_blockface.ome.zarr",
+    ins = [f"{bd}/00_slices", f"{bd}/01_brainmask/01_final", f"{bd}/{S}.info", f"{bd}/02_blockface.ome.zarr", str(jrp),
            f"{bd}/02_blockface_mask.ome.zarr", c.color_store,
            c.final_zarr("blockface"), c.final("holes"), f"{bd}/curated/{S}_bg.nii.gz", f"{bd}/curated/{S}_mask_edited.nii.gz"]
     FS.save(fig, a.out, ins, " ".join(["code/figures/reconstruction.py"] + sys.argv[1:]), md5=False, extra=rec)

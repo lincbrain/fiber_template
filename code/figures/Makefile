@@ -51,7 +51,7 @@ NUMBERS_LINC := \
 NUMBERS_MRI := variants_leave_self_out_rebuild_fa025 variability_four_brains_r061 lobo_t2_rebuild \
   labels_overlap_current lgnstn_geometry_current \
   lgnstn_b0_visibility_r059 lgnstn_midplane_planes_r059 r057_mri_facts_b
-NUMBERS_TIRL := histo_pixel_sizes_r057
+NUMBERS_TIRL := histo_pixel_sizes_r057 bf_jump_pullback
 NUMBERS_COMPLETION := d3_sigma2_pred d3_methods d3_predicted_share \
   d3p_vs_d3_pseudo d3p_vs_d3_pseudo_prod r057_missing_extent r057_s1_synthesis lgnstn_budget_r059
 NUMBERS_ATLAS := gallery_plane_2026-11
@@ -126,6 +126,7 @@ alignment_comparison: route_test_1c
 s_synthesis_depth: r057_s1_synthesis
 s_synthesis_gallery: d3_predicted_share gallery_plane_2026-11
 s_networks: $(NUMBERS_SEGMENT) d3_methods
+reconstruction: bf_jump_pullback
 
 $(filter-out r057_mri_facts_b,$(NUMBERS_MRI)):
 	$(PY_MRI) paper_numbers/$@.py
@@ -138,6 +139,10 @@ r057_mri_facts_b:
 histo_pixel_sizes_r057:
 	@if [ -z "$(LINC_RAW)" ]; then echo "SKIPPED histo_pixel_sizes_r057: set LINC_RAW (raw histology outside the release)"; \
 	else $(PY_TIRL) paper_numbers/$@.py; fi
+
+# the camera jump the reconstruction figure's panel (b) shows, registered again as the reconstruction's step 2 did (TIRL, a few minutes)
+bf_jump_pullback:
+	$(PY_TIRL) paper_numbers/$@.py
 
 $(filter-out d3p_vs_d3_pseudo_prod d3_domain_shift_prod,$(NUMBERS_COMPLETION) $(NUMBERS_SEGMENT) $(NUMBERS_GPU)):
 	$(PY_DEEP) paper_numbers/$@.py

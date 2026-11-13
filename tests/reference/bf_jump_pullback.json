@@ -1,0 +1,46 @@
+{
+ "data": {
+  "subject": "MR252",
+  "jump": [
+   494,
+   495
+  ],
+  "frame_shape_px": [
+   2992,
+   4272
+  ],
+  "pad_px": 200,
+  "pixel_mm": 0.02,
+  "pullback_rowcol_affine": [
+   [
+    0.9946040798423891,
+    0.03375513715773307,
+    207.9816102348155
+   ],
+   [
+    -0.033882741883020234,
+    0.9958907580634437,
+    49.16001895299303
+   ]
+  ],
+  "affine_fit_max_residual_px": 0.0,
+  "rotation_deg": -1.946,
+  "scale": [
+   0.99647,
+   0.99518
+  ],
+  "check": {
+   "masks_dice": {
+    "as_taken": 0.7726,
+    "corrected": 0.9949,
+    "stack_of_record": 0.9948
+   },
+   "centroid_step_mm": {
+    "as_taken": 5.333,
+    "corrected": 0.037,
+    "stack_of_record": 0.032
+   }
+  },
+  "note": "pullback_rowcol_affine maps a pixel (row, col) of the padded upright frame of the sections after the jump to the frame of the sections up to it: every section up to the jump is sampled there (register_jumps' band, without the later jumps the reconstruction composes on every section of this stretch alike)"
+ }
+}
