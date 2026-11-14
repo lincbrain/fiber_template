@@ -21,6 +21,7 @@ tracer_template_demons: labels/tracer_template_current_demons   # tracer labels 
 mri_runs: mri/tc                                      # construction runs (rb_*, mmsym_model_dti_v) and evaluator outputs (crossmodal_*.json)
 crossmodal_cache: mri/data/_crossmodal_rebuild        # each input's images pushed through its construction warp (<arm>__<MOD>__<ID>.nii.gz)
 template_mri: template/mri                            # the MRI channels of record (linc_mri_*.nii.gz)
+template_bf: template/blockface                       # the blockface template's channel in the MRI template's frame (linc_bf_*.nii.gz; template/link/register.py blockface_in_mri)
 atlas_v2: mri/tc/atlas_v2                             # template <-> NMT v2 / INIA19 / CIVM-R mappings (score.json per atlas)
 curated_mri: data/_lcn_src/data/curated               # the photographed brains' own MRI (dwi_b0, dwi, msme)
 

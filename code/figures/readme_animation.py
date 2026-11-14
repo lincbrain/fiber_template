@@ -11,8 +11,9 @@ are shown inside the template's brain mask; T2-weighted and b0 are normalized to
 Frames: coronal planes 0.75 mm apart (3 voxels of the 0.25 mm grid) through the brain mask's front-to-back extent, front to back,
 then a clean restart (84 frames). 10 frames per second, the first and last held 0.6 s. Each panel is the union of the brain and
 blockface masks' coronal extent (+ 0.5 mm), the same in every frame, at one print scale (960 px wide: about 295 px per panel);
-neurological orientation (L and R once, beside the first row). Each title centered over its panel. Below the grid, centered under
-it, one 10 mm bar, 6 mm of space and a running "y = ... mm" counter (NMT v2), in a strip CLEAR_MM (1.5 mm) under the tiles, so
+neurological orientation (L and R once, beside the grid at the middle of its two rows, the titles included and the strip below
+not: one pair for the whole grid, which only this animation does; the paper figures keep one pair per row). Each title centered
+over its panel. Below the grid, centered under it, one 10 mm bar, 6 mm of space and a running "y = ... mm" counter (NMT v2), in a strip CLEAR_MM (1.5 mm) under the tiles, so
 every frame's tissue keeps that from them. (0.5 mm steps make a 10.4 MB GIF, 1 mm steps 5.2 MB; 0.75 mm: 6.9 MB.)
 Reads <tree>/template/outputs/template_{T2w,b0,DEC,soma_fraction,neurite_fraction,blockface_rgb,blockface_mask,brain_mask}.nii.gz.
 Writes the GIF: one 256-color palette for every frame, 128 of its colors for the tensor panel and 48 for the blockface (palette()),
@@ -77,7 +78,7 @@ def render(tree, width=960, step_mm=STEP_MM):
     r0, r1, c0, c1 = max(rr[0] - p, 0), min(rr[-1] + 1 + p, proj.shape[0]), max(cc[0] - p, 0), min(cc[-1] + 1 + p, proj.shape[1])
     w_mm, h_mm = (c1 - c0) * vx, (r1 - r0) * vx
     ctext = lambda y: f"y = {y:.1f} mm".replace("-", "\u2212")     # noqa: E731  the counter, with a true minus sign
-    # layout (mm): NCOL columns, the letters outside the first row, one gutter between the panels and between the rows (below a
+    # layout (mm): NCOL columns, the letters beside the grid, one gutter between the panels and between the rows (below a
     # row's lowest panel edge to the next row's titles), the titles 2 pt above each panel; below the grid, a strip CLEAR_MM under the
     # tiles (so the tissue, inside each tile, keeps at least that) with the bar, BAR_GAP_MM of space and the counter, centered
     W = S.FULL_W_IN * 25.4; pt = 25.4 / 72
@@ -107,7 +108,8 @@ def render(tree, width=960, step_mm=STEP_MM):
             ims[key] = ax.imshow(np.full((r1 - r0, c1 - c0), np.nan), cmap=cm, vmin=0, vmax=1, interpolation="antialiased")
         ax.annotate(title, xy=(0.5, 1), xycoords="axes fraction", xytext=(0, 2), textcoords="offset points", ha="center", va="bottom",
                     fontsize=S.MIN_PT, color=S.FG, annotation_clip=False)              # each title centered over its panel
-    S.dirs_row(axes[CH[0][0]], axes[CH[NCOL - 1][0]], "coronal")                    # L and R once, beside the first row
+    mid = (S.MARGIN_MM + tops[-1] + ph) / 2                 # the grid's middle (mm from the top): the titles' top to the last row's edge
+    S.dirs_row(axes[CH[0][0]], axes[CH[NCOL - 1][0]], "coronal", y=1 - (mid - tops[0]) / ph)   # L and R once, at the grid's middle
     x0 = W / 2 - (pair_w + BAR_GAP_MM + cw) / 2                                     # bar, space, counter: centered under the grid
     S.scalebar_mm(fig, x0, strip + pair_h - 0.6 * pt, BAR_MM, scale, panels=False)
     counter = fig.text((x0 + pair_w + BAR_GAP_MM) / W, 1 - (strip + pair_h / 2) / H, "", ha="left", va="center", fontsize=S.MIN_PT,
