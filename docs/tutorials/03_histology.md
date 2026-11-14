@@ -26,7 +26,7 @@ Labels drawn on the sections, such as tracer charts or the LGN and STN, follow t
 |---|---|---|
 | `mr243LY_c18_s<NN>nDF.jp2` | `brains/sub-MR243/inputs/histology/sections/` | the 76 sections, in cutting order, as JPEG 2000 (42 GB); dark field; `ASCII_files/` holds the chart tracings |
 | `<class>.ome.zarr` | `brains/sub-MR243/inputs/histology/tracer_annotations/` | the tracer labels drawn from the charts, one store per class: bundles and terminal fields by density, the injection site, single fibers, the tissue outline |
-| `MR243_section_match.txt` | `brains/sub-MR243/inputs/manual_annotations/` | the match table, made by hand: which photograph each section's components go with |
+| `MR243_section_match.txt` | `brains/sub-MR243/inputs/manual_annotations/` | the match table, made manually: which photograph each section's components go with |
 | `sub-MR243_histo_L6.nii.gz` and `_lhLGN`, `_rhLGN`, `_lhSTN`, `_rhSTN` | `brains/sub-MR243/inputs/manual_annotations/` | the histology stack the LGN and STN were drawn on, and the four drawings |
 | `MR243_blockface.ome.zarr` | `brains/sub-MR243/intermediate/volume/` | the blockface volume in cutting order, which the histology steps read (02) |
 | `MR243_regions_t2.nii.gz`, `.tsv` | `brains/sub-MR243/intermediate/histology/` | the regions volume on the blockface: 1 left, 2 right, 3 cerebellum and brainstem, 4 marker tubes (step A makes it) |
@@ -91,7 +91,7 @@ cp $H/match_table_proposed.txt $H/match_table_edited.txt      # correct the numb
 
 Every later step uses, in this order: a table given with `--table`, `match_table_edited.txt`, `match_table.txt`, `match_table_proposed.txt`. Each step prints which one it used.
 
-On the five brains with hand-made tables, the proposal put 28 of 319 kept components more than one section away from the hand-made table, and flagged 20 of the 33 components that were farthest off. On MR243: 2 of 91 kept components more than one section off, and its 3 large disagreements were all flagged.
+On the five brains with manually made tables, the proposal put 28 of 319 kept components more than one section away from the manually made table, and flagged 20 of the 33 components that were farthest off. On MR243: 2 of 91 kept components more than one section off, and its 3 large disagreements were all flagged.
 So the flags set the order of the review; they do not replace it.
 
 ### Step C. The registration
@@ -101,7 +101,7 @@ $PY_TIRL code/histology/linc-histology all --subject <ID> --store $STORE --threa
     --histology <sections folder> --regions $H/regions.nii.gz --out $H/registration
 ```
 
-For MR243 on the paper's data: `$PY run.py --run --only histology-MR243`, which uses MR243's hand-made match table and checks every section against the paper's.
+For MR243 on the paper's data: `$PY run.py --run --only histology-MR243`, which uses MR243's manually made match table and checks every section against the paper's.
 
 - **What it does:** runs, for each section: `match` (the photograph of each component), `pieces` (each photograph divided into the section's components by the regions volume), `masks` (each histology component's tissue mask), `prepare` (TIRL's moving and fixed images, on one pixel grid: half the blockface slice's pixel, 0.040 mm for MR243), `register` (TIRL: rotation, rigid, affine, nonlinear) and `rgb` (the registered sections in color).
   The nonlinear stage is stiffer for components that already fit well: a component whose tissue Dice coefficient after the affine stage is at least 0.85 takes a regularization weight of 0.45, the others 0.30.

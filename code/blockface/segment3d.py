@@ -12,7 +12,7 @@ What it does
   The two rules are mask_rules.largest_cc_fill and tube_rule, applied once here.
 You get
   curated/<S>_bg (the mask network's input), curated/<S>_mask and curated/<S>_holes on the curated grid. They are a starting point:
-  a hand correction saved as <S>_mask_edited or <S>_holes_edited wins in the reconstruction, and is never overwritten here.
+  a manual correction saved as <S>_mask_edited or <S>_holes_edited wins in the reconstruction, and is never overwritten here.
 
 Ported unchanged from the analysis project's code/segment.py; parameters from settings/blockface.yaml `volume_segmentation`.
 """
@@ -99,13 +99,13 @@ def prep_mask(cfg):
 
 def post_mask(cfg):
     """Post-process the Dataset506 prediction (largest 3D CC + fill) and write it as the AUTO brain mask on
-    the curated grid. Does NOT overwrite a hand <S>_mask_edited.nii.gz (that wins in reconstruction)."""
+    the curated grid. Does NOT overwrite a manual <S>_mask_edited.nii.gz (that wins in reconstruction)."""
     pred = os.path.join(cfg.seg3d_dir, "out", f"{cfg.subject}.nii.gz")
     ref = nib.load(cfg.curated_bg)                                            # grid + affine authority
     out, removed = _largest_cc_fill(np.asanyarray(nib.load(pred).dataobj))
     assert out.shape == ref.shape[:3], (out.shape, ref.shape)
     nib.save(nib.Nifti1Image(out.astype(np.uint8), ref.affine), cfg.mask_model)
-    note = " (NB: hand _mask_edited present -> it WINS in reconstruction)" if os.path.exists(cfg.mask_edited) else ""
+    note = " (NB: manual _mask_edited present -> it WINS in reconstruction)" if os.path.exists(cfg.mask_edited) else ""
     print(f"  {cfg.subject}: brain mask -> {os.path.basename(cfg.mask_model)} fg={int(out.sum())} "
           f"(largest-CC dropped {removed:.2f}%){note}")
 
@@ -130,13 +130,13 @@ def post_holes(cfg):
     """Post-process the Dataset508 prediction: LEFT-hemisphere constraint (holes are always anatomical-left;
     +X = Right, so drop predictions at/right of the brain X-centroid + tol), clamp to brain, drop specks
     < HOLES_MINVOX (each tube is its own component - NO keep-largest/fill). Padded back to the uncropped
-    curated grid and written as the AUTO holes. A hand <S>_holes_edited.nii.gz wins in reconstruction."""
+    curated grid and written as the AUTO holes. A manual <S>_holes_edited.nii.gz wins in reconstruction."""
     pred = os.path.join(cfg.seg3d_dir, "out", f"{cfg.subject}.nii.gz")
     P = np.asanyarray(nib.load(pred).dataobj) > 0                             # tight-crop, 0.40mm-z
     _, _, i0, i1, j0, j1, _ = curate._info(cfg)
     # MUST be curated_mask (edited-wins), not mask_model: <S>.info's i0/i1/j0/j1 were produced by
     # reconstruct's crop, which used curated_mask. Preferring mask_model here made `brain` disagree
-    # with the crop that produced P whenever a hand _mask_edited existed (7/17 subjects).
+    # with the crop that produced P whenever a manual _mask_edited existed (7/17 subjects).
     mp = cfg.curated_mask
     mim = nib.load(mp); Mfull = np.asanyarray(mim.dataobj) > 0                # uncropped curated grid
     assert (i1 - i0, j1 - j0) == (P.shape[0], P.shape[2]), (P.shape, (i1 - i0, j1 - j0))
@@ -147,6 +147,6 @@ def post_holes(cfg):
     full = np.zeros(Mfull.shape, np.uint8)                                   # pad tight -> uncropped grid
     full[i0:i1, :zc, j0:j1] = keep.astype(np.uint8)
     nib.save(nib.Nifti1Image(full, mim.affine), cfg.holes_model)
-    note = " (NB: hand _holes_edited present -> it WINS)" if os.path.exists(cfg.holes_edited) else ""
+    note = " (NB: manual _holes_edited present -> it WINS)" if os.path.exists(cfg.holes_edited) else ""
     print(f"  {cfg.subject}: {ntubes} tubes, {int(full.sum())} vox -> "
           f"{os.path.basename(cfg.holes_model)} (dropped {rdrop} right-side, {specks} specks){note}")

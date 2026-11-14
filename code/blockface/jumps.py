@@ -2,7 +2,7 @@
 (Methods, "Blockface reconstruction", second step).
 
 You need
-  the raw and mask stacks (_work/blockface_raw.ome.zarr, _work/brainmask.ome.zarr, photos.py), the jumps listed by hand
+  the raw and mask stacks (_work/blockface_raw.ome.zarr, _work/brainmask.ome.zarr, photos.py), the jumps listed manually
   (settings/brains/<ID>.yaml `jumps`: before, after) and TIRL (external.py).
 What it does
   Each jump is corrected by a 2D TIRL registration of the masked frames on either side of it (rotation, rigid, affine;

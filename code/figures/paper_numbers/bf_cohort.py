@@ -12,7 +12,7 @@ What it does
   settings/brains/<ID>.yaml      vx, vz, rotate180, jumps, missing, jump_mode, the raw photographs' folder and pattern
   <ID>.info                       native sections, output sections, interpolated sections, exposure steps, tube voxels, L1 shape,
                                   orientation correlation (written by the reconstruction)
-  curated/                        the hand-corrected mask and tubes (the _edited files)
+  curated/                        the manually corrected mask and tubes (the _edited files)
   <ID>_holes.nii.gz               the number of marker tubes (3D connected components >= 3 voxels on the L4 grid)
   the raw photographs             the photograph count, zero-byte JPEGs (data lost at acquisition)
   mri/<ID>_mri.info, the b0       the MRI used for the registration to the brain's own MRI (b0), its voxel size, whether a T2 exists
@@ -148,8 +148,8 @@ def main():
             output_slices=int(inf.get("z_out", 0) or 0), jumps=len(c["jumps"]), jump_mode=c.get("jump_mode", "affine"),
             missing_intervals=len(c["missing"]), interpolated_sections=len(interp),
             exposure_steps=len(ints(inf.get("intensity_steps", ""))), hole_voxels=int(inf.get("hole_voxels", 0) or 0),
-            hole_tubes_L4=ntubes, mask_hand_curated=(cur / f"{S}_mask_edited.nii.gz").exists(),
-            holes_hand_curated=(cur / f"{S}_holes_edited.nii.gz").exists(),
+            hole_tubes_L4=ntubes, mask_manually_edited=(cur / f"{S}_mask_edited.nii.gz").exists(),
+            holes_manually_edited=(cur / f"{S}_holes_edited.nii.gz").exists(),
             L1_shape=inf.get("L1_shape"), orient_corr=float(inf["orient_corr"]) if "orient_corr" in inf else None,
             mri=mri_mod, mri_voxel_mm=mri_vox,
             mri_tier=(f"{mri_vox:g} mm b0" + (" + T2" if t2 else "")) if mri_mod and mri_vox else None,

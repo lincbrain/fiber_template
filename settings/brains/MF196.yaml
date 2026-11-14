@@ -1,5 +1,5 @@
 # MF196: the per-brain inputs of its blockface reconstruction, as used for the paper (from the analysis project's
-# code/config.py + code/macaque_datasets.xlsx). Hand inputs: spacing (vx, vz um), camera jumps, missing sections and the
+# code/config.py + code/macaque_datasets.xlsx). Manual inputs: spacing (vx, vz um), camera jumps, missing sections and the
 # caudal cutoff (see code/blockface/subject.py). `raw` is relative to $LINC_RAW.
 subject: MF196
 raw: blockface_segmentation/MF196_Photos
@@ -23,7 +23,7 @@ jump_mode: affine
 # reconstruction_spacing_um: the pixel size and section step the volume was REBUILT at (its pixels depend on them, e.g. the
 # intensity smoothing width in sections); vx/vz above are the calibrated spacing written into the headers afterwards by a
 # header-only rescaling about the world origin (code/blockface/spacing.py; pixels unchanged). Equal for a new brain.
-# curation_f: native sections per curated (0.40 mm) slice of the hand-edit grid, pinned at the reconstruction spacing.
+# curation_f: native sections per curated (0.40 mm) slice of the manual-edit grid, pinned at the reconstruction spacing.
 reconstruction_spacing_um: {vx: 21.49, vz: 600}
 curation_f: 1
 # series_alignment: this brain's photographs were aligned to its external, already aligned series (a rescue step; the fit
@@ -34,17 +34,17 @@ series_alignment:
   frame_shape_px:
   - 2932
   - 3528
-# masks_of_record: the masks this brain's reconstruction of record used, and which of them were corrected by hand (paths
-# relative to sub-<ID>/blockface/). A hand-edited curated file wins over the 3D models' outputs in linc-reconstruct.
+# masks_of_record: the masks this brain's reconstruction of record used, and which of them were manually corrected (paths
+# relative to sub-<ID>/blockface/). A manually edited curated file wins over the 3D models' outputs in linc-reconstruct.
 masks_of_record:
   photo_masks_2d:
     folder: 01_final_prealign
-    hand_edited: true
-    note: the 2D model's output with 55 sections corrected by hand, on the original photographs; 01_brainmask/01_final holds
+    manually_edited: true
+    note: the 2D model's output with 55 sections manually corrected, on the original photographs; 01_brainmask/01_final holds
       them warped with the photographs into the external series' frame
   brain_mask_3d:
     file: curated/MF196_mask_edited.nii.gz
-    hand_edited: true
+    manually_edited: true
   tubes_3d:
     file: curated/MF196_holes_edited.nii.gz
-    hand_edited: true
+    manually_edited: true

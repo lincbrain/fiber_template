@@ -8,7 +8,7 @@
 #   For each brain (default MR252 MF191, the walkthrough brains) it re-creates $LINC_RECORDS/data/sub-<ID>/ under <dest>/data as
 #   real folders of yours, with every file inside a link to the record (an OME-Zarr store is one link). Safe to rerun: what exists
 #   is left alone, missing parts are added; nothing is deleted or overwritten.
-#   --rebuild ID          for a brain you will reconstruct yourself: blockface/ gets only the hand inputs, as copies
+#   --rebuild ID          for a brain you will reconstruct yourself: blockface/ gets only the manual inputs, as copies
 #                         (curated/<ID>_mask_edited.nii.gz and _holes_edited.nii.gz, 01_brainmask/01_final/ (MF8 / MF9: the
 #                         masks from before their series alignment), and for MF8 / MF9 the recorded series alignment that
 #                         settings/brains/<ID>.yaml series_alignment names; for MR254 the earlier mask its reconstruction_mask
@@ -16,7 +16,7 @@
 #   --raw NAME=PATH       <dest>/raw/NAME links to PATH (the photographs, the MRI and histology sources)
 #   --link ID:PATH=TARGET <dest>/data/sub-ID/PATH links to TARGET (an input of record kept outside data/sub-ID, e.g. the label
 #                         steps' histology/annotations, section_map.tsv, match_table.txt)
-#   --copy ID:PATH=SOURCE <dest>/data/sub-ID/PATH is a copy of SOURCE (a hand-made input, e.g. a brain's masks for the MRI build)
+#   --copy ID:PATH=SOURCE <dest>/data/sub-ID/PATH is a copy of SOURCE (a manually made input, e.g. a brain's masks for the MRI build)
 # You get
 #   <dest>/data/sub-<ID>/  (point LINC_DATA here)      blockface/, mri/, histology/, labels/ as above; xfm/ (the registry your
 #                          runs write) EMPTY; xfm_record/ the registry entries of record (the blockface-to-b0 registration; for a
@@ -96,9 +96,9 @@ for S in "${IDS[@]}"; do
   if [ -d "$src/xfm_member" ]; then       # a brain without MRI: its route through the template it helped build (construction warp, rigid placement)
     for e in "$src/xfm_member"/*/; do e=${e%/}; farm "$e" "$dst/xfm_record/$(basename "$e")" xfm; done
   fi
-  if is_rebuild "$S"; then                # the hand inputs only, as copies (linc-reconstruct writes the rest)
+  if is_rebuild "$S"; then                # the manual inputs only, as copies (linc-reconstruct writes the rest)
     mkdir -p "$dst/blockface/curated" "$dst/blockface/01_brainmask/01_final"
-    for k in mask holes; do                # the hand edits the reconstruction reads (curated/<ID>_mask_edited, _holes_edited)
+    for k in mask holes; do                # the manual edits the reconstruction reads (curated/<ID>_mask_edited, _holes_edited)
       f="$src/blockface/curated/${S}_${k}_edited.nii.gz"; [ -e "$f" ] && copy "$f" "$dst/blockface/curated/$(basename "$f")"
     done
     rm0=$(sed -n 's/^reconstruction_mask: *\([^ #]*\).*/\1/p' "$REPO/settings/brains/$S.yaml" 2>/dev/null | head -1)
@@ -115,7 +115,7 @@ for S in "${IDS[@]}"; do
   else
     farm "$src/blockface" "$dst/blockface"
   fi
-  echo "sub-$S: $( is_rebuild "$S" && echo "rebuild (hand inputs copied)" || echo "products of record linked" )"
+  echo "sub-$S: $( is_rebuild "$S" && echo "rebuild (manual inputs copied)" || echo "products of record linked" )"
 done
 for e in "$REC/template"/*; do link "$e" "$DEST/template/$(basename "$e")"; done
 link "$REC/template/mri_template_0p5.nii.gz" "$DEST/template/frames/mri_template_0p5.nii.gz"

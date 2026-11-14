@@ -85,7 +85,7 @@ prep:
     frac2: micro/frac2_brain_norm.nii.gz
     micro_mask: masks/micro_brain_mask.nii.gz
     # the build driver's inputs (code/template/build_mri_channels.py; added 3 Nov 2026, the names above unchanged):
-    final_mask: masks/final_brain_mask.nii.gz   # the final hand-edited brain mask on the b0 grid, values {0, 1} (<ID>_mask_EDIT of the data release)
+    final_mask: masks/final_brain_mask.nii.gz   # the final manually edited brain mask on the b0 grid, values {0, 1} (<ID>_mask_EDIT of the data release)
     sarm_in_subject: landmarks/SARM6_in_subject.nii.gz   # SARM level-6 labels carried onto the b0 grid (NMT registered to the b0)
     nmt_affine: landmarks/nmt_affine_0GenericAffine.mat  # the subject -> NMT_v2.0_sym ITK affine of that registration
     dwi_eddy: dwi/raw/dwi_eddycorrect.nii.gz    # the D9 tensor's inputs: the denoised, eddy_correct-ed series (all volumes) and its log

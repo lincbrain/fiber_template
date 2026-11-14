@@ -51,7 +51,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF275/dtifit_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "ff381c0503b29d762db45067f3c408f2"
   },
   {
@@ -64,7 +64,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF275/msme_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "6ed3d7847c4c2181b5c702a8e91332bf"
   },
   {
@@ -77,7 +77,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF275/msme_brain_mask.nii.gz",
    "counted": false,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "6ed3d7847c4c2181b5c702a8e91332bf"
   },
   {
@@ -90,7 +90,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF277/dtifit_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "389d18b85f30d3914a71e59bd1bf37a8"
   },
   {
@@ -103,7 +103,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF277/msme_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "43b0f62b7ddeed5974e862095a9d3175"
   },
   {
@@ -116,7 +116,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF277/msme_brain_mask.nii.gz",
    "counted": false,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "43b0f62b7ddeed5974e862095a9d3175"
   },
   {
@@ -129,7 +129,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF278/dtifit_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "fe235954b9b414ba48bdc32978c1ebff"
   },
   {
@@ -142,7 +142,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF278/msme_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "86d99aa47a3b18aff499df730e08d9c1"
   },
   {
@@ -155,7 +155,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF278/msme_brain_mask.nii.gz",
    "counted": false,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "86d99aa47a3b18aff499df730e08d9c1"
   },
   {
@@ -168,7 +168,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF281/dtifit_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "a7dc83e89c2e45aec96c59fde5ce28ae"
   },
   {
@@ -181,7 +181,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF281/msme_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "7c4f551961f69183315da75f82450c31"
   },
   {
@@ -194,7 +194,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF281/msme_brain_mask.nii.gz",
    "counted": false,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "7c4f551961f69183315da75f82450c31"
   },
   {
@@ -207,7 +207,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF282/dtifit_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "cad6c8c2643a4d44d12e7c149b9645e0"
   },
   {
@@ -220,7 +220,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF282/msme_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "d454e894e4d3a00dfbe41cb1385f0ffb"
   },
   {
@@ -233,7 +233,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF282/msme_brain_mask.nii.gz",
    "counted": false,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "d454e894e4d3a00dfbe41cb1385f0ffb"
   },
   {
@@ -259,7 +259,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF283/msme_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "3b6abaed145eb568573b370bc273d349"
   },
   {
@@ -272,7 +272,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF283/msme_brain_mask.nii.gz",
    "counted": false,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "3b6abaed145eb568573b370bc273d349"
   },
   {
@@ -285,7 +285,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF283/microstructure/fracs_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "2075872748c5d1141dee795f3f78d216"
   },
   {
@@ -311,7 +311,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF284/msme_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "afddbff42cbee3dadc8194e565c3b385"
   },
   {
@@ -324,7 +324,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF284/msme_brain_mask.nii.gz",
    "counted": false,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "afddbff42cbee3dadc8194e565c3b385"
   },
   {
@@ -337,7 +337,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF284/microstructure/fracs_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "9d293f5bbc11dc42cb858fbda806aa59"
   },
   {
@@ -363,7 +363,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF285/msme_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "094108c9afc1371b822aa4b99baaa607"
   },
   {
@@ -376,7 +376,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF285/msme_brain_mask.nii.gz",
    "counted": false,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "094108c9afc1371b822aa4b99baaa607"
   },
   {
@@ -389,7 +389,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF285/microstructure/fracs_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "2acfde8cc11ba7df01a2bc3022f9bad3"
   },
   {
@@ -415,7 +415,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF286/msme_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "108a501b3be412f7fc04283c96bf1df7"
   },
   {
@@ -428,7 +428,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF286/msme_brain_mask.nii.gz",
    "counted": false,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "108a501b3be412f7fc04283c96bf1df7"
   },
   {
@@ -441,7 +441,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MF286/microstructure/fracs_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "3343a3c4116f08984d41047625f9b7f1"
   },
   {
@@ -454,7 +454,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MN276/msme_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "a425c99eb26f7e12c22bb72cc5a46ec5"
   },
   {
@@ -467,7 +467,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR243/dtifit_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.7,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "9690e2905067f4a1fdd1cb5f688f2107"
   },
   {
@@ -480,7 +480,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR249/dtifit_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.7,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "fd04d95e1b637b050f926b253cfdd854"
   },
   {
@@ -493,7 +493,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR250/dtifit_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.7,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "3f49376de730d1b4d550c51f3b674103"
   },
   {
@@ -506,7 +506,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR251/dtifit_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.7,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "919a20883dcf4eb2c7b88932fe8413e6"
   },
   {
@@ -519,7 +519,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR252/dtifit_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.7,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "df87ff231faa83ddf5c607dc68369116"
   },
   {
@@ -532,7 +532,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR253/dtifit_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.7,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "8adf25420528634cf61254ccdfeb9365"
   },
   {
@@ -558,7 +558,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR256/dtifit_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.7,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "821a9753a4075dba049349c7e287bfcb"
   },
   {
@@ -584,7 +584,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR259/dtifit_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.7,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "230de0cb09babc830800c4979d4353df"
   },
   {
@@ -597,7 +597,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR261/dtifit_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.7,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "e65aec81536dcec7edd8987e7341d0ec"
   },
   {
@@ -610,7 +610,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR292/dtifit_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "4592b3e2955a7f44b303c4c55766fbb4"
   },
   {
@@ -623,7 +623,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR292/msme_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "6f0f524021463f11e69c16ee3fc11fa2"
   },
   {
@@ -636,7 +636,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR293/dtifit_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "09b4cd3226161006c81c07c6ec684388"
   },
   {
@@ -649,7 +649,7 @@
    "label": "$LINC_PRODUCTS/data/_lcn_src/data/curated/MR293/msme_brain_mask.nii.gz",
    "counted": true,
    "mm": 0.5,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "64e1e239a29e2fc5b4fb09846b7da0ee"
   }
  ],

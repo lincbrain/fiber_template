@@ -33,7 +33,7 @@ The upstream preprocessing (denoising, eddy-current and motion correction, the f
 | `MF283_tensor_dwi_eddycorrect.nii.gz`, `.ecclog`, `MF283_tensor.bval`, `.bvec`, `MF283_tensor_fit_mask.nii.gz` | `brains/sub-MF283/inputs/mri/` | the same series before the bias correction, its motion-correction matrices, b-values and b-vectors, and the tensor fit's mask; the tensor is fitted on these |
 | `MF283_t2_msme_denoised.nii.gz` | `brains/sub-MF283/inputs/mri/` | the 0.5 mm multi-echo spin-echo series (32 echoes, 6 ms apart), denoised |
 | `MF283_micro_dwi_biascorr.nii.gz`, `MF283_micro_SANDI_fracs_mean.nii.gz`, `_std.nii.gz` | `brains/sub-MF283/inputs/mri/` | the 0.5 mm multi-shell series (184 volumes, b up to 43,000 s/mm²) and its SANDI fit: soma, neurite and dot fractions |
-| `MF283_tensor_brain_mask.nii.gz`, `_t2_brain_mask`, `_micro_brain_mask`, `_final_brain_mask` | `brains/sub-MF283/inputs/manual_annotations/` | the brain mask of each acquisition and the final one, each corrected by hand |
+| `MF283_tensor_brain_mask.nii.gz`, `_t2_brain_mask`, `_micro_brain_mask`, `_final_brain_mask` | `brains/sub-MF283/inputs/manual_annotations/` | the brain mask of each acquisition and the final one, each manually corrected |
 
 **A new brain** needs one b0 as NIfTI.
 The example is MR243's:
@@ -41,7 +41,7 @@ The example is MR243's:
 | File | Where in the data tree | What it is |
 |---|---|---|
 | `MR243_b0.nii.gz` | `brains/sub-MR243/inputs/mri/` | MR243's b0, 0.7 mm isotropic; already masked to the brain and bias-corrected when the collection was curated, so it has no background |
-| `MR243_b0_brain_mask.nii.gz` | `brains/sub-MR243/inputs/manual_annotations/` | its brain mask, corrected by hand |
+| `MR243_b0_brain_mask.nii.gz` | `brains/sub-MR243/inputs/manual_annotations/` | its brain mask, manually corrected |
 
 ![Coronal planes of MF283's T2-weighted image, FA and soma fraction, and of MR243's b0](figures/mri_02_input.png)
 
@@ -309,7 +309,7 @@ The canonical frame must be within 1 degree and a mean move of 0.5 mm of the pap
 |---|---|---|
 | `linc-mri prep` prints that N4 was skipped, and exits 0 | ANTs is not on the path; the step goes on without the bias correction, and the provenance file says "not found: skipped" | put ANTs 2.5.4 on the path (`settings/lab.sh` does it in the lab) and run the step again |
 | `linc-mri prep` stops: the mask is "not on the image's grid", or has values other than 0 and 1 | `--mask` must be on the b0's own grid, with only 0 and 1 | resample or binarize the mask onto the b0's grid first |
-| The mask from the network includes tissue outside the brain, or misses some | the network was trained on ex vivo b0 and T2-weighted images of this collection | correct the mask by hand, save it in `brains/sub-<ID>/inputs/manual_annotations/`, and rerun with `--mask` |
+| The mask from the network includes tissue outside the brain, or misses some | the network was trained on ex vivo b0 and T2-weighted images of this collection | correct the mask manually, save it in `brains/sub-<ID>/inputs/manual_annotations/`, and rerun with `--mask` |
 | Step B2 stops: the transform entry exists | a registration of this brain is already there | pass `--overwrite` (the old entry is backed up) or `--registry <folder>` |
 | The outline check fails anteriorly, the frontal pole pushed forward | the b0's mask included the olfactory bulbs or tracts, which the template's mask does not have, and they pulled the frontal cortex with them. This happened on two of the paper's brains during development | remove the bulbs and tracts from the b0's mask and run step B2 again |
 | `meta.json` shows `fallback_to_similarity: true` | the affine fit was rejected because it stretched the b0 too much (the ratio of its scales above 1.5); the registration then starts from the similarity transform. MR253, with the weakest b0 of the paper's brains, had a ratio of 1.80 | nothing: this is the rule working. Check the outline verdict as usual |

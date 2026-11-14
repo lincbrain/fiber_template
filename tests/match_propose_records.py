@@ -5,7 +5,7 @@
 
 You need
   $LINC_RECORDS (labels/match_tables, labels/regions_t2_final, the brains' stores and masks); the LINC histology dataset (--linc-dataset,
-  default $LINC_RAW/linc_000003); the folder of the five brains' hand-made tables (--hand-tables); settings/env/tirl.yml.
+  default $LINC_RAW/linc_000003); the folder of the five brains' manually made tables (--manual-tables); settings/env/tirl.yml.
 What it does
   rule      the 12 tables written by the rule of record, recomputed from the record's saved scores: run lines, floor and table writer.
   full      the same 12 tables from the command, on the release's inputs, row by row against the record.
@@ -13,8 +13,8 @@ What it does
             that one step.
   noise     the same as full at two threads per process: which rows change through the registrations' thread count alone.
   repeat    one brain twice at one thread per process: identical or not.
-  saved     the five brains with hand-made tables, from the record's saved fit of 20 Sep (an earlier variant, before the atlas regions
-            were the classes): 17 of 318 kept components more than one section from the hand-made table. The record counts 17 of 23 such
+  saved     the five brains with manually made tables, from the record's saved fit of 20 Sep (an earlier variant, before the atlas regions
+            were the classes): 17 of 318 kept components more than one section from the manually made table. The record counts 17 of 23 such
             components flagged in one file and 22 in the other; its pieces give 17 of 22.
   five      the same comparison from the command, and with the record's outline step in its place. Those tables are another person's
             choice, not a known truth, and "kept" leaves out the components the floor dropped.
@@ -48,7 +48,7 @@ RULE = {  # series: subject, spacing the record's rule ran at (um, section step)
     "MF204": ("MF204", 810.0), "MR244": ("MR244", 400.0), "MR253": ("MR253", 50.0), "MR254": ("MR254", 50.0),
     "MR257": ("MR257", 50.0), "MR263": ("MR263", 50.0), "MR273_FR": ("MR273", 50.0), "MR273_FS": ("MR273", 50.0)}
 FIVE = {"MR243": 400.0, "MR252": 50.0, "MR256": 50.0, "MF278": 50.0, "MF275": 50.0}
-HAND_COLUMN = {"whole": 0, "left": 1, "right": 2, "cere": 3}
+MANUAL_COLUMN = {"whole": 0, "left": 1, "right": 2, "cere": 3}
 
 
 def subject_cfg(S):
@@ -210,10 +210,10 @@ def part_repeat(a, rec, dataset, T="MF204"):
                 review_identical=filecmp.cmp(r1 / PR.REVIEW, r2 / PR.REVIEW, shallow=False))
 
 
-def score_against_hand(rows, S, vz, hand, cfg):
-    """rows: [(section, component, photograph on the run line, score, flagged)]. As on record: a component's hand-made photograph is its
+def score_against_manual(rows, S, vz, manual, cfg):
+    """rows: [(section, component, photograph on the run line, score, flagged)]. As on record: a component's manually made photograph is its
     own column, else the section's first filled column; error in mm at the nominal step."""
-    look = M.match_table(f"{hand}/num_{S}.txt", cfg)
+    look = M.match_table(f"{manual}/num_{S}.txt", cfg)
     i0 = subject_cfg(S)["idx_range"][0]
     floor = cfg["propose"]["score_floor"]
     kept, dropped, big, big_flagged, n, flagged = [], [], 0, 0, 0, 0
@@ -221,9 +221,9 @@ def score_against_hand(rows, S, vz, hand, cfg):
         n += 1
         flagged += bool(flag)
         ref = look(sec)
-        c = ref[HAND_COLUMN[comp]]
+        c = ref[MANUAL_COLUMN[comp]]
         if c == -1:
-            c = next((ref[HAND_COLUMN[k]] for k in ("left", "right", "whole", "cere") if ref[HAND_COLUMN[k]] != -1), -1)
+            c = next((ref[MANUAL_COLUMN[k]] for k in ("left", "right", "whole", "cere") if ref[MANUAL_COLUMN[k]] != -1), -1)
         if c == -1 or line is None:
             continue
         err = abs(line - c) * vz / 1000.0
@@ -241,7 +241,7 @@ def pooled(per):
     return {k: int(sum(v[k] for v in per.values())) for k in keys}
 
 
-def part_saved(rec, hand):
+def part_saved(rec, manual):
     cfg = M.config()
     per = {}
     names = {"bottom": "cere"}
@@ -250,12 +250,12 @@ def part_saved(rec, hand):
         i0 = subject_cfg(S)["idx_range"][0]
         rows = [(p["section"], names.get(p["cls"], p["cls"]), None if p.get("idx") is None else p["idx"] + i0, p.get("score"), bool(p.get("flags")))
                 for p in f["pieces"]]
-        per[S] = score_against_hand(rows, S, vz, hand, cfg)
+        per[S] = score_against_manual(rows, S, vz, manual, cfg)
     return dict(pooled=pooled(per), per_brain=per, note="from the record's saved fit (20 Sep 2026): a 2D network's partition with whole "
                 "components corrected by a 3D regions model, not yet the atlas regions as the classes")
 
 
-def part_five(a, rec, dataset, hand):
+def part_five(a, rec, dataset, manual):
     import csv
     cfg = M.config()
     per, per_rec = {}, {}
@@ -270,15 +270,15 @@ def part_five(a, rec, dataset, hand):
         for r in csv.DictReader(open(h / PR.REVIEW)):
             line = int(r["run_line_photograph"]) if r["run_line_photograph"] else None
             rows.append((int(r["section"]), r["component"], line, float(r["score"]) if r["score"] else None, bool(r["flag"])))
-        per[S] = dict(score_against_hand(rows, S, vz, hand, cfg), wall_s=wall, peak_gb_main_process=gb)
+        per[S] = dict(score_against_manual(rows, S, vz, manual, cfg), wall_s=wall, peak_gb_main_process=gb)
         slices, comps, step = inputs_of(S, S, a0, rec, reg, made, dataset, cfg)
         Q = with_record_outlines(PR.outline_fit(comps, slices, a0, cfg), comps, slices, a0, vx, record_pieces(S, rec), a.jobs, cfg)
         PR.run_lines(Q, a0, step, cfg)
-        per_rec[S] = score_against_hand([(p["section"], PR.COMPONENT[p["cls"]], None if p.get("idx") is None else p["idx"] + sc["idx_range"][0],
-                                          p.get("score"), bool(p["flags"])) for p in Q], S, vz, hand, cfg)
+        per_rec[S] = score_against_manual([(p["section"], PR.COMPONENT[p["cls"]], None if p.get("idx") is None else p["idx"] + sc["idx_range"][0],
+                                          p.get("score"), bool(p["flags"])) for p in Q], S, vz, manual, cfg)
         print(f"{S}: {json.dumps(per[S])}\n  with the record's outline step: {json.dumps(per_rec[S])}", flush=True)
     return dict(pooled=pooled(per), per_brain=per, with_record_outlines=dict(pooled=pooled(per_rec), per_brain=per_rec),
-                note="compared with one person's hand-made tables, not with a known truth; kept excludes the components the floor dropped")
+                note="compared with one person's manually made tables, not with a known truth; kept excludes the components the floor dropped")
 
 
 def part_edited(a, rec, dataset, T="MF191"):
@@ -325,7 +325,7 @@ def part_edited(a, rec, dataset, T="MF191"):
     before = edited.read_text()
     run_command(T, S, a, rec, w, a0, vx, reg, made, dataset)
     return dict(series=T, section=section, proposed_photograph=old, edited_photograph=new, uses_proposal_first="unreviewed proposal" in said_prop,
-                edited_used="edited by hand" in said_edit, edited_photo_differs=photo_edit != photo_prop, table_flag_wins="(given)" in said_table,
+                edited_used="manually edited" in said_edit, edited_photo_differs=photo_edit != photo_prop, table_flag_wins="(given)" in said_table,
                 table_photo_equals_proposal=photo_table == photo_prop, edited_file_survives_rerun=edited.read_text() == before,
                 said=[x.replace(str(w), "<work>") for x in (said_prop, said_edit, said_table)])
 
@@ -336,13 +336,13 @@ def main():
     ap.add_argument("--jobs", type=int, default=8)
     ap.add_argument("--parts", default="rule,full,repeat,saved,five,edited")
     ap.add_argument("--linc-dataset", default=None)
-    ap.add_argument("--hand-tables", help="the folder of the five brains' hand-made num_<ID>.txt (parts saved and five)")
+    ap.add_argument("--manual-tables", help="the folder of the five brains' manually made num_<ID>.txt (parts saved and five)")
     ap.add_argument("--json", default=str(REPO / "tests" / "match_propose_records.json"))
     a = ap.parse_args()
     rec = os.environ["LINC_RECORDS"]
     dataset = a.linc_dataset or os.path.join(os.environ["LINC_RAW"], "linc_000003")
-    if {"saved", "five"} & set(a.parts.split(",")) and not a.hand_tables:
-        sys.exit("parts saved and five need --hand-tables")
+    if {"saved", "five"} & set(a.parts.split(",")) and not a.manual_tables:
+        sys.exit("parts saved and five need --manual-tables")
     paths.refuse_records(a.work)
     if (os.path.realpath(a.work) + os.sep).startswith(os.path.realpath(rec) + os.sep):
         sys.exit("--work must be outside $LINC_RECORDS")
@@ -350,8 +350,8 @@ def main():
     for part in a.parts.split(","):
         t0 = time.time()
         res[part] = (part_rule(rec) if part == "rule" else part_full(a, rec, dataset) if part == "full" else
-                     part_repeat(a, rec, dataset) if part == "repeat" else part_saved(rec, a.hand_tables) if part == "saved" else
-                     part_five(a, rec, dataset, a.hand_tables) if part == "five" else part_edited(a, rec, dataset))
+                     part_repeat(a, rec, dataset) if part == "repeat" else part_saved(rec, a.manual_tables) if part == "saved" else
+                     part_five(a, rec, dataset, a.manual_tables) if part == "five" else part_edited(a, rec, dataset))
         print(f"=== {part} done in {time.time() - t0:.0f} s", flush=True)
         Path(a.json).write_text(json.dumps(res, indent=1))
     print(json.dumps({k: v for k, v in res.items() if k in ("repeat", "edited")}, indent=1))

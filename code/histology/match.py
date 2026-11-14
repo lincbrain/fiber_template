@@ -8,7 +8,7 @@ You need
       lower, upper, m_whole, a_whole, m_left, a_left, m_right, a_right, m_cere, a_cere
   and a section n with lower <= n <= upper ("inf" allowed as upper) matches photograph m * n + a for each component (-1: no match).
   Every step finds the table the same way (find_table): the path given by flag; else, in the brain's histology folder,
-  match_table_edited.txt (a copy of the proposal changed by hand), match_table.txt (a table put there), match_table_proposed.txt
+  match_table_edited.txt (a copy of the proposal changed manually), match_table.txt (a table put there), match_table_proposed.txt
   (linc-histology propose).
 What it does
   match_photos() reads, for every histology section, the reconstructed blockface section matched to each of its components,
@@ -57,7 +57,7 @@ def find_table(histology_dir, table=None):
         return str(table), f"{table} (given)"
     h = Path(histology_dir)
     if (h / EDITED).exists():
-        return str(h / EDITED), f"{h / EDITED} (edited by hand)"
+        return str(h / EDITED), f"{h / EDITED} (manually edited)"
     if (h / TABLE).exists():
         return str(h / TABLE), str(h / TABLE)
     if (h / PROPOSED).exists():

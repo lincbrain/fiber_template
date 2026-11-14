@@ -13,7 +13,7 @@ Everything that comes to you goes into the data folder as a copy, under `brains/
 | the blockface photographs | `inputs/photographs/` |
 | the MRI | `inputs/mri/` |
 | the histology sections and the labels drawn on them | `inputs/histology/` |
-| anything drawn or edited by hand | `inputs/manual_annotations/` |
+| anything drawn or edited manually | `inputs/manual_annotations/` |
 
 Then, from the top of the data folder:
 - give each folder a `README.txt` saying what it is a copy of;

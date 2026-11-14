@@ -2,7 +2,7 @@
 
 You need
   stage 3 (the jump-corrected _work stacks, nii/02_blockface_bg_L2: prepare.py) and the curated brain mask and marker tubes
-  (curated/: a hand-edited <S>_mask_edited or <S>_holes_edited wins over the models' <S>_mask, <S>_holes); parameters:
+  (curated/: a manually edited <S>_mask_edited or <S>_holes_edited wins over the models' <S>_mask, <S>_holes); parameters:
   settings/blockface.yaml `reconstruction`.
 What it does (L1 .. L4: the photographs reduced 2, 4, 8 and 16 times in-plane)
   First    the L4 grid: aligned to the curated mask by world coordinates and cropped tight around it; the L4 mask and tubes
@@ -35,7 +35,7 @@ ZREF = R["zref"]                    # the z-referenced illumination field (setti
 
 # =====================================================================================================
 # Forward reconstruction - the FINAL processed blockface --------------------------------------------
-# Off the hand-curated brain mask (+ holes), at L4 in-plane (/16) / NATIVE through-plane resolution. This
+# Off the manually curated brain mask (+ holes), at L4 in-plane (/16) / NATIVE through-plane resolution. This
 # is the canonical deliverable path and SUPERSEDES the old stage-3 tail (remove_background -> correct_shading
 # -> harmonize_intensity): stages 1->register_jumps are shared, then this rebuilds the background-intact twin
 # and runs, in the principled order: crop -> demons re-interpolation of missing slices -> mask -> shading ->
@@ -590,7 +590,7 @@ def montage(cfg, n=10, target=300):
 def reconstruct(cfg, do_holes=True):
     """FINAL blockface reconstruction off the curated mask (+holes). The IMAGE is a canonical OME-Zarr PYRAMID
     at in-plane level R['level'] (L1) down to L4 -> cfg.final_zarr('blockface'); the MASK/HOLES finals
-    stay tiny L4 niftis (the hand-edit surface). Phase A computes the L4 grid + curated finals (affine/mask
+    stay tiny L4 niftis (the manual-edit surface). Phase A computes the L4 grid + curated finals (affine/mask
     only, no bg pixels); Phase B builds the L1 pixels (demons/shading/de-step/inpaint NATIVELY at L1) and
     writes the pyramids. Per-step wall times append to <S>_timing.tsv. See the module banner."""
     import time, shutil
@@ -632,15 +632,15 @@ def reconstruct(cfg, do_holes=True):
     # ===== PHASE A: L4 grid + curated MASK/HOLES finals (affine/mask only - no bg pixels) =====
     # The curated (edited-else-auto) mask DEFINES the grid; we align the L4 output affine to it by world
     # coords (a footprint drift never has to reproduce the grid), tight-crop off its footprint, and write the
-    # tiny L4 mask/holes niftis (the hand-edit round-trip surface). Phase B derives the L1 pixel grid from this.
+    # tiny L4 mask/holes niftis (the manual-edit round-trip surface). Phase B derives the L1 pixel grid from this.
     if not os.path.exists(cfg.curated_mask):
         raise SystemExit(f"no mask for {s}: expected the auto {cfg.mask_model} (run `run.py {s} segment`) "
-                         f"or a hand {cfg.mask_edited}")
+                         f"or a manual {cfg.mask_edited}")
     A4, zax = _affine_level(cfg, f, 4, native_z=True)
     mim = nib.load(cfg.curated_mask)
     cur = (np.asanyarray(mim.dataobj) > 0)                                   # (wm, z_zds, hm) curated L4 grid
     wm, hm = cur.shape[0], cur.shape[2]
-    # align A4 onto the mask grid, by world coordinates at the reconstruction spacing: a hand edit of record carries the calibrated
+    # align A4 onto the mask grid, by world coordinates at the reconstruction spacing: a manual edit of record carries the calibrated
     # spacing (its header was rescaled with the products), which in-plane (MF5-MF7, MM15: 26 -> 27 um) would shift the grid
     _, A4, resid = _inplane_offset(A4, spacing.to_reconstruction_spacing(mim.affine, cfg))
     # resid is the sub-voxel part of the L4 offset (bounded [0,0.5]); the integer rounding absorbs it exactly

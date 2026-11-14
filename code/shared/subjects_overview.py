@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One row per brain: the manual inputs in settings/brains/<ID>.yaml and, with --data, which hand-made files its folder holds.
+"""One row per brain: the manual inputs in settings/brains/<ID>.yaml and, with --data, which manually made files its folder holds.
 
     python code/shared/subjects_overview.py [--data $LINC_DATA] [--out file.csv]
 
@@ -60,7 +60,7 @@ def in_folder(folder, subject, y):
 
 def main():
     ap = argparse.ArgumentParser(description="One row per brain: its manual inputs, as CSV (see the top of this file).")
-    ap.add_argument("--data", type=Path, help="a folder of brains, sub-<ID>/, to report which hand-made files each one holds")
+    ap.add_argument("--data", type=Path, help="a folder of brains, sub-<ID>/, to report which manually made files each one holds")
     ap.add_argument("--out", type=Path, help="write the CSV here (default: stdout)")
     a = ap.parse_args()
     rows = []

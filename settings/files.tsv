@@ -2247,7 +2247,7 @@ models/blockface_holes/model.pt	models_of_record/segment/bf_holes/model.pt	model
 models/blockface_holes/model.pt	models_wrapup/segment/bf_holes/model.pt	model	local	input	124826314
 models/blockface_holes/spec.json	models_of_record/segment/bf_holes/spec.json	model	local	input	1130
 models/blockface_holes/spec.json	models_wrapup/segment/bf_holes/spec.json	model	local	input	1130
-models/blockface_holes/intermediate/task.json	models_wrapup/tasks/bf_holes.json	model	local	input	38898
+models/blockface_holes/intermediate/task.json	models_wrapup/tasks/bf_holes.json	model	local	input	39278
 models/blockface_holes/intermediate/training_data/bf_holes3d/imagesTr/MR256_0000.nii.gz	models_wrapup/data_bf/bf_holes3d/imagesTr/MR256_0000.nii.gz	derivative	local	input	1088058
 models/blockface_holes/intermediate/training_data/bf_holes3d/imagesTr/MR256_0001.nii.gz	models_wrapup/data_bf/bf_holes3d/imagesTr/MR256_0001.nii.gz	derivative	local	input	1240812
 models/blockface_holes/intermediate/training_data/bf_holes3d/imagesTr/MR256_0002.nii.gz	models_wrapup/data_bf/bf_holes3d/imagesTr/MR256_0002.nii.gz	derivative	local	input	1329389
@@ -12215,7 +12215,7 @@ models/blockface_mask2d/model.pt	models_of_record/segment/bf_mask2d/model.pt	mod
 models/blockface_mask2d/model.pt	models_wrapup/segment/bf_mask2d/model.pt	model	local	input	82515530
 models/blockface_mask2d/spec.json	models_of_record/segment/bf_mask2d/spec.json	model	local	input	1091
 models/blockface_mask2d/spec.json	models_wrapup/segment/bf_mask2d/spec.json	model	local	input	1091
-models/blockface_mask2d/intermediate/task.json	models_wrapup/tasks/bf_mask2d.json	model	local	input	2816531
+models/blockface_mask2d/intermediate/task.json	models_wrapup/tasks/bf_mask2d.json	model	local	input	2816885
 models/blockface_mask2d/intermediate/training_data/bf_mask2d_v2/dataset.json	models_wrapup/data_bf/bf_mask2d_v2/dataset.json	derivative	local	input	396
 models/blockface_mask2d/intermediate/training_data/bf_mask2d_v2/imagesTr/MF191_0003_0000.png	models_wrapup/data_bf/bf_mask2d_v2/imagesTr/MF191_0003_0000.png	derivative	local	input	349754
 models/blockface_mask2d/intermediate/training_data/bf_mask2d_v2/imagesTr/MF191_0004_0000.png	models_wrapup/data_bf/bf_mask2d_v2/imagesTr/MF191_0004_0000.png	derivative	local	input	354802
@@ -60644,7 +60644,7 @@ models/blockface_mask3d/model.pt	models_of_record/segment/bf_mask3d/model.pt	mod
 models/blockface_mask3d/model.pt	models_wrapup/segment/bf_mask3d/model.pt	model	local	input	124826314
 models/blockface_mask3d/spec.json	models_of_record/segment/bf_mask3d/spec.json	model	local	input	990
 models/blockface_mask3d/spec.json	models_wrapup/segment/bf_mask3d/spec.json	model	local	input	990
-models/blockface_mask3d/intermediate/task.json	models_wrapup/tasks/bf_mask3d.json	model	local	input	36562
+models/blockface_mask3d/intermediate/task.json	models_wrapup/tasks/bf_mask3d.json	model	local	input	36925
 models/blockface_mask3d/intermediate/training_data/bf_mask3d_v2/imagesTr/MR256_0000.nii.gz	models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR256_0000.nii.gz	derivative	local	input	3142389
 models/blockface_mask3d/intermediate/training_data/bf_mask3d_v2/imagesTr/MR256_0001.nii.gz	models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR256_0001.nii.gz	derivative	local	input	3308663
 models/blockface_mask3d/intermediate/training_data/bf_mask3d_v2/imagesTr/MR256_0002.nii.gz	models_wrapup/data_bf/bf_mask3d_v2/imagesTr/MR256_0002.nii.gz	derivative	local	input	3486129
@@ -60721,7 +60721,7 @@ models/mri_brainmask/model.pt	models_of_record/segment/mri_brainmask/model.pt	mo
 models/mri_brainmask/model.pt	models_wrapup/segment/mri_brainmask/model.pt	model	yes	training-segment-mri-brainmask	124819402
 models/mri_brainmask/spec.json	models_of_record/segment/mri_brainmask/spec.json	model	yes	input	896
 models/mri_brainmask/spec.json	models_wrapup/segment/mri_brainmask/spec.json	model	yes	input	896
-models/mri_brainmask/intermediate/task.json	models_wrapup/tasks/mri_brainmask.json	model	local	input	46972
+models/mri_brainmask/intermediate/task.json	models_wrapup/tasks/mri_brainmask.json	model	local	input	47812
 models/synthesis/own_b0/config.json	isbi2027/runs/d3_full_A_s0/config.json	model	local	training-synthesis	6783
 models/synthesis/own_b0/config.json	isbi2027/runs_public_v3/d3_full_A_s0/config.json	model	local	training-synthesis	6783
 models/synthesis/own_b0/config.json	models_of_record/completion/d3_full_A_s0/config.json	model	local	training-synthesis	6783

@@ -98,7 +98,7 @@ class Inputs:
         return Path(self.prep.format(id=subject))
 
     def native(self, subject, payload):
-        """(native file, space) of a payload (the rebuild's inputs: N4 b0 head, the final mask, hand-mask fractions)."""
+        """(native file, space) of a payload (the rebuild's inputs: N4 b0 head, the final mask, the fractions masked by the manual annotations)."""
         b, p = self.brain(subject), self.prep_dir(subject)
         return {"b0": (p / "_native" / "b0_head_n4.nii.gz", "dwi"), "model_mask": (p / "model_mask_source_uint8.nii.gz", "dwi"),
                 "t2_head": (b("t2_head"), "t2"), "frac1": (b("frac1"), "micro"), "frac2": (b("frac2"), "micro"),

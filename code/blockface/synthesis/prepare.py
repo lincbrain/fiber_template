@@ -77,7 +77,7 @@ You need
     from the registration to the brain's own b0: the b0 on its frame, the registered photographs (grey and color), the deformation, and the
     linear start; a brain without MRI: the stand-in b0, the MRI template's b0 transformed into the brain, in place of its own and no deformation
     the brain mask on the frame. Tissue the MRI shows and the photographs lack, such as a longer brainstem: a label volume (label 1) for the paper's
-    brains, which holds a detector's result and hand trims; a new brain with MRI gets the detector's alone, written beside its folder as <ID>_mri_only_tissue
+    brains, which holds a detector's result and manual trims; a new brain with MRI gets the detector's alone, written beside its folder as <ID>_mri_only_tissue
     from the reconstruction: $LINC_DATA/sub-<ID>/blockface/<ID>_blockface.ome.zarr, <ID>.info, <ID>_holes, <ID>_blockface_iso_grey, <ID>_mask_iso
 
 What it does

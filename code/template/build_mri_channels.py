@@ -7,7 +7,7 @@ You need, for every brain of settings/mri_construction.yaml `inputs`, under $LIN
           b-vectors and b-values (dwi_orig.bvecs, .bvals), the fit mask (brain_mask);
     msme/: the denoised 32-echo MSME (msme_denoised_las);
     dt2/tortoise/: the corrected microstructure series (dwi_biascorr) and its SANDI fit (microstructure/SANDIdot/est.fracs.{mean,std}).
-  mri/masks/: each session's brain mask and the final brain mask (from the masks' network loop, edited by hand at the end; inputs of the build); from the data release
+  mri/masks/: each session's brain mask and the final brain mask (from the masks' network loop, manually edited at the end; inputs of the build); from the data release
   or made by the nmt-, t2reg- and microreg-<ID> steps: mri/landmarks/ (the SARM labels and the brain -> NMT v2 affine on the b0
   grid) and xfm/t2-native__to__b0-native, xfm/micro-native__to__b0-native (the within-brain registrations);
   FSL (FSLDIR), ANTs (ANTSPATH), MRtrix (MRTRIX), and for the mmorf step MMORF (LINC_MMORF_EXE), the patched template-construction driver (LINC_TEMPLATE_DRIVER,

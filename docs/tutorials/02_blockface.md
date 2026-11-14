@@ -29,14 +29,14 @@ Under each arrow are the commands that make the step.*
 | File | Where in the data folder | What it is |
 |---|---|---|
 | `MR252_slice0000.jpg` ... | `brains/sub-MR252/inputs/photographs/` | the photographs, one JPEG per section, in cutting order |
-| `MR252_brain_mask_edited.nii.gz` | `brains/sub-MR252/inputs/manual_annotations/` | the 3D brain mask, corrected by hand |
-| `MR252_tubes_edited.nii.gz` | `brains/sub-MR252/inputs/manual_annotations/` | the marker tubes, corrected by hand |
+| `MR252_brain_mask_edited.nii.gz` | `brains/sub-MR252/inputs/manual_annotations/` | the 3D brain mask, manually corrected |
+| `MR252_tubes_edited.nii.gz` | `brains/sub-MR252/inputs/manual_annotations/` | the marker tubes, manually corrected |
 | `photograph_masks/` | `brains/sub-MR252/inputs/manual_annotations/` | the brain masks of the photographs |
 | `MR252_b0.nii.gz` | `brains/sub-MR252/inputs/mri/` | the b0 (01 prepares it) |
 | `MR252.yaml` | `settings/brains/` in the code folder | the brain's settings: the photographs' names, the pixel size, the section step, the camera jumps and the missing sections |
 
 MR252 has 1,430 photographs, one every 50 µm; the numbers that are missing are sections without a photograph.
-The hand-corrected masks are inputs because a person made them: the code uses them in place of the networks' masks.
+The manually corrected masks are inputs because a person made them: the code uses them in place of the networks' masks.
 
 ![One photograph of MR252 and its brain mask](figures/blockface_02_input.png)
 
@@ -67,7 +67,7 @@ $PY_TIRL code/blockface/linc-reconstruct all --subject <ID>                     
 | `stack` | stacks the photographs and their masks |
 | `prepare` | corrects each camera jump (registered with TIRL), fills the missing sections, crops the stack, evens out the illumination and brightness |
 | `mask` | makes the 3D brain mask (the network's, or your corrected one) |
-| `volume` | writes the volume (and fills hand-corrected marker tubes, if they exist already) |
+| `volume` | writes the volume (and fills manually corrected marker tubes, if they exist already) |
 | `tubes` | finds the 3D marker tubes with the network and fills them in the volume |
 | `spacing` | writes the pixel size and section step of the settings file into the headers |
 
@@ -93,9 +93,9 @@ Add `--keep-work` to keep them, when you may need to correct something and run a
 *Figure 4. MR252's blockface volume (`outputs/MR252_blockface_L2.nii.gz`), coronal, sagittal and axial, through one marker tube, with the outline of its brain mask (white) and its marker tubes (orange, `outputs/MR252_tubes.nii.gz`).
 The tubes are filled in the volume itself, so the orange marks where they were.*
 
-### Step 2. Correct the masks by hand (optional)
+### Step 2. Correct the masks manually (optional)
 
-A mask corrected by hand always wins over a network's.
+A manually corrected mask always wins over a network's.
 Save it under the name the code looks for, then run the steps that follow it again.
 To be able to do that, run the reconstruction one step at a time, not with `all`, and with `--keep-work` on `volume` and `tubes`.
 
@@ -110,7 +110,7 @@ So run `volume` again, which fills the corrected tubes, and it needs the working
 The paper's brains are not affected: their corrected files existed before `volume` ran.
 
 The `curated/` folder is in `$LINC_DATA/sub-<ID>/blockface/`.
-Its grid is the hand-edit grid: the photographs' resolution in plane, and 0.40 mm between slices.
+Its grid is the manual-edit grid: the photographs' resolution in plane, and 0.40 mm between slices.
 When you keep the brain, copy the corrected masks into the data folder's `inputs/manual_annotations/`.
 
 ### Step 3. Register the volume to the brain's own b0 (a brain with MRI)
@@ -217,12 +217,12 @@ This table lists every field, so you can tell which ones a new brain needs.
 | `rotate180` | optional | `false` | `true` if the photographs are upside down: the brain must end up dorsal side up |
 | `reduce` | optional | `mean` | how the coarser resolutions are computed; leave it |
 | `jumps` | optional | none | the camera jumps, found by looking through the stack: each `[before, after]` is the last section before the jump and the first after it, counted from 0 in `00_slices/` |
-| `missing` | optional | none | sections handled by hand: `[before, after]` around missing or damaged sections, which are filled in between; `[-1, k]` drops frames 0 to k-1 that are not brain (a name card, a calibration grid); `[n, -1]` is the caudal cutoff, keeping sections 0 to n |
+| `missing` | optional | none | sections handled manually: `[before, after]` around missing or damaged sections, which are filled in between; `[-1, k]` drops frames 0 to k-1 that are not brain (a name card, a calibration grid); `[n, -1]` is the caudal cutoff, keeping sections 0 to n |
 | `stack_pad` | optional | 200 pixels | the stack's margin on each side; raise it when a large camera jump pushes a photograph off the canvas |
 | `jump_mode` | optional | `affine` | the only mode released |
 | `ccs`, `cce` | optional | `0`, `0` | the first and last histology section where the corpus callosum joins the hemispheres (03); `0`, `0` when there is none or no histology |
 | `native_end_crop_mm` | optional | `0` | drops the last photographed sections, this many mm, before `linc-register mri` resamples; set it only when a brain's own last sections are darker |
-| `curation_f` | optional | from the hand-edit grid | sections per slice of the 0.40 mm hand-edit grid; see below |
+| `curation_f` | optional | from the manual-edit grid | sections per slice of the 0.40 mm manual-edit grid; see below |
 | `reconstruction_spacing_um` | the paper's brains | `vx`, `vz` | the spacing the paper's volumes were reconstructed at, before the spacing calibrated against each brain's MRI was written into the headers |
 | `registration_to_own_mri` | the paper's brains | | the b0 mask, fixed b0 and start pose of record of the 13 brains with MRI; without it, `linc-register mri` estimates the start pose |
 | `series_alignment` | the paper's brains | | MF191 and MF196 only: a camera that moved on nearly every frame, corrected by replaying a recorded alignment to an external series |
@@ -230,7 +230,7 @@ This table lists every field, so you can tell which ones a new brain needs.
 | `stack_origin_frames` | the paper's brains | the stack's own count | MR261 only: its stack of record held frames that are not its photographs |
 | `reconstruction_mask` | the paper's brains | the final mask | MR254 only: the earlier mask its volume was reconstructed with |
 | `mri` | record only | | the name of the MRI file an earlier analysis used; no code reads it |
-| `masks_of_record` | record only | | which of the paper's masks were corrected by hand; the code finds the corrected files by name |
+| `masks_of_record` | record only | | which of the paper's masks were manually corrected; the code finds the corrected files by name |
 | `histo_vx`, `histo_vz`, `histo_divisor` | record only | | records of the histology; no code reads them |
 
 Three of these come up often.
@@ -239,8 +239,8 @@ Three of these come up often.
   No code reads it, so a new brain leaves it out.
 - **`curation_f`** is optional.
   If it is set, the code uses it.
-  If not, it reads it from the header of the hand-edit grid, if one exists; otherwise it takes round(400 µm / `vz`), at least 1.
-  The paper's brains pin it so that a rebuild lines up with their hand edits: 13 brains have 8 (50 µm sections) and 8 brains have 1 (400 µm or more).
+  If not, it reads it from the header of the manual-edit grid, if one exists; otherwise it takes round(400 µm / `vz`), at least 1.
+  The paper's brains pin it so that a rebuild lines up with their manual edits: 13 brains have 8 (50 µm sections) and 8 brains have 1 (400 µm or more).
   A new brain leaves it out.
 - **`native_end_crop_mm`** is optional, with a default of 0.
   It is set only for the three brains whose own last photographed sections are darker: MF282 (MF7) 3.0 mm, MF204 (MF10) 1.62 mm, MR263 (MM14) 3.5 mm.
@@ -349,10 +349,10 @@ On a paper brain, `run.py` runs each step's check: the reconstruction must be id
 | The brain upside down | the photographs were taken upside down | `rotate180: true` |
 | The brain upside down, and no marker tubes found | `rotate180: true` was set on photographs that were already upright, so the tubes ended up on the right and were dropped (only tubes on the brain's left are kept) | look at `00_slices/`, set `rotate180` to match, and reconstruct again |
 | A photograph pushed off the canvas | a large camera jump | raise `stack_pad` |
-| The mask or the tubes wrong | the network missed or added tissue | correct them by hand (Step 2) |
+| The mask or the tubes wrong | the network missed or added tissue | correct them manually (Step 2) |
 | Corrected tubes do not show in the volume | the corrected file was saved after `tubes`, and `tubes` alone does not fill it again | run `volume` and `tubes` again, which needs the working folders (`--keep-work`; Step 2) |
 | `prepare`, `mask` or `volume` cannot be run again | `volume` and `tubes` deleted the working folders | run the steps one at a time with `--keep-work`, or start again from `photos` |
-| Corrected masks no longer line up after a change of `vz` | the hand-edit grid follows round(400 µm / `vz`) | pin `curation_f` to the value the corrections were made with |
+| Corrected masks no longer line up after a change of `vz` | the manual-edit grid follows round(400 µm / `vz`) | pin `curation_f` to the value the corrections were made with |
 | A run is killed with no Python error | out of memory: the full-resolution steps need about 90 GB for 1,400 photographs | run on a machine with more free memory; if you cap it, cap the resident memory, never with `ulimit -v`, which kills every TIRL run |
 | The last sections darker than the rest | the illumination of those sections | `native_end_crop_mm` |
 | The registration stops before it starts | the GPU has less memory free than it needs | it prints what it needs; use a card with more free memory, one registration at a time |
@@ -382,7 +382,7 @@ On a paper brain, `run.py` runs each step's check: the reconstruction must be id
 | What | Path |
 |---|---|
 | The volume, its mask and tubes | `$LINC_DATA/sub-<ID>/blockface/` (`$LINC_REBUILD_DATA/sub-<ID>/blockface/` for a paper brain) |
-| The hand-edit grid and your corrections | `$LINC_DATA/sub-<ID>/blockface/curated/` |
+| The manual-edit grid and your corrections | `$LINC_DATA/sub-<ID>/blockface/curated/` |
 | The transforms | `$LINC_DATA/sub-<ID>/xfm/<from>__to__<to>/` |
 | The registrations' working files and checks | `$LINC_WORK/register/<ID>/`, `$LINC_WORK/qc/` |
 | The completed brain | `$LINC_WORK/complete/<ID>/` |

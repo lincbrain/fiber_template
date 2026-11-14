@@ -364,7 +364,7 @@ def crop_and_mask(cfg):
 
 def blockface_bg(cfg, level=2):
     """Background-INTACT twin of 02_blockface (`02_blockface_bg`): the SAME cropped, jump-corrected grid
-    but WITHOUT masking, so the aligned brain sits in its visible tray. It's the easy space to hand-edit
+    but WITHOUT masking, so the aligned brain sits in its visible tray. It's the easy space to edit manually
     02_blockface_mask (brain aligned + homogeneous intensity, vs the discontinuous native photos). Built
     DIRECTLY at L2 (in-plane /4) as a SINGLE array - it's only ever viewed/edited at L2/L4, so never worth
     a full-res copy (that L0 store, shaded+harmonised at L0, was the batch-killing I/O). Reads the unmasked

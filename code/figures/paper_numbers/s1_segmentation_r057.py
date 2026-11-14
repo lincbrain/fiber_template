@@ -12,7 +12,7 @@ You need
 What it does
   It recomputes:
   2D brain mask (Dataset500_SLICE, used for every photograph): numTraining from its dataset.json (trained 26 Dec 2024, before this project, on 149 photographs whose source brains are not recorded); performance from
-     bf_models_card `mask2d` (the Dice coefficient between the network's photograph masks and the hand-corrected masks of 14
+     bf_models_card `mask2d` (the Dice coefficient between the network's photograph masks and the manually corrected masks of 14
      brains; not cross-validated).
   3D brain mask, round 5 (Dataset506_BFmask5, the network of record): its training cases (the training set's imagesTr.txt: one case per
      brain + one validation slab), its validation Dice (bf_models_card `dataset506_bfmask3d`).
@@ -41,18 +41,18 @@ DOCUMENTED = {
         dict(round=1, dataset="Dataset501_BFmask", brains=1, date="2026-08-10", added=["MR243"],
              source="round 1 QC report 'Blockface brain-mask model - QC (iteration 1)' (10 Aug 2026; not kept as a project file)"),
         dict(round=2, dataset="Dataset502_BFmask2", brains=2, date="2026-08-11", added=["MR250"],
-             source="round 2 QC report 'iteration 2 (2 samples, ResEnc)' (11 Aug 2026; not kept as a project file): 'trained on 2 hand-edited samples'"),
+             source="round 2 QC report 'iteration 2 (2 samples, ResEnc)' (11 Aug 2026; not kept as a project file): trained on 2 manually edited samples"),
         dict(round=3, dataset="Dataset503_BFmask3", brains=4, date="2026-08-12", added=["MR244", "MR248"],
              source="round 3 QC report 'iteration 3 (4 samples)' (12 Aug 2026; not kept as a project file): '4 curated samples'"),
         dict(round=4, dataset="Dataset504_BFmask4", brains=8, date="2026-08-13", added=["MF278", "MR249", "MR251", "MR252"],
              source="round 4 QC report 'iteration 4' (13 Aug 2026; not kept as a project file): description and heading '8 curated samples' (title stale); project log 13 Aug"),
     ],
     "tubes": [
-        dict(round=1, dataset="holes1", brains=1, date="2026-08-14", added=["MF278"], source="project log 13-14 Aug (MF278 painted by hand)"),
+        dict(round=1, dataset="holes1", brains=1, date="2026-08-14", added=["MF278"], source="project log 13-14 Aug (MF278's tubes painted manually)"),
     ],
 }
-LOOP = ("each round's network segmented every brain; the predictions of the brains added next were corrected by hand and joined the "
-        "training set; the final masks of every brain were checked and corrected by hand where needed (masks_of_record)")
+LOOP = ("each round's network segmented every brain; the predictions of the brains added next were manually corrected and joined the "
+        "training set; the final masks of every brain were checked and manually corrected where needed (masks_of_record)")
 
 
 def cases(raw, ds):

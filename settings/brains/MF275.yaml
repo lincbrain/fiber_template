@@ -1,5 +1,5 @@
 # MF275: the per-brain inputs of its blockface reconstruction, as used for the paper (from the analysis project's
-# code/config.py + code/macaque_datasets.xlsx). Hand inputs: spacing (vx, vz um), camera jumps, missing sections and the
+# code/config.py + code/macaque_datasets.xlsx). Manual inputs: spacing (vx, vz um), camera jumps, missing sections and the
 # caudal cutoff (see code/blockface/subject.py). `raw` is relative to $LINC_RAW.
 # registration_to_own_mri: the inputs of record of the registration to the brain's own b0 (R1 v3): the b0 mask (paths relative to
 # mri/), the fixed b0, and the start pose (world, blockface -> b0 on the template grid), recovered from the run's saved init matrix.
@@ -52,7 +52,7 @@ jump_mode: affine
 # reconstruction_spacing_um: the pixel size and section step the volume was REBUILT at (its pixels depend on them, e.g. the
 # intensity smoothing width in sections); vx/vz above are the calibrated spacing written into the headers afterwards by a
 # header-only rescaling about the world origin (code/blockface/spacing.py; pixels unchanged). Equal for a new brain.
-# curation_f: native sections per curated (0.40 mm) slice of the hand-edit grid, pinned at the reconstruction spacing.
+# curation_f: native sections per curated (0.40 mm) slice of the manual-edit grid, pinned at the reconstruction spacing.
 reconstruction_spacing_um: {vx: 26, vz: 50}
 curation_f: 8
 histo_divisor: 24          # native sections per histology bucket (pinned; histology)
@@ -66,16 +66,16 @@ registration_to_own_mri:
   - [-0.020401253516821153, 0.9960475976623258, -0.08644635357290824, -22.334660912454275]
   - [-0.09895011135384639, 0.08402827439941948, 0.9915382617753674, -33.207453289118746]
   - [0.0, 0.0, 0.0, 1.0]
-# masks_of_record: the masks this brain's reconstruction of record used, and which of them were corrected by hand (paths
-# relative to sub-<ID>/blockface/). A hand-edited curated file wins over the 3D models' outputs in linc-reconstruct.
+# masks_of_record: the masks this brain's reconstruction of record used, and which of them were manually corrected (paths
+# relative to sub-<ID>/blockface/). A manually edited curated file wins over the 3D models' outputs in linc-reconstruct.
 masks_of_record:
   photo_masks_2d:
     folder: 01_brainmask/01_final
-    hand_edited: false
+    manually_edited: false
     note: the 2D model's output, unchanged
   brain_mask_3d:
     file: curated/MF275_mask_edited.nii.gz
-    hand_edited: true
+    manually_edited: true
   tubes_3d:
     file: curated/MF275_holes_edited.nii.gz
-    hand_edited: true
+    manually_edited: true

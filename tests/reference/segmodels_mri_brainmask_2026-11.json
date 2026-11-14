@@ -1,7 +1,7 @@
 {
  "data": {
   "task": "mri_brainmask",
-  "task_json_md5": "5644d8b6123ffcba448785bab0af5607",
+  "task_json_md5": "2fe9603931db8aa14e3877289e46ac4d",
   "card_notes": [
    "No post-processing. In cross-validation, 7 of 38 held-out masks had detached pieces of 695 voxels or fewer in total; keeping only the largest component (linc_seg.predict --postprocess largest_component) would change 11 masks: it raised Dice in 8 (by up to 0.0034), lowered it in 3 (by less than 0.0001) and never raised HD95 (lowered by up to 0.36 mm).",
    "The masks of record (all 38 held-out ones) leave enclosed interior spaces unfilled, so hole filling contradicts them: largest component with fill (largest_cc_fill) lowered Dice in 33 of 38 held-out masks (median -0.0013) and raised HD95 by a median 1.7 mm."
@@ -49,101 +49,101 @@
     "MF275": {
      "n_images": 3,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MF277": {
      "n_images": 3,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MF278": {
      "n_images": 3,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MF281": {
      "n_images": 3,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MF282": {
      "n_images": 3,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MF283": {
      "n_images": 4,
      "label_kind": [
       "author_final_edit",
-      "hand"
+      "manual_annotations"
      ]
     },
     "MF284": {
      "n_images": 4,
      "label_kind": [
       "author_final_edit",
-      "hand"
+      "manual_annotations"
      ]
     },
     "MF285": {
      "n_images": 4,
      "label_kind": [
       "author_final_edit",
-      "hand"
+      "manual_annotations"
      ]
     },
     "MF286": {
      "n_images": 4,
      "label_kind": [
       "author_final_edit",
-      "hand"
+      "manual_annotations"
      ]
     },
     "MN276": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR243": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR249": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR250": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR251": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR252": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR253": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR254": {
@@ -155,7 +155,7 @@
     "MR256": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR257": {
@@ -167,44 +167,44 @@
     "MR259": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR261": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR292": {
      "n_images": 2,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR293": {
      "n_images": 2,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     }
    },
    "label_kind": {
     "author_final_edit": 4,
     "author_round2_edit": 2,
-    "hand": 41
+    "manual_annotations": 41
    },
    "label_provenance": [
     {
-     "text": "lcn hand mask (hand-curated per the author), as in Dataset520; drawn in the image's own space",
+     "text": "lcn manual mask (manually curated per the author), as in Dataset520; drawn in the image's own space",
      "n": 41
     },
     {
-     "text": "the author's final edit (30 Sep 2026) of the >=2-of-3 consensus of the three hand masks; the final rebuild's mask",
+     "text": "the author's final edit (30 Sep 2026) of the >=2-of-3 consensus of the three manual masks; the final rebuild's mask",
      "n": 4
     },
     {
-     "text": "the author's round-2 edit (2 Oct 2026, swapped in 3 Oct): the hand mask minus the olfactory bulbs; drawn in the image's own space",
+     "text": "the author's round-2 edit (2 Oct 2026, swapped in 3 Oct): the manual mask minus the olfactory bulbs; drawn in the image's own space",
      "n": 2
     }
    ],
@@ -376,7 +376,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.1978919419923072,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0"
     },
     {
@@ -387,7 +387,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.10159799963031879,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2"
     },
     {
@@ -398,7 +398,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.07759765921936373,
      "counted": false,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2d"
     },
     {
@@ -420,7 +420,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.1158896472161084,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2"
     },
     {
@@ -431,7 +431,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.1413955041810183,
      "counted": false,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2d"
     },
     {
@@ -442,7 +442,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.15371338945178398,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0m"
     },
     {
@@ -453,7 +453,7 @@
      "hd95_mm": 1.5652475575938454,
      "assd_mm": 0.3855228778752212,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0"
     },
     {
@@ -464,7 +464,7 @@
      "hd95_mm": 0.9899494768024272,
      "assd_mm": 0.3140227646584134,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0"
     },
     {
@@ -475,7 +475,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.13703521332220195,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0"
     },
     {
@@ -486,7 +486,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.1744812929534943,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2"
     },
     {
@@ -497,7 +497,7 @@
      "hd95_mm": 0.7071067811865476,
      "assd_mm": 0.23229577938215548,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0"
     },
     {
@@ -508,7 +508,7 @@
      "hd95_mm": 2.179449471770337,
      "assd_mm": 0.4103311407246241,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2"
     },
     {
@@ -519,7 +519,7 @@
      "hd95_mm": 2.23606797749979,
      "assd_mm": 0.4068142651150924,
      "counted": false,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2d"
     },
     {
@@ -541,7 +541,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.15198108638617905,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2"
     },
     {
@@ -552,7 +552,7 @@
      "hd95_mm": 0.5142857432365417,
      "assd_mm": 0.1570217506470723,
      "counted": false,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2d"
     },
     {
@@ -563,7 +563,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.18576632807747137,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0m"
     },
     {
@@ -574,7 +574,7 @@
      "hd95_mm": 3.1304951151876907,
      "assd_mm": 0.7083406817516432,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0"
     },
     {
@@ -585,7 +585,7 @@
      "hd95_mm": 0.699999988079071,
      "assd_mm": 0.3327236640028831,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0"
     },
     {
@@ -596,7 +596,7 @@
      "hd95_mm": 0.7071067811865476,
      "assd_mm": 0.2643056122614437,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0"
     },
     {
@@ -607,7 +607,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.1058388570606298,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2"
     },
     {
@@ -618,7 +618,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.18256738923806534,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0"
     },
     {
@@ -629,7 +629,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.08325939244860411,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2"
     },
     {
@@ -640,7 +640,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.08132791018159592,
      "counted": false,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2d"
     },
     {
@@ -651,7 +651,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.1950239899346228,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0"
     },
     {
@@ -662,7 +662,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.08697616570684889,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2"
     },
     {
@@ -673,7 +673,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.09030753479916552,
      "counted": false,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2d"
     },
     {
@@ -695,7 +695,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.07968373316176601,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2"
     },
     {
@@ -706,7 +706,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.08762068736551196,
      "counted": false,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2d"
     },
     {
@@ -717,7 +717,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.13942191651260175,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0m"
     },
     {
@@ -739,7 +739,7 @@
      "hd95_mm": 4.949747384012135,
      "assd_mm": 1.1007524960217399,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0"
     },
     {
@@ -750,7 +750,7 @@
      "hd95_mm": 0.7071067811865476,
      "assd_mm": 0.1907375283606565,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0"
     },
     {
@@ -761,7 +761,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.10440205263826222,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2"
     },
     {
@@ -772,7 +772,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.09728772368306271,
      "counted": false,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2d"
     },
     {
@@ -794,7 +794,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.08822359639754017,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2"
     },
     {
@@ -805,7 +805,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.0870333532968753,
      "counted": false,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2d"
     },
     {
@@ -816,7 +816,7 @@
      "hd95_mm": 0.5,
      "assd_mm": 0.1556848851805672,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0m"
     },
     {
@@ -827,7 +827,7 @@
      "hd95_mm": 0.699999988079071,
      "assd_mm": 0.254066719703248,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0"
     },
     {
@@ -838,7 +838,7 @@
      "hd95_mm": 0.699999988079071,
      "assd_mm": 0.1986575932407499,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0"
     },
     {
@@ -849,7 +849,7 @@
      "hd95_mm": 4.031128874149275,
      "assd_mm": 0.5092655838499617,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "t2"
     },
     {
@@ -860,7 +860,7 @@
      "hd95_mm": 0.699999988079071,
      "assd_mm": 0.1766447153620093,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0"
     },
     {
@@ -871,7 +871,7 @@
      "hd95_mm": 0.699999988079071,
      "assd_mm": 0.23941683972330946,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "modality": "b0"
     },
     {
@@ -1682,8 +1682,8 @@
    "dice": 0.978,
    "dice_sd": 0.0038,
    "hd95_mm": 0.85,
-   "source": "MF283-286, three hand-edited masks each (dwi, T2, micro), compared on one grid",
-   "what": "three hand-edited masks per brain, on the dwi, T2 and micro images of MF283-286, from the same procedure, compared on one grid (not three annotators)"
+   "source": "MF283-286, three manually edited masks each (dwi, T2, micro), compared on one grid",
+   "what": "three manually edited masks per brain, on the dwi, T2 and micro images of MF283-286, from the same procedure, compared on one grid (not three annotators)"
   },
   "all_model": {
    "run": "models_wrapup/runs/mri_brainmask/fold_all",

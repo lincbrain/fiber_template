@@ -85,7 +85,7 @@ prepare:
   rgb_percentile: 99.0           # the color's one scale: this percentile of the brightest channel
   bf_level: 1                    # the blockface store's level whose geometry the photographed fraction is computed on
   normal_decimals: 4             # the section normal as seam.json records it
-  # Tissue only the MRI shows, detected for a new brain (the paper's brains have it in their register: this detector, plus hand trims):
+  # Tissue only the MRI shows, detected for a new brain (the paper's brains have it in their register: this detector, plus manual trims):
   # brain voxels without photographs, within the photographed extent, opened by a ball to drop the thin surface shell and fissures
   trim:
     open_mm: 1.0                 # the ball's radius

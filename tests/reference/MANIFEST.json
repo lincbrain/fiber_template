@@ -10,7 +10,7 @@
    "created": "2026-10-14T21:53:59-04:00"
   },
   "bf_cohort": {
-   "md5_of_record": "6f47d49c18e88a5a552e98a477f04e44",
+   "md5_of_record": "96118e1bce4d491c89049a27eb45e86c",
    "created": "2026-09-28T12:24:14-04:00"
   },
   "bf_sanity": {
@@ -183,8 +183,8 @@
    "created": "2026-10-30T12:00:14-04:00"
   },
   "r057_mri_facts_b": {
-   "md5_of_record": "b66f10df3ae98c6ee8323f4cd1f200a3",
-   "created": "2026-11-01T12:41:28-05:00"
+   "md5_of_record": "a8f7eea42d76af8fe2b134f7bd3b1ee3",
+   "created": "2026-11-14T18:49:14-05:00"
   },
   "r057_s1_synthesis": {
    "md5_of_record": "348387dd62cd384aef8ebb8d309b4f75",
@@ -227,8 +227,8 @@
    "created": "2026-11-05T22:50:58-05:00"
   },
   "s1_segmentation_r057": {
-   "md5_of_record": "be105e3f33d85fba6ae699a615c134cf",
-   "created": "2026-10-30T12:24:53-04:00"
+   "md5_of_record": "56fca376fe76b84d272028eb73cf54e4",
+   "created": "2026-11-14T18:49:12-05:00"
   },
   "s5_link_d2bs8": {
    "md5_of_record": "90635da1f2a31b679a66051b736144ef",

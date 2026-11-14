@@ -1,13 +1,13 @@
 """One brain's blockface inputs and folder layout, read from settings/brains/<ID>.yaml and settings/blockface.yaml.
 
 You need
-  settings/brains/<ID>.yaml, the hand inputs of a reconstruction:
+  settings/brains/<ID>.yaml, the manual inputs of a reconstruction:
   raw, raw_glob, raw_regex, idx_range   the photographs ($LINC_RAW/<raw>/<files>, numbered by the regex' group 1, in this range)
   rotate180                             photographs taken upside down
   vx, vz                                the pixel size and section step (um) written into the products' headers
   reconstruction_spacing_um             the spacing the pixels were reconstructed at (equal to vx, vz for a new brain; for the
                                         paper's brains, the spacing before the calibration against each brain's MRI)
-  jumps                                 camera jumps (before, after), listed by hand
+  jumps                                 camera jumps (before, after), listed manually
   missing                               missing or damaged sections: (before, after) brackets of sections to interpolate;
                                         (-1, k) drops the leading frames 0..k-1 without brain; (n, -1) is the caudal cutoff
                                         (keep 0..n)
@@ -15,22 +15,22 @@ You need
   stack_origin_frames                   optional: the frame count the stacks' world origin and <ID>.info's native_nz count, when the
                                         stack of record held frames that are not this brain's photographs (MR261); unset = the
                                         stack's own count
-  reconstruction_mask                   optional: the earlier brain mask the volume of record was reconstructed with, when later hand
+  reconstruction_mask                   optional: the earlier brain mask the volume of record was reconstructed with, when later manual
                                         edits of the mask only cleared the image where they removed tissue (MR254): the pixels follow
                                         it, the final mask gives the mask and tubes finals and clears the image; unset = the final mask
-  curation_f                            native sections per curated section of the hand-edit grid (fixed per brain)
-  masks_of_record                       which masks were corrected by hand (they win over the models' outputs)
+  curation_f                            native sections per curated section of the manual-edit grid (fixed per brain)
+  masks_of_record                       which masks were manually corrected (they win over the models' outputs)
 What it does
   Subject(<ID>) reads both files and names every folder and file of the brain's blockface steps.
 You get
   the layout under $LINC_DATA/sub-<ID>/blockface/:
   00_slices/                 the photographs, renamed and turned upright (step 1)
-  01_brainmask/00_predict/   the 2D network's masks (x50 PNGs); 01_final/ the accepted masks (hand corrections survive reruns)
+  01_brainmask/00_predict/   the 2D network's masks (x50 PNGs); 01_final/ the accepted masks (manual corrections survive reruns)
   _work/                     working stores: the raw and mask stacks, the camera-jump registrations, the 3D network's inputs
   02_blockface*.ome.zarr     the aligned, cropped stack and its mask (stage 3; also read by the histology steps)
   nii/                       stage 3's NIfTI exports (the volume with its background kept, read by the 3D brain-mask network)
-  curated/                   the hand-edit grid (L4 in-plane, 0.40 mm sections): <ID>_bg (the network's input), <ID>_mask and
-                             <ID>_holes (the networks' outputs), <ID>_mask_edited and <ID>_holes_edited (the hand
+  curated/                   the manual-edit grid (L4 in-plane, 0.40 mm sections): <ID>_bg (the network's input), <ID>_mask and
+                             <ID>_holes (the networks' outputs), <ID>_mask_edited and <ID>_holes_edited (the manual
                              corrections, which win)
   <ID>_blockface.ome.zarr    the reconstruction (L1 .. L4), <ID>_mask and <ID>_holes (L4), <ID>.info, steps/ (before the tubes are
                              filled)
@@ -108,7 +108,7 @@ class Subject:
         return os.path.join(self.work, "seg3d")
 
     @property
-    def curated_dir(self) -> str:               # the hand-edit grid
+    def curated_dir(self) -> str:               # the manual-edit grid
         return os.path.join(self.root, "curated")
 
     @property
@@ -120,7 +120,7 @@ class Subject:
         return os.path.join(self.curated_dir, f"{self.subject}_mask.nii.gz")
 
     @property
-    def mask_edited(self) -> str:               # hand-corrected brain mask (wins over the model output)
+    def mask_edited(self) -> str:               # manually corrected brain mask (wins over the model output)
         return os.path.join(self.curated_dir, f"{self.subject}_mask_edited.nii.gz")
 
     @property
@@ -132,7 +132,7 @@ class Subject:
         return os.path.join(self.curated_dir, f"{self.subject}_holes.nii.gz")
 
     @property
-    def holes_edited(self) -> str:              # hand-corrected marker tubes (win over the model output)
+    def holes_edited(self) -> str:              # manually corrected marker tubes (win over the model output)
         return os.path.join(self.curated_dir, f"{self.subject}_holes_edited.nii.gz")
 
     @property
@@ -192,7 +192,7 @@ class Subject:
         return os.path.join(self.work, "brainmask.ome.zarr")
 
     @property
-    def mask_edit_nii(self) -> str:             # full-resolution mask stack exported for hand editing
+    def mask_edit_nii(self) -> str:             # full-resolution mask stack exported for manual editing
         return self.snap("01_brainmask_L0")
 
     @property
@@ -209,7 +209,7 @@ class Subject:
 
     # ---------------------------------------------------------------- geometry
     def curation_f(self, path=None, check=True):
-        """Native sections per curated slice: the brain's pin; else the curated grid's own header (`path`, else the hand mask,
+        """Native sections per curated slice: the brain's pin; else the curated grid's own header (`path`, else the manual mask,
         the model mask or the bg, whichever exists); else (a new brain) round(curation_z_target_um / vz). With check=True the pin
         and the curated header must agree (the header carries the calibrated section step, vz_header). Ported from
         code/bf_geometry.curation_f."""
@@ -223,7 +223,7 @@ class Subject:
             return int(pin) if pin else max(1, int(round(target_um / float(self.vz))))
         step_um = float(np.linalg.norm(nib.load(p).affine[:3, 1])) * 1000.0
         # a curated header carries either the reconstruction step (a file written during a rebuild) or the calibrated one (after
-        # spacing.py, e.g. the hand edits of record): take the reading that is closer to an integer number of sections
+        # spacing.py, e.g. the manual edits of record): take the reading that is closer to an integer number of sections
         ratios = [step_um / self.vz, step_um / self.vz_header]
         f_hdr = max(1, int(round(min(ratios, key=lambda r: abs(r - round(r))))))
         if check and pin and int(pin) != f_hdr:

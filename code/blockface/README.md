@@ -10,7 +10,7 @@ $PY_TIRL code/blockface/linc-reconstruct edit-photo-masks export|import --subjec
 ```
 
 `all` runs the steps `photos`, `stack`, `prepare`, `mask`, `volume`, `tubes` and `spacing`, in that order.
-What each one does, needs and writes, the corrections by hand, and a new brain's settings file: [02, Steps 1, 2 and 6](../../docs/tutorials/02_blockface.md#step-1-reconstruct-the-volume).
+What each one does, needs and writes, the manual corrections, and a new brain's settings file: [02, Steps 1, 2 and 6](../../docs/tutorials/02_blockface.md#step-1-reconstruct-the-volume).
 
 | | |
 |---|---|

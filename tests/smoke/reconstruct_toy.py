@@ -8,7 +8,7 @@ You need
   settings/env/tirl.yml (TIRL importable, zarr2nii beside its Python).
 What it does
   Ten synthetic blockface photographs (a tan ellipsoid in blue-white ice, 20 um pixels, 400 um sections, no camera jumps) go through
-  the steps, with the two segmentations given by hand, as a user's hand corrections would be: the photographs' masks are written
+  the steps, with the two segmentations given manually, as a user's manual corrections would be: the photographs' masks are written
   into 01_brainmask/00_predict (where the 2D network's would go) and the 3D mask as curated/TOY1_mask_edited (which wins over the 3D
   network's). Steps: photos (ingest, normalize, finalize; in-process), `linc-reconstruct stack`, `prepare`, the 3D mask's input
   (segment3d.prep_mask), `volume` and `spacing`.
@@ -70,7 +70,7 @@ def build(tmp):
     import nibabel as nib
     from PIL import Image
     cfg = Subject(S)
-    print("== photos (ingest; the photographs' masks given by hand; normalize; finalize)", flush=True)
+    print("== photos (ingest; the photographs' masks given manually; normalize; finalize)", flush=True)
     photos.ingest(cfg)
     os.makedirs(cfg.brainmask("00_predict"), exist_ok=True)
     for p in sorted(Path(cfg.slices).glob("SLICE_*_0000.png")):
@@ -82,7 +82,7 @@ def build(tmp):
     py, cli = sys.executable, REPO / "code" / "blockface" / "linc-reconstruct"
     run(py, cli, "stack", "--subject", S, env=env)
     run(py, cli, "prepare", "--subject", S, env=env)
-    print("== the 3D mask's input (segment3d.prep_mask); the 3D mask given by hand (curated/TOY1_mask_edited)", flush=True)
+    print("== the 3D mask's input (segment3d.prep_mask); the 3D mask given manually (curated/TOY1_mask_edited)", flush=True)
     segment3d.prep_mask(cfg)
     bg = nib.load(cfg.curated_bg); b = np.asanyarray(bg.dataobj).astype(np.float32)
     m = (b[..., 0] - b[..., 2]) > 20

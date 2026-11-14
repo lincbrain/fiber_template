@@ -13,7 +13,7 @@ What it does
   segmentation network; the stand-in network's row, settings/figures.yaml networks.standin (MM12: of the eight brains without MRI,
   one whose stand-in b0 looks natural at the back; the author, 12 Nov 2026, chose it from the candidates sheet). The MRI row shows
   MM6's b0 (MRI_CASE): of the cases with a kept held-out mask, the one with the most signal outside the brain after MM3's (the
-  fraction of the image's energy outside the hand mask), and one that lies upright as scanned, so it needs no rotation for display.
+  fraction of the image's energy outside the manual mask), and one that lies upright as scanned, so it needs no rotation for display.
     input    the image the network reads, as it reads it: the segmentation networks' training case of the brain (the photograph at
              /4, the b0 image, the color volume with its background, the masked color volume), the synthesis networks' b0 input
     output   what the network returned for that input: for the segmentation networks the held-out mask of the cross-validation fold

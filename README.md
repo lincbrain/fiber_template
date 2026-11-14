@@ -55,7 +55,7 @@ Then start with the tutorials: [docs/tutorials/00_start_here.md](docs/tutorials/
 |---|---|
 | Tutorials | Learn the method step by step, on the paper's brains: [00 start here](docs/tutorials/00_start_here.md), [01 MRI](docs/tutorials/01_mri.md), [02 blockface](docs/tutorials/02_blockface.md), [03 histology](docs/tutorials/03_histology.md) |
 | How-to | [Bring a new brain into the template](docs/how-to/new_brain.md) |
-| Reference | Each folder's README (below), [steps.yaml](steps.yaml) for every step of the paper, and `--help` of every command |
+| Reference | Each folder's README (below), [steps.yaml](steps.yaml) for every step of the paper, `--help` of every command, and the [brain identifiers](docs/brain_identifiers.md) (the paper's names, the Specimen IDs and LINC's published IDs) |
 | Explanation | The paper (in preparation); [tests/README.md](tests/README.md) on what decides whether a rerun matches the paper |
 
 ## Repository layout

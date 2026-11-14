@@ -12,7 +12,7 @@ reference grid), T2 (multi-echo MSME, 0.5 mm) and SANDI microstructure (0.5 mm).
      inputs here: $LINC_DATA/sub-<ID>/xfm/{t2,micro}-native__to__b0-native (blockface.registration, anatomix + FireANTs).
   4. the canonical frame (mri.canonical: write_frames_nmt -> canonical.json).
   5. the construction inputs (`prepare`): every payload resampled ONCE onto the canonical grid (antsApplyTransforms with the
-     canonical rigid first, then the within-MRI warp), every channel cut to the brain's final hand-edited mask:
+     canonical rigid first, then the within-MRI warp), every channel cut to the brain's final manually edited mask:
        t2_modelmask  T2 head x final mask, 1-99 percentile -> (0, 4095]
        frac1, frac2  the session-mask SANDI fractions (renormalized on the carried micro mask) x final mask; voxels of the final mask
                      outside the micro brain mask (~1 %) have no values and stay 0 (never filled)
@@ -25,7 +25,7 @@ reference grid), T2 (multi-echo MSME, 0.5 mm) and SANDI microstructure (0.5 mm).
     python -m mri.mri_prep prepare --subject MF283 --final-mask <MF283_mask_EDIT.nii.gz> --tensor <tensor_d9_dwigrid>
         [--mri-root $LINC_DATA/sub-MF283/mri] [--xfm-root $LINC_DATA/sub-MF283/xfm] [--canonical <canonical.json>] [--out <dir>]
 
-Ported from the analysis project's mri/code/rebuild_prep.py (`canon --rule finalhand`, the inputs of record), preprocess_mri.py (the
+Ported from the analysis project's mri/code/rebuild_prep.py (`canon` with the final manually edited masks, the inputs of record), preprocess_mri.py (the
 staging helpers) and tensor_refit_d9.py (`--from-existing`, the tensor of record). Paths come from settings/mri_construction.yaml
 `prep.layout` relative to each brain's MRI folder.
 """
@@ -314,10 +314,10 @@ def _tensor_qc(To, Tn, M):
     ang = np.degrees(np.arccos(np.clip(np.abs((v_o * v_n).sum(1)), 0, 1)))[wm]
     return dict(fa_r=float(np.corrcoef(fa_o, fa_n)[0, 1]), fa_median_current=float(np.median(fa_o)), fa_median_d9=float(np.median(fa_n)),
                 v1_angle_deg_wm_median=float(np.median(ang)), v1_angle_deg_wm_p90=float(np.percentile(ang, 90)), wm_voxels=int(wm.sum()),
-                tensor_zero_in_hand_mask=int((np.abs(Tn[M]).sum(-1) == 0).sum()))
+                tensor_zero_in_manual_mask=int((np.abs(Tn[M]).sum(-1) == 0).sum()))
 
 
-# --------------------------------------------------------------------------- 5. construction inputs (rebuild_prep canon, finalhand)
+# --------------------------------------------------------------------------- 5. construction inputs (rebuild_prep canon, the final manually edited masks)
 
 def _apply(src, ref, transforms, dst, interp):
     cmd = [ants("antsApplyTransforms"), "-d", "3", "-i", str(src), "-r", str(ref), "-o", str(dst), "-n", interp, "--float", "1"]
@@ -348,7 +348,7 @@ def check_masked(image, mask, tol=0.001, dist_mm=2.0, rel=0.01, label=""):
 
 def prepare(b, final_mask, tensor, out, canonical_json=None, check_inputs=True):
     """The construction inputs of one brain (see the module docstring) -> out/. `b` is a Brain; final_mask the brain's final
-    hand-edited mask on the dwi b0 grid (values exactly {0, 1}); tensor the D9 tensor on the dwi grid; canonical_json the brain's
+    manually edited mask on the dwi b0 grid (values exactly {0, 1}); tensor the D9 tensor on the dwi grid; canonical_json the brain's
     frame (default <mri_root>/landmarks/canonical.json)."""
     out = Path(out)
     if out.exists():
@@ -426,7 +426,7 @@ def prepare(b, final_mask, tensor, out, canonical_json=None, check_inputs=True):
     C.mirror_volume(out / "tensor_vr.nii.gz", tmpf, kind="tensor"); os.replace(tmpf, out / "tensor_vr_flip.nii.gz")
     rec = dict(subject=b.subject, model_mask_source=str(mask_src), model_mask_md5=mask_md5, canonical_frame=str(cj_path),
                within_mri_warps={k: v[0] for k, v in chain.items()}, coverage_in_model_mask=cov,
-               tensor_source=f"{tensor} via vecreg, zeroed outside model_mask", rule="finalhand",
+               tensor_source=f"{tensor} via vecreg, zeroed outside model_mask", rule="final_manual_annotations",
                created=time.strftime("%Y-%m-%dT%H:%M:%S%z"))
     if check_inputs:
         rec["input_mask_check"] = [check_masked(out / c, out / "model_mask.nii.gz", label=f"{b.subject} {c}")
@@ -442,7 +442,7 @@ def main(argv=None):
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("prepare", help="the construction inputs of one brain")
     p.add_argument("--subject", required=True)
-    p.add_argument("--final-mask", required=True, help="the brain's final hand-edited mask (dwi b0 grid, values {0, 1})")
+    p.add_argument("--final-mask", required=True, help="the brain's final manually edited mask (dwi b0 grid, values {0, 1})")
     p.add_argument("--tensor", required=True, help="the D9 tensor on the dwi grid (tensor_d9)")
     p.add_argument("--mri-root"); p.add_argument("--xfm-root"); p.add_argument("--canonical")
     p.add_argument("--out", help="default <mri-root>/construction_inputs")

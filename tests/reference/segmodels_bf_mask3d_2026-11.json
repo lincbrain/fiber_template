@@ -1,7 +1,7 @@
 {
  "data": {
   "task": "bf_mask3d",
-  "task_json_md5": "73f324f7bb57589814bb3eba4e0c5ff6",
+  "task_json_md5": "83f5990f2a81d686e3050a83087ca9ec",
   "card_notes": [
    "Compared with the masks of record, the released model's mask extends one voxel further on about a quarter to a half of the lines at anterior-facing surfaces (anterior face 26\u201342 % vs posterior 6\u201314 % of lines, in-sample on MF278, MR243, MR257, MR263), where brain tissue just below the cut surface shows through the ice; the masks of record, and the earlier network (Dataset506) on brains outside its training set (anterior 8 % vs posterior 4\u20136 % of lines on MR257 and MR263), follow the cut face.",
    "In MR243 the mask the models were trained on is about one voxel short over the left hemisphere (left face 50 % vs right 16 % of lines): the voxel it leaves out is tissue-colored on the photograph, and the shortfall is inherited from the automatic mask the record was edited from (the two agree on 89 % of left-face lines, Dice 0.997). It was corrected after training (left face 13 % vs right 16 % of lines against the corrected label); on the anterior face the corrected left half now reaches further than the right (the model lies outside it on 18 % vs 33 % of lines, before 52 % vs 33 %).",
@@ -56,149 +56,149 @@
     "MF191": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MF196": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MF204": {
      "n_images": 1,
      "label_kind": [
-      "hand-constrained"
+      "model_within_manual_annotations"
      ]
     },
     "MF275": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MF278": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MF282": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR243": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR244": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR247": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR248": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR249": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR250": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR251": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR252": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR253": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR254": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR256": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR257": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR261": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR263": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     },
     "MR273": {
      "n_images": 1,
      "label_kind": [
-      "hand"
+      "manual_annotations"
      ]
     }
    },
    "label_kind": {
-    "hand": 20,
-    "hand-constrained": 1
+    "manual_annotations": 20,
+    "model_within_manual_annotations": 1
    },
    "label_provenance": [
     {
-     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar: transported by the auto-mask displacement after a re-alignment",
+     "text": "manually corrected (curated from model predictions, human in the loop); sidecar: transported by the auto-mask displacement after a re-alignment",
      "n": 10
     },
     {
-     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar: re-baselined 2026-09-21 when geometry_id became semantic (affine+shape+jumps+alignm",
+     "text": "manually corrected (curated from model predictions, human in the loop); sidecar: re-baselined 2026-09-21 when geometry_id became semantic (affine+shape+jumps+al",
      "n": 3
     },
     {
-     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar: resynced to the current alignment",
+     "text": "manually corrected (curated from model predictions, human in the loop); sidecar: resynced to the current alignment",
      "n": 3
     },
     {
-     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar:",
+     "text": "manually corrected (curated from model predictions, human in the loop); sidecar:",
      "n": 1
     },
     {
@@ -206,15 +206,15 @@
      "n": 1
     },
     {
-     "text": "hand-constrained: the 3D model's mask restricted to a hand-edited L2 mask of the aligned stack (+1 L4 voxel in-plane), largest component (release yaml)",
+     "text": "the 3D model's mask restricted to a manually edited L2 mask of the aligned stack (+1 L4 voxel in-plane), largest component (release yaml)",
      "n": 1
     },
     {
-     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar: curator edit 2026-09-24 06:48, accepted as drawn",
+     "text": "manually corrected (curated from model predictions, human in the loop); sidecar: curator edit 2026-09-24 06:48, accepted as drawn",
      "n": 1
     },
     {
-     "text": "hand-corrected (curated from model predictions, human in the loop); sidecar: curator edit on the re-segmented model output, accepted as drawn (2026-09-23)",
+     "text": "manually corrected (curated from model predictions, human in the loop); sidecar: curator edit on the re-segmented model output, accepted as drawn (2026-09-23)",
      "n": 1
     }
    ]
@@ -381,7 +381,7 @@
      "hd95_mm": 0.5727128620970083,
      "assd_mm": 0.25798309377640977,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9004852148219255,
       "hd95_mm": 25.619447359084937
@@ -395,7 +395,7 @@
      "hd95_mm": 0.3659999966621399,
      "assd_mm": 0.23489346713486017,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9921454074040339,
       "hd95_mm": 0.3199999928474426
@@ -409,7 +409,7 @@
      "hd95_mm": 0.7155417368063282,
      "assd_mm": 0.31354798815183393,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9873850968120477,
       "hd95_mm": 0.4525483298441468
@@ -423,7 +423,7 @@
      "hd95_mm": 1.011928828635509,
      "assd_mm": 0.34458307838133073,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9853069180923094,
       "hd95_mm": 0.4525483298441468
@@ -437,7 +437,7 @@
      "hd95_mm": 0.5782732927815442,
      "assd_mm": 0.2671185126567147,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9871295982633383,
       "hd95_mm": 0.4525483298441468
@@ -451,7 +451,7 @@
      "hd95_mm": 0.4320000112056732,
      "assd_mm": 0.32930915531960764,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.988627467699813,
       "hd95_mm": 0.4320000112056732
@@ -465,7 +465,7 @@
      "hd95_mm": 0.48616457396549345,
      "assd_mm": 0.25058614310197486,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9898710123149251,
       "hd95_mm": 0.48616457396549345
@@ -479,7 +479,7 @@
      "hd95_mm": 0.6399999856948853,
      "assd_mm": 0.27899008972281064,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9884046844690013,
       "hd95_mm": 0.48166378909156765
@@ -493,7 +493,7 @@
      "hd95_mm": 0.36000001430511475,
      "assd_mm": 0.17008821254153214,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9916899724364756,
       "hd95_mm": 0.3199999928474426
@@ -507,7 +507,7 @@
      "hd95_mm": 1.1089651928652071,
      "assd_mm": 0.4034356065424965,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9798579431139485,
       "hd95_mm": 0.8700000047683716
@@ -521,7 +521,7 @@
      "hd95_mm": 0.3199999928474426,
      "assd_mm": 0.1860325480025823,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9933926932272032,
       "hd95_mm": 0.3199999928474426
@@ -535,7 +535,7 @@
      "hd95_mm": 1.7545369550846783,
      "assd_mm": 0.43921040545757706,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9796889223421342,
       "hd95_mm": 0.8504116838587402
@@ -549,7 +549,7 @@
      "hd95_mm": 0.5727128620970083,
      "assd_mm": 0.27880482259747974,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9867457816295713,
       "hd95_mm": 0.4320000112056732
@@ -563,7 +563,7 @@
      "hd95_mm": 1.5619538894885754,
      "assd_mm": 0.4640656901091676,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9700171932627165,
       "hd95_mm": 1.1399999856948853
@@ -577,7 +577,7 @@
      "hd95_mm": 0.4525483298441468,
      "assd_mm": 0.2496202179341396,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9900838166684032,
       "hd95_mm": 0.3659999966621399
@@ -591,7 +591,7 @@
      "hd95_mm": 0.48616457396549345,
      "assd_mm": 0.258612208185909,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9911405868006282,
       "hd95_mm": 0.4525483298441468
@@ -605,7 +605,7 @@
      "hd95_mm": 0.4525483298441468,
      "assd_mm": 0.14807845042662574,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9900393441737019,
       "hd95_mm": 0.4525483298441468
@@ -619,7 +619,7 @@
      "hd95_mm": 0.6880000233650208,
      "assd_mm": 0.27452002574933265,
      "counted": true,
-     "label_kind": "hand-constrained",
+     "label_kind": "model_within_manual_annotations",
      "raw": {
       "dice": 0.9786838680614646,
       "hd95_mm": 0.6880000233650208
@@ -633,7 +633,7 @@
      "hd95_mm": 0.4320000112056732,
      "assd_mm": 0.2814150006610519,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9862184189139653,
       "hd95_mm": 0.4320000112056732
@@ -647,7 +647,7 @@
      "hd95_mm": 0.800999367922035,
      "assd_mm": 0.2976327818799522,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9901938617426621,
       "hd95_mm": 0.4525483298441468
@@ -661,7 +661,7 @@
      "hd95_mm": 0.3199999928474426,
      "assd_mm": 0.1293550352625939,
      "counted": true,
-     "label_kind": "hand",
+     "label_kind": "manual_annotations",
      "raw": {
       "dice": 0.9902100732969495,
       "hd95_mm": 0.36000001430511475
@@ -1079,7 +1079,7 @@
      "fp_area_mm2": null
     }
    ],
-   "caveat": "Dataset506_BFmask5 (nnU-Net ResEnc-M 3d_fullres, fold 0, checkpoint_final, default mirroring; post-processing: largest 26-connected component + fill holes, code/segment.py post_mask). Held-out brains only (outside its training set); every hand label began as a model prediction (edited vs auto Dice 0.975-0.999), which favors the incumbent."
+   "caveat": "Dataset506_BFmask5 (nnU-Net ResEnc-M 3d_fullres, fold 0, checkpoint_final, default mirroring; post-processing: largest 26-connected component + fill holes, code/segment.py post_mask). Held-out brains only (outside its training set); every manual label began as a model prediction (edited vs auto Dice 0.975-0.999), which favors the incumbent."
   },
   "all_model": {
    "run": "models_wrapup/runs/bf_mask3d/fold_all",

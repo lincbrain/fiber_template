@@ -8,11 +8,11 @@ What it does
     ingest              raw photographs  -> 00_slices/SLICE_<k>_0000.png (a black frame for a missing or unreadable photograph,
                                             so the order of the sections is kept; turned 180 degrees when rotate180)
     normalize_masks     the 2D masks     -> 01_brainmask/00_predict (x50 PNGs, interior holes filled: mask_rules.fill_photo_mask)
-    finalize_brainmask  00_predict       -> 01_brainmask/01_final (existing files are kept, so a hand correction survives)
+    finalize_brainmask  00_predict       -> 01_brainmask/01_final (existing files are kept, so a manual correction survives)
     stack_blockface     00_slices        -> _work/blockface_raw.ome.zarr
     stack_masks         01_final         -> _work/brainmask.ome.zarr
                         (both stacks put slice 0 at the frame count's front end, or at the brain's stack_origin_frames')
-    masks_to_png        an edited stack  -> 01_final (a hand-edited stack written back)
+    masks_to_png        an edited stack  -> 01_final (a manually edited stack written back)
 You get
   00_slices/, 01_brainmask/{00_predict, 01_final}/ and the two working stacks under _work/.
 
@@ -103,7 +103,7 @@ def normalize_masks(cfg):
 def finalize_brainmask(cfg):
     """Accept the brain masks as final -> 01_brainmask/01_final (what reconstruction stacks).
     Copy of the automatic 00_predict while the fsleyes edit is skipped; existing 01_final files are
-    kept, so a hand-corrected slice survives a re-run and 00_predict is never overwritten."""
+    kept, so a manually corrected slice survives a re-run and 00_predict is never overwritten."""
     src, dst = cfg.brainmask("00_predict"), cfg.brainmask("01_final")
     os.makedirs(dst, exist_ok=True)
     n = 0
@@ -181,7 +181,7 @@ def _slice_axis(shape, nz):
 
 
 def export_for_editing(cfg):
-    """The stage-2 exports for a hand correction of the 2D masks (code/run.py stage 2): the raw stack at L2
+    """The stage-2 exports for a manual correction of the 2D masks (code/run.py stage 2): the raw stack at L2
     (nii/00_blockface_raw_L2) and the full-resolution mask stack (nii/01_brainmask_L0), to edit in fsleyes."""
     import nibabel as nib
     from blockface import external

@@ -31,10 +31,10 @@ steps:
   # ---- setup
   - name: data-folders
     group: setup
-    title: Data folders of all 21 brains (records linked, hand inputs copied)
+    title: Data folders of all 21 brains (records linked, manual inputs copied)
     reads: the records ($LINC_RECORDS/data/sub-<ID>, read only); settings/brains/<ID>.yaml
     writes: $LINC_DATA/sub-<ID>/ (links to the records; xfm/ empty, xfm_record/ the entries of record); $LINC_REBUILD_DATA/sub-<ID>/blockface/ (copies
-      of the hand inputs only)
+      of the manual inputs only)
     run: code/shared/make_local_data.sh $(dirname $LINC_DATA) MF278 MF275 MF282 MF191 MF196 MF204 MR243 MR252 MR256 MR249 MR250 MR251 MR253 MR254 MR257
       MR261 MR244 MR247 MR248 MR263 MR273 && code/shared/make_local_data.sh $(dirname $LINC_REBUILD_DATA) --rebuild MF278 --rebuild MF275 --rebuild MF282
       --rebuild MF191 --rebuild MF196 --rebuild MF204 --rebuild MR243 --rebuild MR252 --rebuild MR256 --rebuild MR249 --rebuild MR250 --rebuild MR251
@@ -42,7 +42,7 @@ steps:
     check: 'n=0; for S in MF278 MF275 MF282 MF191 MF196 MF204 MR243 MR252 MR256 MR249 MR250 MR251 MR253 MR254 MR257 MR261 MR244 MR247 MR248 MR263
       MR273; do E=$LINC_REBUILD_DATA/sub-$S/blockface/curated/$S; [ -e $LINC_DATA/sub-$S/blockface/$S"_blockface.ome.zarr" ] && [ -f $E"_mask_edited.nii.gz"
       ] && [ -f $E"_holes_edited.nii.gz" ] && [ ! -L $E"_mask_edited.nii.gz" ] && n=$((n+1)); done; l=$(find $LINC_REBUILD_DATA/sub-*/blockface -type
-      l | wc -l); echo "$n of 21 brains: products of record linked, hand inputs copied; $l links in the rebuild''s blockface folders"; [ $n -eq 21
+      l | wc -l); echo "$n of 21 brains: products of record linked, manual inputs copied; $l links in the rebuild''s blockface folders"; [ $n -eq 21
       ] && [ $l -eq 0 ]'
     expect: all 21 brains in both folders, and no link into the records in the rebuild's blockface folders (so a reconstruction cannot write into
       the records)
@@ -454,8 +454,8 @@ steps:
   - name: mri-prep
     group: mri-template
     for: [MF283]
-    title: Prepare one brain's MRI for registration (linc-mri prep, hand-edited mask)
-    reads: the brain's b0 and hand-edited brain mask of record
+    title: Prepare one brain's MRI for registration (linc-mri prep, manually edited mask)
+    reads: the brain's b0 and manually edited brain mask of record
     writes: $LINC_WORK/mri_prep/{id}/dwi/{b0_brain,b0_brain_n4,b0_brain_n4_bias}.nii.gz, masks/, provenance
     run: $PY code/mri/linc-mri prep --subject {id} --image $LINC_PRODUCTS/mri/data/sub-{id}/dwi/b0.nii.gz --mask $LINC_PRODUCTS/mri/data/sub-{id}/masks/dwi_brain_mask.nii.gz
       --mri-root $LINC_WORK/mri_prep/{id}
@@ -479,7 +479,7 @@ steps:
     group: blockface
     for: [MR252, MR263]
     title: Reconstruct the blockface volume from the photographs
-    reads: the photographs ($LINC_RAW/blockface_curated); the hand inputs ($LINC_REBUILD_DATA/sub-{id}/blockface/curated, 01_brainmask/01_final);
+    reads: the photographs ($LINC_RAW/blockface_curated); the manual inputs ($LINC_REBUILD_DATA/sub-{id}/blockface/curated, 01_brainmask/01_final);
       settings/brains/{id}.yaml
     writes: $LINC_REBUILD_DATA/sub-{id}/blockface/ ({id}_blockface.ome.zarr, {id}_mask, {id}_holes, {id}_blockface_L2, {id}.info)
     run: LINC_DATA=$LINC_REBUILD_DATA $PY_TIRL code/blockface/linc-reconstruct all --subject {id}
@@ -497,13 +497,13 @@ steps:
     optional: false
     note: 'Rerun from a clone on 3 Nov on a loaded machine: MM2 in 9 h 10 min, identical; MM14 in 9 h 52 min, identical except its volume step, whose
       illumination setting the release then gained (shading poly2+zref), after which volume, tubes and spacing reran identical (46 min, 80 GB peak).
-      The hand-corrected masks win over the networks'' outputs, so the card model does not matter; the GPU serves the segmentation (1.5 GB for photos,
+      The manually corrected masks win over the networks'' outputs, so the card model does not matter; the GPU serves the segmentation (1.5 GB for photos,
       10 GB for mask and tubes).'
   - name: reconstruct
     group: blockface
     for: [MF278, MF275, MF282, MR256, MR250, MR251, MR254, MR257, MR261, MR273]
     title: Reconstruct the blockface volume from the photographs
-    reads: the photographs ($LINC_RAW/blockface_curated); the hand inputs ($LINC_REBUILD_DATA/sub-{id}/blockface/curated, 01_brainmask/01_final);
+    reads: the photographs ($LINC_RAW/blockface_curated); the manual inputs ($LINC_REBUILD_DATA/sub-{id}/blockface/curated, 01_brainmask/01_final);
       settings/brains/{id}.yaml
     writes: $LINC_REBUILD_DATA/sub-{id}/blockface/ ({id}_blockface.ome.zarr, {id}_mask, {id}_holes, {id}_blockface_L2, {id}.info)
     run: LINC_DATA=$LINC_REBUILD_DATA $PY_TIRL code/blockface/linc-reconstruct all --subject {id}
@@ -520,11 +520,11 @@ steps:
     timed: estimated
     optional: false
     note: 'Not rerun from a clone before the lab run of 6-7 Nov, where MM5 came out identical and MF5 and MF6 differed by a grid shift of whole voxels:
-      the hand edits of the four 26 um brains (MF5, MF6, MF7, MM15) carry the calibrated 27 um in-plane spacing, which the reconstruction now scales
+      the manual edits of the four 26 um brains (MF5, MF6, MF7, MM15) carry the calibrated 27 um in-plane spacing, which the reconstruction now scales
       back before aligning to them. Rebuilt with that code from stack on 7-8 Nov, MF5, MF6, MF7 and MM15 were 18 of 18 identical. MM10''s stack of
       record held 1,587 frames (a block appended after its 1,383 photographs and later cut off), and its world origin and MR261.info count them: settings/brains/MR261.yaml
       pins that count (stack_origin_frames), and MM10 rebuilt from stack on 8 Nov was 18 of 18 identical. MM8''s volume of record was reconstructed
-      with an earlier brain mask, and the mask was then edited by hand without reconstructing again, which only cleared the image where tissue was
+      with an earlier brain mask, and the mask was then manually edited without reconstructing again, which only cleared the image where tissue was
       removed: settings/brains/MR254.yaml names that earlier mask (reconstruction_mask; code/shared/make_local_data.sh --rebuild copies it), and MM8 rebuilt
       from stack on 8 Nov was 18 of 18 identical. Time, memory and disk from MM2 and MM14 (similar stacks: 884 to 1,427 sections); the camera jumps
       (settings/brains/{id}.yaml) take about 15 min each.'
@@ -532,14 +532,14 @@ steps:
     group: blockface
     for: [MR253]
     title: Reconstruct the blockface volume from the photographs
-    reads: the photographs ($LINC_RAW/blockface_curated); the hand inputs ($LINC_REBUILD_DATA/sub-{id}/blockface/curated, 01_brainmask/01_final);
+    reads: the photographs ($LINC_RAW/blockface_curated); the manual inputs ($LINC_REBUILD_DATA/sub-{id}/blockface/curated, 01_brainmask/01_final);
       settings/brains/{id}.yaml
     writes: $LINC_REBUILD_DATA/sub-{id}/blockface/ ({id}_blockface.ome.zarr, {id}_mask, {id}_holes, {id}_blockface_L2, {id}.info)
     run: LINC_DATA=$LINC_REBUILD_DATA $PY_TIRL code/blockface/linc-reconstruct all --subject {id}
     check: $PY tests/compare/compare_reconstruction.py {id} $LINC_REBUILD_DATA/sub-{id}/blockface $LINC_PRODUCTS/data/sub-{id}/blockface --min-r 0.96 --min-dice
       0.999 --max-shift-mm 0.025
     expect: within the tolerance of the paper's volume, mask and tubes, not identical (every level of the four stores and the three NIfTI files have
-      r at least 0.96 or Dice at least 0.999, and an origin shift of at most 0.025 mm; the hand-corrected mask and tubes identical)
+      r at least 0.96 or Dice at least 0.999, and an origin shift of at most 0.025 mm; the manually corrected mask and tubes identical)
     needs: [data-folders]
     gpu_gb: 10
     gpu_model: ''
@@ -554,13 +554,13 @@ steps:
       stage a second time on the working stack that an earlier run had already corrected in place (the jumps applied, the sections of the seven unreadable
       photographs filled), and a single pass from the photographs does not repeat that. Rerun from a clone in the lab run of 6-7 Nov (18 h): the crop
       is one pixel row off (origin shift 0.020 mm); the volume''s levels have r 0.9976 to 0.9993 and the camera-jump stage''s store 0.961 to 0.992
-      (its full-resolution level is the most sensitive to the row); the masks have Dice 0.99902; the hand-corrected mask and tubes are identical.
+      (its full-resolution level is the most sensitive to the row); the masks have Dice 0.99902; the manually corrected mask and tubes are identical.
       The tolerance is set just beyond these; {id}.info is listed, not tested.'
   - name: reconstruct
     group: blockface
     for: [MF191]
     title: Reconstruct the blockface volume from the photographs
-    reads: the photographs ($LINC_RAW/blockface_curated); the hand inputs and MF8's recorded alignment to its external series ($LINC_REBUILD_DATA/sub-{id}/blockface);
+    reads: the photographs ($LINC_RAW/blockface_curated); the manual inputs and MF8's recorded alignment to its external series ($LINC_REBUILD_DATA/sub-{id}/blockface);
       settings/brains/{id}.yaml
     writes: $LINC_REBUILD_DATA/sub-{id}/blockface/ ({id}_blockface.ome.zarr, {id}_mask, {id}_holes, {id}_blockface_L2, {id}.info)
     run: LINC_DATA=$LINC_REBUILD_DATA $PY_TIRL code/blockface/linc-reconstruct all --subject {id}
@@ -582,7 +582,7 @@ steps:
     group: blockface
     for: [MF196, MR243, MR249, MR244, MR247, MR248]
     title: Reconstruct the blockface volume from the photographs
-    reads: the photographs ($LINC_RAW/blockface_curated); the hand inputs ($LINC_REBUILD_DATA/sub-{id}/blockface; for MF9 its recorded alignment
+    reads: the photographs ($LINC_RAW/blockface_curated); the manual inputs ($LINC_REBUILD_DATA/sub-{id}/blockface; for MF9 its recorded alignment
       to its external series); settings/brains/{id}.yaml
     writes: $LINC_REBUILD_DATA/sub-{id}/blockface/ ({id}_blockface.ome.zarr, {id}_mask, {id}_holes, {id}_blockface_L2, {id}.info)
     run: LINC_DATA=$LINC_REBUILD_DATA $PY_TIRL code/blockface/linc-reconstruct all --subject {id}
@@ -604,13 +604,13 @@ steps:
     group: blockface
     for: [MF204]
     title: Reconstruct the blockface volume from the photographs
-    reads: the photographs ($LINC_RAW/blockface_curated); the hand inputs ($LINC_REBUILD_DATA/sub-{id}/blockface/curated); settings/brains/{id}.yaml
+    reads: the photographs ($LINC_RAW/blockface_curated); the manual inputs ($LINC_REBUILD_DATA/sub-{id}/blockface/curated); settings/brains/{id}.yaml
     writes: $LINC_REBUILD_DATA/sub-{id}/blockface/ ({id}_blockface.ome.zarr, {id}_mask, {id}_holes, {id}_blockface_L2, {id}.info)
     run: LINC_DATA=$LINC_REBUILD_DATA $PY_TIRL code/blockface/linc-reconstruct all --subject {id}
     check: $PY tests/compare/compare_reconstruction.py {id} $LINC_REBUILD_DATA/sub-{id}/blockface $LINC_PRODUCTS/data/sub-{id}/blockface --min-r 0.99 --min-dice
       0.999 --max-shift-mm 0.135 --stack-min-r 0.80 --stack-min-dice 0.97
     expect: within the tolerance of the paper's volume, mask and tubes, not identical (the reconstruction's two stores and NIfTI volume have r at
-      least 0.99 and an origin shift of at most 0.135 mm; the hand-corrected mask and tubes identical; the prepared stack, cropped differently and
+      least 0.99 and an origin shift of at most 0.135 mm; the manually corrected mask and tubes identical; the prepared stack, cropped differently and
       measured by world position, has r at least 0.80 and Dice at least 0.97)
     needs: [data-folders]
     gpu_gb: 10
@@ -623,12 +623,12 @@ steps:
     timed: clone
     optional: false
     note: 'The paper''s reconstruction of MF10 cannot be reproduced exactly from the photographs. Its photograph masks came from an earlier network
-      and were then cleaned and edited by hand, and they were not kept (01_brainmask is empty), so the release''s network makes them anew. That network
+      and were then cleaned and manually edited, and they were not kept (01_brainmask is empty), so the release''s network makes them anew. That network
       gives the same masks on every run (71 of 71 identical on RTX 6000 Ada and RTX 4000 Ada cards), and two rebuilds from a clone were identical
       to each other (18 of 18 items; 3.2 h and 2.4 h), but it keeps a non-brain region joined to the brain. The crop of the prepared stack (02_blockface)
       is therefore wider (2,304 pixels against 1,536) and starts 771 pixels further left and 1 pixel higher; neither offset is a multiple of 16, so
       the reconstruction lands 3 and 1 photograph pixels (0.129 and 0.043 mm) off the paper''s grid. The reconstruction''s two stores and its NIfTI
-      volume have r 0.992 to 0.998 and an origin shift of 0.129 mm; the hand-corrected mask and tubes are identical. The prepared stack and its mask,
+      volume have r 0.992 to 0.998 and an origin shift of 0.129 mm; the manually corrected mask and tubes are identical. The prepared stack and its mask,
       cropped differently, are measured by world position: r 0.802 to 0.834, lower because of the non-brain region the release''s network keeps, and
       Dice 0.972. The tolerance is set just beyond these; {id}.info is listed, not tested. 14 camera jumps, about 15 min each.'
 
@@ -1314,7 +1314,7 @@ steps:
     group: histology
     for: [MR243, MR256]
     title: Register the brain's histology to its blockface photographs (TIRL)
-    reads: the blockface store; the sections (JPEG 2000); the hand-made match table; the atlas regions on the blockface
+    reads: the blockface store; the sections (JPEG 2000); the manually made match table; the atlas regions on the blockface
     writes: $LINC_DATA/sub-{id}/histology/registration/
     run: $PY_TIRL code/histology/linc-histology all --subject {id} --store $LINC_PRODUCTS/data/sub-{id}/blockface/{id}_blockface.ome.zarr --histology $LINC_RAW/linc_000003/sourcedata/sub-{id}/micr
       --table $LINC_RAW/match_tables_manual_annotations/num_{id}.txt --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --out $LINC_DATA/sub-{id}/histology/registration
@@ -1439,7 +1439,7 @@ steps:
     group: labels
     for: [MR256]
     title: Interpolate the labels between sections, from the paper's pushed labels
-    reads: the paper's pushed labels; the paper's registered sections; the regions; the hand-made match table
+    reads: the paper's pushed labels; the paper's registered sections; the regions; the manually made match table
     writes: $LINC_WORK/labels/{id}/blockface/{id}_*_bfnative_L2_demons.nii.gz
     run: $PY code/labels/linc-labels interpolate --subject {id} --labels $LINC_PRODUCTS/labels/push_tracer_h9/{id}/{id}_*_bfnative_L2.nii.gz --registrations
       $LINC_PRODUCTS/data_arm_h9_preinp_r058/sub-{id}/blockface/06_histo2bf/tirl --regions $LINC_PRODUCTS/labels/regions_t2_final/{id}_regions_t2.nii.gz --match-table
@@ -1594,7 +1594,7 @@ steps:
   - name: training-segment-mri-brainmask
     group: training
     title: Train the MRI brain-mask segmentation model again (all brains)
-    reads: settings/segment/mri_brainmask.json and the hand-corrected MRI masks it lists (records)
+    reads: settings/segment/mri_brainmask.json and the manually corrected MRI masks it lists (records)
     writes: $LINC_WORK/segment/runs/mri_brainmask/fold_all/model.pt, spec.json, record.json
     run: $PY_DEEP code/shared/linc-segment train --task settings/segment/mri_brainmask.json --fold all
     check: cmp $LINC_WORK/segment/runs/mri_brainmask/fold_all/model.pt $LINC_MODELS/segment/mri_brainmask/model.pt && echo "model.pt byte-identical

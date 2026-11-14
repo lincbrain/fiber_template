@@ -38,7 +38,7 @@ export LINC_RECORDS=$_IN LINC_PRODUCTS=$_IN LINC_MODELS=$_O/models
 export LINC_COMPLETION_PREPARED=$_IN/isbi2027/data/canon_d3                    # the 13 brains with MRI
 export LINC_COMPLETION_PREPARED_STANDIN=$_IN/isbi2027/data/canon_d3n_prod_lo0  # the 8 brains without MRI (stand-in b0)
 
-# the working folders, built once: local_data (the products: registration, histology, labels), local_rebuild (the hand inputs only, to
+# the working folders, built once: local_data (the products: registration, histology, labels), local_rebuild (the manual inputs only, to
 # reconstruct from the photographs) and local_mri (the MRI build of the four template brains)
 _RAW="--raw blockface_curated=$_IN/raw/blockface_curated --raw blockface_segmentation=$_IN/raw/blockface_segmentation
       --raw macaque_mri=$_IN/raw/macaque_mri --raw microstructure=$_IN/raw/microstructure

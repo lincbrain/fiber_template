@@ -1,15 +1,15 @@
-"""Hand corrections of the curated masks, folded back onto their grid, and the quick tube re-fill (Methods, "Blockface
-reconstruction": the masks were corrected by hand where needed).
+"""Manual corrections of the curated masks, folded back onto their grid, and the quick tube re-fill (Methods, "Blockface
+reconstruction": the masks were manually corrected where needed).
 
 You need
-  a hand-edited final <S>_mask or <S>_holes (L4, native sections, tight crop), and the brain's <S>.info (the grid: factor, kept
+  a manually edited final <S>_mask or <S>_holes (L4, native sections, tight crop), and the brain's <S>.info (the grid: factor, kept
   sections, crop).
 What it does
   fold_edits(cfg, "mask"|"holes")  folds the edit back onto the curated grid (L4, 0.40 mm sections, uncropped)
   clamp_holes                      keeps every tube voxel inside the brain mask
   reinpaint                        re-fills the tubes on steps/<S>_03_color after a tubes-only edit (no full reconstruction)
 You get
-  curated/<S>_mask_edited or <S>_holes_edited (the hand corrections, which win over the models' outputs); after reinpaint, the
+  curated/<S>_mask_edited or <S>_holes_edited (the manual corrections, which win over the models' outputs); after reinpaint, the
   reconstruction <S>_blockface.ome.zarr, <S>_holes and <S>.info rewritten.
 
 Ported unchanged from the analysis project's code/curate.py (the one-off migration helpers are not part of the release).
@@ -34,7 +34,7 @@ def _info(cfg):
 
 
 def fold_edits(cfg, kind):
-    """Fold a hand-edited FINAL mask/holes (L4 / native-z / tight-crop) back onto the curated grid (L4 /
+    """Fold a manually edited FINAL mask/holes (L4 / native-z / tight-crop) back onto the curated grid (L4 /
     0.40mm-z / uncropped) and write it as the _EDITED override (<S>_mask_edited / <S>_holes_edited), which
     wins over the model output - so a correction never clobbers the auto <S>_mask / <S>_holes. In-plane the
     crop maps 1:1; only a z-collapse (native -> 0.40mm block; MAX = foreground if any sub-slice) + an un-crop

@@ -5,7 +5,7 @@ tissue from a b0 image, used where a brain has no photographs (settings/completi
 You need
   a folder of prepared brains (`linc-complete prepare`), one folder per brain named by its Specimen ID, holding the brains that
   settings/completion.yaml lists under training (members and extra_train: the 13 brains with MRI). Own b0: `linc-complete prepare`. Stand-in
-  b0: the same with --targets-from and --stand-in-b0. The targets are the brain's own photographs; no hand labels. A CUDA GPU with about 8 GB.
+  b0: the same with --targets-from and --stand-in-b0. The targets are the brain's own photographs; no manual labels. A CUDA GPU with about 8 GB.
 
 What it does
   1. reads each brain's input (the b0 at 0.5 mm) and targets (the photographs' grey at 0.25 mm, normalized by their 1st / 99th percentiles,

@@ -38,7 +38,7 @@
      "added": [
       "MR250"
      ],
-     "source": "round 2 QC report 'iteration 2 (2 samples, ResEnc)' (11 Aug 2026; not kept as a project file): 'trained on 2 hand-edited samples'"
+     "source": "round 2 QC report 'iteration 2 (2 samples, ResEnc)' (11 Aug 2026; not kept as a project file): trained on 2 manually edited samples"
     },
     {
      "round": 3,
@@ -127,7 +127,7 @@
      "added": [
       "MF278"
      ],
-     "source": "project log 13-14 Aug (MF278 painted by hand)"
+     "source": "project log 13-14 Aug (MF278's tubes painted manually)"
     },
     {
      "round": 2,
@@ -210,6 +210,6 @@
    "first_brains": 1,
    "last_brains": 16
   },
-  "loop": "each round's network segmented every brain; the predictions of the brains added next were corrected by hand and joined the training set; the final masks of every brain were checked and corrected by hand where needed (masks_of_record)"
+  "loop": "each round's network segmented every brain; the predictions of the brains added next were manually corrected and joined the training set; the final masks of every brain were checked and manually corrected where needed (masks_of_record)"
  }
 }

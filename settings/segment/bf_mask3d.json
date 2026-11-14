@@ -56,7 +56,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MF191.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "0b068ef262a90d97164fa546d896c711"
   },
   {
@@ -69,7 +69,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MF196.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "8b9b834e9d2d257b3372f861804634c2"
   },
   {
@@ -82,7 +82,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MF204.nii.gz",
    "counted": true,
-   "label_kind": "hand-constrained",
+   "label_kind": "model_within_manual_annotations",
    "label_md5": "1dbae522d9d879cef95137cd46a3e2ca"
   },
   {
@@ -95,7 +95,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MF275.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "3cf4c48a36bb56067798915ee18d6524",
    "image_md5": [
     "397aa1be24472828e0289ab55e8be6d3",
@@ -113,7 +113,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MF278.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "cd4d2d929ebd94002ede9e739d6a02f2"
   },
   {
@@ -126,7 +126,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MF282.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "c1b739a95487236a63eb2256d73681b4"
   },
   {
@@ -139,7 +139,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR243.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "3e7cb35ab3784c780acdd7d340181554"
   },
   {
@@ -152,7 +152,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR244.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "45f72df87ab553a61b139f73ba609c1d"
   },
   {
@@ -165,7 +165,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR247.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "5137e2166874688d9d8ed5bcbd031dfc"
   },
   {
@@ -178,7 +178,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR248.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "c0610af7db8941e7b9fb91d368a428ad",
    "image_md5": [
     "53e0ee22c6b2885326ca4de3187f2c92",
@@ -196,7 +196,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR249.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "02a881b4c1f7a04dec95a59b4b678494"
   },
   {
@@ -209,7 +209,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR250.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "2d3d5542f438c8d1f00c5940192162a3"
   },
   {
@@ -222,7 +222,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR251.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "e0c7dce10ecc20e826cb0aea76811650"
   },
   {
@@ -235,7 +235,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR252.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "0345c81d51829faa3b8d990add1042db"
   },
   {
@@ -248,7 +248,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR253.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "c592e4ac8cbcd185a1f5e88ea5495ebe"
   },
   {
@@ -261,7 +261,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR254.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "ed3e080abd5662b7e7f4e328048bdace"
   },
   {
@@ -274,7 +274,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR256.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "fd6d1924d2e0d6b9ceef593c80982a38"
   },
   {
@@ -287,7 +287,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR257.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "b114914518bf912aa6ac04ab18390859"
   },
   {
@@ -300,7 +300,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR261.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "dd1b9331403a9da100e0153f4de2a113"
   },
   {
@@ -313,7 +313,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR263.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "529538b87f9db2db04c88affa031c47c"
   },
   {
@@ -326,7 +326,7 @@
    ],
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_mask3d_v2/labelsTr/MR273.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "854c2f84279134f536c7c0f82bcb3381"
   }
  ],

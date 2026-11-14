@@ -5,7 +5,7 @@
 You need
   the photographs as taken, one JPEG per section, in $LINC_RAW/<raw> (docs/how-to/new_brain.md); the brain's settings/brains/<ID>.yaml (a new
   brain: copy settings/brains/TEMPLATE.yaml): the photographs' folder, pattern and numbering, pixel size and section step, and the
-  hand-made lists of camera jumps and missing sections; optional hand corrections (curated/<ID>_mask_edited.nii.gz,
+  manually made lists of camera jumps and missing sections; optional manual corrections (curated/<ID>_mask_edited.nii.gz,
   curated/<ID>_holes_edited.nii.gz, corrected photograph masks in 01_brainmask/01_final); the network weights in $LINC_MODELS/segment;
   settings/env/tirl.yml's Python ($PY_TIRL) with TIRL and zarr2nii beside it, and settings/env/deep.yml's ($LINC_SEGMENT_PYTHON) for the networks.
 What it does (`all` runs these steps in order; each can be run alone)
@@ -24,11 +24,11 @@ You get
 
     $PY_TIRL code/blockface/linc-reconstruct all --subject <ID>
     $PY_TIRL code/blockface/linc-reconstruct <step> --subject <ID>
-    $PY_TIRL code/blockface/linc-reconstruct edit-photo-masks export|import --subject <ID>     optional: hand-correct the photograph masks
+    $PY_TIRL code/blockface/linc-reconstruct edit-photo-masks export|import --subject <ID>     optional: manually correct the photograph masks
 
-Details. Hand corrections: after `prepare`, a brain mask edited on curated/<ID>_bg is saved as curated/<ID>_mask_edited.nii.gz;
+Details. Manual corrections: after `prepare`, a brain mask edited on curated/<ID>_bg is saved as curated/<ID>_mask_edited.nii.gz;
 after `volume`, edited tubes as curated/<ID>_holes_edited.nii.gz (code/blockface/curate.py folds edits made on the final grid back);
-settings/brains/<ID>.yaml `masks_of_record` lists which of the paper's masks are hand edits. The networks: settings/blockface.yaml
+settings/brains/<ID>.yaml `masks_of_record` lists which of the paper's masks are manual edits. The networks: settings/blockface.yaml
 `segmentation.models` (code/shared/linc-segment); their post-processing is applied once by code/blockface/mask_rules.py. MF8 and MF9 replay their recorded
 alignment to an external series in `photos`. Parameters: settings/blockface.yaml; per brain: settings/brains/<ID>.yaml.
 """
@@ -96,7 +96,7 @@ def step_volume(cfg, a):
 
 def step_tubes(cfg, a):
     _seg3d(cfg, a, "tubes", segment3d.prep_holes, segment3d.post_holes)
-    if os.path.exists(cfg.holes_edited):        # `volume` already filled the hand-edited tubes: re-filling would be identical
+    if os.path.exists(cfg.holes_edited):        # `volume` already filled the manually edited tubes: re-filling would be identical
         print(f"[tubes] {os.path.basename(cfg.holes_edited)} present: `volume` already filled it; no re-fill")
     else:
         curate.reinpaint(cfg)

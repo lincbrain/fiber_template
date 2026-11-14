@@ -1,5 +1,5 @@
 """A brain mask for a new brain's b0, made by the MRI brain-mask network, so `linc-register mri --place-b0 B0_NATIVE` needs no
-hand-made mask.
+manually made mask.
 
 You need
   the b0 image, the network's weights ($LINC_MODELS/segment/mri_brainmask; settings/models/README.md) and $LINC_SEGMENT_PYTHON

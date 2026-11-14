@@ -90,7 +90,7 @@ You need
   (code/blockface/training.py lists the files).
 
 What it does
-  writes each case the way the network of record was trained on it, from the photographs or volumes and the hand-edited masks of record.
+  writes each case the way the network of record was trained on it, from the photographs or volumes and the manually edited masks of record.
 
 You get
   in --out (a new folder): imagesTr/, labelsTr/ (bf_holes also masksTr/) and <model>.json, the task file pointed at these cases, with

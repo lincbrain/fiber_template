@@ -52,6 +52,7 @@ It builds the templates, brings new brains into them, and rewrites the paper's n
 A brain's folder and the template's folder are organized the same way:
 `inputs/` holds what an instrument or a person made, `outputs/` holds the finished files, and `intermediate/` holds everything else.
 A brain's ID is its Specimen ID, such as MR243; `brains.tsv` gives its name in the paper, such as MM1.
+[brain_identifiers.md](../brain_identifiers.md) lists all 25 brains with their names in the paper and on LINC.
 MR brains are *Macaca mulatta* and MF brains are *Macaca fascicularis*.
 
 Two LINC datasets hold parts of it in the cloud.

@@ -60,7 +60,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MF191.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MF191.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "193a26a0b60ac825402a4051f9cc663c"
   },
   {
@@ -74,7 +74,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MF196.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MF196.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "9abc3bdbbfc093d3cc4d1b3c8ef65bf7"
   },
   {
@@ -88,7 +88,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MF204.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MF204.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "e0f59fd854fe1f391fc0ca99bac56635"
   },
   {
@@ -102,7 +102,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MF275.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MF275.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "b429775534665d59e9ca4598921c3d9d"
   },
   {
@@ -116,7 +116,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MF278.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MF278.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "e505c90779476d2797dbe718db6e7bff"
   },
   {
@@ -130,7 +130,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MF282.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MF282.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "7601237169bcbf9389a6b8019e1c4581"
   },
   {
@@ -144,7 +144,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MR243.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MR243.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "9136161f4fc9d491a180ee4984fba3d6"
   },
   {
@@ -158,7 +158,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MR244.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MR244.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "dffb61b20c1cfd77d698168bd37fa9a1"
   },
   {
@@ -172,7 +172,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MR247.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MR247.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "58f9366b19d333b5a8bb8c775298e7e0"
   },
   {
@@ -186,7 +186,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MR248.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MR248.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "278d92aec687f54815e23caa50708410"
   },
   {
@@ -200,7 +200,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MR249.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MR249.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "c59822531ec18f672ad11135bd9e8a7f"
   },
   {
@@ -214,7 +214,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MR250.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MR250.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "debf375cdef5642a977f072cf4847c15"
   },
   {
@@ -228,7 +228,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MR251.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MR251.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "a0552385feaa168f046a890fa90cb1d1"
   },
   {
@@ -242,7 +242,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MR252.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MR252.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "8c3c513a9b297e1185780be3f47c266f"
   },
   {
@@ -256,7 +256,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MR253.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MR253.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "9dab7c01afe67468ff0fe147dbfaa537"
   },
   {
@@ -270,7 +270,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MR254.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MR254.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "854793ba304af343a9e3da04747f8063"
   },
   {
@@ -284,7 +284,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MR256.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MR256.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "21ca423a39dadd3033b0c93165b53ea0"
   },
   {
@@ -298,7 +298,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MR257.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MR257.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "146417158f9d7d22e4475a5f3d38cbfc"
   },
   {
@@ -312,7 +312,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MR261.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MR261.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "f97ad157dccb5b6ebdf0eeb4ad29fb01"
   },
   {
@@ -326,7 +326,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MR263.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MR263.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "2d04a11ab4c075a2581b62d53e9eff0a"
   },
   {
@@ -340,7 +340,7 @@
    "label": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/labelsTr/MR273.nii.gz",
    "mask": "$LINC_PRODUCTS/models_wrapup/data_bf/bf_holes3d/masksTr/MR273.nii.gz",
    "counted": true,
-   "label_kind": "hand",
+   "label_kind": "manual_annotations",
    "label_md5": "567bc8e4da51a9665f0b5e1c0dd690b9"
   }
  ],

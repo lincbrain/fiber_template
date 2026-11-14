@@ -9,7 +9,7 @@
   msme      $LINC_RAW/microstructure/data/<ID>/log.txt, the msme_process lines (TR, number of echoes, first TE = echo spacing)
   tensor    the tensor of record (products tensor_d9: <ID>_existing/run.json): volumes acquired / used, b-values used, gradient check
   sandi     the delivered fractions before normalization (products mri_inputs: sub-<ID>/micro/frac{1,2}_brain.nii.gz) inside the micro
-            hand mask (sub-<ID>/masks/micro_brain_mask.nii.gz): mean and 5th/95th percentiles of frac1 + frac2, the share of voxels
+            manual mask (sub-<ID>/masks/micro_brain_mask.nii.gz): mean and 5th/95th percentiles of frac1 + frac2, the share of voxels
             with frac1 > 1 or frac2 > 1, the maxima
 Ported from the analysis project's paper/scripts/r057_mri_facts_b.py (r057_mri_facts with the source series described as in their
 source paper, Gong et al. 2026, instead of by a folder name; same values); its description is kept verbatim as METHOD (part of the
@@ -38,7 +38,7 @@ METHOD = [
     '  msme      Gong et al. 2026, multi-slice multi-echo spin-echo images, <S>/log.txt, the msme_process lines (TR, number of echoes, first TE = echo spacing).',
     '  tensor    the tensor of record (D9, mri/tensor_refit_d9/<S>_existing/run.json): volumes acquired / used, b-values used, gradcheck.',
     '  sandi     the delivered SANDIdot fractions before normalisation (mri/data/sub-<S>/micro/frac{1,2}_brain.nii.gz; frac1 = soma, frac2 =',
-    '            neurite) inside the micro hand mask (masks/micro_brain_mask): mean and 5th/95th percentiles of frac1 + frac2, the share of',
+    '            neurite) inside the micro manual mask (masks/micro_brain_mask): mean and 5th/95th percentiles of frac1 + frac2, the share of',
     '            voxels with frac1 > 1 or frac2 > 1, the maxima. preprocess_mri.normalize_fracs_and_weights then clips each to [0, 1] and',
     '            divides by their sum (the `_norm` files of record).',
     '-> paper/numbers/r057_mri_facts_b.json',

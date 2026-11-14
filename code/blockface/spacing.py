@@ -11,8 +11,8 @@ What it does
     OME-Zarr stores (<S>_*.ome.zarr, 02_*.ome.zarr, steps/, _work/): every level's scale (rows and columns x fx, sections x fz;
         the translations are in voxels and do not change)
     NIfTIs (<S>_blockface_L2, <S>_mask, <S>_holes, nii/, curated/, steps/): affine <- diag(fx, fz, fx, 1) @ affine
-  A file already at the calibrated spacing (e.g. a hand edit of record that already has it) is left as it is. For a new brain the
-  two spacings are equal and nothing changes. The other way, to_reconstruction_spacing gives a hand edit's affine at the
+  A file already at the calibrated spacing (e.g. a manual edit of record that already has it) is left as it is. For a new brain the
+  two spacings are equal and nothing changes. The other way, to_reconstruction_spacing gives a manual edit's affine at the
   reconstruction spacing, which the reconstruction aligns its grid to (code/blockface/reconstruct.py).
 You get
   the headers rewritten in place; respace returns a log of every file (old and new scale, or already calibrated).
@@ -71,9 +71,9 @@ def _unscaled32(v, f):
 
 
 def to_reconstruction_spacing(affine, cfg):
-    """A hand edit's affine at the reconstruction spacing. The paper's hand edits carry the calibrated spacing: respace rescaled
+    """A manual edit's affine at the reconstruction spacing. The paper's manual edits carry the calibrated spacing: respace rescaled
     their world rows by (fx, fz, fx) and stored them as float32. Such an affine is scaled back exactly, each entry to the float32
-    value that the rescaling turned into the stored one, so the reconstruction aligns its grid to the hand edit as the paper's did.
+    value that the rescaling turned into the stored one, so the reconstruction aligns its grid to the manual edit as the paper's did.
     An affine already at the reconstruction spacing (a new brain, or an edit made before `spacing` ran) is returned as it is."""
     A = np.asarray(affine, float)
     f = (cfg.vx_header / cfg.vx, cfg.vz_header / cfg.vz, cfg.vx_header / cfg.vx)

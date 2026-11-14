@@ -85,7 +85,7 @@ def mri_route(a):
     if a.place_b0:
         if len(a.place_b0) == 2:
             b0_native, mask_native = a.place_b0
-        else:                                   # no hand mask: the MRI brain-mask network segments the b0 (code/blockface/registration/mri_mask.py)
+        else:                                   # no manual mask: the MRI brain-mask network segments the b0 (code/blockface/registration/mri_mask.py)
             if scfg and not a.new_brain:
                 sys.exit(f"{S} has masks of record (settings/brains/{S}.yaml registration_to_own_mri): give --place-b0 B0_NATIVE "
                          "MASK_NATIVE, or --new-brain to treat it as a new brain and segment its b0")

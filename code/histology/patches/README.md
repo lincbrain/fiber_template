@@ -9,7 +9,7 @@ ran with it.
 
 `tirl-3.6.3_optnl_clip.edits.json` holds our lines only (TIRL is Apache-2.0; the edit file follows `code/template/patches/` for a uniform
 form): the range of `optnl.py`'s lines it replaces, their sha256, our new lines, and the md5 of the clean and of the edited file.
-`install.sh` applies it to the copy of TIRL's sources it builds. By hand, on a source tree or an installed TIRL (the folder that holds
+`install.sh` applies it to the copy of TIRL's sources it builds. Manually, on a source tree or an installed TIRL (the folder that holds
 `tirl/`):
 ```bash
 python code/template/patches/apply_edits.py code/histology/patches/tirl-3.6.3_optnl_clip.edits.json <folder>

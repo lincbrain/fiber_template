@@ -8,7 +8,7 @@
 # 2023, Apache License 2.0; it builds two small C modules; tirlscripts-mgh-linc provides the `linc.h2b` script). install.sh does
 # all of it, from that folder (or LINC_TIRL_SRC):
 #     bash install.sh --only tirl --tirl-src <folder with the TIRL sources>          # 2-6 min on a cluster node, 3 Nov 2026
-# or by hand, in this order:
+# or manually, in this order:
 #     conda env create -f settings/env/tirl.yml && conda activate linc-tirl && pip install -e . --no-deps
 #     pip install --no-deps --no-build-isolation <tirl 3.6.3> <tirlscripts-oxford-scriptutils 1.1.1> <tirlscripts-stanford-core 1.2.2> <tirlscripts-mgh-linc 1.0.1>
 # (--no-build-isolation: TIRL's setup.py imports numpy and Cython from this environment; its C modules include lapacke.h, from the
@@ -23,7 +23,7 @@
 # zarr 3.1.5 / numcodecs 0.16.5 and the packages listed with them: what the runs of record imported from the account's user
 # site-packages (which shadowed the env's zarr 3.0.1). Build and run with PYTHONNOUSERSITE=1.
 # The demons interpolation of record (code/labels/linc-labels interpolate) ran with SimpleITK 2.5.3: env/labels-interp.yml.
-# nifti-zarr 1.0.0rc6 (zarr2nii / nii2zarr, the reconstruction's stage-3 exports and the 2D masks' hand-edit round trip; it ran in
+# nifti-zarr 1.0.0rc6 (zarr2nii / nii2zarr, the reconstruction's stage-3 exports and the 2D masks' manual-edit round trip; it ran in
 # env/niizarr.yml for the paper, removed 3 Nov 2026) is installed here too, with dask and its helpers at that env's versions:
 # MR243's two stage-3 exports (zarr2nii --level 2 of 02_blockface and 02_blockface_mask) are byte-identical to the env of record, and
 # the nii2zarr round trip writes identical chunks (its root zarr.json lacks zarr 3.1.1's "consolidated_metadata": null; transient).

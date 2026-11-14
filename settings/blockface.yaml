@@ -22,7 +22,7 @@ volume_segmentation:
 reconstruction:
   level: 1                           # in-plane pyramid level of the final volume (L1 = /2 of the photographs)
   view_level: 2                      # a viewable RGB NIfTI is also written at this level
-  curation_z_target_um: 400.0        # the hand-edit grid's section step (curation_f native sections per curated slice)
+  curation_z_target_um: 400.0        # the manual-edit grid's section step (curation_f native sections per curated slice)
   harmonize_mm: 1.0                  # brightness steps: the de-stepped reference is smoothed over this width (sigma, mm)
   crop_margin_mm: 2.0                # margin around the brain before the tight crop
   crop_multiple: 16                  # the tight crop's in-plane size is a multiple of this at L4
