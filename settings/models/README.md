@@ -4,7 +4,7 @@ The weights are in this repository, under `models/` at the top: `models/segment/
 networks) and `models/completion/<network>/` (the two synthesis networks and the two leave-slab-out networks of the
 paper's evaluation). A file over GitHub's 100 MB limit is kept as `<file>.part1` and `<file>.part2`.
 `settings/roots.sh` joins them once into `outputs/models/` (`$LINC_MODELS`) with `code/shared/join_weights.sh`, and checks
-every file against the lists here. The joined files are the files of record, bit for bit.
+every file against the lists here. The joined files are the paper's files, bit for bit.
 
 Check the repository's copy, or a joined one:
 

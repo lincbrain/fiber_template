@@ -8,8 +8,9 @@ front to back through the brain.
 Panels: T2-weighted, b0, Tensor (the principal diffusion direction, FA-weighted color, template_DEC, display gamma 1/1.6 as in the
 template figure); Soma fraction, Neurite fraction (0-1, turbo), Blockface (the color channel, inside its own mask). The MRI channels
 are shown inside the template's brain mask; T2-weighted and b0 are normalized to their 99.5th percentile in the brain.
-Frames: coronal planes 0.75 mm apart (3 voxels of the 0.25 mm grid) through the brain mask's front-to-back extent, front to back,
-then a clean restart (84 frames). 10 frames per second, the first and last held 0.6 s. Each panel is the union of the brain and
+Frames: coronal planes 0.75 mm apart (3 voxels of the 0.25 mm grid) through the brain mask's front-to-back extent, front to back
+(84 frames, 10 frames per second). The GIF starts on the plane with the largest brain area and holds it 0.6 s (the frame a reader
+sees when animations are paused, and in previews, shows the whole brain), sweeps to the back, restarts at the front and comes back. Each panel is the union of the brain and
 blockface masks' coronal extent (+ 0.5 mm), the same in every frame, at one print scale (960 px wide: about 295 px per panel);
 neurological orientation (L and R once, beside the grid at the middle of its two rows, the titles included and the strip below
 not: one pair for the whole grid, which only this animation does; the paper figures keep one pair per row). Each title centered
@@ -43,7 +44,7 @@ COLOR = ("DEC", "blockface_rgb")                                 # the panels sh
 
 def render(tree, width=960, step_mm=STEP_MM):
     """The frames (H x W x 3 uint8, front to back), their durations (ms), every tile's pixel box {key: (r0, r1, c0, c1)}, the planes'
-    y (mm) and the print scale."""
+    y (mm), the print scale and the first frame shown (the plane with the largest brain area)."""
     T = Path(tree) / "template" / "outputs"
     import matplotlib
     matplotlib.use("Agg")
@@ -136,8 +137,9 @@ def render(tree, width=960, step_mm=STEP_MM):
     for key, ax in axes.items():
         e = ax.get_window_extent(r_); boxes[key] = (int(Hp - e.y1), int(np.ceil(Hp - e.y0)), int(e.x0), int(np.ceil(e.x1)))
     plt.close(fig)
-    dur = [int(round(1000 / FPS))] * len(frames); dur[0] = dur[-1] = int(HOLD_S * 1000)
-    return frames, dur, boxes, ys, scale
+    start = int(np.argmax([brain[:, j, :].sum() for j in planes]))           # the plane with the largest brain area: shown first, held
+    dur = [int(round(1000 / FPS))] * len(frames); dur[start] = int(HOLD_S * 1000)
+    return frames, dur, boxes, ys, scale, start
 
 
 SHARE = dict(DEC=128, blockface_rgb=48)                          # of the GIF's 256 colors, the color panels' own; the rest for all else
@@ -169,12 +171,14 @@ def palette(frames, boxes, share=SHARE):
     return img
 
 
-def encode(frames, dur, out, boxes, share=SHARE):
-    """The GIF: every frame mapped to one palette (palette()), no dithering (steady colors, small frame deltas). No comment or other
-    metadata block: only the loop block and the frames' delays."""
+def encode(frames, dur, out, boxes, start=0, share=SHARE):
+    """The GIF: every frame mapped to one palette (palette(), on the frames front to back), no dithering (steady colors, small frame
+    deltas), played from frames[start] (then on to the back, the front, and back to it). No comment or other metadata block: only
+    the loop block and the frames' delays."""
     from PIL import Image
     pal = palette(frames, boxes, share)
     q = [Image.fromarray(f).quantize(palette=pal, dither=Image.Dither.NONE) for f in frames]
+    q, dur = q[start:] + q[:start], dur[start:] + dur[:start]
     out = Path(out); out.parent.mkdir(parents=True, exist_ok=True)
     q[0].save(out, save_all=True, append_images=q[1:], duration=dur, loop=0, optimize=False, disposal=1)
     return q
@@ -189,11 +193,11 @@ def main():
     a = ap.parse_args()
     if not a.tree:
         raise SystemExit("set --tree or LINC_DATA_TREE (settings/roots.sh)")
-    frames, dur, boxes, ys, scale = render(a.tree, a.width, a.step_mm)
-    encode(frames, dur, a.out, boxes)
+    frames, dur, boxes, ys, scale, start = render(a.tree, a.width, a.step_mm)
+    encode(frames, dur, a.out, boxes, start)
     out = Path(a.out)
     print(f"{out}: {len(frames)} frames, {frames[0].shape[1]} x {frames[0].shape[0]} px, {out.stat().st_size / 1e6:.2f} MB; "
-          f"y {ys[0]:.1f} to {ys[-1]:.1f} mm; print scale {scale:.3f}")
+          f"y {ys[0]:.1f} to {ys[-1]:.1f} mm, starting at {ys[start]:.1f} mm; print scale {scale:.3f}")
 
 
 if __name__ == "__main__":

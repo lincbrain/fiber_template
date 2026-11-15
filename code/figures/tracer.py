@@ -62,6 +62,7 @@ WS, WD, ZB = 0.6, 0.5, 3.0                                                    # 
 INJ_FIELD, INJ_LW, INJ_FILL = 12.0, 1.3, 0.7
 DIM, OUT_A, FILL_A = 0.6, 0.3, 0.9
 DARK = "#111111"
+BAR_BELOW_MM = 3.2     # (c)'s and (d)'s scale bars this far under their frames: the length (printed 7.7 pt over the bar) below the image
 
 
 def roots():
@@ -374,7 +375,7 @@ def main(argv=None):
             ax.contour(disp(crop(sarm[:, j, :] == IC_LABEL).astype(float)), [0.5], colors=[FS.FG], linewidths=0.7, linestyles=[(0, (1, 1.2))])
             keep_limits(ax, bg.shape); ax.set_axis_off()
             head2(ax, "Internal capsule, anterior limb, bundles" if q == 0 else "", f"y = {y:.1f} mm", "c" if q == 0 else None)
-        FS.dirs_row(axb[0], axb[-1], "coronal"); FS.scalebar(axb[0], 1.0 / vox, 2.0)
+        FS.dirs_row(axb[0], axb[-1], "coronal"); FS.scalebar(axb[0], 1.0 / vox, 2.0, y_frac=BAR_BELOW_MM / hb)
 
         # key
         rows_k = [("heads", None, None)] + [("case", S, name(S)) for S in CASES] + [("line", None, "Injection site"),
@@ -428,7 +429,8 @@ def main(argv=None):
                     ax.annotate(f"y = {y:.1f} mm", xy=(0, 0.5), xycoords="axes fraction", xytext=(-(xc - LEFTD) * 72 / 25.4 - 6, 0),
                                 textcoords="offset points", ha="right", va="center", fontsize=FS.MIN_PT, color=FS.FG, annotation_clip=False)
                 if r == len(rows_) - 1 and c == 0:
-                    FS.scalebar(ax, 1.0 / vox, 10.0)
+                    FS.scalebar(ax, 1.0 / vox, 10.0, x0_px=(bg.shape[1] - 1) / 2 - 5.0 / vox,    # centered under the column,
+                                y_frac=BAR_BELOW_MM / h)                                        # clear of the L under its left edge
                     ax.annotate("L", xy=(0, -0.12), xycoords="axes fraction", ha="left", va="top", fontsize=FS.MIN_PT, color=FS.GRAY,
                                 annotation_clip=False, xytext=(0, -6), textcoords="offset points")
                 if r == len(rows_) - 1 and c == len(CASES) - 1:

@@ -77,6 +77,13 @@ AREA = {"MR243": "area 10", "MF191": "area 13m", "MR252": "SMA"}
 KEY_NOTE = {"MR256": "injection site not annotated"}               # a case without an annotated injection site: its key's note
 COLOR = {S: FS.TRACER[S] for S in CASES}
 MIRROR = {"MF191"}
+
+
+def key_text(S):
+    """a case's key: its name, its injection site (or the note why none is drawn) and, for a mirrored case, where it comes from"""
+    return f"{FS.label(S)}, {AREA.get(S) or KEY_NOTE[S]}" + (" (mirrored from the left)" if S in MIRROR else "")
+
+
 X_SAG, Y_COR = 0.0, 18.0                                             # mm: the midline plane; the coronal plane (right half) through (b)'s middle slab
 LO_PCT, HI_PCT, PLANE_DIM = 5.0, 99.0, 0.55                          # the planes' linear window (brain percentiles), dimmed
 ALIC_Y = [16.0, 18.0, 20.0]
@@ -333,7 +340,7 @@ def compose(sd, stills, views, sil, cap, rec, args, arrange="side"):
     subs = [", ".join(FS.label(S) for S in g) for g in views] if nv > 1 else None   # the views' sub-labels
     sub_h = T("MM1")[1] + 2.0 * pt if subs else 0.0                                   # their line, 4 pt above each view
     LM = MG + FS.orient_room("P")                                                  # (a): the P left of it (figstyle), the tags right of it
-    keys_k = [f"{FS.label(S)}, {AREA.get(S) or KEY_NOTE[S]}" + (" (mirrored from the left)" if S in MIRROR else "") for S in CASES] + KEY_TEXTS
+    keys_k = [key_text(S) for S in CASES] + KEY_TEXTS
     KW = max(T(t)[0] for t in keys_k) / (1 - KEY_X)                                  # the key: its texts start at KEY_X of its width
     nb = len(cap); gapb = GUT; LB = MG + FS.orient_room("L")
     wb = (FW - LB - (nb - 1) * GUT - FS.orient_room("R") - GUT - KW - MG) / nb       # (b)'s tiles fill the row beside the key
@@ -602,9 +609,13 @@ def video(sd, f, size=(1600, 1072), n=360, layered=False):
 def animation(sd, views, f, n=72, fps=12, width=960, swing=45.0, render=(1100, 733), point_gain=1.6, colors=128, extras=None):
     """(a)'s views side by side, turning together (the README's animation): the still's camera swung +-swing degrees about the vertical
     axis through the focal point (a smooth back-and-forth, n frames at fps), each view's cases layered over the planes as in the still,
-    a plane the camera is behind at 0.3 opacity, the brain's outline per frame, no tags; one legend line under the views. Written as a
-    GIF (one shared palette, no dithering, no comment or other metadata); with extras (a folder), also an animated WebP and a still
-    there; the views cropped to the outline's extent over the turn."""
+    a plane the camera is behind at 0.3 opacity, the brain's outline per frame, no tags; P and A once, left and right of the two
+    views at their middle (7 pt, gray, 2 pt from them, as the template animation's L and R: the turn keeps the front on the right);
+    under the left view (a)'s 10 mm bar, its length above it (the projection is parallel and its scale fixed, so the bar holds in
+    every frame for lengths across the view); one legend line under them, the still's key texts. The letters and the bar are laid
+    out at the template animation's print scale (the width = the page's 178 mm) and checked against every frame's tissue
+    (figstyle.check). Written as a GIF (one shared palette, no dithering, no comment or other metadata); with extras (a folder),
+    also an animated WebP and a still there; the views cropped to the outline's extent over the turn."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -639,9 +650,18 @@ def animation(sd, views, f, n=72, fps=12, width=960, swing=45.0, render=(1100, 7
         p.close()
     u = np.any(sils, 0); rr, cc = np.nonzero(u); pad = 6
     r0, r1, c0, c1 = max(rr.min() - pad, 0), rr.max() + pad + 1, max(cc.min() - pad, 0), cc.max() + pad + 1
-    gap = 16; vw = (width - gap * (len(views) - 1)) // len(views); vh = round(vw * (r1 - r0) / (c1 - c0))
+    # the layout in the GIF's pixels at the template animation's print scale (width px = the page's 178 mm, so 7 pt is 7 pt there)
+    dpi = width / FS.FULL_W_IN; px = dpi / 25.4; pt = 25.4 / 72                  # px per print mm; print mm per point
+    f_ = plt.figure(dpi=dpi); r_ = f_.canvas.get_renderer()
+    wl = max(f_.text(0, 0, s_, fontsize=FS.MIN_PT).get_window_extent(r_).width for s_ in "PA") / px   # the letters' width (mm)
+    th = f_.text(0, 0, f"{SB_A_MM:g} mm", fontsize=FS.MIN_PT).get_window_extent(r_).height / px; plt.close(f_)
+    side = int(round((FS.MARGIN_MM + wl + 2.0 * pt) * px))                     # each outer side: the margin, a letter, its 2 pt
+    gap = 16; vw = (width - 2 * side - gap * (len(views) - 1)) // len(views); vh = round(vw * (r1 - r0) / (c1 - c0))
+    x_v = [side + i * (vw + gap) for i in range(len(views))]                     # the views' left edges (px)
+    mm_px = render[1] / (2.0 * PSCALE) * vw / (c1 - c0)                         # GIF px per tissue mm (parallel projection)
+    strip = int(np.ceil((FS.CLEAR_MM + th + (2.0 + 1.2) * pt) * px))            # under the views: CLEAR_MM, the length, 2 pt, the bar
     # the legend line, sentence case, black, rendered once at the animation's width, centered under the views (the author, 12 Nov 2026)
-    keys = [f"{FS.label(S)}, {AREA[S]}" if S in AREA else FS.label(S) for S in cases]
+    keys = [key_text(S) for S in cases]
     fig = plt.figure(figsize=(width / 100, 0.34), dpi=100, facecolor="black"); x = 0.0; texts = []
     r_ = fig.canvas.get_renderer()
     for S, t_ in zip(cases, keys):
@@ -651,14 +671,29 @@ def animation(sd, views, f, n=72, fps=12, width=960, swing=45.0, render=(1100, 7
     for t_ in texts:
         t_.set_x(t_.get_position()[0] + shift)
     fig.canvas.draw(); leg = np.asarray(fig.canvas.buffer_rgba())[..., :3].copy(); plt.close(fig)
-    H = vh + leg.shape[0]
+    H = vh + strip + leg.shape[0]
+    vs = [[np.asarray(Image.fromarray(img[r0:r1, c0:c1]).resize((vw, vh), Image.LANCZOS)) for img in row] for row in frames]
+    # the letters and the bar, drawn once over the views' places; checked with every frame's tissue in those places
+    fig = plt.figure(figsize=(width / dpi, H / dpi), dpi=dpi, facecolor=FS.PAPER)
+    axv = [fig.add_axes([x / width, 1 - vh / H, vw / width, vh / H]) for x in x_v]
+    for ax in axv:
+        ax.set_axis_off()
+    FS.dirs_row(axv[0], axv[-1], "sagittal")                                    # P left, A right
+    FS.scalebar_mm(fig, (x_v[0] + vw / 2) / px, (vh + strip) / px - 0.6 * pt, SB_A_MM, mm_px / px, anchor="center", panels=False)
+    ims = [ax.imshow(np.max([row[i] for row in vs], 0), aspect="auto", interpolation="nearest") for i, ax in enumerate(axv)]
+    bad = FS.check(fig)
+    if bad:
+        raise SystemExit("animation: house rules broken:\n  " + "\n  ".join(bad))
+    for im in ims:
+        im.remove()
+    fig.set_dpi(dpi); fig.canvas.draw(); top = np.asarray(fig.canvas.buffer_rgba())[..., :3].copy(); plt.close(fig)
+    assert top.shape == (H, width, 3), (top.shape, H, width)
     out = []
-    for row in frames:
-        c = np.zeros((H, width, 3), np.uint8)
-        for i, img in enumerate(row):
-            v = Image.fromarray(img[r0:r1, c0:c1]).resize((vw, vh), Image.LANCZOS)
-            c[:vh, i * (vw + gap):i * (vw + gap) + vw] = np.asarray(v)
-        c[vh:, :leg.shape[1]] = leg[:, :width]
+    for row in vs:
+        c = top.copy()
+        for i, v in enumerate(row):
+            c[:vh, x_v[i]:x_v[i] + vw] = v
+        c[vh + strip:, :leg.shape[1]] = leg[:, :width]
         out.append(Image.fromarray(c))
     from matplotlib.colors import to_rgb
     seed = np.zeros((48, width, 3), np.uint8)                                      # the palette keeps neutral grays and each case's color

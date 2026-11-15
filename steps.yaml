@@ -5,7 +5,7 @@
 #   group     setup | paper | mri-template | blockface | registration | synthesis | blockface-template | link | histology | labels | training
 #   for       a set of brains (`sets` below) or a list of LINC IDs
 #   title, inputs, outputs   what it does, reads and writes, in plain words
-#   run       the command: one shell line, from the repository root, in the shell that `source envs/linc_envs.sh` (or settings/lab.sh) gives
+#   run       the command: one shell line, from the repository root, in the shell that `source settings/roots.sh` gives
 #   check     a command that exits 0 only when `expect` holds and prints its evidence on its last line; left out when there is no
 #             file of record to compare with
 #   expect    what the check proves

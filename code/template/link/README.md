@@ -1,12 +1,9 @@
-# Registering the templates
+# The template link
 
-Registers the blockface template to the MRI template, checks the result, and registers the template
-to NMT v2, INIA19 and CIVM-R (Methods, "Registration of the blockface template to the MRI template"
-and "Relation to published templates"). Run it with `code/template/build_link.py`. About 1 hour on a
-GPU. Settings: `settings/link.yaml`. ANTs 2.5.4 gives the affine starts.
+Registers the blockface template to the MRI template, checks the result, and registers the template to NMT v2, INIA19 and CIVM-R (Methods, "Registration of the blockface template to the MRI template" and "Relation to published templates").
+Run it with `code/template/build_link.py`: about 1 hour on a GPU. Settings: `settings/link.yaml`. ANTs 2.5.4 gives the affine starts.
 
-It also holds the MRI-based alignment of one brain, its own b0 to the MRI template
-(`linc-register` mri-template):
+It also holds the registration of one brain's b0 to the template (`linc-register mri-template`, [01, Step B2](../../../docs/tutorials/01_mri.md#step-b2-register-the-b0-to-the-template)):
 
 1. a rigid placement of the b0 on the template's frame
 2. a new bias correction, only when the b0 needs it
@@ -15,9 +12,11 @@ It also holds the MRI-based alignment of one brain, its own b0 to the MRI templa
 5. the moving image cut below the template brain's lowest slice
 6. the deformable registration
 
-|  |  |
+## Files
+
+| | |
 |---|---|
-| `register.py`, `symreg.py`, `estimate.py`    | the registration between the templates |
-| `b0_to_template.py`                      | a brain's b0 to the MRI template |
-| `atlas.py`, `ants.py`                      | the registrations to published templates |
-| `qc.py`                                  | the outline check |
+| `register.py`, `symreg.py`, `estimate.py` | the template link |
+| `b0_to_template.py` | a brain's b0 to the template |
+| `atlas.py`, `ants.py` | the registrations to the published templates |
+| `qc.py` | the outline check |

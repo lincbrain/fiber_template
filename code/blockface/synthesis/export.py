@@ -82,10 +82,15 @@ def export_brain(net, D, S, out, device="cuda", cache_out=None):
         lum = real_rgb.mean(-1)
         chroma = (real_rgb[ph] / np.maximum(lum[ph, None], 1e-3)).mean(0); chroma = chroma / chroma.mean()
         (sl, ic), *_ = np.linalg.lstsq(np.c_[grey[ph], np.ones(ph.sum())], lum[ph], rcond=None)
-        fill = (sl * synth + ic)[..., None] * chroma[None, None, None, :]
+        # in float32, as the products of record were computed (NumPy 1.26 cast the line's float64 coefficients to the volume's
+        # float32; NumPy 2 would promote the volume to float64 instead and round the result differently)
+        fill = (np.float32(sl) * synth + np.float32(ic))[..., None] * chroma[None, None, None, :]
         rf = np.stack([nearest_valid_fill(real_rgb[..., c], rm) for c in range(3)], -1)
         comp_rgb = (w[..., None] * rf + (1 - w[..., None]) * fill) * brain[..., None]
-        nib.save(nib.Nifti1Image(np.ascontiguousarray(np.clip(comp_rgb, 0, 1).astype(np.float32)), Aff), f"{od}/{S}_bf_completed_rgb.nii.gz")
+        # + 0: the zeros outside the brain written as +0.0, as NumPy 1.26's clip wrote them (NumPy 2's keeps the -0.0 of a negative
+        # fill times the mask)
+        rgb = np.clip(comp_rgb, 0, 1) + np.float32(0)
+        nib.save(nib.Nifti1Image(np.ascontiguousarray(rgb.astype(np.float32)), Aff), f"{od}/{S}_bf_completed_rgb.nii.gz")
         chroma_row = dict(chroma=[round(float(v), 4) for v in chroma], grey_to_luma=[round(float(sl), 4), round(float(ic), 4)])
         json.dump(chroma_row, open(f"{od}/{S}_chroma.json", "w"), indent=1)
     shutil.copy2(f"{D}/coarse/in.nii.gz", f"{od}/{S}_b0_input_0p5.nii.gz")

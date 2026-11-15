@@ -14,6 +14,14 @@ JPEG 2000 sections, so they need glymur, which $PY_TIRL has. Each figure takes s
     $PY_TIRL code/docs/tutorial_figures.py --list                                 # the figures, in order
 
 --tree defaults to $LINC_DATA_TREE (settings/roots.sh sets it). --out (a trial render elsewhere) writes the provenance beside the PNGs.
+
+The house rules (the author, 12 Nov 2026), drawn by one layout engine (grid() and its helpers, below): one print scale per figure, as
+large as the page lets, tight crops and equal gutters; each panel's letter at its top left and its title centered over it; a brain named
+by its Specimen ID and its paper ID, "MR243 (MM1)" (docs/brain_identifiers.md); no plane names where the orientation letters show the
+view (the captions name the planes and say that axial views have anterior up); orientation letters by figstyle.orient_letters; one
+scale bar per figure, in an empty corner (figstyle.scalebar_free); arrows named by their command where that helps. MR252's photographs
+are shown mirrored left-right into the neurological convention (the camera sees the subject's left on the image's right), as in the
+paper's reconstruction figure. save() also refuses texts that overlap or leave the page.
 """
 import argparse
 import os
@@ -32,7 +40,7 @@ FIG_OUT = REPO / "docs" / "tutorials" / "figures"                   # the PNGs, 
 PROV_OUT = REPO / "outputs" / "docs" / "figures_provenance"         # their provenance: machine paths, so local only
 DPI = 200                                    # the tutorials' figures (FS.DPI is the paper's 600)
 W_MM = 178.0                                  # full page width
-LET_MM = 3.0                                  # room for a direction letter beside a panel
+
 S = "MR243"                                   # the example brain (MM1)
 T = "MF283"                                   # a brain of the MRI template (MF1)
 T4 = ("MF283", "MF284", "MF285", "MF286")     # the MRI template's four brains
@@ -186,22 +194,216 @@ def section_thumb(tr, name=SECTION, step=JP2_STEP):
 
 
 # ---- layout ------------------------------------------------------------------------------------------------------------------
-TOP_MM, HEAD_MM, BAR_MM = 2.0, 5.0, 6.5      # the page's top margin, a panel's letter and header line, a scale bar's room below
+# One engine for every figure (the author's house rules, 12 Nov 2026): rows of panels at ONE print scale per figure, as large as the
+# page lets; tight crops (crop padding is empty space); one gutter (figstyle GUTTER_MM) between panels and rows, wider only where an
+# arrow or a pair of orientation letters needs it; each panel's letter at its top left and its title centered over it (a title over a
+# group of panels follows the group's letter); orientation letters by figstyle.orient_letters (left and right of the images only, 1 mm
+# from the tissue, one line per image row); one scale bar per figure, its length above it, placed by measurement in an empty corner
+# (figstyle.scalebar_free), never in added room.
+G, MG = FS.GUTTER_MM, FS.MARGIN_MM
+BASE_MM = 1.4                                 # a title line's baseline above the panels' top
+TITLE_MM = 4.6                                # the band of the title line nearest the panels (a 9 pt bold letter's cap above it)
+LINE_MM = 3.4                                 # each further title line
+CROP_MM = 0.3                                 # tight crops: the tissue plus this
+CMD_MM = 3.4                                  # one line of a command band
 
 
-def fit_scale(widths_mm, gutter=FS.GUTTER_MM, extra_mm=0.0, letters=True):
-    """The one print scale at which a row of panels (tissue widths, mm) fills the page."""
-    room = W_MM - 2 * FS.MARGIN_MM - gutter * (len(widths_mm) - 1) - extra_mm - (2 * LET_MM if letters else 0)
-    return room / sum(widths_mm)
+def cropm(px):
+    """The crop margin, pixels: CROP_MM of tissue, at least one pixel (so that an outline at the tissue's edge is whole)."""
+    return max(1, int(round(CROP_MM / px)))
 
 
-def row(fig, dims, y_mm, scale, gutter=FS.GUTTER_MM, x0=None, letters=True):
-    """Axes for panels `dims` = [(h_mm, w_mm), ...] (tissue mm), left to right, tops at y_mm, at print scale `scale`."""
-    x = (FS.MARGIN_MM + (LET_MM if letters else 0)) if x0 is None else x0
-    axs = []
-    for h, w in dims:
-        ax = FS.axes_mm(fig, x, y_mm, w * scale, h * scale); ax.set_axis_off(); axs.append(ax); x += w * scale + gutter
-    return axs
+class Pn:
+    """One image panel: img (2-D, or RGB), px (tissue mm per pixel), view (a plane of figstyle.DIRS: its orientation letters; None:
+    none), letter and title (on the row's title line `tline`, 1 = the line nearest the panels); lg: its letter group (panels of one
+    group share one pair; default: a run of panels in one view); gap: the gutter before it (mm; widened if the letters need more);
+    the rest goes to imshow (cmap, vmin, vmax, interpolation)."""
+
+    def __init__(self, img, px, view=None, letter=None, title=None, lg=None, gap=None, tline=1, **kw):
+        self.img, self.px, self.view, self.letter, self.title = img, float(px), view, letter, title
+        self.lg, self.gap, self.tline, self.kw = lg, gap, tline, kw
+
+    @property
+    def w(self):
+        return self.img.shape[1] * self.px
+
+    @property
+    def h(self):
+        return self.img.shape[0] * self.px
+
+
+class Row:
+    """A row of panels: `lines` title lines above it; valign "top" or "center" (a flow, its arrows at the middle); below: room under
+    it (mm: a command band, a key); under: for each panel, the panel of the row above it is centered under (instead of a packed row)."""
+
+    def __init__(self, panels, lines=1, valign="top", below=0.0, under=None, above=0.0):
+        self.panels, self.lines, self.valign, self.below, self.under, self.above = panels, lines, valign, below, under, above
+
+
+def room(s):
+    """The print room of an orientation letter beside the tissue: its 1 mm gap and its ink (figstyle.orient_room)."""
+    return FS.orient_room(s)
+
+
+def _groups(r):
+    k, prev = 0, None
+    for p in r.panels:
+        if p.view is None:
+            p.grp = None
+        elif p.lg is not None:
+            p.grp = ("lg", p.lg)
+        elif prev is not None and prev.view == p.view and prev.lg is None and prev.grp is not None:
+            p.grp = prev.grp
+        else:
+            k += 1; p.grp = ("auto", k)
+        prev = p
+
+
+def _gaps(r):
+    out = []
+    for a, b in zip(r.panels[:-1], r.panels[1:]):
+        split = a.grp != b.grp
+        need = ((room(FS.DIRS[a.view][1]) if a.view and split else 0.0) + (room(FS.DIRS[b.view][0]) if b.view and split else 0.0)
+                + (1.0 if a.view and b.view and split else 0.0))
+        out.append(max(G if b.gap is None else b.gap, need))
+    return out
+
+
+def grid(rows, sc=None, reserve_right=0.0, bottom=0.0):
+    """Lay the rows out at one print scale (the largest at which every packed row fits the page) and draw the panels and their letters
+    and titles. Returns (fig, sc); each panel gets .ax, .x, .y (page mm, its top left) and .row."""
+    for r in rows:
+        _groups(r); r.gaps = _gaps(r)
+        f, l = r.panels[0], r.panels[-1]
+        r.left = MG + (room(FS.DIRS[f.view][0]) if f.view else 0.0)
+        r.right = MG + (room(FS.DIRS[l.view][1]) if l.view else 0.0) + reserve_right
+    if sc is None:
+        sc = min((W_MM - r.left - r.right - sum(r.gaps)) / sum(p.w for p in r.panels) for r in rows if r.under is None)
+    y, prev = MG, None
+    for r in rows:
+        y += r.above + (TITLE_MM + LINE_MM * (r.lines - 1) if r.lines else 0.0)
+        r.top, r.hrow = y, max(p.h for p in r.panels) * sc
+        x = r.left
+        for i, (p, g) in enumerate(zip(r.panels, [0.0] + r.gaps)):
+            if r.under is not None:
+                q = prev.panels[r.under[i]]; p.x = q.x + (q.w - p.w) * sc / 2
+            else:
+                x += g; p.x = x; x += p.w * sc
+            p.y = r.top + ((r.hrow - p.h * sc) / 2 if r.valign == "center" else 0.0)
+            p.row = r
+        assert max(p.x + p.w * sc for p in r.panels) <= W_MM - MG + 1e-6, "a row runs off the page"
+        y, prev = r.top + r.hrow + r.below + G, r
+    fig = new_fig(y - G + MG + bottom)
+    fig._sc = sc
+    for r in rows:
+        for p in r.panels:
+            p.ax = FS.axes_mm(fig, p.x, p.y, p.w * sc, p.h * sc); p.ax.set_axis_off(); show(p.ax, p.img, p.px, **p.kw)
+        for p in r.panels:
+            if p.letter or p.title:
+                head_at(fig, p.x, p.x + p.w * sc, base(r, p.tline), p.letter, p.title)
+    return fig, sc
+
+
+def base(r, line=1):
+    """The baseline (page mm) of a row's title line (1: the nearest the panels)."""
+    return r.top - BASE_MM - LINE_MM * (line - 1)
+
+
+def page(fig):
+    return tuple(v * 25.4 for v in fig.get_size_inches())
+
+
+def txt(fig, x_mm, y_mm, s, ha="left", va="baseline", fs=FS.MIN_PT, color=FS.FG, **kw):
+    W, H = page(fig)
+    return fig.text(x_mm / W, 1 - y_mm / H, s, ha=ha, va=va, fontsize=fs, color=color, **kw)
+
+
+def ink(s, fs=FS.MIN_PT, bold=False, mono=False):
+    """A one-line text's ink, (x0, x1) in mm from its origin."""
+    from matplotlib.font_manager import FontProperties
+    from matplotlib.textpath import TextPath
+    fp = FontProperties(family="monospace" if mono else FS.FONT, weight="bold" if bold else "normal")
+    e = TextPath((0, 0), s, size=fs, prop=fp).get_extents()
+    return e.x0 / 72 * 25.4, e.x1 / 72 * 25.4
+
+
+def head_at(fig, x0, x1, y, letter=None, title=None, align="center"):
+    """A bold panel letter at x0 and a title on the baseline y (mm): the title centered over x0..x1 by its ink, or, if that would run
+    into the letter (or align="left"), 1.5 mm after the letter."""
+    xr = x0
+    if letter:
+        t = txt(fig, x0, y, letter, fs=FS.LETTER_PT, fontweight="bold")
+        t.set_gid(FS.PANEL_LETTER_GID)
+        xr = x0 + ink(letter, FS.LETTER_PT, bold=True)[1] + 1.5
+    if title:
+        a, b = ink(title)
+        xc = (x0 + x1) / 2 - (b - a) / 2 - a
+        txt(fig, xc if (align == "center" and xc + a >= xr) else xr - a, y, title)
+
+
+def span(fig, panels, title, line, letter=None, align="center"):
+    """A title over a group of panels (on the row's title line `line`), centered over the group, or after the group's letter."""
+    sc, p0 = fig._sc, panels[0]
+    x0 = p0.x
+    if letter is None and p0.letter and p0.tline == line:              # the group's first panel has its letter on this line
+        x0 += ink(p0.letter, FS.LETTER_PT, bold=True)[1] + 1.5
+    head_at(fig, x0, max(p.x + p.w * sc for p in panels), base(p0.row, line), letter, title, align)
+
+
+def bracket(fig, panels, label, line, letter=None):
+    """A label over a group of panels (a subset of its row), on the row's title line `line`, inside a thin gray bracket that spans the
+    group (after its letter, if any), so that it does not read as one panel's title."""
+    sc, p0 = fig._sc, panels[0]
+    y = base(p0.row, line); x0 = p0.x; x1 = max(p.x + p.w * sc for p in panels)
+    if letter:
+        t = txt(fig, x0, y, letter, fs=FS.LETTER_PT, fontweight="bold"); t.set_gid(FS.PANEL_LETTER_GID)
+        x0 += ink(letter, FS.LETTER_PT, bold=True)[1] + 1.5
+    a, b = ink(label); xm = (x0 + x1) / 2
+    txt(fig, xm - (b - a) / 2 - a, y, label)
+    ym = y - 0.9                                                          # the bracket at the label's mid-height
+    for xa, xb in ((x0, xm - (b - a) / 2 - 1.5), (xm + (b - a) / 2 + 1.5, x1)):
+        arrow(fig, (xa, ym), (xb, ym), head=False, color=FS.GRAY)
+    for xe in (x0, x1):
+        arrow(fig, (xe, ym), (xe, ym + 1.2), head=False, color=FS.GRAY)
+
+
+def orient(fig, rows):
+    """The orientation letters: one pair per letter group, one line per row (figstyle.orient_letters)."""
+    out = []
+    for r in rows:
+        pairs = []
+        for g in dict.fromkeys(p.grp for p in r.panels if p.grp is not None):
+            ps = [p for p in r.panels if p.grp == g]
+            pairs.append((ps[0].ax, ps[-1].ax, ps[0].view))
+        if pairs:
+            out.append(pairs)
+    if out:
+        FS.orient_letters(fig, out)
+
+
+def bar(fig, sc, mm=10.0, corners=("bottom left", "bottom right", "top right", "top left"), reach=(40.0, 15.0), region=None):
+    """The figure's one scale bar, `mm` long at the print scale sc, its length above it, in an empty corner of the page: the first of
+    `corners` whose corner box (reach = its width and height, mm) has an empty place, 2 mm clear of everything drawn (ink; check()
+    measures 1.5 mm from the texts' boxes), nearest that corner (figstyle.scalebar_free). region: one box instead (page mm, x0, x1, y0,
+    y1). Call it last."""
+    W, H = page(fig)
+    for c in corners:
+        if region is not None:
+            reg = region
+        else:
+            x0, x1 = (MG, MG + reach[0]) if "left" in c else (W - MG - reach[0], W - MG)
+            y0, y1 = (0.3, reach[1]) if "top" in c else (H - reach[1], H - MG)
+            reg = (x0, x1, max(y0, 0.3), min(y1, H - MG))
+        try:
+            return FS.scalebar_free(fig, mm, sc, reg, corner=c, clear_mm=2.0)
+        except ValueError:
+            continue
+    raise ValueError(f"no empty corner for the {mm:g} mm bar")
+
+
+def box(p, sc):
+    """A panel's box in page mm: (x0, y0, x1, y1), y down."""
+    return p.x, p.y, p.x + p.w * sc, p.y + p.h * sc
 
 
 def show(ax, img, px_mm, cmap="gray", vmin=0, vmax=1, interpolation="bilinear"):
@@ -211,45 +413,61 @@ def show(ax, img, px_mm, cmap="gray", vmin=0, vmax=1, interpolation="bilinear"):
     return ax
 
 
-def head(ax, letter, text=None):
-    FS.letter(ax, letter)
-    if text:
-        FS.header(ax, text)
-
-
-def bar_below(ax, px_per_mm, mm, y_frac=None, gap_mm=3.0):
-    """figstyle's scale bar, gap_mm under the panel's bottom edge whatever the panel's height (y_frac is ignored)."""
-    h_mm = ax.get_position().height * ax.figure.get_size_inches()[1] * 25.4
-    return FS.scalebar(ax, px_per_mm, mm, y_frac=gap_mm / h_mm)
-
-
 def code_text(fig, x_mm, y_mm, s, ha="center", va="bottom", **kw):
     """A command name in the figure (monospace, bold and half a point larger, so that its underscores survive a viewer's downscaling;
     exempt from the sentence-case rule)."""
-    W, H = (v * 25.4 for v in fig.get_size_inches())
     CODE_TEXT.add(s)
-    return fig.text(x_mm / W, 1 - y_mm / H, s, ha=ha, va=va, fontsize=FS.MIN_PT + 0.5, color=FS.FG, family="monospace", fontweight="bold", **kw)
+    return txt(fig, x_mm, y_mm, s, ha=ha, va=va, fs=FS.MIN_PT + 0.5, family="monospace", fontweight="bold", **kw)
 
 
-def arrow(fig, p0_mm, p1_mm, head=True):
+def code_lines(fig, x_mm, y_mm, lines, up=True):
+    """Command lines centered on x_mm: stacked upward from the baseline y_mm (up=True: above an arrow), or downward from y_mm (a band
+    under a row). A line that starts with "~" is plain words (secondary gray), not a command."""
+    out = []
+    seq = list(reversed(lines)) if up else list(lines)
+    for k, s in enumerate(seq):
+        yy = y_mm - k * CMD_MM if up else y_mm + k * CMD_MM
+        if s.startswith("~"):
+            out.append(txt(fig, x_mm, yy, s[1:], ha="center", va="bottom" if up else "top", color=FS.GRAY))
+        elif s:
+            out.append(code_text(fig, x_mm, yy, s, va="bottom" if up else "top"))
+    return out
+
+
+def mixed(fig, xc, y, parts, gap=1.2):
+    """One line of plain words and command names, centered on xc (mm) on the baseline y: parts = [(text, is_command), ...]."""
+    ws = [ink(t, FS.MIN_PT + 0.5, bold=True, mono=True) if c else ink(t) for t, c in parts]
+    x = xc - (sum(b - a for a, b in ws) + gap * (len(parts) - 1)) / 2
+    for (t, c), (a, b) in zip(parts, ws):
+        (code_text(fig, x - a, y, t, ha="left", va="baseline") if c else txt(fig, x - a, y, t)); x += b - a + gap
+
+
+def arrow(fig, p0_mm, p1_mm, head=True, color=FS.FG):
     """A plain arrow between two points of the page (mm from the top-left corner); head=False: a line."""
     from matplotlib.patches import FancyArrowPatch
-    W, H = (v * 25.4 for v in fig.get_size_inches())
-    f = lambda p: (p[0] / W, 1 - p[1] / H)
-    fig.add_artist(FancyArrowPatch(f(p0_mm), f(p1_mm), transform=fig.transFigure, arrowstyle="-|>" if head else "-", mutation_scale=6, lw=0.8,
-                                   color=FS.FG, shrinkA=0, shrinkB=0))
+    W, H = page(fig)
+    f = lambda p: (p[0] / W, 1 - p[1] / H)                                # noqa: E731
+    fig.add_artist(FancyArrowPatch(f(p0_mm), f(p1_mm), transform=fig.transFigure, arrowstyle="-|>" if head else "-", mutation_scale=6,
+                                   lw=0.8, color=color, shrinkA=0, shrinkB=0))
 
 
-def box_mm(fig, ax):
-    """An axes' box in page mm: (x0, y0, x1, y1), y down."""
-    W, H = (v * 25.4 for v in fig.get_size_inches()); p = ax.get_position()
-    return p.x0 * W, (1 - p.y1) * H, p.x1 * W, (1 - p.y0) * H
+def arrow_gutter(fig, a, b, sc, y=None):
+    """An arrow across the gutter between panels a and b, 1 mm from each, at height y (mm; default the row's middle)."""
+    y = (a.row.top + a.row.hrow / 2) if y is None else y
+    arrow(fig, (a.x + a.w * sc + 1.0, y), (b.x - 1.0, y))
+    return y
 
 
-def arrow_between(fig, ax0, ax1):
-    a, b = box_mm(fig, ax0), box_mm(fig, ax1)
-    y = (max(a[1], b[1]) + min(a[3], b[3])) / 2
-    arrow(fig, (a[2] + 1.0, y), (b[0] - 1.0, y))
+def key(fig, handles, x_mm, y_mm, loc="upper left", ncol=1, **kw):
+    """A key (legend) at page mm (x, y), frameless."""
+    W, H = page(fig)
+    return fig.legend(handles=handles, loc=loc, bbox_to_anchor=(x_mm / W, 1 - y_mm / H), ncol=ncol, frameon=False, borderaxespad=0,
+                      handlelength=kw.pop("handlelength", 1.6), handletextpad=0.6, columnspacing=1.6, **kw)
+
+
+def name(S):
+    """A brain's name in the figures: its Specimen ID, the repository's name, and the paper's (docs/brain_identifiers.md)."""
+    return f"{S} ({FS.label(S)})"
 
 
 def new_fig(h_mm):
@@ -257,14 +475,32 @@ def new_fig(h_mm):
     return plt.figure(figsize=(W_MM * FS.MM, h_mm * FS.MM))
 
 
+def _overlaps(fig):
+    """Texts (and keys) that overlap one another or leave the page: the cut-off or overlapping text figstyle.check does not look for."""
+    from matplotlib.text import Text
+    fig.canvas.draw(); r = fig.canvas.get_renderer(); fb = fig.bbox
+    ts = [t for t in fig.findobj(Text) if t.get_visible() and t.get_text().strip()
+          and not any(t in lg.get_texts() for lg in fig.legends)]
+    items = [(t.get_text()[:30], t.get_window_extent(r)) for t in ts] + [("key", lg.get_window_extent(r)) for lg in fig.legends]
+    bad = []
+    for i, (s, e) in enumerate(items):
+        if e.x0 < fb.x0 - 0.5 or e.y0 < fb.y0 - 0.5 or e.x1 > fb.x1 + 0.5 or e.y1 > fb.y1 + 0.5:
+            bad.append(f"text off the page: {s!r}")
+        for s2, e2 in items[i + 1:]:
+            if e.x0 < e2.x1 - 0.5 and e.x1 > e2.x0 + 0.5 and e.y0 < e2.y1 - 0.5 and e.y1 > e2.y0 + 0.5:
+                bad.append(f"texts overlap: {s!r} and {s2!r}")
+    return bad
+
+
 def save(fig, out, prov_out, tree, name):
-    """figstyle's checks (all but sentence case for the command names), then the PNG at 200 dpi, with no text chunks (no paths or
-    host names in a public file), and its provenance in prov_out."""
+    """figstyle's checks (all but sentence case for the command names) and the overlap check, then the PNG at 200 dpi, with no text
+    chunks (no paths or host names in a public file), and its provenance in prov_out."""
     import json
     import matplotlib.pyplot as plt
     from shared import provenance
     FS.tiles(fig)
     bad = [b for b in FS.check(fig) if not (b.startswith("not in sentence case") and any(repr(c[:40]) in b for c in CODE_TEXT))]
+    bad += _overlaps(fig)
     if bad:
         raise ValueError(f"{name}: house rules broken:\n  " + "\n  ".join(bad))
     out.mkdir(parents=True, exist_ok=True); prov_out.mkdir(parents=True, exist_ok=True)
@@ -301,18 +537,12 @@ def native_planes(ba, f, fa, tp):
     return dict(sagittal=int(round(ijk[0])), coronal=int(round(ijk[1])), axial=int(round(ijk[2])))
 
 
-def one_row(panels, gutter=FS.GUTTER_MM, extra_mm=0.0, letters=True, bar_room=True):
-    """A one-row figure: panels = [(image, px_mm), ...]; returns (fig, axes)."""
-    dims = [(p[0].shape[0] * p[1], p[0].shape[1] * p[1]) for p in panels]
-    sc = fit_scale([w for h, w in dims], gutter=gutter, extra_mm=extra_mm, letters=letters)
-    fig = new_fig(TOP_MM + HEAD_MM + max(h for h, w in dims) * sc + (BAR_MM if bar_room else FS.MARGIN_MM))
-    axs = row(fig, dims, TOP_MM + HEAD_MM, sc, gutter=gutter, letters=letters)
-    for ax, (img, px) in zip(axs, panels):
-        show(ax, img, px)
-    return fig, axs, sc
 
 
 # ---- the MRI tutorial (01_mri.md) --------------------------------------------------------------------------------------------
+GA = 23.0                                     # an arrow gutter that holds a two-line command above the arrow ("linc-register")
+
+
 @figure
 def mri_01_flow(tr):
     """The MRI part: the four brains' T2-weighted images make the template (top); a brain's b0 is registered to it (bottom)."""
@@ -324,38 +554,31 @@ def mri_01_flow(tr):
         f, fa = itk_field(tr, f"brains/sub-{B}/outputs/{B}_t2_to_template.nii.gz")
         j = native_planes(a, f, fa, tp)["coronal"]
         im, m2 = FS.section(window(d, mk), "coronal", j), FS.section(mk, "coronal", j)
-        bx = bbox(m2 > 0.5, int(2 / abs(a[0, 0]))); top.append((crop(im * (m2 > 0.5), bx), abs(a[0, 0])))
+        bx = bbox(m2 > 0.5, cropm(abs(a[0, 0]))); top.append(Pn(crop(im * (m2 > 0.5), bx), abs(a[0, 0]), "coronal", title=name(B)))
     t2, _ = tr.nii("template/outputs/template_T2w.nii.gz")
-    m2 = FS.section(tm, "coronal", tp["coronal"]); bx = bbox(m2 > 0.5, 8)
-    top.append((crop(FS.section(window(t2, tm), "coronal", tp["coronal"]) * (m2 > 0.5), bx), 0.25))
+    m2 = FS.section(tm, "coronal", tp["coronal"]); bx = bbox(m2 > 0.5, 1)
+    top.append(Pn(crop(FS.section(window(t2, tm), "coronal", tp["coronal"]) * (m2 > 0.5), bx), 0.25, "coronal", gap=17.0))
     b0, ba, m, tb, ta, tm, f, fa = mri_example(tr)
     npl = native_planes(ba, f, fa, tp)
     n_im, n_m = FS.section(window(b0, m), "coronal", npl["coronal"]), FS.section(m, "coronal", npl["coronal"])
-    nb = bbox(n_m > 0.5, int(2 / abs(ba[0, 0])))
+    nb = bbox(n_m > 0.5, cropm(abs(ba[0, 0])))
     mv = pull_itk(f, fa, b0, ba, "coronal", tp["coronal"])
-    bot = [(crop(n_im, nb), abs(ba[0, 0]), crop(n_m, nb)), (crop(window(mv, mv > 0), bx), 0.25, crop(m2, bx)),
-           (crop(FS.section(window(tb, tm), "coronal", tp["coronal"]), bx), 0.25, crop(m2, bx))]
-    g = 3.0; ga = 8.0                                               # the gutter; the gutter that holds an arrow
-    wt = [p[0].shape[1] * p[1] for p in top]
-    sc = (W_MM - 2 * FS.MARGIN_MM - 2 * LET_MM - 3 * g - ga) / sum(wt)
-    ht = max(p[0].shape[0] * p[1] for p in top) * sc; hb = max(p[0].shape[0] * p[1] for p in bot) * sc
-    fig = new_fig(TOP_MM + HEAD_MM + ht + HEAD_MM + 2.0 + hb + BAR_MM)
-    x = FS.MARGIN_MM + LET_MM; axs_t = []
-    for i, (img, px) in enumerate(top):
-        ax = FS.axes_mm(fig, x, TOP_MM + HEAD_MM, img.shape[1] * px * sc, img.shape[0] * px * sc); ax.set_axis_off(); show(ax, img, px)
-        axs_t.append(ax); x += img.shape[1] * px * sc + (ga if i == 3 else g)
-    head(axs_t[0], "a", "The four brains' T2-weighted images ..."); head(axs_t[4], "b", "... make the template")
-    arrow_between(fig, axs_t[3], axs_t[4])
-    y1 = TOP_MM + HEAD_MM + ht + HEAD_MM + 2.0; x = FS.MARGIN_MM + LET_MM; axs_b = []
-    for i, (img, px, ol) in enumerate(bot):
-        ax = FS.axes_mm(fig, x, y1, img.shape[1] * px * sc, img.shape[0] * px * sc); ax.set_axis_off(); show(ax, img, px)
-        FS.outline(ax, ol, lw=0.5); axs_b.append(ax); x += img.shape[1] * px * sc + ga
-    for a0, a1 in zip(axs_b[:-1], axs_b[1:]):
-        arrow_between(fig, a0, a1)
-    for ax, l, t in zip(axs_b, "cde", (f"{S}'s b0, its mask", "In the template", "The template's b0")):
-        head(ax, l, t)
-    FS.dirs_row(axs_t[0], axs_t[-1], "coronal", pad=1.5); FS.dirs_row(axs_b[0], axs_b[-1], "coronal", pad=1.5)
-    bar_below(axs_b[0], 1 / axs_b[0].px_mm, 10, y_frac=0.08)
+    bot = [Pn(crop(n_im, nb), abs(ba[0, 0]), "coronal", "c", f"{name(S)}: b0, its mask"),
+           Pn(crop(window(mv, mv > 0), bx), 0.25, "coronal", "d", "Its b0, in the template", gap=GA),
+           Pn(crop(FS.section(window(tb, tm), "coronal", tp["coronal"]), bx), 0.25, "coronal", "e", "The template's b0")]
+    rows = [Row(top, lines=2, valign="center"), Row(bot, valign="center")]
+    fig, sc = grid(rows)
+    bracket(fig, top[:4], "The template's four brains, T2-weighted, each in its own space", 2, letter="a")
+    head_at(fig, top[4].x, top[4].x + top[4].w * sc, base(rows[0], 2), "b", "The MRI template")
+    for p, ol in zip(bot, (crop(n_m, nb), crop(m2, bx), crop(m2, bx))):
+        FS.outline(p.ax, ol, lw=0.5)
+    y = arrow_gutter(fig, top[3], top[4], sc)
+    txt(fig, (top[3].x + top[3].w * sc + top[4].x) / 2, y - 1.2, "Groupwise\nregistration", ha="center", va="bottom", color=FS.GRAY,
+        multialignment="center", linespacing=1.1)
+    y = arrow_gutter(fig, bot[0], bot[1], sc)
+    code_lines(fig, (bot[0].x + bot[0].w * sc + bot[1].x) / 2, y - 1.2, ["linc-register", "mri-template"])
+    orient(fig, rows)
+    bar(fig, sc, corners=("bottom right", "bottom left"))
     return fig
 
 
@@ -364,50 +587,51 @@ def mri_02_input(tr):
     """The inputs: MF283's T2-weighted image, FA (from its tensor) and soma fraction, each in its own space, and MR243's b0 (coronal)."""
     P = []
     d, a = tr.nii(f"brains/sub-{T}/outputs/{T}_t2_T2w.nii.gz"); mk, _ = tr.nii(f"brains/sub-{T}/inputs/manual_annotations/{T}_t2_brain_mask.nii.gz")
-    j = int(round(np.argwhere(mk > 0.5)[:, 1].mean())); m2 = FS.section(mk, "coronal", j); bx = bbox(m2 > 0.5, 4)
-    P.append((crop(FS.section(window(d, mk), "coronal", j) * (m2 > 0.5), bx), abs(a[0, 0]), f"{T}: T2-weighted"))
+    j = int(round(np.argwhere(mk > 0.5)[:, 1].mean())); m2 = FS.section(mk, "coronal", j); bx = bbox(m2 > 0.5, cropm(abs(a[0, 0])))
+    P.append(Pn(crop(FS.section(window(d, mk), "coronal", j) * (m2 > 0.5), bx), abs(a[0, 0]), "coronal", "a", "T2-weighted"))
     t6, a = tr.nii(f"brains/sub-{T}/outputs/{T}_tensor_dti.nii.gz"); mk, _ = tr.nii(f"brains/sub-{T}/inputs/manual_annotations/{T}_tensor_brain_mask.nii.gz")
-    j = int(round(np.argwhere(mk > 0.5)[:, 1].mean())); m2 = FS.section(mk, "coronal", j); bx = bbox(m2 > 0.5, 8)
-    P.append((crop(fa_slice(t6, "coronal", j) * (m2 > 0.5), bx), abs(a[0, 0]), "FA, from its tensor"))
+    j = int(round(np.argwhere(mk > 0.5)[:, 1].mean())); m2 = FS.section(mk, "coronal", j); bx = bbox(m2 > 0.5, cropm(abs(a[0, 0])))
+    P.append(Pn(crop(fa_slice(t6, "coronal", j) * (m2 > 0.5), bx), abs(a[0, 0]), "coronal", "b", "FA, from the tensor"))
     d, a = tr.nii(f"brains/sub-{T}/outputs/{T}_micro_soma_fraction.nii.gz"); mk, _ = tr.nii(f"brains/sub-{T}/inputs/manual_annotations/{T}_micro_brain_mask.nii.gz")
-    j = int(round(np.argwhere(mk > 0.5)[:, 1].mean())); m2 = FS.section(mk, "coronal", j); bx = bbox(m2 > 0.5, 4)
-    P.append((crop(np.clip(FS.section(d, "coronal", j), 0, 1) * (m2 > 0.5), bx), abs(a[0, 0]), "Soma fraction"))
+    j = int(round(np.argwhere(mk > 0.5)[:, 1].mean())); m2 = FS.section(mk, "coronal", j); bx = bbox(m2 > 0.5, cropm(abs(a[0, 0])))
+    P.append(Pn(crop(np.clip(FS.section(d, "coronal", j), 0, 1) * (m2 > 0.5), bx), abs(a[0, 0]), "coronal", "c", "Soma fraction"))
     b0, ba = tr.nii(f"brains/sub-{S}/inputs/mri/{S}_b0.nii.gz"); mk, _ = tr.nii(f"brains/sub-{S}/inputs/manual_annotations/{S}_b0_brain_mask.nii.gz")
-    j = int(round(np.argwhere(mk > 0.5)[:, 1].mean())); m2 = FS.section(mk, "coronal", j); bx = bbox(m2 > 0.5, 3)
-    P.append((crop(FS.section(window(b0, mk), "coronal", j), bx), abs(ba[0, 0]), f"{S}: b0"))
-    g = 3.0; ga = 7.0
-    dims = [(p[0].shape[0] * p[1], p[0].shape[1] * p[1]) for p in P]
-    sc = (W_MM - 2 * FS.MARGIN_MM - 2 * LET_MM - 2 * g - ga - LET_MM * 2) / sum(w for h, w in dims)
-    fig = new_fig(TOP_MM + HEAD_MM + max(h for h, w in dims) * sc + BAR_MM)
-    x = FS.MARGIN_MM + LET_MM; axs = []
-    for i, ((img, px, t), (h, w)) in enumerate(zip(P, dims)):
-        ax = FS.axes_mm(fig, x, TOP_MM + HEAD_MM, w * sc, h * sc); ax.set_axis_off(); show(ax, img, px); head(ax, "abcd"[i], t)
-        axs.append(ax); x += w * sc + (ga + 2 * LET_MM if i == 2 else g)
-    FS.dirs_row(axs[0], axs[2], "coronal", pad=1.5); FS.dirs(axs[3], "coronal", pad=1.5)
-    bar_below(axs[0], 1 / axs[0].px_mm, 10, y_frac=0.08)                  # one print scale: one bar
+    j = int(round(np.argwhere(mk > 0.5)[:, 1].mean())); m2 = FS.section(mk, "coronal", j); bx = bbox(m2 > 0.5, cropm(abs(ba[0, 0])))
+    P.append(Pn(crop(FS.section(window(b0, mk), "coronal", j), bx), abs(ba[0, 0]), "coronal", "d", "b0", lg="new brain"))
+    rows = [Row(P, lines=2)]
+    fig, sc = grid(rows)
+    bracket(fig, P[:3], f"{name(T)}, one of the template's four brains", 2)
+    bracket(fig, P[3:], f"{name(S)}, a new brain", 2)
+    orient(fig, rows)
+    bar(fig, sc)
     return fig
 
 
 @figure
 def mri_03_template_channels(tr):
     """The MRI template's channels in one coronal plane: T2-weighted, b0, FA, the principal direction, neurite and soma fractions; the
-    brain mask's outline on the first."""
+    brain mask's outline on the first; under the principal direction, the key to its colors (red left-right, green front-back, blue
+    up-down)."""
     tm, _ = tr.nii("template/outputs/template_brain_mask.nii.gz")
-    j = template_planes(tm)["coronal"]; m2 = FS.section(tm, "coronal", j); bx = bbox(m2 > 0.5, 8)
+    j = template_planes(tm)["coronal"]; m2 = FS.section(tm, "coronal", j); bx = bbox(m2 > 0.5, 1)
     P = []
-    for title, rel, kind in (("T2-weighted", "template_T2w", "win"), ("b0", "template_b0", "win"), ("FA", "template_FA", "01"),
-                             ("Principal direction", "template_DEC", "rgb"), ("Neurite fraction", "template_neurite_fraction", "01"),
-                             ("Soma fraction", "template_soma_fraction", "01")):
+    for i, (title, rel, kind) in enumerate((("T2-weighted", "template_T2w", "win"), ("b0", "template_b0", "win"), ("FA", "template_FA", "01"),
+                                            ("Principal direction", "template_DEC", "rgb"), ("Neurite fraction", "template_neurite_fraction", "01"),
+                                            ("Soma fraction", "template_soma_fraction", "01"))):
         d, _ = tr.nii(f"template/outputs/{rel}.nii.gz")
         im = FS.section(window(d, tm) if kind == "win" else (rgb01(d) if kind == "rgb" else np.clip(d, 0, 1)), "coronal", j)
         im = im * ((m2 > 0.5)[..., None] if im.ndim == 3 else (m2 > 0.5))
-        P.append((crop(im, bx), 0.25, title))
-    fig, axs, _ = one_row([(p[0], p[1]) for p in P])
-    for i, (ax, p) in enumerate(zip(axs, P)):
-        head(ax, "abcdef"[i], p[2])
-    FS.outline(axs[0], crop(m2, bx), lw=0.5)
-    FS.dirs_row(axs[0], axs[-1], "coronal", pad=1.5)
-    bar_below(axs[0], 4, 10, y_frac=0.08)
+        P.append(Pn(crop(im, bx), 0.25, "coronal", "abcdef"[i], title))
+    rows = [Row(P, lines=2, below=4.0)]
+    fig, sc = grid(rows)
+    span(fig, P, "The MRI template's channels", 2)
+    FS.outline(P[0].ax, crop(m2, bx), lw=0.5)
+    from matplotlib.patches import Patch                                 # (d)'s colors, under it: the principal direction's axis
+    key(fig, [Patch(facecolor=c, edgecolor="none", label=t) for c, t in (((1, 0, 0), "Left–right"), ((0, 1, 0), "Front–back"),
+                                                                          ((0, 0, 1), "Up–down"))],
+        P[3].x + P[3].w * sc / 2, rows[0].top + rows[0].hrow + 1.2, loc="upper center", ncol=3, handlelength=1.0, handleheight=1.0)
+    orient(fig, rows)
+    bar(fig, sc, corners=("top right",))
     return fig
 
 
@@ -420,48 +644,45 @@ def mri_04_prep(tr):
     bias, _ = tr.nii(f"brains/sub-{T}/intermediate/prepare/dwi/b0_brain_n4_bias.nii.gz")
     mk, _ = tr.nii(f"brains/sub-{T}/inputs/manual_annotations/{T}_tensor_brain_mask.nii.gz")
     j = int(round(np.argwhere(mk > 0.5)[:, 1].mean())); px = abs(a[0, 0])
-    m2 = FS.section(mk, "coronal", j); bx = bbox(m2 > 0.5, int(3 / px))
+    m2 = FS.section(mk, "coronal", j); bx = bbox(m2 > 0.5, cropm(px))
     raw = FS.section(window(b, b > np.percentile(b, 50)), "coronal", j)
     br = FS.section(window(bb, mk), "coronal", j)
     bi = FS.section(bias, "coronal", j); bi = np.where(m2 > 0.5, bi, 0)
     v = bi[m2 > 0.5]; bi = np.clip((bi - v.min()) / max(v.max() - v.min(), 1e-9), 0, 1) * (m2 > 0.5)
     corr = np.where(m2 > 0.5, FS.section(bb, "coronal", j) / np.where(FS.section(bias, "coronal", j) > 0, FS.section(bias, "coronal", j), 1), 0)
     corr = window(corr, m2)
-    P = [(crop(raw, bx), px), (crop(raw, bx), px), (crop(br, bx), px), (crop(bi, bx), px), (crop(corr, bx), px)]
-    fig, axs, _ = one_row(P)
-    FS.outline(axs[1], crop(m2, bx), lw=0.5)
-    for i, (ax, t) in enumerate(zip(axs, ("The b0", "Its brain mask", "Masked", "Bias field (N4)", "Bias-corrected"))):
-        head(ax, "abcde"[i], t)
-    FS.dirs_row(axs[0], axs[-1], "coronal", pad=1.5)
-    bar_below(axs[0], 1 / px, 10, y_frac=0.08)
+    P = [Pn(crop(im, bx), px, "coronal", "abcde"[i], t) for i, (im, t) in
+         enumerate(((raw, "The b0"), (raw, "Its brain mask"), (br, "Masked"), (bi, "Bias field (N4)"), (corr, "Bias-corrected")))]
+    rows = [Row(P, lines=2)]
+    fig, sc = grid(rows)
+    FS.outline(P[1].ax, crop(m2, bx), lw=0.5)
+    mixed(fig, (P[0].x + P[-1].x + P[-1].w * sc) / 2, base(rows[0], 2), [(f"{name(T)}: its b0 through", False), ("linc-mri prep", True)])
+    orient(fig, rows)
+    bar(fig, sc)
     return fig
 
 
 @figure
 def mri_05_b0_in_template(tr):
     """The registration's result: MR243's b0 pulled into the template through outputs/MR243_b0_to_template (top) and the template's
-    b0 (bottom), the template brain's outline on both, three planes."""
+    b0 (bottom), the template brain's outline on both, three planes (sagittal 6 mm left of the midline)."""
     b0, ba, m, tb, ta, tm, f, fa = mri_example(tr)
     tp = template_planes(tm); tw = window(tb, tm)
     rows = [[], []]
     for pl in ("sagittal", "coronal", "axial"):
-        mv = pull_itk(f, fa, b0, ba, pl, tp[pl]); mk = FS.section(tm, pl, tp[pl]); bx = bbox(mk > 0.5, 8)
-        rows[0].append((pl, crop(window(mv, mv > 0), bx), crop(mk, bx)))
-        rows[1].append((pl, crop(FS.section(tw, pl, tp[pl]), bx), crop(mk, bx)))
+        mv = pull_itk(f, fa, b0, ba, pl, tp[pl]); mk = FS.section(tm, pl, tp[pl]); bx = bbox(mk > 0.5, 1)
+        rows[0].append((Pn(crop(window(mv, mv > 0), bx), 0.25, pl), crop(mk, bx)))
+        rows[1].append((Pn(crop(FS.section(tw, pl, tp[pl]), bx), 0.25, pl), crop(mk, bx)))
         r = np.corrcoef(mv[mk > 0.5], FS.section(tb, pl, tp[pl])[mk > 0.5])[0, 1]
         print(f"  {pl}: r (the moved b0, the template's b0) inside the template brain = {r:.3f}")
-    dims = [(p[1].shape[0] * 0.25, p[1].shape[1] * 0.25) for p in rows[0]]
-    g = 2 * LET_MM + 1.0; sc = fit_scale([w for h, w in dims], gutter=g)
-    hrow = max(h for h, w in dims) * sc
-    fig = new_fig(TOP_MM + 2 * (HEAD_MM + hrow) + BAR_MM)
-    heads = (f"{S}'s b0 in the template", "The template's b0")
-    for k in range(2):
-        axs = row(fig, dims, TOP_MM + HEAD_MM + k * (HEAD_MM + hrow), sc, gutter=g)
-        for i, (ax, (pl, im, mk)) in enumerate(zip(axs, rows[k])):
-            show(ax, im, 0.25); FS.outline(ax, mk, lw=0.5)
-            head(ax, "abcdef"[3 * k + i], f"{heads[k]}, {pl}" if i == 0 else pl.capitalize()); FS.dirs(ax, pl, pad=1.5)
-        if k == 1:
-            bar_below(axs[0], 4, 10, y_frac=0.08)
+    R = [Row([p for p, _ in rw]) for rw in rows]
+    fig, sc = grid(R)
+    for k, (rw, letter, t) in enumerate(zip(rows, "ab", (f"{name(S)}: its b0, moved into the template", "The template's b0"))):
+        for p, mk in rw:
+            FS.outline(p.ax, mk, lw=0.5)
+        span(fig, [rw[0][0]], t, 1, letter=letter, align="left")
+    orient(fig, R)
+    bar(fig, sc)
     return fig
 
 
@@ -470,63 +691,46 @@ def mri_06_outline_check(tr):
     """The outline check, a pass and a warning: MR243 (PASS) and MR253 (WARN, ventral overshoot), each brain's b0 mask moved into the
     template (dashed) over the template's b0 and its brain outline (solid), one sagittal plane 2 mm off the midline and one coronal
     plane; the dotted orange line is the template brain's lowest axial slice, below which the check reports tissue but does not gate it."""
+    from matplotlib.lines import Line2D
     tb, ta = tr.nii("template/outputs/template_b0.nii.gz"); tm, _ = tr.nii("template/outputs/template_brain_mask.nii.gz")
     tp = template_planes(tm); tw = window(tb, tm)
     tp_s = dict(tp, sagittal=int(np.round(np.argwhere(tm > 0.5)[:, 0].mean())) - 8)      # 2 mm off the midline: the brainstem in view
-    rows = []
-    for B in (S, "MR253"):
-        m, ma = tr.nii(f"brains/sub-{B}/inputs/manual_annotations/{B}_b0_brain_mask.nii.gz")
-        f, fa = itk_field(tr, f"brains/sub-{B}/outputs/{B}_b0_to_template.nii.gz")
-        P = []
-        for pl in ("sagittal", "coronal"):
-            k = tp_s[pl]; mk = FS.section(tm, pl, k); bx = bbox(mk > 0.5, 16)
-            mv = pull_itk(f, fa, m.astype(np.float32), ma, pl, k) > 0.5
-            P.append((pl, crop(FS.section(tw, pl, k), bx), crop(mk, bx), crop(mv, bx), bx))
-        rows.append((B, P))
     zlow = int(np.where((tm > 0.5).any(axis=(0, 1)))[0][0])            # the template brain's lowest axial slice (its flat brainstem cut)
     row_low = tm.shape[2] - 1 - zlow                                   # its row in section()'s display (superior up)
     import json
-    verdict = {}
-    for B, _ in rows:
+    P, O, verdict = [], [], {}
+    for B in (S, "MR253"):
         q = json.load(open(tr(f"brains/sub-{B}/intermediate/registration/b0-native__to__mri-template/meta.json")))["qc"]
         verdict[B] = q["outline"] + (f", {q['outline_reasons'][0].split(' p99')[0]}" if q.get("outline_reasons") else "")
-    dims = [(p[1].shape[0] * 0.25, p[1].shape[1] * 0.25) for p in rows[0][1]] * 2
-    g = 2 * LET_MM + 1.0; sc = fit_scale([w for h, w in dims], gutter=g)
-    fig = new_fig(TOP_MM + HEAD_MM + max(h for h, w in dims) * sc + BAR_MM)
-    axs = row(fig, dims, TOP_MM + HEAD_MM, sc, gutter=g)
-    i = 0
-    for B, P in rows:
-        for j, (pl, im, mk, mv, bx) in enumerate(P):
-            ax = axs[i]; show(ax, im, 0.25); FS.outline(ax, mk, lw=0.5)
-            FS.outline(ax, mv, color=FS.ON_IMG2, lw=0.6, linestyles="dashed")
-            ax.axhline(row_low - bx[0] + 0.5, color=FS.COL["pred"], lw=0.5, ls=(0, (1, 1.5)))    # below it: reported, not gated
-            head(ax, "abcd"[i], f"{B}: {verdict[B]}" if j == 0 else pl.capitalize()); FS.dirs(ax, pl, pad=1.5); i += 1
-    bar_below(axs[0], 4, 10)
+        m, ma = tr.nii(f"brains/sub-{B}/inputs/manual_annotations/{B}_b0_brain_mask.nii.gz")
+        f, fa = itk_field(tr, f"brains/sub-{B}/outputs/{B}_b0_to_template.nii.gz")
+        for pl in ("sagittal", "coronal"):
+            k = tp_s[pl]; mk = FS.section(tm, pl, k); mv = pull_itk(f, fa, m.astype(np.float32), ma, pl, k) > 0.5
+            bx = bbox((mk > 0.5) | mv | (np.arange(mk.shape[0])[:, None] == row_low) & (mk > 0.5).any(0)[None, :], 1)
+            P.append(Pn(crop(FS.section(tw, pl, k), bx), 0.25, pl, lg=f"{B}{pl}")); O.append((crop(mk, bx), crop(mv, bx), bx))
+    rows = [Row(P, below=4.0)]
+    fig, sc = grid(rows)
+    for p, (mk, mv, bx) in zip(P, O):
+        FS.outline(p.ax, mk, lw=0.5); FS.outline(p.ax, mv, color=FS.ON_IMG2, lw=0.6, linestyles="dashed")
+        p.ax.axhline(row_low - bx[0] + 0.5, color=FS.COL["pred"], lw=0.6, ls=(0, (1, 1.5)))    # below it: reported, not gated
+    for i, (B, letter) in enumerate(zip((S, "MR253"), "ab")):
+        span(fig, P[2 * i:2 * i + 2], f"{name(B)}: {verdict[B]}", 1, letter=letter, align="left")
+    hs = [Line2D([], [], color=FS.ON_IMG, lw=0.6, label="Template brain's outline"),
+          Line2D([], [], color=FS.ON_IMG2, lw=0.8, ls=(0, (3, 2)), label="The brain's b0 mask, moved into the template"),
+          Line2D([], [], color=FS.COL["pred"], lw=0.8, ls=(0, (1, 1.5)), label="The template brain's lowest slice")]
+    key(fig, hs, W_MM / 2, rows[0].top + rows[0].hrow + 1.2, loc="upper center", ncol=3)
+    orient(fig, rows)
+    bar(fig, sc)
     return fig
 
 
 # ---- the blockface tutorial (02_blockface.md) -------------------------------------------------------------------------------
-def provenance_view(lum, tissue, predicted):
+def provenance_view(lum, tissue, synthesized):
     """The paper's provenance colors (its blockface template figure, panel c): photographed tissue in dimmed gray (its luminance),
-    predicted tissue orange (figstyle COL["pred"])."""
+    synthesized tissue orange (figstyle COL["pred"])."""
     from matplotlib.colors import to_rgb
     gray = (0.18 + 0.44 * np.clip(lum, 0, 1))[..., None] * np.ones(3)
-    return np.where(predicted[..., None], np.asarray(to_rgb(FS.COL["pred"])), gray) * tissue[..., None]
-
-
-def two_rows(panels, heads):
-    """A two-row figure: panels[k] = [(image, px_mm, plane), ...] for row k (the same planes and crops in both rows)."""
-    dims = [(p[0].shape[0] * p[1], p[0].shape[1] * p[1]) for p in panels[0]]
-    g = 2 * LET_MM + 1.0; sc = fit_scale([w for h, w in dims], gutter=g)
-    hrow = max(h for h, w in dims) * sc
-    fig = new_fig(TOP_MM + 2 * (HEAD_MM + hrow) + BAR_MM)
-    axs = []
-    for k in range(2):
-        ax_k = row(fig, dims, TOP_MM + HEAD_MM + k * (HEAD_MM + hrow), sc, gutter=g)
-        for i, (ax, (img, px, pl)) in enumerate(zip(ax_k, panels[k])):
-            show(ax, img, px); head(ax, "abcdef"[len(panels[0]) * k + i], heads[k][i]); FS.dirs(ax, pl, pad=1.5)
-        axs.append(ax_k)
-    return fig, axs
+    return np.where(synthesized[..., None], np.asarray(to_rgb(FS.COL["pred"])), gray) * tissue[..., None]
 
 
 BF = "MR252"                                  # the blockface tutorial's example brain (MM2)
@@ -604,20 +808,30 @@ def bf_plane(v, mk, tb, M, Tb, plane, index):
     return img, m3, t3, p
 
 
+
+
+def mirror(a):
+    """A photograph of MR252 in the neurological convention: the camera sees the subject's left on the image's right (the paper's
+    reconstruction figure decides it by correlation with the reconstructed section, photo_mirrored: true for MR252), so the figures flip
+    it left-right, one uniform display operation, as that figure does."""
+    return a[:, ::-1]
+
+
 @figure
 def blockface_01_flow(tr):
-    """The blockface part with MR252: a photograph, the reconstructed volume, the volume registered onto its own b0, and the completed
-    volume (sagittal); the commands between them."""
+    """The blockface part with MR252: a photograph (mirrored to the neurological convention), the reconstructed volume, the volume
+    registered onto its own b0, and the completed volume (sagittal, 4.5 mm left of the b0 brain's center); the commands between them."""
     import nibabel as nib
     k = 700
-    ph, pm, ppx = bf_photo(tr, k); bx = bbox(pm, int(2 / ppx))
+    ph, pm, ppx = bf_photo(tr, k); ph, pm = mirror(ph), mirror(pm); bx = bbox(pm, cropm(ppx))
     v, mk, tb, M, Tb, pl = bf_volume_planes(tr)
     vimg, vm, _, vpx = bf_plane(v, mk, tb, M, Tb, "sagittal", pl["sagittal"])
-    vb = bbox(vm, int(2 / vpx))
+    vb = bbox(vm, cropm(vpx))
     nl = nib.as_closest_canonical(tr.img(f"paper/brains/sub-{BF}/mri/nonlinear_r1v3mr/{BF}_bf_nonlin_rgb.nii.gz"))
     b0 = nib.as_closest_canonical(tr.img(f"paper/brains/sub-{BF}/mri/r1v3mr/{BF}_b0_masked.nii.gz"))
     co = nib.as_closest_canonical(tr.img(f"brains/sub-{BF}/outputs/{BF}_completed.nii.gz"))
     xw = float((b0.affine[:3, :3] @ np.argwhere(np.asanyarray(b0.dataobj) > 0).mean(0) + b0.affine[:3, 3])[0]) - 4.5   # 4.5 mm left of center
+
     def sag(img_n, x_mm, rgb=False):
         i = int(round((x_mm - img_n.affine[0, 3]) / img_n.affine[0, 0]))
         a = np.take(np.asanyarray(img_n.dataobj), i, axis=0)
@@ -625,54 +839,49 @@ def blockface_01_flow(tr):
     nl2, i_nl = sag(nl, xw, rgb=True); nl2 = rgb01(nl2)
     from scipy import ndimage as ndi
     bm = sample_world(ndi.binary_fill_holes(np.asanyarray(b0.dataobj) > 0).astype(np.uint8), b0.affine, plane_world(nl, "sagittal", i_nl)) > 0
-    nbx = bbox(bm, int(2 / 0.25))
-    co2, _ = sag(co, xw); cm = co2 > 0; cbx = bbox(cm, int(2 / 0.25))
-    P = [(crop(ph * pm[..., None], bx), ppx), (crop(vimg * vm[..., None], vb), vpx), (crop(nl2 * bm[..., None], nbx), 0.25),
-         (crop(window(co2, cm, 0.5, 99.5) * cm, cbx), 0.25)]
-    g = 12.0
-    dims = [(p[0].shape[0] * p[1], p[0].shape[1] * p[1]) for p in P]
-    sc = fit_scale([w for h, w in dims], gutter=g, letters=False)
-    hrow = max(h for h, w in dims) * sc
-    band = 4 * 3.4                                                         # four lines of commands under the row
-    fig = new_fig(TOP_MM + HEAD_MM + hrow + 2.0 + band + BAR_MM)
-    axs = row(fig, dims, TOP_MM + HEAD_MM, sc, gutter=g, letters=False)
-    for i, (ax, (img, px)) in enumerate(zip(axs, P)):
-        show(ax, img, px)
-        head(ax, "abcd"[i], ("A photograph", "The volume, sagittal", "On its own b0", "Completed")[i])
-    FS.outline(axs[2], crop(bm, nbx), lw=0.5)
-    for a0, a1 in zip(axs[:-1], axs[1:]):
-        arrow_between(fig, a0, a1)
-    y0 = TOP_MM + HEAD_MM + hrow + 2.0
-    cmds = (("linc-reconstruct all", "photos stack prepare mask", "volume tubes spacing"),
-            ("linc-register mri", "linc-register mri-template", "", "or linc-register blockface-template"),
-            ("linc-complete prepare", "linc-complete", ""))
-    for a0, a1, lines in zip(axs[:-1], axs[1:], cmds):
-        x = (box_mm(fig, a0)[2] + box_mm(fig, a1)[0]) / 2
-        for n, s in enumerate(lines):
-            if s:
-                code_text(fig, x, y0 + n * 3.4, s, va="top")
-    bar_below(axs[0], 1 / ppx, 10, y_frac=0.08)                            # one print scale: one bar, under (a), left of the commands
+    nbx = bbox(bm, 1)
+    co2, _ = sag(co, xw); cm = co2 > 0; cbx = bbox(cm, 1)
+    GB = 10.0                                                              # the arrow gutters (the commands go in the band under the row)
+    P = [Pn(crop(ph * pm[..., None], bx), ppx, "coronal", "a", f"{name(BF)}: photograph {k}"),
+         Pn(crop(vimg * vm[..., None], vb), vpx, "sagittal", "b", "Blockface volume", gap=GB),
+         Pn(crop(nl2 * bm[..., None], nbx), 0.25, "sagittal", "c", "Registered to its b0", gap=GB),
+         Pn(crop(window(co2, cm, 0.5, 99.5) * cm, cbx), 0.25, "sagittal", "d", "Completed", gap=GB)]
+    rows = [Row(P, valign="center", below=1.5 + 3 * CMD_MM)]
+    fig, sc = grid(rows)
+    FS.outline(P[2].ax, crop(bm, nbx), lw=0.5)
+    ya = rows[0].top + rows[0].hrow / 2 - 3.0                                # the arrows: above the orientation letters' line
+    for a, b in zip(P[:-1], P[1:]):
+        arrow_gutter(fig, a, b, sc, y=ya)
+    y0 = rows[0].top + rows[0].hrow + 1.5
+    for a, b, lines in zip(P[:-1], P[1:], (("linc-reconstruct all",), ("linc-register mri", "~Without MRI:", "linc-register blockface-template"),
+                                           ("linc-complete prepare", "linc-complete"))):
+        code_lines(fig, (a.x + a.w * sc + b.x) / 2, y0, lines, up=False)
+    orient(fig, rows)
+    bar(fig, sc)
     print(f"  photograph {k}, the volume's sagittal index {pl['sagittal']}, x = {xw:.2f} mm in the b0 frame")
     return fig
 
 
 @figure
 def blockface_02_input(tr):
-    """The input: one photograph of MR252 (inputs/photographs) beside its brain mask (inputs/manual_annotations/photograph_masks)."""
+    """The input: one photograph of MR252 (inputs/photographs) beside its brain mask (inputs/manual_annotations/photograph_masks), both
+    mirrored to the neurological convention."""
     k = 700
-    ph, pm, ppx = bf_photo(tr, k); bx = bbox(pm, int(3 / ppx))
-    P = [(crop(ph, bx), ppx), (crop(pm.astype(np.float32), bx), ppx)]
-    fig, axs, _ = one_row(P, gutter=FS.GUTTER_MM, letters=False)
-    head(axs[0], "a", f"Photograph {k}, {BF}"); head(axs[1], "b", "Its brain mask")
-    FS.outline(axs[0], crop(pm, bx), lw=0.5)
-    bar_below(axs[0], 1 / ppx, 10, y_frac=0.08)
+    ph, pm, ppx = bf_photo(tr, k); ph, pm = mirror(ph), mirror(pm); bx = bbox(pm, int(1.0 / ppx))
+    P = [Pn(crop(ph, bx), ppx, "coronal", "a", f"{name(BF)}: photograph {k}"),
+         Pn(crop(pm.astype(np.float32), bx), ppx, "coronal", "b", "Its brain mask")]
+    rows = [Row(P)]
+    fig, sc = grid(rows)
+    orient(fig, rows)
+    bar(fig, sc)
     return fig
 
 
 @figure
 def blockface_03_jumps(tr):
-    """One camera jump of MR252 (settings/brains/MR252.yaml jumps), the photograph after it with the outline of the one before it:
-    as photographed (left) and after prepare (intermediate/prepare/02_blockface, the jump corrected; right)."""
+    """MR252's largest camera jump (settings/brains/MR252.yaml jumps): the photograph after it with its outline (white) and the outline of
+    the one before it (orange), as photographed (left) and after prepare (intermediate/prepare/02_blockface, the jump corrected; right);
+    both mirrored to the neurological convention."""
     import yaml, zarr
     c = yaml.safe_load((REPO / "settings" / "brains" / f"{BF}.yaml").read_text())
     from scipy import ndimage as ndi
@@ -692,18 +901,22 @@ def blockface_03_jumps(tr):
     st = zarr.open_group(str(tr(f"brains/sub-{BF}/intermediate/prepare/02_blockface.ome.zarr")), mode="r")["0"]
     sm = zarr.open_group(str(tr(f"brains/sub-{BF}/intermediate/prepare/02_blockface_mask.ome.zarr")), mode="r")["0"]
     r = BF_PHOTO_REDUCE
+
     def prep(k):                                                           # the stack is stored reversed: [::-1, ::-1] is upright
         a = np.asarray(st[:, ::r, k, ::r]).transpose(1, 2, 0)[::-1, ::-1]; m = np.asarray(sm[0, ::r, k, ::r])[::-1, ::-1] > 0
         return rgb01(a), m
     q1, n1 = prep(b_); _, n0 = prep(a_)
-    bx = bbox(m1 | m0, int(3 / px)); bq = bbox(n1 | n0, int(3 / px))
-    P = [(crop(ph1, bx), px), (crop(q1, bq), px)]
-    fig, axs, _ = one_row(P, gutter=FS.GUTTER_MM, letters=False)
-    head(axs[0], "a", f"Photograph {b_}, outlined, and {a_} (orange)"); head(axs[1], "b", "The same two after prepare")
-    for ax, mb, ma in ((axs[0], crop(m0, bx), crop(m1, bx)), (axs[1], crop(n0, bq), crop(n1, bq))):
-        FS.outline(ax, ma, lw=0.5)                                         # the photograph after the jump: white
-        FS.outline(ax, mb, lw=0.8, color=FS.COL["pred"])                  # the one before it: orange
-    bar_below(axs[0], 1 / px, 10, y_frac=0.08)
+    ph1, m0, m1, q1, n0, n1 = (mirror(x) for x in (ph1, m0, m1, q1, n0, n1))
+    bx = bbox(m1 | m0, int(1.0 / px)); bq = bbox(n1 | n0, cropm(px))
+    P = [Pn(crop(ph1, bx), px, "coronal", "a", "As photographed"), Pn(crop(q1, bq), px, "coronal", "b", "After prepare")]
+    rows = [Row(P, lines=2)]
+    fig, sc = grid(rows)
+    span(fig, P, f"{name(BF)}, its largest camera jump: photograph {b_} (white outline) and {a_} before it (orange outline)", 2)
+    for p, mb, ma in ((P[0], crop(m0, bx), crop(m1, bx)), (P[1], crop(n0, bq), crop(n1, bq))):
+        FS.outline(p.ax, ma, lw=0.5)                                       # the photograph after the jump: white
+        FS.outline(p.ax, mb, lw=0.8, color=FS.COL["pred"])                # the one before it: orange
+    orient(fig, rows)
+    bar(fig, sc)
     print(f"  jump [{a_}, {b_}]: its masks' centers {d:.2f} mm apart before prepare")
     return fig
 
@@ -712,16 +925,22 @@ def blockface_03_jumps(tr):
 def blockface_04_volume(tr):
     """MR252's volume (outputs/MR252_blockface_L2) in three planes through one marker tube, the brain mask's outline (white) and the
     marker tubes (outputs/MR252_tubes, orange; filled in the volume)."""
+    from matplotlib.lines import Line2D
     v, mk, tb, M, Tb, pl = bf_volume_planes(tr)
     P, O = [], []
-    for name in ("coronal", "sagittal", "axial"):
-        img, m3, t3, p = bf_plane(v, mk, tb, M, Tb, name, pl[name])
-        bx = bbox(m3, int(2 / p)); P.append((crop(img, bx), p)); O.append((crop(m3, bx), crop(t3, bx), name))
-    fig, axs, _ = one_row(P, gutter=2 * LET_MM + 1.0)
-    for i, (ax, (m3, t3, name)) in enumerate(zip(axs, O)):
-        head(ax, "abc"[i], ("Coronal", "Sagittal", "Axial")[i]); FS.dirs(ax, name, pad=1.5)
-        FS.outline(ax, m3, lw=0.5); FS.outline(ax, t3, lw=0.8, color=FS.COL["pred"])
-    bar_below(axs[0], 1 / P[0][1], 10, y_frac=0.08)
+    for i, nm in enumerate(("coronal", "sagittal", "axial")):
+        img, m3, t3, p = bf_plane(v, mk, tb, M, Tb, nm, pl[nm])
+        bx = bbox(m3, cropm(p)); P.append(Pn(crop(img, bx), p, nm, "abc"[i])); O.append((crop(m3, bx), crop(t3, bx)))
+    rows = [Row(P)]
+    fig, sc = grid(rows)
+    span(fig, P[:1], f"{name(BF)}: blockface volume", 1, letter=None, align="left")
+    for p, (m3, t3) in zip(P, O):
+        FS.outline(p.ax, m3, lw=0.5); FS.outline(p.ax, t3, lw=0.8, color=FS.COL["pred"])
+    hs = [Line2D([], [], color=FS.ON_IMG, lw=0.6, label="Brain mask"),
+          Line2D([], [], color=FS.COL["pred"], lw=0.9, label="Marker tubes (filled in the volume)")]
+    key(fig, hs, P[1].x, P[1].y + P[1].h * sc + 3.0, ncol=1)
+    orient(fig, rows)
+    bar(fig, sc)
     print(f"  planes through a tube: {pl}")
     return fig
 
@@ -730,7 +949,7 @@ def blockface_04_volume(tr):
 def blockface_05_on_b0(tr):
     """MR252's blockface registered onto its own b0 (the paper's products: mri/nonlinear_r1v3mr/MR252_bf_nonlin_rgb, on the b0's 0.25 mm
     grid) beside the b0 (mri/r1v3mr/MR252_b0_masked), sagittal 4.5 mm left of the b0 brain's center and coronal through the
-    photographed slab; the b0 brain's outline on both."""
+    photographed slab; the b0 brain's outline on all four."""
     import nibabel as nib
     nl = nib.as_closest_canonical(tr.img(f"paper/brains/sub-{BF}/mri/nonlinear_r1v3mr/{BF}_bf_nonlin_rgb.nii.gz"))
     b0 = nib.as_closest_canonical(tr.img(f"paper/brains/sub-{BF}/mri/r1v3mr/{BF}_b0_masked.nii.gz"))
@@ -740,50 +959,53 @@ def blockface_05_on_b0(tr):
     cw = b0.affine[:3, :3] @ np.argwhere(bm > 0).mean(0) + b0.affine[:3, 3]
     yw = float((nl.affine[:3, :3] @ np.argwhere(photo).mean(0) + nl.affine[:3, 3])[1])
     out = []
-    for name, wpt in (("sagittal", cw[0] - 4.5), ("coronal", yw)):
-        k = FS.PLANE_AXIS[name]
-        i_b = int(round((wpt - b0.affine[k, 3]) / b0.affine[k, k])); i_n = int(round((wpt - nl.affine[k, 3]) / nl.affine[k, k]))
-        wn = plane_world(nl, name, i_n)
+    for nm, wpt in (("sagittal", cw[0] - 4.5), ("coronal", yw)):
+        k = FS.PLANE_AXIS[nm]
+        i_n = int(round((wpt - nl.affine[k, 3]) / nl.affine[k, k]))
+        wn = plane_world(nl, nm, i_n)
         b0_on = sample_world(B0, b0.affine, wn, order=1); m_on = sample_world(bm, b0.affine, wn) > 0
         rgb = np.stack([np.flipud(np.take(N, i_n, axis=k)[..., c].T) for c in range(3)], -1)
-        bx = bbox(m_on, int(2 / 0.25))
-        out += [(crop(window(b0_on, m_on) * m_on, bx), crop(m_on, bx), name), (crop(rgb, bx), crop(m_on, bx), name)]
-    P = [(o[0], 0.25) for o in out]
-    fig, axs, _ = one_row(P, gutter=2 * LET_MM + 1.0)                       # room for the pairs' direction letters
-    heads = ("b0, sagittal", "The blockface registered onto it", "b0, coronal", "Registered onto it")
-    for i, (ax, (img, m, name)) in enumerate(zip(axs, out)):
-        head(ax, "abcd"[i], heads[i]); FS.outline(ax, m, lw=0.5)
-    FS.dirs_row(axs[0], axs[1], "sagittal", pad=1.5); FS.dirs_row(axs[2], axs[3], "coronal", pad=1.5)
-    bar_below(axs[0], 4, 10, y_frac=0.08)
+        bx = bbox(m_on, 1)
+        out += [(crop(window(b0_on, m_on) * m_on, bx), crop(m_on, bx), nm), (crop(rgb, bx), crop(m_on, bx), nm)]
+    heads = (f"{name(BF)}: b0", "Blockface, registered to it", "b0", "Blockface, registered to it")
+    P = [Pn(img, 0.25, nm, "abcd"[i], heads[i]) for i, (img, m, nm) in enumerate(out)]
+    rows = [Row(P)]
+    fig, sc = grid(rows)
+    for p, (img, m, nm) in zip(P, out):
+        FS.outline(p.ax, m, lw=0.5)
+    orient(fig, rows)
+    bar(fig, sc)
     return fig
 
 
 @figure
 def blockface_06_completed(tr):
-    """MR252's completed volume (outputs/MR252_completed) in a sagittal and a coronal plane (top), and the same planes in the paper's
-    provenance colors (bottom): photographed gray, predicted orange (outputs/MR252_synthesized_mask). In the sagittal plane the border
-    between the two is the junction plane; the coronal plane lies 5 mm caudal of it, in predicted tissue."""
+    """MR252's completed volume (outputs/MR252_completed) in a sagittal and a coronal plane (left column, a and b), and the same planes in
+    the paper's provenance colors (right column, c and d): photographed gray, synthesized orange (outputs/MR252_synthesized_mask). In the
+    sagittal plane the border between the two is the junction plane; the coronal plane lies 5 mm caudal of it, in synthesized tissue."""
     B = "MR252"
     v, A = tr.nii(f"brains/sub-{B}/outputs/{B}_completed.nii.gz")
     sm, _ = tr.nii(f"brains/sub-{B}/outputs/{B}_synthesized_mask.nii.gz")
     tissue, px = v > 0, abs(A[0, 0]); sm = sm > 0
     vw = window(v, tissue, 0.5, 99.5)
     i = int(round(np.argwhere(tissue)[:, 0].mean() - 4.5 / px))        # 4.5 mm left of the brain's center (the paper's pipeline figure)
-    frac = sm.sum((0, 2)) / np.maximum(tissue.sum((0, 2)), 1)           # the predicted share of each coronal plane
-    ys = np.where(tissue.any((0, 2)))[0]; j_junction = int(ys.min())     # the junction: from the caudal end, the last plane mostly predicted
+    frac = sm.sum((0, 2)) / np.maximum(tissue.sum((0, 2)), 1)           # the synthesized share of each coronal plane
+    ys = np.where(tissue.any((0, 2)))[0]; j_junction = int(ys.min())     # the junction: from the caudal end, the last plane mostly synthesized
     while j_junction + 1 <= ys.max() and frac[j_junction + 1] > 0.5:
         j_junction += 1
     j = j_junction - int(round(5.0 / px))
-    P = [[], []]
-    for pl, k in (("sagittal", i), ("coronal", j)):
-        t2 = FS.section(tissue.astype(np.float32), pl, k) > 0.5; bx = bbox(t2, int(1.0 / px))
+    R = []
+    heads = {"sagittal": (f"{name(B)}: completed volume", "Photographed (gray), synthesized (orange)"), "coronal": ("In the synthesized part", None)}
+    for pl, k, letters in (("sagittal", i, "ac"), ("coronal", j, "bd")):
+        t2 = FS.section(tissue.astype(np.float32), pl, k) > 0.5; bx = bbox(t2, 1)
         lum = FS.section(vw, pl, k) * t2
-        P[0].append((crop(lum, bx), px, pl))
-        P[1].append((crop(provenance_view(lum, t2, FS.section(sm.astype(np.float32), pl, k) > 0.5), bx), px, pl))
+        R.append([Pn(crop(lum, bx), px, pl, letters[0], heads[pl][0]),
+                  Pn(crop(provenance_view(lum, t2, FS.section(sm.astype(np.float32), pl, k) > 0.5), bx), px, pl, letters[1], heads[pl][1])])
     print(f"  {B}: sagittal index {i}, junction plane y index {j_junction}, coronal {j} (5 mm caudal)")
-    fig, axs = two_rows(P, (("Completed volume, sagittal", "Coronal, 5 mm caudal of the junction"),
-                            ("Photographed (gray) and predicted (orange)", "Coronal")))
-    bar_below(axs[1][0], 1 / px, 10, y_frac=0.08)
+    rows = [Row(R[0]), Row(R[1], under=[0, 1])]
+    fig, sc = grid(rows)
+    orient(fig, rows)
+    bar(fig, sc)
     return fig
 
 
@@ -798,16 +1020,19 @@ def blockface_07_template(tr):
     tp = template_planes(bm); rgb = np.clip(rgb.astype(np.float32), 0, 1)
     lum_all = rgb @ np.array([0.299, 0.587, 0.114], np.float32)
     hi = float(np.percentile(lum_all[bm > 0.5], 99.5))
-    P = [[], []]
-    for pl in ("sagittal", "coronal", "axial"):
-        k = tp[pl]; t2 = FS.section(bm, pl, k) > 0.5; bx = bbox(t2, 4)
+    R = [[], []]
+    for n, pl in enumerate(("sagittal", "coronal", "axial")):
+        k = tp[pl]; t2 = FS.section(bm, pl, k) > 0.5; bx = bbox(t2, 1)
         col = np.stack([FS.section(rgb[..., c], pl, k) for c in range(3)], -1) * t2[..., None]
         lum = FS.section(lum_all, pl, k) / hi * t2
-        P[0].append((crop(col, bx), 0.25, pl))
-        P[1].append((crop(provenance_view(lum, t2, FS.section(sm, pl, k) > 0.5), bx), 0.25, pl))
-    fig, axs = two_rows(P, (("Blockface template, sagittal", "Coronal", "Axial"),
-                            ("Photographed (gray) and predicted (orange)", "Coronal", "Axial")))
-    bar_below(axs[1][0], 4, 10, y_frac=0.08)
+        R[0].append(Pn(crop(col, bx), 0.25, pl, "abc"[n]))
+        R[1].append(Pn(crop(provenance_view(lum, t2, FS.section(sm, pl, k) > 0.5), bx), 0.25, pl, "def"[n]))
+    rows = [Row(R[0]), Row(R[1])]
+    fig, sc = grid(rows)
+    span(fig, R[0][:1], "Blockface template", 1, letter=None, align="left")
+    span(fig, R[1][:1], "Photographed (gray), synthesized (orange)", 1, letter=None, align="left")
+    orient(fig, rows)
+    bar(fig, sc)
     return fig
 
 
@@ -825,31 +1050,52 @@ def template_both_plane(tr):
     return lt, int(np.argmax(n.min(0)))
 
 
+
+
+def section_crop(sec, spx):
+    """A scanned section cropped to its tissue (the window, never the pixels)."""
+    return crop(sec, bbox(sec.max(-1) > 0.04, cropm(spx)))
+
+
 @figure
 def histology_01_flow(tr):
     """The histology part: a section as scanned, the photograph of its own section, the section registered onto it, and the LGN (solid)
-    and STN (dashed) drawn on the sections, carried into the template, on the coronal plane that cuts all four."""
+    and STN (dashed) drawn on the sections, carried into the template, on the coronal plane that cuts all four; the commands."""
     sec, spx = section_thumb(tr)
     ph, px = bf_slice(tr, f"brains/sub-{S}/outputs/{S}_blockface_L2.nii.gz", SECTION_SLICE)
     hi, _ = bf_slice(tr, f"brains/sub-{S}/outputs/{S}_histology_blockface.nii.gz", SECTION_SLICE)
-    bx = bbox(ph.sum(-1) > 0, int(2 / px))
+    bx = bbox((ph.sum(-1) > 0) | (hi.max(-1) > 0.02), cropm(px))
     tb, _ = tr.nii("template/outputs/template_b0.nii.gz"); tm, _ = tr.nii("template/outputs/template_brain_mask.nii.gz")
     lt, jt = template_both_plane(tr)
     print(f"  the template's coronal plane through all four nuclei: {jt}")
-    m2 = FS.section(tm, "coronal", jt); tbx = bbox(m2 > 0.5, 8)
-    P = [(sec, spx), (crop(ph, bx), px), (crop(hi, bx), px), (crop(FS.section(window(tb, tm), "coronal", jt) * (m2 > 0.5), tbx), 0.25)]
-    fig, axs, _ = one_row(P, gutter=8.0, letters=False)
-    for i, (ax, t) in enumerate(zip(axs, ("A section as scanned", "Its own photograph", "Registered onto it", "LGN and STN in the template"))):
-        head(ax, "abcd"[i], t)
+    m2 = FS.section(tm, "coronal", jt); tbx = bbox(m2 > 0.5, 1)
+    GH = 10.0                                                              # the arrow gutters (the commands go in the band under the row)
+    P = [Pn(section_crop(sec, spx), spx, "coronal", "a", f"Section {SECTION_N}, as scanned"),
+         Pn(crop(ph, bx), px, "coronal", "b", "Its blockface photograph", gap=GH),
+         Pn(crop(hi, bx), px, "coronal", "c", "The section, registered onto it"),
+         Pn(crop(FS.section(window(tb, tm), "coronal", jt) * (m2 > 0.5), tbx), 0.25, "coronal", "d", "LGN and STN in the template", gap=GH)]
+    rows = [Row(P, lines=2, valign="center", below=1.5 + 2 * CMD_MM + 3.0)]
+    fig, sc = grid(rows)
+    bracket(fig, P[:3], name(S), 2)
     tl = crop(FS.section(lt, "coronal", jt), tbx)
     for k in (1, 2):
-        FS.outline(axs[3], tl == k, color=FS.BRAIN[S], lw=0.6)
+        FS.outline(P[3].ax, tl == k, color=FS.BRAIN[S], lw=0.6)
     for k in (3, 4):
-        FS.outline(axs[3], tl == k, color=FS.BRAIN[S], lw=0.6, linestyles="dashed")
-    for a0, a1 in zip(axs[:-1], axs[1:]):
-        arrow_between(fig, a0, a1)
-    bar_below(axs[0], 1 / spx, 10, y_frac=0.08)                            # one print scale: one bar
+        FS.outline(P[3].ax, tl == k, color=FS.BRAIN[S], lw=0.6, linestyles="dashed")
+    y0 = rows[0].top + rows[0].hrow + 1.5
+    for a, b, lines in ((P[0], P[1], ("linc-histology all",)), (P[2], P[3], ("linc-labels push", "linc-labels carry"))):
+        arrow_gutter(fig, a, b, sc)
+        code_lines(fig, (a.x + a.w * sc + b.x) / 2, y0, lines, up=False)
+    lgn_stn_key(fig, P[3].x + P[3].w * sc / 2, y0 + 2 * CMD_MM + 0.5, loc="upper center", ncol=2)
+    orient(fig, rows)
+    bar(fig, sc)
     return fig
+
+
+def lgn_stn_key(fig, x_mm, y_mm, **kw):
+    from matplotlib.lines import Line2D
+    hs = [Line2D([], [], color=FS.BRAIN[S], lw=0.8, label="LGN"), Line2D([], [], color=FS.BRAIN[S], lw=0.8, ls=(0, (3, 2)), label="STN")]
+    return key(fig, hs, x_mm, y_mm, **kw)
 
 
 @figure
@@ -858,11 +1104,13 @@ def histology_02_input(tr):
     section (slice 107 of the cutting order)."""
     sec, spx = section_thumb(tr)
     ph, px = bf_slice(tr, f"brains/sub-{S}/outputs/{S}_blockface_L2.nii.gz", SECTION_SLICE)
-    bx = bbox(ph.sum(-1) > 0, int(2 / px))
-    fig, axs, _ = one_row([(sec, spx), (crop(ph, bx), px)], gutter=8.0)
-    head(axs[0], "a", f"Section {SECTION_N} as scanned"); head(axs[1], "b", f"Its photograph, slice {SECTION_SLICE}")
-    FS.dirs(axs[1], "coronal", pad=1.5)
-    bar_below(axs[0], 1 / spx, 10, y_frac=0.06)                            # one print scale: one bar
+    bx = bbox(ph.sum(-1) > 0, cropm(px))
+    P = [Pn(section_crop(sec, spx), spx, "coronal", "a", f"{name(S)}: section {SECTION_N}, as scanned"),
+         Pn(crop(ph, bx), px, "coronal", "b", f"Its blockface photograph, slice {SECTION_SLICE}")]
+    rows = [Row(P)]
+    fig, sc = grid(rows)
+    orient(fig, rows)
+    bar(fig, sc)
     return fig
 
 
@@ -872,48 +1120,52 @@ REGION_NAMES = ["Left hemisphere (1)", "Right hemisphere (2)", "Cerebellum and b
 
 def region_key(fig, x_mm, y_mm):
     from matplotlib.patches import Patch
-    W, H = (v * 25.4 for v in fig.get_size_inches())
-    fig.legend(handles=[Patch(facecolor=c, edgecolor="none", label=n) for c, n in zip(REGION_COLORS[1:], REGION_NAMES)], loc="upper left",
-               bbox_to_anchor=(x_mm / W, 1 - y_mm / H), frameon=False, handlelength=1.0, handleheight=1.0, borderaxespad=0)
+    return key(fig, [Patch(facecolor=c, edgecolor="none", label=n) for c, n in zip(REGION_COLORS[1:], REGION_NAMES)], x_mm, y_mm,
+               handlelength=1.0, handleheight=1.0)
 
 
 @figure
 def histology_03_regions(tr):
     """The regions volume of MR243 (intermediate/histology/MR243_regions_t2) on blockface slice 134, where all four labels are present,
-    beside the photograph of that slice with the regions' outlines."""
+    beside the photograph of that slice with the regions' outlines; the key gives each label's value in the file."""
     from matplotlib.colors import ListedColormap
-    r, ra = tr.nii(f"brains/sub-{S}/intermediate/histology/{S}_regions_t2.nii.gz")
     jj = REGIONS_SLICE
     ph, px = bf_slice(tr, f"brains/sub-{S}/outputs/{S}_blockface_L2.nii.gz", jj)
     lab = regions_on_bf(tr, jj)
-    bx = bbox((ph.sum(-1) > 0) | (lab > 0), int(2 / px))
-    fig, axs, _ = one_row([(crop(lab, bx), px), (crop(ph, bx), px)], gutter=8.0, extra_mm=50)
-    axs[0].images[0].remove(); show(axs[0], crop(lab, bx), px, cmap=ListedColormap(REGION_COLORS), vmin=-0.5, vmax=4.5, interpolation="nearest")
+    bx = bbox((ph.sum(-1) > 0) | (lab > 0), cropm(px))
+    KW = ink(max(REGION_NAMES, key=lambda n: ink(n)[1]))[1] + 6.5 + G      # the key's width: its swatch and pads, its longest name, a gutter
+    P = [Pn(crop(lab, bx), px, "coronal", "a", f"{name(S)}: regions, slice {jj}", cmap=ListedColormap(REGION_COLORS), vmin=-0.5, vmax=4.5,
+            interpolation="nearest"),
+         Pn(crop(ph, bx), px, "coronal", "b", "Their outlines on its photograph")]
+    rows = [Row(P)]
+    fig, sc = grid(rows, reserve_right=KW)
     for k in (1, 2, 3, 4):
-        FS.outline(axs[1], crop(lab, bx) == k, lw=0.4, color=FS.ON_IMG if k < 4 else FS.COL["pred"])
-    head(axs[0], "a", f"Regions on slice {jj}"); head(axs[1], "b", "On its photograph")
-    FS.dirs_row(axs[0], axs[1], "coronal", pad=1.5)
-    x1 = box_mm(fig, axs[1])[2] + LET_MM + 3.0
-    region_key(fig, x1, TOP_MM + HEAD_MM)
-    bar_below(axs[0], 1 / px, 10, y_frac=0.08)
+        FS.outline(P[1].ax, crop(lab, bx) == k, lw=0.4, color=FS.ON_IMG if k < 4 else FS.COL["pred"])
+    region_key(fig, W_MM - MG - KW + G, rows[0].top)
+    orient(fig, rows)
+    bar(fig, sc)
     return fig
 
 
 @figure
 def histology_04_components(tr):
     """One section's components: section 5 is registered as two, its left and right hemispheres, each to its own part of the photograph
-    of slice 14 (the regions volume divides the photograph)."""
+    of slice 14 (the regions volume divides the photograph). The scanned section has no orientation letters: its two hemispheres were
+    mounted apart."""
     sec, spx = section_thumb(tr, PIECES)
     ph, px = bf_slice(tr, f"brains/sub-{S}/outputs/{S}_blockface_L2.nii.gz", PIECES_SLICE)
     lab = regions_on_bf(tr, PIECES_SLICE)
-    t = ph.sum(-1) > 0; bx = bbox(t, int(2 / px))
+    t = ph.sum(-1) > 0
     from scipy import ndimage as ndi
     left = ndi.binary_dilation(lab == 1, iterations=2) & t; right = ndi.binary_dilation(lab == 2, iterations=2) & t & ~left
-    L = crop(np.where(left[..., None], ph, 0), bbox(left, int(1 / px))); R = crop(np.where(right[..., None], ph, 0), bbox(right, int(1 / px)))
-    fig, axs, _ = one_row([(sec, spx), (L, px), (R, px)], gutter=8.0)
-    head(axs[0], "a", f"Section {PIECES_N} as scanned"); head(axs[1], "b", "Component 1: left"); head(axs[2], "c", "Component 2: right")
-    FS.dirs_row(axs[1], axs[2], "coronal", pad=1.5)
-    bar_below(axs[0], 1 / spx, 10, y_frac=0.08)                            # one print scale: one bar
+    L = crop(np.where(left[..., None], ph, 0), bbox(left, cropm(px))); R = crop(np.where(right[..., None], ph, 0), bbox(right, cropm(px)))
+    P = [Pn(section_crop(sec, spx), spx, None, "a", f"{name(S)}: section {PIECES_N}, as scanned"),
+         Pn(L, px, "coronal", "b", "Component 1: left"), Pn(R, px, "coronal", "c", "Component 2: right")]
+    rows = [Row(P, lines=2)]
+    fig, sc = grid(rows)
+    bracket(fig, P[1:], f"Its photograph, slice {PIECES_SLICE}, divided in two", 2)
+    orient(fig, rows)
+    bar(fig, sc)
     return fig
 
 
@@ -926,14 +1178,16 @@ def histology_05_registered(tr):
     hi, _ = bf_slice(tr, f"brains/sub-{S}/outputs/{S}_histology_blockface.nii.gz", SECTION_SLICE)
     t = hi.max(-1) > 0.02
     w = t.shape[1]; left = t.copy(); left[:, w // 2:] = False
-    bx = bbox(left | ((ph.sum(-1) > 0) & (np.arange(w)[None, :] < w // 2)), int(1 / px))
+    bx = bbox(left | ((ph.sum(-1) > 0) & (np.arange(w)[None, :] < w // 2)), cropm(px))
     tis = ndi.binary_fill_holes(ndi.binary_opening(crop(t, bx), iterations=2))
-    fig, axs, _ = one_row([(crop(ph, bx), px), (crop(hi, bx), px), (crop(ph, bx), px)])
-    FS.outline(axs[2], tis, lw=0.5)
-    for i, (ax, tt) in enumerate(zip(axs, ("Photograph", "Registered section", "Its outline on the photograph"))):
-        head(ax, "abc"[i], tt)
-    FS.dirs_row(axs[0], axs[-1], "coronal", pad=1.5)
-    bar_below(axs[0], 1 / px, 5, y_frac=0.08)
+    P = [Pn(crop(ph, bx), px, "coronal", "a", "Photograph"), Pn(crop(hi, bx), px, "coronal", "b", "Registered section"),
+         Pn(crop(ph, bx), px, "coronal", "c", "Its outline on the photograph")]
+    rows = [Row(P, lines=2)]
+    fig, sc = grid(rows)
+    span(fig, P, f"{name(S)}: section {SECTION_N}, its left half", 2)
+    FS.outline(P[2].ax, tis, lw=0.5)
+    orient(fig, rows)
+    bar(fig, sc, mm=5.0)
     return fig
 
 
@@ -946,18 +1200,20 @@ def histology_06_volume(tr):
     ph = tr.img(f"brains/sub-{S}/outputs/{S}_blockface_L2.nii.gz"); hi = tr.img(f"brains/sub-{S}/outputs/{S}_histology_blockface.nii.gz")
     pv = tr.img(f"brains/sub-{S}/intermediate/histology/provenance_L2.nii.gz"); lb = tr.img(f"brains/sub-{S}/outputs/{S}_lgn_stn_blockface.nii.gz")
     i = int(round(np.argwhere(np.asanyarray(lb.dataobj) == 1)[:, 0].mean()))
-    disp = lambda a: np.flipud(np.swapaxes(a, 0, 1))[:, ::-1]      # superior up; the L2 y axis runs posterior, so anterior to the right
+    disp = lambda a: np.flipud(np.swapaxes(a, 0, 1))[:, ::-1]      # noqa: E731  superior up; the L2 y axis runs posterior, so anterior right
     vy, vz = abs(ph.affine[1, 1]), abs(ph.affine[2, 2]); f = vy / vz
     p = ndi.zoom(rgb01(disp(np.asanyarray(ph.dataobj[i]))), (1, f, 1), order=0)
     h = ndi.zoom(rgb01(disp(np.asanyarray(hi.dataobj[i]))), (1, f, 1), order=0)
     v = ndi.zoom(disp(np.asanyarray(pv.dataobj[i])), (1, f), order=0)
-    bx = bbox(p.sum(-1) > 0, int(2 / vz))
+    bx = bbox(p.sum(-1) > 0, cropm(vz))
     prov = np.zeros(v.shape + (3,), np.float32); prov[v == 1] = to_rgb(FS.ON_IMG); prov[v == 2] = to_rgb(FS.COL["pred"])
-    fig, axs, _ = one_row([(crop(p, bx), vz), (crop(h, bx), vz), (crop(prov, bx), vz)])
-    for k, (ax, tt) in enumerate(zip(axs, ("Photographs", "Registered histology", "Registered (white), interpolated (orange)"))):
-        ax.images[0].set_interpolation("nearest"); head(ax, "abc"[k], tt)
-    FS.dirs_row(axs[0], axs[-1], "sagittal", pad=1.5)
-    bar_below(axs[0], 1 / vz, 10, y_frac=0.08)
+    P = [Pn(crop(im, bx), vz, "sagittal", "abc"[k], t, interpolation="nearest") for k, (im, t) in
+         enumerate(((p, "Blockface volume"), (h, "Registered histology"), (prov, "Registered (white), interpolated (orange)")))]
+    rows = [Row(P, lines=2)]
+    fig, sc = grid(rows)
+    span(fig, P, f"{name(S)}: the registered sections as a volume, through the left LGN", 2)
+    orient(fig, rows)
+    bar(fig, sc)
     return fig
 
 
@@ -981,24 +1237,21 @@ def histology_07_tracer(tr):
     ib, _ = bf_slice(tr, f"brains/sub-{S}/outputs/{S}_tracer_injection_site_blockface.nii.gz", jb)
     tb_, _ = bf_slice(tr, f"brains/sub-{S}/outputs/{S}_tracer_terminals_blockface.nii.gz", jb)
     bb_, _ = bf_slice(tr, f"brains/sub-{S}/outputs/{S}_tracer_bundles_blockface.nii.gz", jb)
-    bx = bbox(ph.sum(-1) > 0, int(2 / px))
+    bx = bbox((ph.sum(-1) > 0) | (hi.max(-1) > 0.02), cropm(px))
     cen = np.round(np.argwhere(con_t > 0).mean(0)).astype(int)          # the pathway's center in the template
     slab = TRACER_SLAB_VOX
     tpan = []
     for pl in ("sagittal", "axial"):
         k = FS.PLANE_AXIS[pl]; i0 = int(cen[k])
-        proj = lambda v: FS.section(np.take(v, range(i0 - slab, i0 + slab + 1), axis=k).max(axis=k, keepdims=True), pl, 0)
-        m2 = FS.section(tm, pl, i0); tbx = bbox(m2 > 0.5, 8)
+        proj = lambda v: FS.section(np.take(v, range(i0 - slab, i0 + slab + 1), axis=k).max(axis=k, keepdims=True), pl, 0)  # noqa: E731
+        m2 = FS.section(tm, pl, i0); tbx = bbox(m2 > 0.5, 1)
         tpan.append((pl, crop(FS.section(window(t2, tm), pl, i0) * (m2 > 0.5), tbx), *(crop(proj(v), tbx) for v in (inj_t, ter_t, con_t))))
     print(f"  blockface slice with the most bundle voxels: {jb}; the template's planes: x {cen[0]}, z {cen[2]} (slab +-{slab} voxels)")
-    dims = [(hi[bx[0]:bx[1]].shape[0] * px, (bx[3] - bx[2]) * px)] + [(p[1].shape[0] * 0.25, p[1].shape[1] * 0.25) for p in tpan]
-    g = 2 * LET_MM + 1.0; sc = fit_scale([w for h, w in dims], gutter=g)
-    hrow = max(h for h, w in dims) * sc
-    fig = new_fig(TOP_MM + HEAD_MM + hrow + BAR_MM + 6.0)
-    axs = row(fig, dims, TOP_MM + HEAD_MM, sc, gutter=g)
-    show(axs[0], crop(hi, bx), px)
-    for ax, p in zip(axs[1:], tpan):
-        show(ax, p[1], 0.25)
+    P = [Pn(crop(hi, bx), px, "coronal", "a", f"{name(S)}: blockface, slice {jb}"),
+         Pn(tpan[0][1], 0.25, "sagittal", "b"), Pn(tpan[1][1], 0.25, "axial", "c")]
+    rows = [Row(P)]
+    fig, sc = grid(rows)
+    span(fig, P[1:], "In the template", 1, align="left")
 
     def over(ax, inj, ter, bun, con=None):
         ov = np.zeros(inj.shape + (4,), np.float32)
@@ -1008,18 +1261,15 @@ def histology_07_tracer(tr):
         else:
             ov[bun > 0] = (*c, 0.9)
         ax.imshow(ov, interpolation="nearest"); FS.outline(ax, inj > 0, color=FS.ON_IMG, lw=0.7)
-    over(axs[0], crop(ib, bx), crop(tb_, bx), crop(bb_, bx))
-    for ax, p in zip(axs[1:], tpan):
-        over(ax, p[2], p[3], None, p[4])
-    head(axs[0], "a", f"Blockface, slice {jb}"); head(axs[1], "b", "Template, sagittal"); head(axs[2], "c", "Axial")
-    for ax, pl in zip(axs, ("coronal", "sagittal", "axial")):
-        FS.dirs(ax, pl, pad=1.5)
+    over(P[0].ax, crop(ib, bx), crop(tb_, bx), crop(bb_, bx))
+    for p, tp_ in zip(P[1:], tpan):
+        over(p.ax, tp_[2], tp_[3], None, tp_[4])
     hs = [Line2D([], [], color=FS.ON_IMG, lw=0.7, label="Injection site"), Patch(facecolor=g2, alpha=0.55, edgecolor="none", label="Terminal fields"),
           Patch(facecolor=c, alpha=0.9, edgecolor="none", label="Bundles (charted)"), Patch(facecolor=c, alpha=0.4, edgecolor="none", label="Joins (inferred)")]
-    W, H = (v * 25.4 for v in fig.get_size_inches())
-    fig.legend(handles=hs, loc="upper right", bbox_to_anchor=(1 - FS.MARGIN_MM / W, 1 - (TOP_MM + HEAD_MM + hrow + 2.0) / H), ncol=4,
-               frameon=False, handlelength=1.2, borderaxespad=0)
-    bar_below(axs[0], 1 / px, 10)                                          # one print scale: one bar
+    y_free = max(P[0].y + P[0].h * sc, P[1].y + P[1].h * sc) + 3.0      # under (a) and (b): the axial (c) sets the row's height
+    key(fig, hs, P[0].x, y_free, ncol=2)
+    orient(fig, rows)
+    bar(fig, sc, region=(MG, P[2].x - 3.0, MG, page(fig)[1] - MG), corners=("bottom right", "bottom left"))
     return fig
 
 
@@ -1031,21 +1281,23 @@ def histology_08_lgn_stn(tr):
     lb, _ = bf_slice(tr, f"brains/sub-{S}/outputs/{S}_lgn_stn_blockface.nii.gz", SECTION_SLICE)
     tb, _ = tr.nii("template/outputs/template_b0.nii.gz"); tm, _ = tr.nii("template/outputs/template_brain_mask.nii.gz")
     lt, jl = template_lgn_plane(tr, 1); _, js = template_lgn_plane(tr, 3)
-    bx = bbox(hi.max(-1) > 0.02, int(2 / px)); tw = window(tb, tm)
-    P = [(crop(hi, bx), px, crop(lb, bx))]
-    for j in (jl, js):
-        m2 = FS.section(tm, "coronal", j); b2 = bbox(m2 > 0.5, 8)
-        P.append((crop(FS.section(tw, "coronal", j) * (m2 > 0.5), b2), 0.25, crop(FS.section(lt, "coronal", j), b2)))
-    fig, axs, _ = one_row([(p[0], p[1]) for p in P])
-    for i, (ax, p, tt) in enumerate(zip(axs, P, (f"On the blockface, slice {SECTION_SLICE}", "In the template, through the LGN",
-                                                 "Through the STN"))):
-        head(ax, "abc"[i], tt)
+    bx = bbox(hi.max(-1) > 0.02, cropm(px)); tw = window(tb, tm)
+    P = [Pn(crop(hi, bx), px, "coronal", "a", f"{name(S)}: blockface, slice {SECTION_SLICE}")]
+    L = [crop(lb, bx)]
+    for j, t in ((jl, "Template, through the LGN"), (js, "Template, through the STN")):
+        m2 = FS.section(tm, "coronal", j); b2 = bbox(m2 > 0.5, 1)
+        P.append(Pn(crop(FS.section(tw, "coronal", j) * (m2 > 0.5), b2), 0.25, "coronal", "bc"[len(P) - 1], t))
+        L.append(crop(FS.section(lt, "coronal", j), b2))
+    rows = [Row(P, below=4.0)]
+    fig, sc = grid(rows)
+    for p, lab in zip(P, L):
         for k in (1, 2):
-            FS.outline(ax, p[2] == k, color=FS.BRAIN[S], lw=0.6)
+            FS.outline(p.ax, lab == k, color=FS.BRAIN[S], lw=0.6)
         for k in (3, 4):
-            FS.outline(ax, p[2] == k, color=FS.BRAIN[S], lw=0.6, linestyles="dashed")
-    FS.dirs_row(axs[0], axs[-1], "coronal", pad=1.5)
-    bar_below(axs[0], 1 / px, 10, y_frac=0.08)                             # one print scale: one bar
+            FS.outline(p.ax, lab == k, color=FS.BRAIN[S], lw=0.6, linestyles="dashed")
+    lgn_stn_key(fig, (P[1].x + P[2].x + P[2].w * sc) / 2, rows[0].top + rows[0].hrow + 1.2, loc="upper center", ncol=2)
+    orient(fig, rows)
+    bar(fig, sc)
     return fig
 
 
@@ -1057,101 +1309,91 @@ QC_CASES = (("mr243LY_c18_s15nDF_0001", 44, 1), ("mr243LY_c18_s68nDF_0003", 155,
 @figure
 def histology_09_qc(tr):
     """The registration check on two components of MR243: one that passes (section 15, left hemisphere) and one that fails (section 68,
-    cerebellum), each as the photograph with the registered section's tissue outline; the Dice coefficients from the check's record."""
+    cerebellum), each as the registered section and as its tissue outline on the photograph; the Dice coefficients from the check's
+    record."""
     import json
     from scipy import ndimage as ndi
     rec = json.load(open(tr("paper/numbers/registration_qc_histo2bf_h9.json")))
     rec = rec.get("data", rec)
-    rows = {r["tag"]: r for r in rec if r["subject"] == S and r["time"].startswith("2026-11-12")}
-    P = []
-    for tag, j, k in QC_CASES:
-        q = rows[tag]; assert q["bf_slice"] == j, (tag, q["bf_slice"], j)
+    rows_ = {r["tag"]: r for r in rec if r["subject"] == S and r["time"].startswith("2026-11-12")}
+    P, T_ = [], []
+    for c_, (tag, j, k) in enumerate(QC_CASES):
+        q = rows_[tag]; assert q["bf_slice"] == j, (tag, q["bf_slice"], j)
         ph, px = bf_slice(tr, f"brains/sub-{S}/outputs/{S}_blockface_L2.nii.gz", j)
         hi, _ = bf_slice(tr, f"brains/sub-{S}/outputs/{S}_histology_blockface.nii.gz", j)
         lab = regions_on_bf(tr, j)
         part = ndi.binary_dilation(lab == k, iterations=3)
-        bx = bbox(part & (ph.sum(-1) > 0), int(1.5 / px))
+        bx = bbox(part & (ph.sum(-1) > 0), cropm(px))
         tis = ndi.binary_fill_holes(ndi.binary_opening(crop((hi.max(-1) > 0.02) & part, bx), iterations=2))
-        P.append((crop(ph, bx), crop(np.where(part[..., None], hi, 0), bx), tis, q))
-    dims = []
-    for p in P:
-        dims += [(p[0].shape[0] * px, p[0].shape[1] * px)] * 2
-    g = FS.GUTTER_MM; sc = fit_scale([w for h, w in dims], gutter=g, extra_mm=6.0)
-    fig = new_fig(TOP_MM + 2 * HEAD_MM + max(h for h, w in dims) * sc + BAR_MM)
-    x = FS.MARGIN_MM + LET_MM; axs = []
-    for i, (h, w) in enumerate(dims):
-        ax = FS.axes_mm(fig, x, TOP_MM + 2 * HEAD_MM, w * sc, h * sc); ax.set_axis_off(); axs.append(ax)
-        x += w * sc + (g + 6.0 if i == 1 else g)
-    for c, (ph_, hi_, tis, q) in enumerate(P):
-        a0, a1 = axs[2 * c], axs[2 * c + 1]
-        show(a0, hi_, px); show(a1, ph_, px); FS.outline(a1, tis, lw=0.5)
-        m = q["metrics"]; part_name = {1: "left hemisphere", 2: "right hemisphere", 3: "cerebellum"}[QC_CASES[c][2]]
-        W, H = (v * 25.4 for v in fig.get_size_inches())
-        fig.text(box_mm(fig, a0)[0] / W, 1 - (TOP_MM + HEAD_MM - 1.0) / H, f"Section {int(q['tag'].split('_s')[1][:2])}, {part_name}: "
-                 f"{'passes' if q['gate'] == 'pass' else 'fails'}, Dice {m['dice_nonlinear']:.2f}", ha="left", va="baseline",
-                 fontsize=FS.MIN_PT, color=FS.FG)
-        head(a0, "ac"[c], "Registered"); head(a1, "bd"[c], "On its photograph")
-    FS.dirs(axs[0], "coronal", pad=1.5)
-    bar_below(axs[0], 1 / px, 5)
+        P += [Pn(crop(np.where(part[..., None], hi, 0), bx), px, "coronal", "ac"[c_], "Registered"),
+              Pn(crop(ph, bx), px, "coronal", "bd"[c_], "On its photograph")]
+        m = q["metrics"]; part_name = {1: "left hemisphere", 2: "right hemisphere", 3: "cerebellum"}[k]
+        T_.append((tis, f"Section {int(q['tag'].split('_s')[1][:2])}, {part_name}: {'passes' if q['gate'] == 'pass' else 'fails'}, "
+                        f"Dice {m['dice_nonlinear']:.2f}"))
+    P[2].gap = G + 3.0                                                     # the two cases apart
+    rows = [Row(P, lines=3)]
+    fig, sc = grid(rows)
+    span(fig, P, f"{name(S)}: a component that passes the check and one that fails it", 3)
+    for c_, (tis, t) in enumerate(T_):
+        FS.outline(P[2 * c_ + 1].ax, tis, lw=0.5)
+        span(fig, P[2 * c_:2 * c_ + 2], t, 2, align="left")
+    orient(fig, rows)
+    bar(fig, sc, mm=5.0)
     return fig
 
 
 # ---- the overview (00_start_here.md) -----------------------------------------------------------------------------------------
+def space_text(fig, x_mm, y_mm, s):
+    """A space's name under a tile's title (monospace, secondary gray; a name in the code, exempt from sentence case)."""
+    CODE_TEXT.add(s)
+    return txt(fig, x_mm, y_mm, s, ha="center", color=FS.GRAY, family="monospace")
+
+
 @figure
 def overview_01_chain(tr):
     """The chain of spaces, with the command between each pair: a section as scanned (histo-piece), its photograph (bf-native), the
     brain's b0 (b0-native), the MRI template (mri-template, T2-weighted); below, the blockface template's channel (bf-template, shown on
-    the MRI template's grid), the route for a brain without MRI."""
+    the MRI template's grid), the route for a brain without MRI, which bypasses the b0, and the link between the two templates."""
     sec, spx = section_thumb(tr)
     ph, px = bf_slice(tr, f"brains/sub-{S}/outputs/{S}_blockface_L2.nii.gz", SECTION_SLICE)
-    bx = bbox(ph.sum(-1) > 0, int(1 / px))
+    bx = bbox(ph.sum(-1) > 0, cropm(px))
     b0, ba, m, tb, ta, tm, f, fa = mri_example(tr)
-    tp = template_planes(tm); npl = native_planes(ba, f, fa, tp)
-    n_m = FS.section(m, "coronal", npl["coronal"]); nb = bbox(n_m > 0.5, 2)
+    tp = template_planes(tm); npl = native_planes(ba, f, fa, tp); bpx = abs(ba[0, 0])
+    n_m = FS.section(m, "coronal", npl["coronal"]); nb = bbox(n_m > 0.5, cropm(bpx))
     t2, _ = tr.nii("template/outputs/template_T2w.nii.gz")
-    m2 = FS.section(tm, "coronal", tp["coronal"]); tbx = bbox(m2 > 0.5, 4)
+    m2 = FS.section(tm, "coronal", tp["coronal"]); tbx = bbox(m2 > 0.5, 1)
     rgb, _ = tr.nii("template/outputs/template_blockface_rgb.nii.gz"); bm, _ = tr.nii("template/outputs/template_blockface_mask.nii.gz")
-    bm2 = FS.section(bm, "coronal", tp["coronal"])
-    top = [(sec, spx, "Section (histo-piece)"), (crop(ph, bx), px, "Photograph (bf-native)"),
-           (crop(FS.section(window(b0, m), "coronal", npl["coronal"]), nb), abs(ba[0, 0]), "b0 (b0-native)"),
-           (crop(FS.section(window(t2, tm), "coronal", tp["coronal"]) * (m2 > 0.5), tbx), 0.25, "MRI template (mri-template)")]
-    low = (crop(rgb01(FS.section(rgb, "coronal", tp["coronal"])) * (bm2 > 0.5)[..., None], tbx), 0.25, "Blockface template (bf-template)")
-    ga = 22.0                                                        # gutters that hold an arrow and its command
-    sc = (W_MM - 2 * FS.MARGIN_MM - 3 * ga) / sum(p[0].shape[1] * p[1] for p in top)
-    ht = max(p[0].shape[0] * p[1] for p in top) * sc; hl = low[0].shape[0] * low[1] * sc
-    gap_v = 12.0
-    fig = new_fig(TOP_MM + HEAD_MM + ht + gap_v + HEAD_MM + hl + BAR_MM)
-    x = FS.MARGIN_MM; axs = []
-    for img, ppx, t in top:
-        h, w = img.shape[0] * ppx * sc, img.shape[1] * ppx * sc
-        ax = FS.axes_mm(fig, x, TOP_MM + HEAD_MM + (ht - h) / 2, w, h); ax.set_axis_off(); show(ax, img, ppx)
-        axs.append(ax); x += w + ga
-    for k, (ax, (img, ppx, t)) in enumerate(zip(axs, top)):
-        last = k == len(top) - 1
-        ax.annotate(t, xy=(1.0 if last else 0.5, 1), xycoords="axes fraction", xytext=(0, 3), textcoords="offset points",
-                    ha="right" if last else "center", va="bottom", fontsize=FS.MIN_PT, color=FS.FG, annotation_clip=False)
-    b1 = box_mm(fig, axs[1]); w_l, h_l = low[0].shape[1] * low[1] * sc, hl
-    xl = (b1[0] + b1[2]) / 2 - w_l / 2; yl = TOP_MM + HEAD_MM + ht + gap_v + HEAD_MM
-    axl = FS.axes_mm(fig, xl, yl, w_l, h_l); axl.set_axis_off(); show(axl, low[0], low[1])
-    axl.annotate(low[2], xy=(0.5, 1), xycoords="axes fraction", xytext=(0, 3), textcoords="offset points", ha="center", va="bottom",
-                 fontsize=FS.MIN_PT, color=FS.FG, annotation_clip=False)
-    cmds = ("linc-histology", "linc-register mri", "linc-register mri-template")
-    for a0, a1, cmd in zip(axs[:-1], axs[1:], cmds):
-        p, q = box_mm(fig, a0), box_mm(fig, a1)
-        y = TOP_MM + HEAD_MM + ht / 2
-        arrow(fig, (p[2] + 1.0, y), (q[0] - 1.0, y))
-        lines = cmd.split(" ", 1)
-        for k, s in enumerate(reversed(lines)):
-            code_text(fig, (p[2] + q[0]) / 2, y - 1.2 - 3.0 * k, s)
-    # the route without MRI: bf-native down to bf-template, then on to mri-template
-    yb = box_mm(fig, axs[1])[3]
-    arrow(fig, ((b1[0] + b1[2]) / 2, yb + 1.0), ((b1[0] + b1[2]) / 2, yl - HEAD_MM - 0.5))
-    code_text(fig, (b1[0] + b1[2]) / 2 + 1.5, (yb + yl - HEAD_MM) / 2 + 1.2, "linc-register blockface-template", ha="left", va="center")
-    p, q = box_mm(fig, axl), box_mm(fig, axs[3])
-    yy = (p[1] + p[3]) / 2; x_end, y_end = (q[0] + q[2]) / 2, q[3] + 1.0
-    arrow(fig, (p[2] + 1.0, yy), (x_end, yy), head=False); arrow(fig, (x_end, yy), (x_end, y_end))     # right, then up to the MRI template
-    code_text(fig, (p[2] + x_end) / 2, yy + 1.2, "code/template/build_link.py", va="top")
-    bar_below(axs[0], 1 / spx, 10, y_frac=0.08)
+    bm2 = FS.section(bm, "coronal", tp["coronal"]); bfx = bbox(bm2 > 0.5, 1)
+    top = [Pn(section_crop(sec, spx), spx, "coronal"), Pn(crop(ph, bx), px, "coronal", gap=GA),
+           Pn(crop(FS.section(window(b0, m), "coronal", npl["coronal"]), nb), bpx, "coronal", gap=GA),
+           Pn(crop(FS.section(window(t2, tm), "coronal", tp["coronal"]) * (m2 > 0.5), tbx), 0.25, "coronal", gap=GA)]
+    low = [Pn(crop(rgb01(FS.section(rgb, "coronal", tp["coronal"])) * (bm2 > 0.5)[..., None], bfx), 0.25, "coronal")]
+    rows = [Row(top, lines=3, valign="center"), Row(low, lines=2, under=[2])]
+    fig, sc = grid(rows)
+    for p, r, (t, s) in zip(top + low, (rows[0],) * 4 + (rows[1],),
+                            (("Histology section", "histo-piece"), ("Blockface photograph", "bf-native"), ("b0 (MRI)", "b0-native"),
+                             ("MRI template", "mri-template"), ("Blockface template", "bf-template"))):
+        cx = p.x + p.w * sc / 2
+        txt(fig, cx, base(r, 2), t, ha="center"); space_text(fig, cx, base(r, 1), s)
+    bracket(fig, top[:3], name(S), 3)                                     # the brain's three tiles: its name
+    # the route with MRI: section -> photograph -> b0 -> MRI template, the command over each arrow
+    for a_, b_, cmd in zip(top[:-1], top[1:], (["linc-histology"], ["linc-register", "mri"], ["linc-register", "mri-template"])):
+        y = arrow_gutter(fig, a_, b_, sc)
+        code_lines(fig, (a_.x + a_.w * sc + b_.x) / 2, y - 1.2, cmd)
+    # the route without MRI: from the photograph down and right into the blockface template (bypassing the b0), then the link up into
+    # the MRI template; both at a quarter of the tile's height, clear of the orientation letters at its middle
+    q = low[0]; qx0, qy0, qx1, qy1 = box(q, sc)
+    yr = qy0 + 0.25 * (qy1 - qy0)
+    xs = top[1].x + top[1].w * sc / 2
+    arrow(fig, (xs, top[1].y + top[1].h * sc + 1.0), (xs, yr), head=False); arrow(fig, (xs, yr), (qx0 - 1.0, yr))
+    code_lines(fig, (xs + qx0) / 2, yr - 1.2, ["linc-register", "blockface-template"])
+    txt(fig, (xs + qx0) / 2, yr + 1.2, "Without MRI", ha="center", va="top", color=FS.GRAY)
+    t3 = top[3]; xt = t3.x + t3.w * sc / 2
+    arrow(fig, (qx1 + 1.0, yr), (xt, yr), head=False); arrow(fig, (xt, yr), (xt, t3.y + t3.h * sc + 1.0))
+    code_lines(fig, (qx1 + xt) / 2, yr - 1.2, ["build_link.py"])
+    txt(fig, (qx1 + xt) / 2, yr + 1.2, "Template link", ha="center", va="top", color=FS.GRAY)
+    orient(fig, rows)
+    bar(fig, sc, region=(MG, xs - 2.0, top[0].y + top[0].h * sc, page(fig)[1] - MG))
     return fig
 
 

@@ -163,7 +163,7 @@
     "large": 3,
     "large_flagged": 3,
     "i0": 4759,
-    "wall_s": 593.6,
+    "wall_s": 1127.93,
     "peak_gb_main_process": 13.78
    },
    "MR252": {
@@ -177,8 +177,8 @@
     "large": 8,
     "large_flagged": 6,
     "i0": 8527,
-    "wall_s": 354.66,
-    "peak_gb_main_process": 12.65
+    "wall_s": 662.32,
+    "peak_gb_main_process": 12.64
    },
    "MR256": {
     "components": 53,
@@ -191,8 +191,8 @@
     "large": 3,
     "large_flagged": 2,
     "i0": 20194,
-    "wall_s": 602.95,
-    "peak_gb_main_process": 12.71
+    "wall_s": 524.82,
+    "peak_gb_main_process": 12.69
    },
    "MF278": {
     "components": 73,
@@ -205,8 +205,8 @@
     "large": 12,
     "large_flagged": 8,
     "i0": 63514,
-    "wall_s": 575.4,
-    "peak_gb_main_process": 11.44
+    "wall_s": 708.91,
+    "peak_gb_main_process": 11.43
    },
    "MF275": {
     "components": 77,
@@ -219,8 +219,8 @@
     "large": 7,
     "large_flagged": 1,
     "i0": 58436,
-    "wall_s": 421.72,
-    "peak_gb_main_process": 10.85
+    "wall_s": 637.21,
+    "peak_gb_main_process": 10.91
    }
   },
   "with_record_outlines": {
@@ -297,7 +297,7 @@
     }
    }
   },
-  "note": "compared with one person's hand-made tables, not with a known truth; kept excludes the components the floor dropped"
+  "note": "compared with one person's manually made tables, not with a known truth; kept excludes the components the floor dropped"
  },
  "repeat": {
   "series": "MF204",
@@ -811,7 +811,7 @@
   "edited_file_survives_rerun": true,
   "said": [
    "match table: <work>/MF191/histology/match_table_proposed.txt (an unreviewed proposal, 18 components flagged: see <work>/MF191/histology/match_review.csv; to change it, copy it to match_table_edited.txt)",
-   "match table: <work>/MF191/histology/match_table_edited.txt (edited by hand)",
+   "match table: <work>/MF191/histology/match_table_edited.txt (manually edited)",
    "match table: <work>/MF191/histology/other_table.txt (given)"
   ]
  }

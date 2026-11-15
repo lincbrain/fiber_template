@@ -4,7 +4,7 @@ The histology registration runs TIRL 3.6.3 (`settings/env/tirl.yml`). Its optimi
 parameter's start point to its bounds before calling nlopt. When a parameter ends a resolution level exactly on its bound, the next
 level's normalized start can fall a hair outside [-1, 1] by round-off, and nlopt's BOBYQA refuses it: the registration stops. The one
 change clips the normalized start into [-1, 1]. It changes no result otherwise: no registration of the paper's settings reached the
-bound (the clipped TIRL reproduced the registrations of record byte for byte), and every histology registration of the paper's numbers
+bound (the clipped TIRL reproduced the paper's registrations byte for byte), and every histology registration of the paper's numbers
 ran with it.
 
 `tirl-3.6.3_optnl_clip.edits.json` holds our lines only (TIRL is Apache-2.0; the edit file follows `code/template/patches/` for a uniform

@@ -34,6 +34,7 @@ from shared import paths, provenance  # noqa: E402
 
 CFG = yaml.safe_load((REPO / "settings" / "figures.yaml").read_text())["alignment_comparison"]
 FOV, ZOOM, ZPCT = CFG["fov_mm"], CFG["zoom"], CFG["crop_height_pct"]
+BAR_BELOW_MM = 3.2     # (b)'s scale bar this far under the frame: its length (printed 7.7 pt over the bar) below the image
 
 
 def main():
@@ -70,10 +71,10 @@ def main():
     va = {m: np.array([pairs[k]["A"][m] for k in keys]) for m in ("ncc", "dice")}
     vb = {m: np.array([pairs[k]["B"][m] for k in keys]) for m in ("ncc", "dice")}
     assert np.allclose(va["ncc"] - vb["ncc"], dn) and np.allclose(va["dice"] - vb["dice"], dd)    # the record's own differences
-    for ax, m, ylab in ((axa[0], "ncc", "blockface NCC"), (axa[1], "dice", "brain-mask Dice")):
+    for ax, m, ylab in ((axa[0], "ncc", "Blockface NCC"), (axa[1], "dice", "Brain-mask Dice")):
         for i in range(len(keys)):
             ax.plot([xs[i] - OFF, xs[i] + OFF], [va[m][i], vb[m][i]], color=REF, lw=0.6, zorder=2)
-        ax.scatter(xs - OFF, va[m], s=11, color=CA, lw=0, zorder=3, label="blockface-based")
+        ax.scatter(xs - OFF, va[m], s=11, color=CA, lw=0, zorder=3, label="Blockface-based")
         ax.scatter(xs + OFF, vb[m], s=11, color=CB, lw=0, zorder=3, label="MRI-based")
         lo, hi = min(va[m].min(), vb[m].min()), max(va[m].max(), vb[m].max()); pad = 0.15 * max(hi - lo, 1e-6)
         ax.set_xlim(-0.6, len(keys) - 0.4); ax.set_ylim(lo - pad, hi + pad); ax.set_ylabel(ylab)
@@ -83,7 +84,7 @@ def main():
     axa[1].set_xticks(xs); axa[1].set_xticklabels([f"{L(pairs[k]['brains'][0])}\n{L(pairs[k]['brains'][1])}" for k in keys])
     axa[1].yaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter("%.4f"))
     axa[0].legend(loc="lower left", frameon=False, handletextpad=0.2, borderaxespad=0.1)
-    FS.letter(axa[0], "a", dx=-12); FS.header(axa[0], "the two alignments, per pair of brains", dx=-3)
+    FS.letter(axa[0], "a", dx=-12); FS.header(axa[0], "The two alignments, per pair of brains", dx=-3)
 
     # b: the example pair's carried images, coronal section through the center of the pair's evaluation support
     tname = f"d1cs2_{ex}"
@@ -111,7 +112,7 @@ def main():
     # page width; a whole number of pixels, so the images render the same
     BX = AX + AW + 18.0 - 36 * 25.4 / FS.DPI; cols = [(S1, L(S1)), (S2, L(S2)), (None, "|difference|")]
     DIFF_MAX = CFG["difference_window_z"]                                     # z units, one window for both routes
-    for r, (R, rname, col) in enumerate((("A", "blockface-based", CA), ("B", "MRI-based", CB))):
+    for r, (R, rname, col) in enumerate((("A", "Blockface-based", CA), ("B", "MRI-based", CB))):
         Mc = sl((masks[S1, R] & masks[S2, R]).astype(np.float32)) > 0.5       # the crop where both brains have tissue
         z = {}
         for S in (S1, S2):                                                    # zero mean, unit variance inside Mc (as NCC normalizes)
@@ -134,13 +135,13 @@ def main():
                 ax.text(-2.9 / side, 0.5, rname, transform=ax.transAxes, rotation=90, ha="right", va="center", color=col,
                         fontsize=FS.MIN_PT)
             if r == 1 and c == 2:
-                FS.scalebar(ax, 1.0 / vox, 2.0)
+                FS.scalebar(ax, 1.0 / vox, 2.0, y_frac=BAR_BELOW_MM / side)   # under the frame, its length clear of the image
             if r == 0 and c == 0:
                 FS.letter(ax, "b", dx=-10, dy=2); ax_first = ax
             if r == 0 and c == 2:
                 FS.dirs_row(ax_first, ax, "coronal")                          # L and R once, at the top row's mid-height
             if r == 0 and c == 2:
-                ax.text(1.0, -0.02, f"coronal, y = {nmt_y:.1f} mm".replace("-", "−"), transform=ax.transAxes, ha="right", va="top",
+                ax.text(1.0, -0.02, f"Coronal, y = {nmt_y:.1f} mm".replace("-", "−"), transform=ax.transAxes, ha="right", va="top",
                         color=REF, fontsize=FS.MIN_PT)
     FS.save(fig, a.out, ins, " ".join(["code/figures/alignment_comparison.py"] + sys.argv[1:]),
             extra=dict(example_pair=ex, brains=[S1, S2], section_index_ijk=[int(v) for v in ci], section_nmt_y_mm=nmt_y, fov_mm=FOV, zoom=ZOOM,
