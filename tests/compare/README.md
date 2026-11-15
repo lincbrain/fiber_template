@@ -8,5 +8,5 @@
 | `compare_mri_build.py`         | a step of the MRI template's build |
 | `compare_nifti.py`             | any NIfTI files, array by array |
 
-Each prints one line per item and exits 0 when all agree. Add `--help` for its options.
+Each prints one line per item and exits 0 when all agree; `--help` lists its options.
 `steps.yaml` gives the exact check for each step.

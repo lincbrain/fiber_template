@@ -1,8 +1,7 @@
 # Labels
 
-Carries labels drawn on histology sections onto the blockface volume and into the template.
-Settings: `settings/labels.yaml`. No GPU.
-Step by step: [03, Steps D and E](../../docs/tutorials/03_histology.md#step-d-tracer-labels).
+`linc-labels` carries labels drawn on histology sections onto the blockface volume and into the template.
+Its settings are in `settings/labels.yaml`, it needs no GPU, and [03, Steps D and E](../../docs/tutorials/03_histology.md#step-d-tracer-labels) walk through it.
 
 ## Commands
 
@@ -20,13 +19,10 @@ $PY      code/labels/linc-labels connect     --subject <ID>                     
 | `carry` | resamples the labels into the template in one resampling |
 | `connect` | joins the bundles into one pathway and marks each join as inferred |
 
-## Inputs
+## Inputs and outputs
 
-In `$LINC_DATA/sub-<ID>/histology/`: the labels (`annotations/<class>.ome.zarr`), the section map (`section_map.tsv`), the match table, the regions volume and the histology registration ([code/histology](../histology/README.md)); for the LGN and STN, `structures/`.
-
-## Outputs
-
-`$LINC_DATA/sub-<ID>/labels/blockface/tracer/` and `structures/` (on the blockface), and `$LINC_DATA/sub-<ID>/labels/template/tracer/` (in the template).
+It reads the labels, the section map, the match table, the regions volume and the histology registration ([code/histology](../histology/README.md)) from `$LINC_DATA/sub-<ID>/histology/`, and writes to `$LINC_DATA/sub-<ID>/labels/`.
+[03, Steps D and E](../../docs/tutorials/03_histology.md#step-d-tracer-labels) list the files.
 
 ## Files
 

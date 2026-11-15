@@ -12,10 +12,7 @@ $PY_DEEP code/shared/linc-segment predict|train ...                          the
 $PY code/shared/linc-info                                                    what this installation runs with; attach it to a bug report
 ```
 
-A transform `<from>__to__<to>` moves images from the first space to the second; its folder holds the transform files and `meta.json`.
-World coordinates are RAS, in millimeters, and a chain is applied with one interpolation.
-An inverted link is solved at every voxel of the target grid, so use 0.3 mm or coarser.
-The spaces and their names: [overview, Spaces and transforms](../../docs/overview.md#spaces-and-transforms).
+The [overview](../../docs/overview.md#spaces-and-transforms) describes the spaces, the transform folders (`<from>__to__<to>`, moving images from the first space to the second) and how a chain is applied.
 
 ## Files
 

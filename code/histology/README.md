@@ -1,8 +1,7 @@
 # Histology registration
 
-Registers each histology section to the blockface photograph of its own section (Methods, "Histology registration and label propagation").
-Environment: `settings/env/tirl.yml` (`$PY_TIRL`). Settings: `settings/histology.yaml`. No GPU.
-Step by step: [03, Steps A to C](../../docs/tutorials/03_histology.md#step-a-the-regions-volume).
+`linc-histology` registers each histology section to the blockface photograph of its own section (Methods, "Histology registration and label propagation").
+It runs in `$PY_TIRL` (`settings/env/tirl.yml`) with the settings in `settings/histology.yaml`, needs no GPU, and is walked through in [03, Steps A to C](../../docs/tutorials/03_histology.md#step-a-the-regions-volume).
 
 ## Commands
 
@@ -13,19 +12,13 @@ $PY_TIRL code/histology/linc-histology all --subject <ID> --store <ID>_blockface
     --histology <sections folder> --regions <regions.nii.gz> --out <histology>/registration [--threads 12 --jobs 2]
 ```
 
-`propose` proposes the match table; `all` runs the steps `match`, `pieces`, `masks`, `prepare`, `register` (TIRL) and `rgb`, in that order, and `propose` first when there is no match table yet.
+`propose` proposes the match table.
+`all` runs the steps `match`, `pieces`, `masks`, `prepare`, `register` (TIRL) and `rgb`, in that order, starting with `propose` when there is no match table yet.
 
-## Inputs
+## Inputs and outputs
 
-- the sections, as JPEG 2000, in cutting order;
-- the brain's blockface volume, `<ID>_blockface.ome.zarr` ([code/blockface](../blockface/README.md));
-- its regions volume ([03, Step A](../../docs/tutorials/03_histology.md#step-a-the-regions-volume));
-- optionally, a match table: `--table`, or `match_table_edited.txt`, `match_table.txt`, `match_table_proposed.txt`, the first that exists.
-
-## Outputs
-
-- `propose`: `match_table_proposed.txt`, `match_review.csv` and `match_review/` beside the `--out` folder;
-- `all`: in the `--out` folder, `matched/`, `pieces/`, `tissue_masks/`, `moving/`, `fixed/` and `tirl/<component>/` (TIRL's transforms and the registered image), each step with a `provenance.json`.
+It reads the sections (JPEG 2000, in cutting order), the brain's blockface volume `<ID>_blockface.ome.zarr` ([code/blockface](../blockface/README.md)), its regions volume and, if there is one, a match table.
+[03, Steps A to C](../../docs/tutorials/03_histology.md#step-a-the-regions-volume) describe each input, the order in which a match table is looked for, and every output.
 
 ## Files
 
@@ -33,6 +26,6 @@ $PY_TIRL code/histology/linc-histology all --subject <ID> --store <ID>_blockface
 |---|---|
 | `linc-histology` | the command |
 | `match.py`, `propose.py` | the match table |
-| `pieces.py`, `sections.py` | divides sections into components |
+| `pieces.py`, `sections.py` | divide sections into components |
 | `register.py` | the registration |
 | [patches/](patches/README.md) | our one change to TIRL |

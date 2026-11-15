@@ -1,7 +1,7 @@
 # The pipeline
 
-One folder per stage, each with its commands and a README: what it does, its commands, inputs, outputs and files.
-Every command prints what it needs, what it does and what it writes with `--help`, and every setting is in [settings/](../settings/README.md).
+There is one folder per stage, and each has a README with its commands, inputs, outputs and files.
+Every command explains what it needs, what it does and what it writes with `--help`, and every setting is in [settings/](../settings/README.md).
 
 | | |
 |---|---|

@@ -1,4 +1,4 @@
 # The paper's numbers records
 
-One `<record>.json` per record, holding its numbers. `tests/check_numbers.py` compares a rewritten record
-with these. Do not edit them.
+Each `<record>.json` holds one record's numbers, and `tests/check_numbers.py` compares a rewritten record with them.
+Do not edit them.

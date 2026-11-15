@@ -1,8 +1,7 @@
 # Blockface reconstruction
 
-Makes a brain's 3D color volume from its blockface photographs (Methods, "Blockface reconstruction").
-Environment: `settings/env/tirl.yml` (`$PY_TIRL`). Settings: `settings/blockface.yaml` and `settings/brains/<ID>.yaml`.
-Step by step: [02, Steps 1, 2 and 6](../../docs/tutorials/02_blockface.md#step-1-reconstruct-the-volume).
+`linc-reconstruct` turns a brain's blockface photographs into a 3D color volume (Methods, "Blockface reconstruction").
+It runs in `$PY_TIRL` (`settings/env/tirl.yml`) with the settings in `settings/blockface.yaml` and `settings/brains/<ID>.yaml`, and [02, Steps 1, 2 and 6](../../docs/tutorials/02_blockface.md#step-1-reconstruct-the-volume) walk through it.
 
 ## Commands
 
@@ -14,15 +13,10 @@ $PY_TIRL code/blockface/linc-reconstruct edit-photo-masks export|import --subjec
 
 `all` runs the steps `photos`, `stack`, `prepare`, `mask`, `volume`, `tubes` and `spacing`, in that order.
 
-## Inputs
+## Inputs and outputs
 
-- the photographs, in `$LINC_RAW/<raw>`, named as `raw_glob` and `raw_regex` say;
-- `settings/brains/<ID>.yaml`: pixel size, section step, camera jumps, missing sections;
-- optionally, manually corrected masks in `$LINC_DATA/sub-<ID>/blockface/curated/`.
-
-## Outputs
-
-In `$LINC_DATA/sub-<ID>/blockface/`: `<ID>_blockface.ome.zarr` (the volume, in color, at four resolutions), `<ID>_blockface_L2.nii.gz` (a lighter copy), `<ID>_mask.nii.gz`, `<ID>_holes.nii.gz` (the marker tubes) and `<ID>.info`.
+It reads the photographs from `$LINC_RAW/<raw>`, the brain's settings file and any corrected masks in `$LINC_DATA/sub-<ID>/blockface/curated/`, and writes the volume, its brain mask and its marker tubes to `$LINC_DATA/sub-<ID>/blockface/`.
+[02, Step 1](../../docs/tutorials/02_blockface.md#step-1-reconstruct-the-volume) lists the files.
 
 ## Files
 

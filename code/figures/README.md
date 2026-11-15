@@ -1,7 +1,7 @@
 # The paper's figures and numbers
 
-Remakes every figure and number of the paper, and checks the numbers against the paper's records.
-Each record and figure runs in the environment it ran in for the paper.
+This folder remakes every figure and number in the paper and checks the numbers against the paper's records.
+Each record and figure runs in the same environment it ran in for the paper.
 
 ## Commands
 
@@ -14,11 +14,11 @@ Each record and figure runs in the environment it ran in for the paper.
 | `make -C code/figures check`              | compares the records with the paper's |
 | `make -C code/figures template-animation`, `tracers-animation` | the README's animations ([docs/media](../../docs/media/README.md)) |
 
-`check` passes only when all three numbers targets have run. A target skips, with a message, when its
-input is missing: your own copies of NMT v2 and CIVM-R (`settings/targets.yaml`), or raw data outside
-the data folder. The figures take about 10 minutes on a CPU.
+`check` passes only after all three numbers targets have run.
+A target whose input is missing skips with a message; the inputs it may miss are your own copies of NMT v2 and CIVM-R (`settings/targets.yaml`) and raw data outside the data folder.
+The figures take about 10 minutes on a CPU.
 
-One figure at a time: `$PY code/figures/<script>.py --out <file.png>`
+To make one figure: `$PY code/figures/<script>.py --out <file.png>`.
 
 ## Figures
 
@@ -39,7 +39,7 @@ One figure at a time: `$PY code/figures/<script>.py --out <file.png>`
 | S4 | `s_networks.py` |
 | not in the paper | `alignment_comparison.py` (it still writes a numbers record), `s_synthesis_depth.py` (its numbers are in the Supplement's text) |
 
-`figstyle.py` holds the shared figure style. Fonts: Liberation Sans.
+`figstyle.py` holds the shared figure style, and the font is Liberation Sans.
 
 ## Files
 

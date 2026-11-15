@@ -1,8 +1,9 @@
 # Segmentation networks
 
-Four networks, one recipe, one code path: brain masks and marker tubes.
-Environment: `settings/env/deep.yml` (`$PY_DEEP`).
-The weights are in this repository under `models/segment/` (a file over 100 MB in two parts, which `settings/roots.sh` joins); each network's card, `card.txt`, with its training data, held-out results and known limitations (Supplementary Section S5 of the paper), is in the data folder's `models/`.
+Four networks, trained with one recipe and run through one code path, make the brain masks and find the marker tubes.
+They run in `$PY_DEEP` (`settings/env/deep.yml`).
+The weights are in this repository's `models/segment/` ([settings/models](../../../settings/models/README.md) says how they are stored and checked).
+Each network's card, `card.txt`, with its training data, held-out results and known limitations (Supplementary Section S5 of the paper), is in the data folder's `models/`.
 
 | Network | Input | Output | GPU free |
 |---|---|---|---|
@@ -22,8 +23,8 @@ $PY_DEEP code/shared/linc-segment train --help      # about 2 hours on a GPU wit
 ## Inputs and outputs
 
 `bf_mask2d` reads a folder of blockface photographs named `<case>_0000.png`.
-Every mask has the values 0 and 1, on its input's grid; `--postprocess` changes the clean-up step.
+Every mask has the values 0 and 1, on its input's grid, and `--postprocess` changes the clean-up step.
 The training tasks are in [settings/segment](../../../settings/segment/README.md).
 
-The networks were trained on this project's brains, cameras and MRI acquisitions: a new setup, stain or contrast needs checking against a few manual masks.
+The networks were trained on this project's brains, cameras and MRI acquisitions, so check them against a few manual masks on a new setup, stain or contrast.
 `bf_holes` keeps tubes in the left hemisphere only, where they were drilled.

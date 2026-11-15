@@ -1,7 +1,7 @@
 # Settings
 
-Every parameter of the paper, with a comment naming the Methods section it comes from. The code reads
-these files and does not repeat their values.
+Every parameter of the paper is here, with a comment naming the Methods section it comes from.
+The code reads these files and does not repeat their values.
 
 |  |  |
 |---|---|
@@ -14,5 +14,5 @@ these files and does not repeat their values.
 | `segment/`                | the segmentation networks' training tasks |
 | `tirl/`                   | the TIRL settings of the camera-jump registrations |
 | `env/`                    | the Python environments |
-| `models/`                 | the networks' checksums (the weights: `models/` at the top) |
+| `models/`                 | the networks' checksums (the weights are in `models/` at the top) |
 | `internal/`               | maps from the code's names to the data folder |

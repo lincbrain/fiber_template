@@ -1,19 +1,18 @@
 # Python environments
 
-The pipeline needs separate environments because their packages conflict. `install.sh` builds them.
-Each file's header says how to build it manually. Every step runs in the environment it ran in for the
-paper.
+The pipeline needs several Python environments because their packages conflict.
+`install.sh` builds them, `settings/roots.sh` points the variables below to them, and each file's header says how to build it manually.
+Every step runs in the environment it ran in for the paper.
 
-|  |  |
-|---|---|
-| `linc.yml`        | registration, MRI preparation, MRI template, labels, evaluation, numbers, figures |
-| `deep.yml`        | the segmentation networks and the synthesis |
-| `anatomix.yml`    | the deformable registration engine (anatomix features and FireANTs) |
-| `tirl.yml`        | histology registration and the blockface reconstruction (TIRL 3.6.3) |
-| `viz3d.yml`       | optional, for the 3D tracer figure (`install.sh` `--with-figures-3d`) |
+| Variable | Environment | Runs |
+|---|---|---|
+| `$PY` | `linc.yml` | MRI preparation, registration, the MRI template, the labels after `push`, evaluation, the numbers and figures |
+| `$PY_DEEP` | `deep.yml` | the segmentation networks and the synthesis |
+| `$PY_TIRL` | `tirl.yml` | the blockface reconstruction, the histology registration and `linc-labels push` (TIRL 3.6.3) |
+| (called by `linc-register`) | `anatomix.yml` | the deformable registration engine: anatomix features and FireANTs |
+| `$PY_VIZ3D` | `viz3d.yml` | optional: the 3D tracer figure (`install.sh` `--with-figures-3d`) |
 
-Other programs, at these versions: FSL 6.0.7.4 (FSLDIR), ANTs 2.5.4 (ANTSPATH) and, to rebuild the
-MRI template, MRtrix3 3.0.2 (MRTRIX). MMORF 1.0.1 comes with `linc.yml`. TIRL and its script packages
-are not yet public: ask their authors for the sources and set LINC_TIRL_SRC before `install.sh`. The
-code checks each version before running. Set PYTHONNOUSERSITE=1, so that packages in `~/.local` do not
-replace the pinned ones.
+You also need FSL 6.0.7.4 (FSLDIR) and ANTs 2.5.4 (ANTSPATH), and MRtrix3 3.0.2 (MRTRIX) to rebuild the MRI template; MMORF 1.0.1 comes with `linc.yml`.
+The code checks each version before running.
+TIRL and its script packages are not public yet: ask their authors for the sources and set LINC_TIRL_SRC before running `install.sh`.
+Set PYTHONNOUSERSITE=1, so that packages in `~/.local` cannot replace the pinned ones.

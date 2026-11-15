@@ -1,6 +1,6 @@
 # The evaluation
 
-The measures the paper reports.
+These scripts compute the measures the paper reports; `code/figures/paper_numbers/` runs them and writes the records.
 
 |  |  |
 |---|---|
@@ -14,5 +14,3 @@ The measures the paper reports.
 | `tubes.py`                | marker-tube offsets, a measure of histology registration error |
 | `labels_agreement.py`     | agreement of the LGN and STN labels in the template |
 | `plan.py`                 | what an evaluation script would do, without running it |
-
-`code/figures/paper_numbers/` runs these and writes the records.
