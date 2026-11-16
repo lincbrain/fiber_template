@@ -13,8 +13,8 @@ What it does, per case
   3. fits each section's plane and measures the spacing between consecutive sections; lists every footprint voxel with its section.
 
 You get
-  $LINC_WORK/tracer_sections_v2_h9/<ID>/: <ID>_<label>_mri-template_sections_{density,footprint}.nii.gz,
-  <ID>_section_index_mri-template.nii.gz, <ID>_sections.json, <ID>_sections_points.csv; and $LINC_NUMBERS/tracer_sections_v2_h9.json
+  $LINC_WORK/tracer_sections_v2<tag>/<ID>/ (<tag> = settings/labels.yaml template_chain_tag): <ID>_<label>_mri-template_sections_{density,footprint}.nii.gz,
+  <ID>_section_index_mri-template.nii.gz, <ID>_sections.json, <ID>_sections_points.csv; and $LINC_NUMBERS/tracer_sections_v2<tag>.json
   (the four cases)
 
     python code/figures/paper_numbers/tracer_sections_v2.py [--cases MR243 ...]
@@ -38,10 +38,11 @@ from labels import carry as CA  # noqa: E402
 from labels.labels import config  # noqa: E402
 from blockface.registration import xfmtools as X  # noqa: E402
 
-NAME = "tracer_sections_v2_h9"
+NAME = "tracer_sections_v2" + paths.template_chain_tag()
 GROUPS = {"Bundles": ["Fiber_light_bundle", "Fiber_moderate_bundle", "Fiber_dense_bundle", "Bundle"],
           "Terminals": ["Terminal_light", "Terminal_moderate", "Terminal_dense"], "Injection_site": ["Injection_site"], "Fibers": ["Fibers"]}
-ROUTE = {"MR243": "B", "MR252": "B", "MR256": "B", "MF191": "A"}
+from labels import route as RT  # noqa: E402
+ROUTE = {S: ("A" if r == "blockface" else "B") for S, r in RT.routes().items()}   # A = blockface-based, B = MRI-based (settings/labels.yaml template_routes)
 NOTE = ("a slice holding pieces of two sections is indexed by the lower section number Spacing = |(centroid_k - centroid_{k-1}) . mean normal|; "
         "section numbers increase toward the posterior (decreasing template y).")
 MF8 = "MF191"
@@ -69,22 +70,6 @@ PROTOCOL = (
     'it (per case: route (A = blockface-based, B = MRI-based alignment), links, per-label counts, sections, spacing: the absolute spacing between consecutive charted sections along their\n'
     'mean normal, median / p90 / max, point rows).\n'
 )
-
-
-def mf8_pull(P3):
-    """MRI-template world points -> MF8's blockface world points (the figure script's route): the registration of the blockface template
-    to the MRI template (pull map), MF8's member warp of the blockface template's construction, the inverse of its rigid placement."""
-    link = X.load_map(str(P3["bft_pull_map"]), "full")
-    w = json.load(open(P3["bft_member_warps"]))
-    row = [r for r in w["data"] if r["member"] == MF8][0]
-    assert "photographed" in row["warp_validity"]["valid_in"], row["warp_validity"]
-    W = xfm.Warp(paths.rerooted(row["file"]), "fsl_rel", src_grid=paths.rerooted(row["src_grid"]))
-    T = np.array(json.load(open(P3["mf8_rigid"]))["T_world_bf_to_run113"], float); Ti = np.linalg.inv(T)
-
-    def f(y):
-        p = np.asarray(W.pull(link(y)))
-        return p @ Ti[:3, :3].T + Ti[:3, 3]
-    return f, ["mri-template->bf-template (d2bs8_s5sym)", "bf-template->MF191 canon (d2bs8 member warp)", "MF191 canon->bf-native (s2lin)"]
 
 
 def placeholders(d):
@@ -116,7 +101,7 @@ def carrier(S, P2, P3, ref, slab):
             a = np.asarray(nib.load(str(out)).dataobj, np.float32); os.remove(out)
             return a
         return go, [str(placeholders(e)) for e in chain.describe()]
-    f, links = mf8_pull(P3)
+    f, links = RT.blockface_pull(S, P3)
 
     def go(src, order, tmpdir):
         img = nib.load(str(src)); V = np.asarray(img.dataobj, np.float32)

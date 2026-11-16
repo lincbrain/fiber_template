@@ -65,6 +65,23 @@ def subject_dir(subject):
     return data_root() / f"sub-{subject}"
 
 
+def blockface_template_names():
+    """The blockface template of record's file prefixes, from settings/blockface_template.yaml step9: its own-space files
+    T<iterations><tag>_* (the build's last round), and the analysis project's copies on the MRI template's grid,
+    T<iterations><tag>_<template_mm without the point>_in_mri_* (the record's naming of its MRI-frame copies)."""
+    import yaml
+    c = yaml.safe_load((Path(__file__).resolve().parents[2] / "settings" / "blockface_template.yaml").read_text())["step9"]
+    own = f"T{int(c['iterations'])}{c['tag']}"
+    return dict(own=own, in_mri=f"{own}_{format(float(c['template_mm']), 'g').replace('.', '')}_in_mri")
+
+
+def template_chain_tag():
+    """The tag of the chain the tracer labels in the template come from (settings/labels.yaml template_chain_tag): the tracer records
+    are named <base><tag>."""
+    import yaml
+    return yaml.safe_load((Path(__file__).resolve().parents[2] / "settings" / "labels.yaml").read_text())["template_chain_tag"]
+
+
 def products_root():
     return _env("LINC_PRODUCTS")
 

@@ -59,6 +59,26 @@ def sample(vol, affine, pts, order=1, cval=0.0):
                      for c in range(vol.shape[-1])], -1)
 
 
+class GridField:
+    """x -> x + U(x): a displacement field U (X, Y, Z, 3, mm) on a diagonal RAS grid (<grid>.json: shape, affine), sampled trilinearly
+    with border values outside the grid (as the step-9 build samples its fields). The blockface template's step-9 link of a brain that is
+    not one of its members (MF8): template point -> the point of the brain's step-8 input."""
+
+    def __init__(self, npy, grid_json):
+        import json
+        g = json.load(open(grid_json)); A = np.array(g["affine"], float); dg = np.diag(A)[:3]
+        assert np.allclose(A[:3, :3], np.diag(dg)) and (dg > 0).all(), "expects a diagonal RAS grid"
+        U = np.load(npy, mmap_mode="r")
+        assert U.shape == tuple(g["shape"]) + (3,), (U.shape, g["shape"])
+        self.A, self.d = A, dg
+        self.U = [np.ascontiguousarray(U[..., c], dtype=np.float32) for c in range(3)]
+
+    def __call__(self, x):
+        x = np.asarray(x, np.float64)
+        q = ((x - self.A[:3, 3]) / self.d).T
+        return x + np.stack([ndi.map_coordinates(c, q, order=1, mode="nearest") for c in self.U], 1).astype(np.float64)
+
+
 class Map:
     """src_world = L @ (x + d(x)); d is (field RAS mm, field_affine) or None."""
 

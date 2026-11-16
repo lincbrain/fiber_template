@@ -9,8 +9,9 @@ spaced between the block's L and R), then transformed to the template by the blo
 MRI-based alignment (brown, through its own MRI), both starting right after the histology block. The blockface template's box starts
 at the MRI template's left edge; its image is centered in it below the header.
 
-Inputs: the products listed in settings/internal/products_figures.yaml (under $LINC_PRODUCTS) and two counts from the numbers records
-($LINC_NUMBERS: bf_cohort, histo_tube_landmarks). Display parameters: settings/figures.yaml (pipeline).
+Inputs: the products listed in settings/internal/products_figures.yaml (under $LINC_PRODUCTS), two counts from the numbers records
+($LINC_NUMBERS: bf_cohort, histo_tube_landmarks) and the number of brains in the blockface template's final step
+(settings/blockface_template.yaml step9.members). Display parameters: settings/figures.yaml (pipeline).
 
 Planes (the sagittal plane of the template figure, x = 2.0 mm):
 - template-space thumbnails (the MRI channels on the template grid) at x = 2.0 mm;
@@ -267,7 +268,8 @@ def main():
     cfg = yaml.safe_load((ROOT / "settings" / "figures.yaml").read_text())["pipeline"]
     XS = float(cfg["sagittal_x_mm"])
     W_LUM = np.asarray(cfg["luminance_weights"], np.float32)
-    N = {"n_bf": count("bf_cohort", "rows"), "n_histo": count("histo_tube_landmarks", "per_subject")}
+    N = {"n_bf": count("bf_cohort", "rows"), "n_histo": count("histo_tube_landmarks", "per_subject"),
+         "n_bf_final": len(yaml.safe_load((ROOT / "settings" / "blockface_template.yaml").read_text())["step9"]["members"])}  # step 9's brains
     FG, GRAY, BFA, MRIA = FS.FG, FS.GRAY, FS.COL["direct"], FS.COL["mri"]
 
     def sagx(path, x):
@@ -498,7 +500,7 @@ def main():
     AX["bfvol"].set_xlim(0, vol.shape[1] * I["bfvol"][2]); AX["bfvol"].set_ylim(vol.shape[0] * I["bfvol"][1], 0)
     image("bft", xbt, (by0 + HEAD + by1) / 2)                       # centered below its header (it has no label line)
     box(LX0, top, LX1, my1); header(LX0, LX1, top, "Ex vivo MRI", "4 brains + their L-R mirrors")
-    box(LX0, by0, LX1, by1); header(LX0, LX1, by0, "Blockface", f"{N['n_bf']} brains + their L-R mirrors")
+    box(LX0, by0, LX1, by1); header(LX0, LX1, by0, "Blockface", f"{N['n_bf']} brains + their L-R mirrors ({N['n_bf_final']} in the final step)")
     box(TX0, top, TX1, my1, ec=FG, lw_=0.9); header(TX0, TX1, top, "MRI template")
     box(bx0, by0, bx1, by1, ec=FG, lw_=0.9); header(bx0, bx1, by0, "Blockface template")
     yA = (R1 + R2) / 2

@@ -2,21 +2,28 @@
 """The blockface template registered to the MRI template, and the composed registrations (the paper's figure "The blockface template
 registered into the MRI template").
 
-    python code/figures/link.py [--out figures/link.png]
+    python code/figures/link.py [--out figures/link.png] [--layout 2x3 | 3x2] [--wm-line t2 | fa] [--fa-smooth s]
+
+The defaults are the paper's figure, from settings/figures.yaml link: two rows (the sagittal and the coronal section) and three columns
+((a) the MRI template's T2 and the blockface template through the registration, (b) the distance map), the orange line the T2's
+gray/white split. --layout 3x2 draws the earlier layout: rows (a) sagittal, (a) coronal, (b) both.
 
 The registration of record is the direct symmetric b0 <-> b0 registration between the blockface template (step 8, d2bs8) and the
-MRI template, exported as a pull map (template2template/d2bs8_s5sym/bftemplate__to__mri-template). The composed registrations are the
+MRI template; the template of record (step 9, 0.15 mm) keeps step 8's frame, so its grey is shown through the same map. The map is exported as a pull map (template2template/d2bs8_s5sym/bftemplate__to__mri-template). The composed registrations are the
 average over the brains of each brain's construction warp composed with its own registration to the MRI template (bftemplate_cv/s5_compose_d2bs8_r05_guard/link_ras_disp.nii.gz). No landmarks.
   a  mid-sagittal (x = 0) and coronal (through the anterior commissure, y = 19.6 mm) sections: the MRI template (T2-weighted) and the
      blockface template's grey channel pulled into it by the registration; on every panel the same two lines, drawn from the MRI
-     template only (sky blue: brain-mask outline; orange: gray/white boundary = a two-class (Otsu) split of the T2 inside the mask).
+     template only (sky blue: brain-mask outline; orange: gray/white boundary = a two-class (Otsu) split of the T2 inside the mask;
+     --wm-line fa: orange is the white matter's boundary instead, the line where the template's FA is 0.25 inside the mask, the paper's
+     white matter (template FA > 0.25, as template_mri/linc_mri_wm_fa025 and the tracer records); --fa-smooth s: the FA on the plane
+     smoothed by a Gaussian of s voxels first (default none; the T2 line uses GW_SMOOTH).
   b  per-voxel distance between the registration and the composed registrations (mm), on the same sections, inside the MRI brain mask.
 Two columns, each as wide as its widest cell (its images and the letters beside them; (b)'s coronal with its color bar), one gutter
 between them and between the rows, at the print scale that fills the page's width (lowered if the figure would pass MAX_H); coronal
 panels centered in their column; the color bar right of the coronal distance map; the 5 mm scale bar, its length above it, at the
 column titles' level, top right (figstyle.scalebar_title: it holds for every panel); orientation letters left and right of each row
 (figstyle.orient_letters: 1 mm from the brain, one line per row; (b)'s two views each with its pair on the row's line).
-Reads (settings/internal/products_mri*.yaml): template_mri/linc_mri_{T2,brainmask}.nii.gz, bftemplate_step8/d2bs8_grey.nii.gz, the two maps
+Reads (settings/internal/products_mri*.yaml): template_mri/linc_mri_{T2,brainmask}.nii.gz (and linc_mri_FA.nii.gz for --wm-line fa), bftemplate_step9/T3s11_grey.nii.gz, the two maps
 above, numbers_of_record/s5_link_d2bs8.json (recorded as an input: the caption's values). Writes the PNG and its provenance.json.
 """
 import argparse
@@ -25,6 +32,7 @@ from pathlib import Path
 
 import nibabel as nib
 import numpy as np
+import yaml
 from scipy import ndimage as ndi
 from scipy.ndimage import map_coordinates
 
@@ -36,13 +44,14 @@ from blockface.registration import xfmtools as X                    # noqa: E402
 
 BF_MAP = "d2bs8_s5sym"                                         # the registration of record (template2template export)
 COMPOSITION = "s5_compose_d2bs8_r05_guard"                     # the composed registrations (bftemplate_cv)
-GREY = "d2bs8_grey.nii.gz"                                     # the blockface template's grey channel (bftemplate_step8)
+GREY = paths.blockface_template_names()["own"] + "_grey.nii.gz"   # the template of record's grey (bftemplate_step9; settings step9)
 Y_COR = 19.6                                                   # coronal section through the AC (acpc.json, record frame)
 VOX = 0.25                                                     # MRI template grid (mm)
 CROP_MM = 2.0                                                  # every panel of a row cropped to the MRI brain-mask box + this
 DIST_MAX_MM = 2.0                                              # distance color bar maximum
 SCALEBAR_MM = 5
 GW_SMOOTH = 1.0                                                # Gaussian sigma (voxels) of the T2 before the gray/white contour
+FA_WM = 0.25                                                   # --wm-line fa: the white matter is template FA > FA_WM (the paper's rule)
 PAGE_W, TOP, GAPR = 178.0, 9.0, 9.0                           # mm; TOP, GAPR: where the rows are first drawn, to be measured
 MAX_H = 185.0                                                  # the figure's height at most (mm): the page's 231 mm less its caption
 CBAR_DX = 7.0                                                  # mm from the coronal distance map to its color bar
@@ -73,10 +82,17 @@ def otsu(v, bins=256):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", default="figures/link.png")
+    CFG = yaml.safe_load((HERE.parents[1] / "settings" / "figures.yaml").read_text()).get("link") or {}
+    ap.add_argument("--wm-line", choices=("t2", "fa"), default=CFG.get("wm_line", "t2"),
+                    help="the orange line: t2 = the T2's two-class (Otsu) gray/white split (settings default); fa = the white matter's boundary, FA = 0.25")
+    ap.add_argument("--layout", choices=("3x2", "2x3"), default=str(CFG.get("layout", "3x2")),
+                    help="3x2: rows (a) sagittal, (a) coronal, (b) both; 2x3 (settings default): rows sagittal and coronal, columns the T2, the "
+                         "blockface template, the distance map ((a) = the first two, (b) = the third)")
+    ap.add_argument("--fa-smooth", type=float, default=float(CFG.get("fa_smooth", 0.0)), help="--wm-line fa: Gaussian sigma (voxels) of the FA on the plane before the line (default 0)")
     a = ap.parse_args()
     PR = {**paths.products("products_mri"), **paths.products("products_mri_figures")}
     T2P, MSKP = PR["template_mri"] / "linc_mri_T2.nii.gz", PR["template_mri"] / "linc_mri_brainmask.nii.gz"
-    GREYP = PR["bftemplate_step8"] / GREY
+    GREYP = PR["bftemplate_step9"] / GREY
     LINK = PR["template2template"] / BF_MAP / "bftemplate__to__mri-template"
     COMP = PR["bftemplate_cv"] / COMPOSITION
     NUM = PR["numbers_of_record"] / "s5_link_d2bs8.json"
@@ -90,6 +106,9 @@ def main():
     link = X.load_map(str(LINK), "full")
     D = nib.load(str(COMP / "link_ras_disp.nii.gz")); Dd = np.asanyarray(D.dataobj).astype(np.float32); Dd = Dd.reshape(Dd.shape[:3] + (3,))
     gw = otsu(T2[M > 0.5])
+    FAP = PR["template_mri"] / "linc_mri_FA.nii.gz"
+    if a.wm_line == "fa":
+        fai = nib.load(str(FAP)); FA = np.asanyarray(fai.dataobj).astype(np.float32)
     rows = {}
     for kind in ("sag", "cor"):
         P, shp, ext = plane(kind, t2i, t2i.affine)
@@ -98,6 +117,8 @@ def main():
         rows[kind] = dict(shp=shp, ext=ext, m=m.reshape(shp), t2=sample(T2, t2i.affine, P).reshape(shp),
                           sym=sample(G, gi.affine, xs).reshape(shp),
                           dist=np.where(m, np.linalg.norm(xs - xc, axis=1), np.nan).reshape(shp))
+        if a.wm_line == "fa":
+            rows[kind]["fa"] = sample(FA, fai.affine, P).reshape(shp)
     for r in rows.values():                                    # the same crop for all panels of a row
         ij = np.argwhere(r["m"]); lo, hi = ij.min(0), ij.max(0); px = int(round(CROP_MM / VOX))
         lo = np.maximum(lo - px, 0); hi = np.minimum(hi + px, np.array(r["shp"]) - 1); r["crop"] = np.s_[lo[0]:hi[0] + 1, lo[1]:hi[1] + 1]
@@ -123,8 +144,13 @@ def main():
                 vmax = np.percentile(a_[mm], 99.5) if mm.any() else 1
                 ax.imshow(a_.T, cmap="gray", origin="lower", vmin=0, vmax=vmax, interpolation="nearest", aspect="equal")
                 ax.contour(mm.T.astype(float), [0.5], colors=[S.OKABE["sky"]], linewidths=0.5)
-                g = ndi.gaussian_filter(r["t2"][r["crop"]], GW_SMOOTH) * mm
-                ax.contour(g.T, [gw], colors=[S.OKABE["orange"]], linewidths=0.5)
+                if a.wm_line == "fa":
+                    f_ = r["fa"][r["crop"]]
+                    f_ = ndi.gaussian_filter(f_, a.fa_smooth) if a.fa_smooth > 0 else f_
+                    ax.contour((f_ * mm).T, [FA_WM], colors=[S.OKABE["orange"]], linewidths=0.5)
+                else:
+                    g = ndi.gaussian_filter(r["t2"][r["crop"]], GW_SMOOTH) * mm
+                    ax.contour(g.T, [gw], colors=[S.OKABE["orange"]], linewidths=0.5)
                 ax.set_xticks([]); ax.set_yticks([]); [s_.set_visible(False) for s_ in ax.spines.values()]
                 if kind == "sag":
                     ax.set_title(TITLES[j], color=S.FG, fontsize=S.MIN_PT, pad=2)
@@ -183,6 +209,87 @@ def main():
         t1 = M_ + above[0]; t2 = t1 + below[0] + G_ + above[1]; t3 = t2 + below[1] + G_ + above[2]
         return W_[0] + G_ + W_[1], Xc, (t1, t2, t3), t3 + below[2] + M_
 
+    TITLE3 = "Distance between the registration\nand the composed registrations"
+    CBAR_GAP = S.CLEAR_MM                                              # 2x3: from the coronal distance map's R to its color bar (mm)
+
+    def render23(scale, Xc=None, T=None, Hf=None):
+        """--layout 2x3: the rows sagittal and coronal; the columns the T2, the blockface template through the link, the distance
+        map; (a) over the first two columns, (b) over the third; the color bar right of the coronal distance map, past its R."""
+        hs, hc = rows["sag"]["mm"][1] * scale, rows["cor"]["mm"][1] * scale
+        Xc = Xc or (PAGE_W / 6, PAGE_W / 2, 5 * PAGE_W / 6)
+        T = T or (TOP, TOP + hs + GAPR)
+        Hf = Hf or T[1] + hc + 9
+        fig = plt.figure(figsize=(S.FULL_W_IN, Hf / 25.4), facecolor=S.BG)
+        col, row, pairs, b_axes = ([], [], []), ([], []), ([], []), []
+        for r_, (kind, plane_name) in enumerate((("sag", "sagittal"), ("cor", "coronal"))):
+            r = rows[kind]; w, h = r["mm"][0] * scale, r["mm"][1] * scale; axs = []
+            for j, key in enumerate(("t2", "sym", "dist")):
+                ax = S.axes_mm(fig, Xc[j] - w / 2, T[r_], w, h)
+                mm = r["m"][r["crop"]]
+                if key == "dist":
+                    im = ax.imshow(r["dist"][r["crop"]].T, cmap="magma", origin="lower", vmin=0, vmax=DIST_MAX_MM, interpolation="nearest",
+                                   aspect="equal")
+                    ax.contour(mm.T.astype(float), [0.5], colors=[S.OKABE["sky"]], linewidths=0.5)
+                    b_axes.append(ax)
+                else:
+                    a_ = r[key][r["crop"]]
+                    vmax = np.percentile(a_[mm], 99.5) if mm.any() else 1
+                    ax.imshow(a_.T, cmap="gray", origin="lower", vmin=0, vmax=vmax, interpolation="nearest", aspect="equal")
+                    ax.contour(mm.T.astype(float), [0.5], colors=[S.OKABE["sky"]], linewidths=0.5)
+                    if a.wm_line == "fa":
+                        f_ = r["fa"][r["crop"]]
+                        f_ = ndi.gaussian_filter(f_, a.fa_smooth) if a.fa_smooth > 0 else f_
+                        ax.contour((f_ * mm).T, [FA_WM], colors=[S.OKABE["orange"]], linewidths=0.5)
+                    else:
+                        g = ndi.gaussian_filter(r["t2"][r["crop"]], GW_SMOOTH) * mm
+                        ax.contour(g.T, [gw], colors=[S.OKABE["orange"]], linewidths=0.5)
+                ax.set_xticks([]); ax.set_yticks([]); [s_.set_visible(False) for s_ in ax.spines.values()]
+                if kind == "sag":
+                    ax.set_title((TITLES[0], TITLES[1], TITLE3)[j], color=S.FG, fontsize=S.MIN_PT, pad=2)
+                col[j].append(ax); row[r_].append(ax); axs.append(ax)
+            pairs[r_].append((axs[0], axs[2], plane_name))         # the row's letters once: left of the T2, right of the distance map
+        S.letter(col[0][0], "a", dx=-14, dy=10)
+        S.letter(col[2][0], "b", dx=-14, dy=10)
+        wcor = rows["cor"]["mm"][0] * scale
+        cax = S.axes_mm(fig, Xc[2] + wcor / 2 + S.orient_room("coronal") + CBAR_GAP, T[1] + 0.15 * hc, 3.0, 0.7 * hc)
+        cb = fig.colorbar(im, cax=cax); cb.set_label("Distance (mm)", color=S.FG, fontsize=S.MIN_PT)
+        cb.ax.tick_params(colors=S.FG, labelsize=S.MIN_PT); cb.outline.set_edgecolor(S.FRAME)
+        col[2].append(cax); row[1].append(cax)
+        return fig, col, row, b_axes, pairs
+
+    def measure23(scale):
+        fig, col, row, _, pairs = render23(scale)
+        X0 = (PAGE_W / 6, PAGE_W / 2, 5 * PAGE_W / 6)
+        sp = [lext(fig, j, col, pairs) for j in range(3)]
+        T0 = (TOP, TOP + rows["sag"]["mm"][1] * scale + GAPR)
+        rx = [ext(fig, row[k]) for k in range(2)]
+        plt.close(fig)
+        W_ = [x1 - x0 for x0, x1, _, _ in sp]; off = [X0[j] - sp[j][0] for j in range(3)]
+        Xc = (M_ + off[0], M_ + W_[0] + G_ + off[1], M_ + W_[0] + G_ + W_[1] + G_ + off[2])
+        above = [T0[k] - rx[k][2] for k in range(2)]; below = [rx[k][3] - T0[k] for k in range(2)]
+        t1 = M_ + above[0]; t2 = t1 + below[0] + G_ + above[1]
+        return sum(W_) + 2 * G_, Xc, (t1, t2), t2 + below[1] + M_
+
+    if a.layout == "2x3":
+        s0 = 1.0; w0 = measure23(s0)[0]; w1 = measure23(1.2)[0]
+        scale = s0 + (PAGE_W - 2 * M_ - w0) / ((w1 - w0) / 0.2)
+        wd, Xc, T, Hf = measure23(scale)
+        if Hf > MAX_H:
+            H0 = measure23(0.9 * scale)[3]; scale = 0.9 * scale + (MAX_H - H0) / ((Hf - H0) / (0.1 * scale)); wd, Xc, T, Hf = measure23(scale)
+        fig, col, row, b_axes, pairs = render23(scale, Xc, T, Hf)
+        S.orient_letters(fig, [pairs[0], pairs[1]])                    # once per image row, 1 mm from the brain
+        S.scalebar_in(col[2][0], 1 / VOX, SCALEBAR_MM, corner="bottom right")   # one bar, in the sagittal distance map's empty corner
+        S.save(fig, str(a.out), [T2P, MSKP, GREYP, LINK / "maps.json", LINK / "full_d.nii.gz", COMP / "link_ras_disp.nii.gz", NUM]
+               + ([FAP] if a.wm_line == "fa" else []),
+               cmd=" ".join(["python"] + sys.argv),
+               extra=dict(layout="2x3", height_mm=round(Hf, 1), print_mm_per_tissue_mm=round(scale, 3), scalebar_mm=SCALEBAR_MM,
+                          sections=dict(sagittal="x = 0 mm", coronal=f"y = {Y_COR} mm (AC)"),
+                          **(dict(wm_line="the white matter's boundary: template FA = 0.25 on the plane (linear), inside the brain mask",
+                                  wm_fa_level=FA_WM, wm_fa_smooth_sigma_vox=a.fa_smooth) if a.wm_line == "fa" else dict(gray_white_level=gw)),
+                          distance_colorbar_max_mm=DIST_MAX_MM, link=str(LINK), composition=str(COMP)))
+        plt.close(fig); print("->", a.out, "scale", round(scale, 3), "height", round(Hf, 1), "mm")
+        return
+
     s0 = 1.0; w0 = measure(s0)[0]; w1 = measure(1.2)[0]
     scale = s0 + (PAGE_W - 2 * M_ - w0) / ((w1 - w0) / 0.2)            # the content is affine in the scale: fill the width
     wd, Xc, T, Hf = measure(scale)
@@ -192,10 +299,13 @@ def main():
     S.orient_letters(fig, [pairs[0][0], pairs[1][0], pairs[2]])        # one line per row, 1 mm from the brain
     S.scalebar_title(col[1][0], 1 / VOX, SCALEBAR_MM, col[1][0].title)   # top right, at the column titles' level: for every panel
     hs, hc = rows["sag"]["mm"][1] * scale, rows["cor"]["mm"][1] * scale
-    S.save(fig, str(a.out), [T2P, MSKP, GREYP, LINK / "maps.json", LINK / "full_d.nii.gz", COMP / "link_ras_disp.nii.gz", NUM],
+    S.save(fig, str(a.out), [T2P, MSKP, GREYP, LINK / "maps.json", LINK / "full_d.nii.gz", COMP / "link_ras_disp.nii.gz", NUM]
+           + ([FAP] if a.wm_line == "fa" else []),
            cmd=" ".join(["python"] + sys.argv),
            extra=dict(print_mm_per_tissue_mm=round(scale, 3), scalebar_mm=SCALEBAR_MM,
-                      sections=dict(sagittal="x = 0 mm", coronal=f"y = {Y_COR} mm (AC)"), gray_white_level=gw,
+                      sections=dict(sagittal="x = 0 mm", coronal=f"y = {Y_COR} mm (AC)"),
+                      **(dict(wm_line="the white matter's boundary: template FA = 0.25 on the plane (linear), inside the brain mask",
+                              wm_fa_level=FA_WM, wm_fa_smooth_sigma_vox=a.fa_smooth) if a.wm_line == "fa" else dict(gray_white_level=gw)),
                       distance_colorbar_max_mm=DIST_MAX_MM, link=str(LINK), composition=str(COMP)))
     plt.close(fig); print("->", a.out, "scale", round(scale, 3))
 

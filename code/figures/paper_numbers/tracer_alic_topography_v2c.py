@@ -10,7 +10,7 @@ What it does
   under the footprint and solid rules and, for the bundles, the connected pathway; the injection site under the first two rules.
 
 You get
-  $LINC_NUMBERS/tracer_alic_topography_v2c_h9.json
+  $LINC_NUMBERS/tracer_alic_topography_v2c<tag>.json
 
     python code/figures/paper_numbers/tracer_alic_topography_v2c.py [--labels tracer_template_v2] [--connected-from products|work]
 """
@@ -18,6 +18,9 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parents[1]))
+from shared.paths import template_chain_tag  # noqa: E402
+TAG = template_chain_tag()                    # (<tag> = settings/labels.yaml template_chain_tag)
 BASE = HERE / "tracer_alic_topography_r058d.py"
 src = BASE.read_text()
 CONNECTED_FROM = "work" if "--connected-from" in sys.argv and sys.argv[sys.argv.index("--connected-from") + 1] == "work" else "products"
@@ -32,7 +35,7 @@ SUBS = [
      '    P = paths.products("products_blockface")\n'
      '    LAB, SARM6, RUN = P[a.labels], P["atlas_nmt"] / "SARM_level6_in_template.nii.gz", P["atlas_nmt"] / "run"\n',
      '    ap.add_argument("--labels", default="tracer_template_v2", help="label folder: a key of configs/products_mri.yaml")\n'
-     '    ap.add_argument("--name", default="tracer_alic_topography_v2c_h9", help="record name ($LINC_NUMBERS/<name>.json)")\n'
+     '    ap.add_argument("--name", default="tracer_alic_topography_v2c' + TAG + '", help="record name ($LINC_NUMBERS/<name>.json)")\n'
      '    a = ap.parse_args()\n'
      '    P = paths.products("products_blockface"); P2 = paths.products("products_mri")\n'
      '    LAB, SARM6, RUN = P2[a.labels], P["atlas_nmt"] / "SARM_level6_in_template.nii.gz", P["atlas_nmt"] / "run"\n'

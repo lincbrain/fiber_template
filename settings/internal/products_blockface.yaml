@@ -71,6 +71,10 @@ bf_step8_view: bftemplate/d2b/s8/tc/d2bs8_bfview      # the same run without TPL
 bf_step8_box_products: bftemplate/d2b/s8/tc/d2bs8/final_d2bs8   # the finish's products on the step-8 box, before the embed
 bf_canon2: bftemplate/d2/s8/canon2                    # the 21 members x 2 mirrors at 0.25 mm (the blockface channel's inputs)
 bf_canon2_tpl: bftemplate/d2b/canon2                  # the same + TPL (the b0 channel's inputs)
+bf_step8_box: bftemplate/d2/s8/box_0p25.nii.gz        # step 8's box (0.25 mm): the grid step 9 refines
+bftemplate_step9: bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_03   # the published template (step 9, 0.15 mm): T3s11_*
+bftemplate_step9_rounds: bftemplate/hr_2026-11-12/step9/out_s11/nln_step_09             # its three rounds (0.125 mm): iteration_00..03
+bftemplate_step9_in_mri: bftemplate/hr_2026-11-12/step9/out_015_s11/in_mri_template     # the same in the MRI template's frame: T3s11_015_in_mri_*
 # inputs of code/template/build_blockface_template.py that no other key names (3 Nov 2026)
 completion_cache: synthesis/cache_d3                  # <ID>/deploy/brain.nii.gz, the synthesis's per-brain cache (members' --cache)
 bf_plan_a_affine: bftemplate/d2b/plan_a_affine        # the first stage's affine part, copied from design 2's build (code/template/README.md section 2)

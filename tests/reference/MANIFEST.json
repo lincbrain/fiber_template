@@ -33,6 +33,10 @@
    "md5_of_record": "9efbb49457151c9e7142371f1dde5449",
    "created": "2026-10-05T15:34:14-04:00"
   },
+  "bf_template_metrics_s9_015_s11": {
+   "md5_of_record": "6dfd8dc09cb7f9d8345e46aa354f2623",
+   "created": "2026-11-15T18:42:22-05:00"
+  },
   "bf_tubes_per_brain_r073": {
    "md5_of_record": "cd7133e83d7ca55c87288a73ec1440e0",
    "created": "2026-11-06T12:25:53-05:00"
@@ -325,6 +329,54 @@
   "variants_leave_self_out_rebuild_fa025": {
    "md5_of_record": "71b60525b707371eff3d5066ab17e6cc",
    "created": "2026-10-14T22:01:25-04:00"
+  },
+  "tracer_alic_topography_v2c_h9_s11": {
+   "md5_of_record": "ef5068f5150f919b7315e858dbfc625f",
+   "created": "2026-11-15T19:07:04-05:00"
+  },
+  "tracer_alic_topography_v5_h9_s11": {
+   "md5_of_record": "0f207245050abb24d71a81defbc73de5",
+   "created": "2026-11-15T19:06:59-05:00"
+  },
+  "tracer_connected_v2c_h9_s11": {
+   "md5_of_record": "549218bcd9e464196707c437a8259fb9",
+   "created": "2026-11-15T19:06:40-05:00"
+  },
+  "tracer_label_volumes_v2c_h9_s11": {
+   "md5_of_record": "185267386e8265944ee3da9d2c2fe10a",
+   "created": "2026-11-15T19:07:16-05:00"
+  },
+  "tracer_placement_v2c_h9_s11": {
+   "md5_of_record": "6e39098813a169187ad7bc05d426590d",
+   "created": "2026-11-15T19:06:56-05:00"
+  },
+  "tracer_sections_v2_h9_s11": {
+   "md5_of_record": "114d4821aef87761069406c0ed4374dd",
+   "created": "2026-11-15T19:04:06-05:00"
+  },
+  "tracer_template_v2_all_h9_s11": {
+   "md5_of_record": "35ebd227906a916baf6ee8075235385b",
+   "created": "2026-11-15T19:04:14-05:00"
+  },
+  "fig_tracer_r058_h9_s11": {
+   "md5_of_record": "4c71fa9e249ba0c448a7ad2019bc715e",
+   "created": "2026-11-15T19:08:00-05:00"
+  },
+  "fig_tracer_sections3d_v6_h9_s11_c": {
+   "md5_of_record": "59568e7074c5d4d74b49ceeb86f47a99",
+   "created": "2026-11-15T19:28:32-05:00"
+  },
+  "labels_overlap_current_h9_s11": {
+   "md5_of_record": "74824889b60c701f468698a4f6c04106",
+   "created": "2026-11-15T19:05:13-05:00"
+  },
+  "lgnstn_geometry_current_h9_s11": {
+   "md5_of_record": "ee4e2dafbe02228bb305601306e8fc53",
+   "created": "2026-11-15T19:13:14-05:00"
+  },
+  "lgnstn_label_volumes_h9_s11": {
+   "md5_of_record": "fb5c9791916e9b88f168e78a2ac3fde2",
+   "created": "2026-11-15T19:13:19-05:00"
   }
  }
 }

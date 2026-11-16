@@ -1353,7 +1353,10 @@ def space_text(fig, x_mm, y_mm, s):
 def overview_01_chain(tr):
     """The chain of spaces, with the command between each pair: a section as scanned (histo-piece), its photograph (bf-native), the
     brain's b0 (b0-native), the MRI template (mri-template, T2-weighted); below, the blockface template's channel (bf-template, shown on
-    the MRI template's grid), the route for a brain without MRI, which bypasses the b0, and the link between the two templates."""
+    the MRI template's grid) and the link between the two templates. Two routes: the MRI route through the brain's own b0 (top), and the
+    blockface route through the blockface template, which bypasses the b0 (the route of every brain's histology labels, and the only
+    one for a brain without MRI). Each command on one line: each top gutter is as wide as its command needs (at least GA); on the
+    blockface route the gray names sit above the arrows and the commands below them."""
     sec, spx = section_thumb(tr)
     ph, px = bf_slice(tr, f"brains/sub-{S}/outputs/{S}_blockface_L2.nii.gz", SECTION_SLICE)
     bx = bbox(ph.sum(-1) > 0, cropm(px))
@@ -1364,9 +1367,11 @@ def overview_01_chain(tr):
     m2 = FS.section(tm, "coronal", tp["coronal"]); tbx = bbox(m2 > 0.5, 1)
     rgb, _ = tr.nii("template/outputs/template_blockface_rgb.nii.gz"); bm, _ = tr.nii("template/outputs/template_blockface_mask.nii.gz")
     bm2 = FS.section(bm, "coronal", tp["coronal"]); bfx = bbox(bm2 > 0.5, 1)
-    top = [Pn(section_crop(sec, spx), spx, "coronal"), Pn(crop(ph, bx), px, "coronal", gap=GA),
-           Pn(crop(FS.section(window(b0, m), "coronal", npl["coronal"]), nb), bpx, "coronal", gap=GA),
-           Pn(crop(FS.section(window(t2, tm), "coronal", tp["coronal"]) * (m2 > 0.5), tbx), 0.25, "coronal", gap=GA)]
+    cmds = ("linc-histology", "linc-register mri", "linc-register mri-template")
+    gap = [max(GA, (lambda e: e[1] - e[0])(ink(c, FS.MIN_PT + 0.5, bold=True, mono=True)) + 2.5) for c in cmds]   # one line above each arrow
+    top = [Pn(section_crop(sec, spx), spx, "coronal"), Pn(crop(ph, bx), px, "coronal", gap=gap[0]),
+           Pn(crop(FS.section(window(b0, m), "coronal", npl["coronal"]), nb), bpx, "coronal", gap=gap[1]),
+           Pn(crop(FS.section(window(t2, tm), "coronal", tp["coronal"]) * (m2 > 0.5), tbx), 0.25, "coronal", gap=gap[2])]
     low = [Pn(crop(rgb01(FS.section(rgb, "coronal", tp["coronal"])) * (bm2 > 0.5)[..., None], bfx), 0.25, "coronal")]
     rows = [Row(top, lines=3, valign="center"), Row(low, lines=2, under=[2])]
     fig, sc = grid(rows)
@@ -1376,22 +1381,25 @@ def overview_01_chain(tr):
         cx = p.x + p.w * sc / 2
         txt(fig, cx, base(r, 2), t, ha="center"); space_text(fig, cx, base(r, 1), s)
     bracket(fig, top[:3], name(S), 3)                                     # the brain's three tiles: its name
-    # the route with MRI: section -> photograph -> b0 -> MRI template, the command over each arrow
-    for a_, b_, cmd in zip(top[:-1], top[1:], (["linc-histology"], ["linc-register", "mri"], ["linc-register", "mri-template"])):
+    # the MRI route: section -> photograph -> b0 -> MRI template, the command over each arrow, the route's name under the second
+    for k, (a_, b_, cmd) in enumerate(zip(top[:-1], top[1:], cmds)):
         y = arrow_gutter(fig, a_, b_, sc)
-        code_lines(fig, (a_.x + a_.w * sc + b_.x) / 2, y - 1.2, cmd)
-    # the route without MRI: from the photograph down and right into the blockface template (bypassing the b0), then the link up into
-    # the MRI template; both at a quarter of the tile's height, clear of the orientation letters at its middle
+        code_lines(fig, (a_.x + a_.w * sc + b_.x) / 2, y - 1.2, [cmd])
+        if k == 1:
+            txt(fig, (a_.x + a_.w * sc + b_.x) / 2, y + 1.2, "MRI route", ha="center", va="top", color=FS.GRAY)
+    # the blockface route: from the photograph down and right into the blockface template (bypassing the b0), then the link up into
+    # the MRI template; both at a quarter of the tile's height, clear of the orientation letters at its middle; the names above the
+    # arrows, the commands below them (the first one ends before the tile, clear of the line down from the photograph)
     q = low[0]; qx0, qy0, qx1, qy1 = box(q, sc)
     yr = qy0 + 0.25 * (qy1 - qy0)
     xs = top[1].x + top[1].w * sc / 2
     arrow(fig, (xs, top[1].y + top[1].h * sc + 1.0), (xs, yr), head=False); arrow(fig, (xs, yr), (qx0 - 1.0, yr))
-    code_lines(fig, (xs + qx0) / 2, yr - 1.2, ["linc-register", "blockface-template"])
-    txt(fig, (xs + qx0) / 2, yr + 1.2, "Without MRI", ha="center", va="top", color=FS.GRAY)
+    txt(fig, (xs + qx0) / 2, yr - 1.2, "Blockface route", ha="center", va="bottom", color=FS.GRAY)
+    code_text(fig, qx0 - 1.5 - FS.orient_room("coronal"), yr + 1.2, "linc-register blockface-template", ha="right", va="top")   # clear of its L
     t3 = top[3]; xt = t3.x + t3.w * sc / 2
     arrow(fig, (qx1 + 1.0, yr), (xt, yr), head=False); arrow(fig, (xt, yr), (xt, t3.y + t3.h * sc + 1.0))
-    code_lines(fig, (qx1 + xt) / 2, yr - 1.2, ["build_link.py"])
-    txt(fig, (qx1 + xt) / 2, yr + 1.2, "Template link", ha="center", va="top", color=FS.GRAY)
+    txt(fig, (qx1 + xt) / 2, yr - 1.2, "Template link", ha="center", va="bottom", color=FS.GRAY)
+    code_text(fig, (qx1 + xt) / 2, yr + 1.2, "build_link.py", ha="center", va="top")
     orient(fig, rows)
     bar(fig, sc, region=(MG, xs - 2.0, top[0].y + top[0].h * sc, page(fig)[1] - MG))
     return fig

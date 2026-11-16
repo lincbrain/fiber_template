@@ -2,11 +2,15 @@
 """The paper's figure "The LGN and STN of three brains in the template" (Results, after the LGN and STN table; earlier a
 supplementary figure).
 
-    python code/figures/lgnstn.py [--out figures/lgnstn.pdf]
+    python code/figures/lgnstn.py [--out figures/lgnstn.pdf] [--mri-route]
+
+The labels are those of the brains' route (code/labels/route.py lgnstn_sets): through the blockface template when settings/labels.yaml
+template_routes sends MM1-MM3 that way (products_mri lgnstn_template_labels), else through each brain's own MRI (products_mri
+push_current); --mri-route draws the MRI route's set in either case (the paper reports both).
 
 Rows: LGN and STN. Columns, in two groups: the left hemisphere's coronal, axial and sagittal sections of the template's FA, then the
-right hemisphere's, each through the mean centroid of the labels shown for that nucleus and hemisphere (window +-HALF_MM): the three brains' labels of record (demons; products
-lgnstn_labels/<ID>/<ID>_<struct>_mri-template_mask_demons, outlined by the 0.5 contour of their probability maps) in COLORS, and the SARM nucleus (products
+right hemisphere's, each through the mean centroid of the labels shown for that nucleus and hemisphere (window +-HALF_MM): the three brains' labels of record (demons; the
+set's <ID>/<ID>_<struct>_mri-template_mask_demons, outlined by the 0.5 contour of their probability maps) in COLORS, and the SARM nucleus (products
 lgnstn_slab/SARM_<struct>_mri-template.nii.gz, as code/figures/paper_numbers/lgnstn_budget_r059.py writes it) dashed white. A legend
 above names them, the 2 mm scale bar at its right; both rows share one window (9.25 mm across), so the bar holds for both.
 Orientation as figstyle.section: coronal and axial, the left of the brain on the left; sagittal, anterior right;
@@ -54,6 +58,7 @@ REPO = HERE.parents[1]
 sys.path.insert(0, str(HERE)); sys.path.insert(0, str(REPO / "code"))
 import figstyle as FS  # noqa: E402
 from shared import paths  # noqa: E402
+from labels import route as RT  # noqa: E402
 
 SUBS = ["MR243", "MR252", "MR256"]
 GOLD = "#FFC20A"   # saturated golden yellow: reads against the dashed white SARM outline (figstyle's pale yellow does not)
@@ -93,15 +98,19 @@ def text_mm(fig):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", default="figures/lgnstn.pdf")
+    ap.add_argument("--mri-route", action="store_true", help="draw the MRI route's labels (products_mri push_current)")
     a = ap.parse_args()
     P = paths.products("products_completion")
+    sets = RT.lgnstn_sets()
+    tag, labdir, _rmap = sets[0] if a.mri_route else sets[-1]
+    print("labels:", tag, labdir, flush=True)
     FS.setup()
     lp = REPO / "settings" / "specimen_labels.json"; lab = json.load(open(lp))["labels"]
     bgp = P["template_mri"] / "linc_mri_FA.nii.gz"                      # the background: FA
     bgi = nib.load(bgp); BG = np.asarray(bgi.dataobj).astype(np.float32); A = bgi.affine
     assert np.allclose(A[:3, :3], np.diag([VOX] * 3)), "template not axis-aligned RAS"
-    lps = {(S, st): P["lgnstn_labels"] / S / f"{S}_{st}_mri-template_mask_demons.nii.gz" for S in SUBS for st, _ in ROWS}
-    pps = {(S, st): P["lgnstn_labels"] / S / f"{S}_{st}_mri-template_prob_demons.nii.gz" for S in SUBS for st, _ in ROWS}
+    lps = {(S, st): labdir / S / f"{S}_{st}_mri-template_mask_demons.nii.gz" for S in SUBS for st, _ in ROWS}
+    pps = {(S, st): labdir / S / f"{S}_{st}_mri-template_prob_demons.nii.gz" for S in SUBS for st, _ in ROWS}
     rps = {st: P["lgnstn_slab"] / f"SARM_{st}_mri-template.nii.gz" for st, _ in ROWS}
     L = {k: np.asarray(nib.load(p).dataobj) > 0 for k, p in lps.items()}
     R = {k: np.asarray(nib.load(p).dataobj) > 0 for k, p in rps.items()}

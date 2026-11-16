@@ -98,6 +98,10 @@ def load_plan(path=PLAN):
         die(f"{path.name}: unknown top-level keys {sorted(set(doc) - {'sets', 'steps'})}")
     sets = doc.get("sets") or {}
     labels = json.loads((REPO / "settings" / "specimen_labels.json").read_text())["labels"]
+    # {chain_tag} and {lgnstn_dir}: the labels' route of record in the settings (settings/labels.yaml template_chain_tag; products_mri.yaml
+    # lgnstn_template_labels), so the route steps check against the products of the route the settings name
+    subst = {"{chain_tag}": str(yaml.safe_load((REPO / "settings" / "labels.yaml").read_text())["template_chain_tag"]),
+             "{lgnstn_dir}": str(yaml.safe_load((REPO / "settings" / "internal" / "products_mri.yaml").read_text())["lgnstn_template_labels"])}
     steps, bases, entries = [], {}, []
     for e in doc["steps"]:
         where = f"{path.name}, step {e.get('name', '?')!r}"
@@ -118,6 +122,9 @@ def load_plan(path=PLAN):
                 s["name"] = f"{e['name']}-{b}"
                 for k in TEXT:
                     s[k] = str(s[k]).replace("{id}", b)
+            for k in TEXT:
+                for a, v in subst.items():
+                    s[k] = str(s[k]).replace(a, v)
             for k in TEXT:                # commands keep their spacing (a pattern may need two spaces); prose is tidied
                 s[k] = str(s[k]).strip() if k in ("run", "check") else " ".join(str(s[k]).split())
             bases.setdefault(e["name"], []).append(s["name"])

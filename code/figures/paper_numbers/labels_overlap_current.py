@@ -2,7 +2,10 @@
 """Overlap of the LGN and STN labels carried from histology into the MRI template (paper: Results, "Labels in the template"; Table 7).
 
 The labels of three histology brains (MM1-MM3) were drawn on histology, carried to the blockface, interpolated between sections, and
-carried to the MRI template through each brain's own MRI (blockface -> b0 -> template; products: push_current/<ID>/). The reference is
+carried to the MRI template, each set on its route (code/labels/route.py lgnstn_sets): through each brain's own MRI (blockface -> b0 ->
+template; products push_current/<ID>/, the record labels_overlap_current_h9), and, when settings/labels.yaml template_routes sends the
+brains through the blockface template, through it (products lgnstn_template_labels/<ID>/, labels_overlap_current<template_chain_tag>;
+code/labels/structures.py carries both). The paper reports both. The reference is
 a template-space annotation drawn on an earlier MRI template and carried onto the current one (products: template_gt/). Per
 hemisphere-structure (lhLGN, lhSTN, rhLGN, rhSTN), every brain against the reference (subject_vs_GT) and every pair of brains
 (pairwise_subjects, the rows the paper quotes): Dice, ASSD (mean symmetric surface distance, mm), centroid distance (mm), volume ratio,
@@ -15,7 +18,7 @@ Three variants of the interpolated labels:
                         >= 50 voxels
 Top level: the one-voxel reference per structure (and LGN / STN means over the primary variant's brain labels) and each brain's
 blockface A-P spacing.
--> $LINC_NUMBERS/labels_overlap_current_h9.json
+-> $LINC_NUMBERS/labels_overlap_current<tag>.json, one per set
     python code/figures/paper_numbers/labels_overlap_current.py"""
 import json
 import sys
@@ -28,6 +31,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "code"))
 from shared import paths, provenance  # noqa: E402
 from figures.evaluation.labels_agreement import AA_RULE, ONE_VOXEL_RULE, bf_ap_spacing, one_voxel_ref, overlap_metrics
+from labels import route as RT  # noqa: E402
 
 SUBJECTS = ["MR243", "MR252", "MR256"]                             # LINC IDs of MM1, MM2, MM3
 STRUCTS = ["lhLGN", "lhSTN", "rhLGN", "rhSTN"]
@@ -58,8 +62,8 @@ def load(p):
     return np.asarray(im.dataobj) > 0, im
 
 
-def links(S):
-    return [f"{s}->{d} ({S})" for s, d in LINKS_SUBJECT]
+def links(S, route="mri"):
+    return RT.link_names(S, route)                                 # LINKS_SUBJECT on the MRI route
 
 
 def adequate(variant, m):
@@ -71,8 +75,12 @@ def adequate(variant, m):
 
 
 def main():
+    for tag, pushdir, rmap in RT.lgnstn_sets():
+        record(tag, pushdir, rmap)
+
+
+def record(tag, pushdir, rmap):
     P = paths.products("products_mri")
-    pushdir = P["push_current"]
     REF = P["template_mri"] / "linc_mri_b0.nii.gz"
     ref = nib.load(REF)
     vox = ref.header.get_zooms()[:3]
@@ -108,14 +116,14 @@ def main():
                 m = adequate(variant, overlap_metrics(lab[S] & R(S), g & R(S), vox, ref.affine))
                 ex = extra(variant, st, lab[S] & R(S), g & R(S), S, "GT" if variant != "demons_real_sections" else f"GT&real({S})")
                 rows.append(dict(variant=variant, primary=variant == PRIMARY, kind="subject_vs_GT", struct=st, a=S, b=GT_NAME, **m, **ex,
-                                 links_a=[LINK_HISTO] + links(S), links_b=[LINK_GT_DRAWN] + gt_links, shared_links=[], note=GT_NOTE))
+                                 links_a=[LINK_HISTO] + links(S, rmap[S]), links_b=[LINK_GT_DRAWN] + gt_links, shared_links=[], note=GT_NOTE))
             for S1, S2 in combinations(have, 2):
                 both = R(S1) & R(S2)
                 m = adequate(variant, overlap_metrics(lab[S1] & both, lab[S2] & both, vox, ref.affine))
                 rk = "" if variant != "demons_real_sections" else f"&real({S1},{S2})"
                 ex = extra(variant, st, lab[S1] & both, lab[S2] & both, S1 + rk, S2 + rk)
                 rows.append(dict(variant=variant, primary=variant == PRIMARY, kind="pairwise_subjects", struct=st, a=S1, b=S2, **m, **ex,
-                                 links_a=links(S1), links_b=links(S2), shared_links=[SHARED_PAIR]))
+                                 links_a=links(S1, rmap[S1]), links_b=links(S2, rmap[S2]), shared_links=[SHARED_PAIR]))
 
     ovp = {st: {k: v for (var, k, s_), v in ovr.items() if var == PRIMARY and s_ == st} for st in STRUCTS}
     mean = lambda v: round(float(np.mean(v)), 4) if v else None                                     # noqa: E731
@@ -130,7 +138,7 @@ def main():
                 chain_override=CHAIN_OVERRIDE_PREFIX + ", ".join(f"{S} {man[S]['variant']}" for S in SUBJECTS),
                 variants=VARIANT_TEXT,
                 rows=rows)
-    provenance.write_numbers("labels_overlap_current_h9", data, inputs=inputs, md5=False,
+    provenance.write_numbers("labels_overlap_current" + tag, data, inputs=inputs, md5=False,
                              cmd="python code/figures/paper_numbers/labels_overlap_current.py")
 
 

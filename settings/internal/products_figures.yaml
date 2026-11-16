@@ -10,8 +10,8 @@ template_frac1: template/mri/linc_mri_frac1.nii.gz                   # SANDI som
 template_frac2: template/mri/linc_mri_frac2.nii.gz                   # SANDI neurite fraction
 
 # --- the blockface template in its own space, and the registration's pull map (MRI-template point -> blockface-template point) ---
-bft_rgb: bftemplate/d2b/final_s8/d2bs8_rgb.nii.gz
-bft_mask: bftemplate/d2b/final_s8/d2bs8_brainmask.nii.gz
+bft_rgb: bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_03/T3s11_rgb.nii.gz         # the blockface template of record (step 9, 0.15 mm)
+bft_mask: bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_03/T3s11_brainmask.nii.gz
 bft_pull_map: bftemplate/cv/template2template/d2bs8_s5sym/bftemplate__to__mri-template    # maps.json: src = L @ (x + d(x))
 
 # --- the blockface example (MM6 = MR251): its completed volume, the construction's input, and what the photographed part is pulled from ---
@@ -33,11 +33,19 @@ blockface_store: data/sub-MR252/blockface/MR252_blockface.ome.zarr   # the recon
 histology_piece: data_arm_h9_final/sub-MR252/blockface/06_histo2bf/tirl/mr252FS_c11_s28nDF_0000   # moving4_nonlinear_rgb.png, fixed.png (the registrations with the per-component nonlinear stiffness)
 
 # --- the tracer labels figure (code/figures/tracer.py) ---
-tracer_template: labels/tracer_template_r058d_h9                    # <S>/<S>_<class>_mri-template{,_density}.nii.gz: the final tracer labels
+tracer_template: labels/tracer_template_r058d_h9_s11                    # <S>/<S>_<class>_mri-template{,_density}.nii.gz: the final tracer labels
 template_fa: template/mri/linc_mri_FA.nii.gz
 sarm_level6: mri/tc/atlas_v2/NMT_v2.0_sym/SARM_level6_in_template.nii.gz    # SARM level 6 carried from NMT v2 (internal capsule = 50)
 bft_member_warps: bftemplate/d2b/final_s8/d2_member_warps.json      # each member's construction warp (file, convention, src_grid)
 mf8_rigid: data/sub-MF191/mri/s2lin_prod/MF191_s2lin.json           # MF8's rigid placement (T_world_bf_to_run113)
+# a brain's step-9 link into the blockface template of record (x -> x + U(x), mm): for a brain whose chain goes through the blockface template
+# and is not one of step 9's members (MF8; L2, 15 Nov 2026), its registration to the template; one entry per brain
+bft_step9_fields:
+  MR243: bftemplate/hr_2026-11-12/step9/out_015_s11/outside10/fields/MR243.npy
+  MR252: bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_03/fields/MR252_u.npy
+  MR256: bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_03/fields/MR256_u.npy
+  MF191: bftemplate/hr_2026-11-12/step9/out_015_s11/outside10/fields/MF191.npy
+bft_step9_grid: bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_03/T3s11_grid.json   # its grid (the template of record's)
 mf8_interp: data_arm_h9_preinp_r058/sub-MF191/blockface/06_histo2bf/interp_tracer/interp.json   # MF8's interpolation table (interpolated pairs)
 mf8_label_grid: labels/push_tracer_h9/MF191/MF191_Fiber_dense_bundle_bfnative_L2.nii.gz   # MF8's blockface label grid (its header)
 

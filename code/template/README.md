@@ -9,7 +9,7 @@ You do not need them to align a new brain: a rebuild makes a new template ([00](
 | Driver | Builds | Settings |
 |---|---|---|
 | `build_mri_channels.py` | the MRI template | `settings/mri_construction.yaml` |
-| `build_blockface_template.py` | the blockface template | `settings/blockface_template.yaml` |
+| `build_blockface_template.py` | the blockface template (its step 9: `blockface_step9.py`) | `settings/blockface_template.yaml` |
 | `build_link.py` | the template link, and the registrations to the published templates | `settings/link.yaml` |
 
 ```text
@@ -30,7 +30,8 @@ The members are listed in the settings files, and [01, part A](../../docs/tutori
 | | |
 |---|---|
 | `mmorf_run.py`, `channels.py`, `tools.py` | the MRI template |
-| `blockface_build.py`, `blockface_mmorf.py`, `blockface_finish.py` | the blockface template |
+| `blockface_build.py`, `blockface_mmorf.py`, `blockface_finish.py` | the blockface template, steps 1 to 8 |
+| `blockface_step9.py` | the blockface template's step 9, the published template; also the refinement of a brain's registration to it |
 | [blockface_shim/](blockface_shim/README.md) | the MMORF wrapper of the blockface build |
 | [link/](link/README.md) | the template link, and a b0's registration to the template |
 | [patches/](patches/README.md) | our edits to the template-construction driver |

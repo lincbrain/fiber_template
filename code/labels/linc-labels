@@ -25,12 +25,18 @@ You get, under $LINC_DATA/sub-<ID>/labels/
     linc-labels push        --subject MR252 [--kind tracer|structures]
     linc-labels interpolate --subject MR252 [--method v2|v1]
     linc-labels carry       --subject MR252 [--entry DIR ...]
+    linc-labels carry       --subject MR243 --kind structures [--dense] [--route blockface|mri]
     linc-labels connect     --subject MR252
     linc-labels all         --subject MR252
 Every path can be overridden. The transforms of `carry`, in PULL order (a template point goes first to last):
   --entry DIR [--entry DIR ...]     registry entries (shared.xfm), each '<dir>' or '<dir>:inv', in IMAGE order (bf-native first)
   --map DIR:NAME / --warp FILE:CONV[:SRC_GRID] / --ras-pull FILE     a precomputed pull map, in PULL order (template first)
-  (neither: the registry's own chain bf-native -> mri-template for the brain, every link with passing QC).
+  (neither: the brain's route, settings/labels.yaml template_routes, or --route: blockface, through the blockface template as the paper
+  carries the labels (a brain outside the paper through its step-9 refined entry, xfm_step9/; code/labels/route.py), or mri, through
+  its R1 of record and its b0's registration to the template; a brain not in template_routes takes the blockface route).
+`carry --kind structures` carries the LGN and STN (code/labels/structures.py): from labels/blockface/structures/ (or --labels-dir) to
+labels/template/structures/, into the MRI template on the brain's route (settings/labels.yaml template_routes, or --route) and into
+its b0 through its R1 of record; --dense takes the demons-interpolated labels (*_bfnative_L2_demons).
 Environments: push in settings/env/tirl.yml, interpolate and carry in settings/env/linc.yml (paper: Methods, "Histology registration and label propagation").
 """
 import argparse
@@ -122,10 +128,25 @@ def cmd_interpolate(a, cfg):
     return outs
 
 
+def cmd_carry_structures(a, cfg):
+    from labels import route as RT
+    from labels import structures as STR
+    S = a.subject
+    L = lambda k: LB.layout(S, k, cfg)  # noqa: E731
+    src = _p(a.labels_dir, L("labels") / "blockface" / "structures")
+    out = _p(a.out, L("labels") / "template" / "structures")
+    route = a.route or RT.route_of(S)
+    t0 = time.time()
+    rec = STR.carry_structures(S, src, out, STR.targets_for(S, route), cfg["push"]["structures"], a.dense)
+    print(f"{S}: {len(rec)} structures carried on the {route} route ({'dense' if a.dense else 'plain'}) in {time.time() - t0:.0f} s -> {out}")
+
+
 def cmd_carry(a, cfg):
     from shared import xfm
     from labels import carry as CA
     S = a.subject
+    if getattr(a, "kind", "tracer") == "structures":
+        return cmd_carry_structures(a, cfg)
     L = lambda k: LB.layout(S, k, cfg)  # noqa: E731
     C = cfg["carry"]
     ref = Path(a.ref) if a.ref else paths.template_root() / C["ref"]
@@ -153,8 +174,19 @@ def cmd_carry(a, cfg):
             ent = xfm.Entry(e[:-4] if inv else e)
             links.append(xfm.InverseEntry(ent) if inv else ent)
         chain = xfm.Chain(links, strict=True)
-    else:
-        chain = xfm.Chain.between("bf-native", "mri-template", subject=S, strict=True)
+    else:                                                     # the brain's route (code/labels/route.py)
+        from labels import route as RT
+        route = a.route or RT.route_of(S)
+        if route == "blockface":
+            PF = paths.products("products_figures")
+            rc = RT.RouteChain(S, PF)
+            if RT.uses_pull(S, PF):
+                pull, desc = rc.pull, rc.describe()
+            else:
+                chain = rc
+        else:
+            chain = RT.template_chain(S, "mri")
+        print(f"{S}: the {route} route", flush=True)
     t0 = time.time()
     rec, outs = CA.carry(S, lab, ref=ref, brain=brain, out_dir=out, chain=chain, pull=pull, links=desc, cfg=cfg)
     for f in outs:
@@ -201,6 +233,11 @@ def main(argv=None):
         p.add_argument("--ref"); p.add_argument("--brain")
         p.add_argument("--entry", action="append"); p.add_argument("--map", action="append")
         p.add_argument("--warp", action="append"); p.add_argument("--ras-pull", action="append")
+        if name == "carry":
+            p.add_argument("--kind", choices=["tracer", "structures"], default="tracer")
+            p.add_argument("--dense", action="store_true", help="structures: the demons-interpolated labels (*_bfnative_L2_demons)")
+            p.add_argument("--labels-dir", help="structures: the blockface labels' folder (default: labels/blockface/structures of the brain)")
+        p.add_argument("--route", choices=["blockface", "mri"], help="the route into the MRI template when no transform is given (default: settings/labels.yaml template_routes, else blockface)")
         if name == "all":
             p.add_argument("--interp-dir")
             for k in ("annotations", "section_map", "piece_masks", "blockface_pieces"):

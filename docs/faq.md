@@ -8,7 +8,7 @@ Terms are explained in the [overview](overview.md) and its [glossary](overview.m
 ### I only want the template. Do I need the code?
 
 No.
-The template is in LINC dataset 000059, under `derivatives/template/` (its blockface channel is in `micr/`), and in the data folder's `template/outputs/`.
+The template is in LINC dataset 000059, under `derivatives/template/` (its blockface channel is in `micr/`, on the template's grid and, at 0.15 mm, in its own space), and in the data folder's `template/outputs/`.
 Any NIfTI viewer, such as FSLeyes or ITK-SNAP, opens it.
 To apply its mappings to NMT v2, INIA19 and CIVM-R without this code, see the dataset's `derivatives/template/xfms/README.txt`.
 
@@ -52,7 +52,7 @@ Its transform to the template carries along every image already aligned with it 
 ### Why is there a blockface template?
 
 Eight of the 21 photographed brains have no MRI.
-Their blockface volumes are registered to a template of the same contrast and then follow the template link into the template ([02, Step 4](tutorials/02_blockface.md#step-4-register-the-volume-to-the-blockface-template-a-brain-without-mri)).
+Their blockface volumes are registered to a template of the same contrast and then follow the template link into the template ([02, Step 4](tutorials/02_blockface.md#step-4-register-the-volume-to-the-blockface-template-a-brain-without-mri-or-with-histology)).
 
 ### Why synthesize tissue that was never photographed?
 

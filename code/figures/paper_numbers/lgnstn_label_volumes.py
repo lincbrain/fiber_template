@@ -2,7 +2,9 @@
 """The volumes behind Fig. 8's caption sentence on SARM's larger nuclei, and the border check behind "shares the ventral and lateral borders".
 
 You need (settings/internal/products_completion.yaml)
-  lgnstn_labels: <ID>/<ID>_<struct>_mri-template_mask_demons.nii.gz, the drawn LGN and STN carried into the template (MM1-MM3);
+  per label set (code/labels/route.py lgnstn_sets: the MRI route, tag _h9, products_mri push_current, and the blockface route when the
+  settings send the brains through it, tag template_chain_tag, products_mri lgnstn_template_labels):
+  <ID>/<ID>_<struct>_mri-template_mask_demons.nii.gz, the drawn LGN and STN carried into the template (MM1-MM3);
   lgnstn_slab: SARM_<struct>_mri-template.nii.gz, SARM's nuclei split by hemisphere on the template grid.
 
 What it does
@@ -12,7 +14,8 @@ What it does
   and their mean and range over the three brains and both hemispheres.
 
 You get
-  $LINC_NUMBERS/lgnstn_label_volumes_h9.json (the labels carried through the registrations with the per-component nonlinear stiffness)
+  $LINC_NUMBERS/lgnstn_label_volumes<tag>.json, one per set (the labels carried through the histology registrations with the
+  per-component nonlinear stiffness)
 
     python code/figures/paper_numbers/lgnstn_label_volumes.py
 """
@@ -26,8 +29,9 @@ import numpy as np
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO / "code"))
 from shared import paths, provenance  # noqa: E402
+from labels import route as RT  # noqa: E402
 
-NAME = "lgnstn_label_volumes_h9"
+NAME = "lgnstn_label_volumes"                                       # + the set's tag
 SUBJ = ["MR243", "MR252", "MR256"]
 EDGES = ("ventral", "lateral", "dorsal", "medial")
 NOTE = ("mm3 = voxel count x voxel volume on the template grid; edges = 5th/95th percentiles of the label's voxel coordinates "
@@ -42,6 +46,11 @@ def measure(p):
 
 
 def main():
+    for tag, labdir, _rmap in RT.lgnstn_sets():
+        record(tag, labdir)
+
+
+def record(tag, labdir):
     P = paths.products("products_completion")
     names = json.load(open(REPO / "settings" / "specimen_labels.json"))["labels"]
     out, inputs = {}, []
@@ -52,7 +61,7 @@ def main():
             sp = P["lgnstn_slab"] / f"SARM_{st}_mri-template.nii.gz"; s = measure(sp); inputs.append(sp)
             o = {}
             for S in SUBJ:
-                p = P["lgnstn_labels"] / S / f"{S}_{st}_mri-template_mask_demons.nii.gz"; o[names[S]] = measure(p); inputs.append(p)
+                p = labdir / S / f"{S}_{st}_mri-template_mask_demons.nii.gz"; o[names[S]] = measure(p); inputs.append(p)
             per[st] = dict(sarm_mm3=round(s["mm3"], 2), drawn_mm3={k: round(v["mm3"], 2) for k, v in o.items()},
                            drawn_mean_mm3=round(float(np.mean([v["mm3"] for v in o.values()])), 2),
                            **{f"sarm_minus_drawn_{e}_edge_mm": {k: round(s[e] - v[e], 3) for k, v in o.items()} for e in EDGES})
@@ -64,7 +73,7 @@ def main():
             out[nuc][f"sarm_minus_drawn_{e}_edge_mm_mean_range"] = [round(float(np.mean(v)), 3), round(float(min(v)), 3), round(float(max(v)), 3)]
         print(nuc, "SARM", out[nuc]["sarm_mm3"], "drawn", out[nuc]["drawn_mm3"], flush=True)
     out["note"] = NOTE
-    print(provenance.write_numbers(NAME, out, inputs=inputs, md5=False, cmd="python code/figures/paper_numbers/lgnstn_label_volumes.py"))
+    print(provenance.write_numbers(NAME + tag, out, inputs=inputs, md5=False, cmd="python code/figures/paper_numbers/lgnstn_label_volumes.py"))
 
 
 if __name__ == "__main__":

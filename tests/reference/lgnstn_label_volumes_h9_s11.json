@@ -1,0 +1,173 @@
+{
+ "data": {
+  "LGN": {
+   "sarm_mm3": 56.44,
+   "drawn_mm3": 33.52,
+   "per_hemisphere": {
+    "lhLGN": {
+     "sarm_mm3": 57.69,
+     "drawn_mm3": {
+      "MM1": 37.72,
+      "MM2": 30.52,
+      "MM3": 29.41
+     },
+     "drawn_mean_mm3": 32.55,
+     "sarm_minus_drawn_ventral_edge_mm": {
+      "MM1": 0.25,
+      "MM2": 0.25,
+      "MM3": -0.25
+     },
+     "sarm_minus_drawn_lateral_edge_mm": {
+      "MM1": 0.25,
+      "MM2": 0.0,
+      "MM3": 0.0
+     },
+     "sarm_minus_drawn_dorsal_edge_mm": {
+      "MM1": 0.5,
+      "MM2": 0.25,
+      "MM3": 0.25
+     },
+     "sarm_minus_drawn_medial_edge_mm": {
+      "MM1": -0.25,
+      "MM2": -0.75,
+      "MM3": -0.75
+     }
+    },
+    "rhLGN": {
+     "sarm_mm3": 55.19,
+     "drawn_mm3": {
+      "MM1": 35.03,
+      "MM2": 32.47,
+      "MM3": 35.94
+     },
+     "drawn_mean_mm3": 34.48,
+     "sarm_minus_drawn_ventral_edge_mm": {
+      "MM1": 0.0,
+      "MM2": 0.0,
+      "MM3": 0.0
+     },
+     "sarm_minus_drawn_lateral_edge_mm": {
+      "MM1": 0.0,
+      "MM2": 0.25,
+      "MM3": 0.25
+     },
+     "sarm_minus_drawn_dorsal_edge_mm": {
+      "MM1": 0.25,
+      "MM2": 0.5,
+      "MM3": 0.25
+     },
+     "sarm_minus_drawn_medial_edge_mm": {
+      "MM1": -0.5,
+      "MM2": -0.75,
+      "MM3": -0.5
+     }
+    }
+   },
+   "sarm_minus_drawn_ventral_edge_mm_mean_range": [
+    0.042,
+    -0.25,
+    0.25
+   ],
+   "sarm_minus_drawn_lateral_edge_mm_mean_range": [
+    0.125,
+    0.0,
+    0.25
+   ],
+   "sarm_minus_drawn_dorsal_edge_mm_mean_range": [
+    0.333,
+    0.25,
+    0.5
+   ],
+   "sarm_minus_drawn_medial_edge_mm_mean_range": [
+    -0.583,
+    -0.75,
+    -0.25
+   ]
+  },
+  "STN": {
+   "sarm_mm3": 15.29,
+   "drawn_mm3": 6.29,
+   "per_hemisphere": {
+    "lhSTN": {
+     "sarm_mm3": 14.89,
+     "drawn_mm3": {
+      "MM1": 5.44,
+      "MM2": 7.19,
+      "MM3": 4.83
+     },
+     "drawn_mean_mm3": 5.82,
+     "sarm_minus_drawn_ventral_edge_mm": {
+      "MM1": -0.25,
+      "MM2": 0.25,
+      "MM3": -0.5
+     },
+     "sarm_minus_drawn_lateral_edge_mm": {
+      "MM1": 0.5,
+      "MM2": 0.5,
+      "MM3": 0.0
+     },
+     "sarm_minus_drawn_dorsal_edge_mm": {
+      "MM1": 0.75,
+      "MM2": 0.5,
+      "MM3": 0.25
+     },
+     "sarm_minus_drawn_medial_edge_mm": {
+      "MM1": 0.5,
+      "MM2": 0.5,
+      "MM3": -0.25
+     }
+    },
+    "rhSTN": {
+     "sarm_mm3": 15.69,
+     "drawn_mm3": {
+      "MM1": 6.45,
+      "MM2": 7.98,
+      "MM3": 5.84
+     },
+     "drawn_mean_mm3": 6.76,
+     "sarm_minus_drawn_ventral_edge_mm": {
+      "MM1": -0.5,
+      "MM2": 0.25,
+      "MM3": -0.25
+     },
+     "sarm_minus_drawn_lateral_edge_mm": {
+      "MM1": 0.25,
+      "MM2": 0.5,
+      "MM3": 0.5
+     },
+     "sarm_minus_drawn_dorsal_edge_mm": {
+      "MM1": 0.5,
+      "MM2": 0.5,
+      "MM3": 0.5
+     },
+     "sarm_minus_drawn_medial_edge_mm": {
+      "MM1": 0.0,
+      "MM2": 0.5,
+      "MM3": 0.0
+     }
+    }
+   },
+   "sarm_minus_drawn_ventral_edge_mm_mean_range": [
+    -0.167,
+    -0.5,
+    0.25
+   ],
+   "sarm_minus_drawn_lateral_edge_mm_mean_range": [
+    0.375,
+    0.0,
+    0.5
+   ],
+   "sarm_minus_drawn_dorsal_edge_mm_mean_range": [
+    0.5,
+    0.25,
+    0.75
+   ],
+   "sarm_minus_drawn_medial_edge_mm_mean_range": [
+    0.208,
+    -0.25,
+    0.5
+   ]
+  },
+  "note": "mm3 = voxel count x voxel volume on the template grid; edges = 5th/95th percentiles of the label's voxel coordinates (ventral = p5 of z, dorsal = p95 of z, lateral = p95 of |x|, medial = p5 of |x|); positive differences = SARM's edge higher / more lateral"
+ }
+}

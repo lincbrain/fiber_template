@@ -14,7 +14,7 @@ What it does, per case
 You get
   $LINC_WORK/tracer_v2c/<ID>/<ID>_Bundles_mri-template_connected.nii.gz (uint8: 1 = charted, 2 = inferred), _solid_v2c.nii.gz
   (the pathway, 0/1), _bridges.nii.gz (each join's component number), <ID>_connect_v2c.json; and
-  $LINC_NUMBERS/tracer_connected_v2c_h9.json (per case: the components, every join with its length, the inferred fraction, the longest join)
+  $LINC_NUMBERS/tracer_connected_v2c<tag>.json (per case: the components, every join with its length, the inferred fraction, the longest join)
 
     python code/figures/paper_numbers/tracer_connected_v2c.py [--cases MR243 ...]
 """
@@ -27,7 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "code"))
 from shared import paths, provenance  # noqa: E402
 from labels.connect import CASES, GROUP, connect  # noqa: E402
 
-NAME = "tracer_connected_v2c_h9"
+NAME = "tracer_connected_v2c" + paths.template_chain_tag()   # (<tag> = settings/labels.yaml template_chain_tag)
 # the record's method text, fixed (it was this script's docstring when the record was made; the docstring may change)
 METHOD = [
     'One connected pathway per tracer case (paper: Results, tracer labels; Fig. 10; Supplementary S2): the interpolated bundle label of each',

@@ -66,7 +66,7 @@ sys.path.insert(0, str(HERE)); sys.path.insert(0, str(HERE.parents[1] / "code"))
 import figstyle as FS  # noqa: E402
 from shared import paths, provenance  # noqa: E402
 
-NAME = "fig_tracer_sections3d_v6_h9"                                 # the record of the three-case figure MM1, MF8, MM2 (the paper's until
+NAME = "fig_tracer_sections3d_v6" + paths.template_chain_tag()                                 # the record of the three-case figure MM1, MF8, MM2 (the paper's until
                                                                      #   12 Nov 2026); another case set writes the record its setting names
 P_MRI, P_FIG = paths.products("products_mri"), paths.products("products_figures")
 SEC, V2 = Path(P_MRI["tracer_sections_v2"]), Path(P_MRI["tracer_template_v2"])
@@ -481,7 +481,7 @@ def main(argv=None):
     if a.record:
         rec_name = a.record
     elif not a.cases and cfg.get("record"):
-        rec_name = cfg["record"]
+        rec_name = cfg["record"].format(tag=paths.template_chain_tag())
     else:                                                                           # the old three: the old name; another set: its own
         rec_name = NAME if sorted(CASES) == sorted(["MR243", "MF191", "MR252"]) else NAME + "_" + "_".join(FS.label(S).lower() for S in CASES)
     views = [v.split(",") for v in a.views] if a.views else ([list(v) for v in cfg.get("views")] if (cfg.get("views") and not a.cases) else [list(CASES)])

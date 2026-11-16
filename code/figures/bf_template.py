@@ -7,8 +7,8 @@ Columns: (a) grayscale, (b) color (RGB), (c) photographed fraction (<arm>_photo_
 photographs), over the dimmed grayscale template: each voxel blends orange (fraction 0) into the dimmed gray anatomy (fraction 1), so only
 tissue that is not fully photographed is colored. Rows: sagittal, coronal and axial sections through one point, the sections of the
 MRI channels figure (NMT v2 x = 2, y = 19.5, z = 15.5 mm, transformed into the blockface template by the link's pull map), in the stated
-convention (sagittal anterior right; coronal and axial neurological; axial anterior up), the template's own 0.25 mm voxels (nothing
-resampled; bilinear display). No row headers: the caption names the planes and the direction letters show the view (the author,
+convention (sagittal anterior right; coronal and axial neurological; axial anterior up), the template's own 0.15 mm voxels (step 9;
+nothing resampled; bilinear display). No row headers: the caption names the planes and the direction letters show the view (the author,
 12 Nov 2026), left of (a) and right of (c) on one line per row, at the middle of the row's brains, 1 mm from them
 (figstyle.orient_letters); the sections' NMT v2 coordinates (mm), carried through the template's link of record, are in the provenance. Each view is cropped to its own section's brain box + 0.5
 mm, and one print scale makes the three columns and the color bar fill the page width (or, when the figure would be taller, its
@@ -16,10 +16,12 @@ max_height_mm), with one gutter between the columns and between the rows; one 10
 The color bar (--colorbar): right = vertical, in its own column beside (c), the bar at the figure's bottom-right corner beside the last
 row; below = horizontal under (c), the freed column given to the images, the bar in the empty place nearest the bottom right
 (figstyle.scalebar_free).
-Inputs: the template of record and its link (settings/internal/products_blockface.yaml `bftemplate_step8`, `template_link`).
+Inputs: the template of record and its link (settings/internal/products_blockface.yaml `bftemplate_step9`, `template_link`; step 9 keeps
+step 8's frame, so step 8's link applies).
 Display parameters: settings/figures.yaml `bf_template`.
 Ported from the analysis project's paper/scripts/fig7_bf_template.py, the path the paper's figure was made with
-(--simple --no-d --fill on design 2b's step 8 and its link); the other variants of that script are not ported.
+(--simple --no-d --fill on design 2b's step 8 and its link); the other variants of that script are not ported. Since 15 Nov 2026 it shows
+the step-9 template (the author adopted it).
 """
 import argparse
 import sys
@@ -37,7 +39,7 @@ from shared import paths  # noqa: E402
 from blockface.registration import xfmtools as X  # noqa: E402
 
 CFG = yaml.safe_load((REPO / "settings" / "figures.yaml").read_text())["bf_template"]
-ARM = "d2bs8"                                 # the template of record's file prefix (design 2b, step 8)
+ARM = paths.blockface_template_names()["own"]   # the template of record's file prefix (settings/blockface_template.yaml step9)
 NMT_SECTIONS = tuple(CFG["nmt_sections_mm"])  # the MRI channels figure's sections (NMT v2 mm)
 MARGIN = tuple(CFG["margin_mm"])              # mm of black around the brain box (x, y, z) ...
 POST = CFG["post_mm"]                         # ... and extra mm behind the occipital pole (the 3D box the views are cut from)
@@ -54,7 +56,7 @@ def main():
     a = ap.parse_args()
     prod = paths.products("products_blockface")
     link_rel = yaml.safe_load((REPO / "settings" / "internal" / "products_blockface.yaml").read_text())["template_link"]
-    T, link = prod["bftemplate_step8"], prod["template_link"]
+    T, link = prod["bftemplate_step9"], prod["template_link"]
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -156,7 +158,7 @@ def main():
         FS.scalebar_mm(fig, fw - FS.MARGIN_MM, y_end - 0.3, 10.0, ws, anchor="right")   # (the color bar's column is empty there)
     else:                                                              # the empty place nearest the bottom right
         FS.scalebar_free(fig, 10.0, ws, (FS.MARGIN_MM, fw - FS.MARGIN_MM, TOP, fh - FS.MARGIN_MM), corner="bottom right")
-    ins =[str(T / f"{ARM}_{n}.nii.gz") for n in ("grey", "rgb", "brainmask", "photo_share", "real_eff")]
+    ins =[str(T / f"{ARM}_{n}.nii.gz") for n in ("grey", "rgb", "brainmask", "photo_share")]
     FS.save(fig, a.out, ins + [str(link / "mri-template__to__bftemplate" / "maps.json")],
             " ".join(["code/figures/bf_template.py"] + sys.argv[1:]),
             extra=dict(template=ARM, slices_world_mm=dict(sagittal_x=xs, coronal_y=yc, axial_z=za), symmetry=None,

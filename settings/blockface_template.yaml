@@ -32,3 +32,42 @@ mmorf:
       warp_scaling: ["1", "1", "1", "2", "2", "2", "2", "2", "2"]
       lambda_reg: ["4.0e5", "3.7e-1", "3.1e-1", "2.6e-1", "2.2e-1", "1.8e-1", "1.5e-1", "1.2e-1", "1.0e-1"]
       fwhm_mm: ["4.0", "2.0", "1.0", "0.5", "0.25", "0.125", "0.0625", "0.05", "0.05"]
+
+# Step 9 (code/template/blockface_step9.py): the published template, a ninth step at a finer grid after MMORF's eighth. Each member
+# is registered whole brain to the current template with anatomix + FireANTs, three times, and the template is averaged again from
+# the photographs after each round. It starts from the eighth step of record and the brains' own photographs.
+step9:
+  # every section photographed and at most 10 % of the sections interpolated, and photographs that passed the lighting check (which
+  # leaves MR263 out); each brain is used twice (as cut and mirrored). Listed in step 8's run order: the averages add the brains in
+  # this order, so the order is part of the result
+  members: [MF278, MF282, MR250, MR251, MR252, MR253, MR254, MR256, MR257, MR261, MR273]
+  tag: s11                         # the member set's name in the file names: T<round><tag>_grey.nii.gz, ... (the record's)
+  iterations: 3
+  grid_mm: 0.125                   # the rounds' grid: step 8's 0.25 mm box refined corner to corner (500 x 644 x 416)
+  template_mm: 0.15                # the published grid (417 x 537 x 347): x centered on the mirror plane, y and z corner-anchored
+  support_dilate_vox: 8            # each input is computed where any member of step 8 has brain, dilated 8 voxels of 0.25 mm
+  pair_below_mm: 0.07              # photographs closer than this along the cut are averaged in pairs before sampling
+  slab_vox: 8                      # z planes per pass (memory only)
+  polish: {near_vox: 2, den_min: 1.0e-3}   # the photograph's own mask is read within near_vox 0.25 mm voxels of the brain
+  registration:                    # one member (or a new brain) to the template, whole brain, on one 48 GB card
+    warp_mm: 0.15                  # the registration grid: the largest grid that fits a 48 GB card with the settings below
+    margin_mm: 2.0                 # the registration box: template mask and input tissue, plus this margin
+    feature_res_mm: 0.3            # anatomix's network features computed at this voxel size and upsampled; MIND-SSC on the grid
+    ungated_features: true         # the feature channels are not multiplied by the masks (the masks still restrict the loss)
+    cap_gib: 46                    # the process may use at most this much of the card
+    # anatomix-register.py's arguments; --loss-channel-chunk 2 keeps the peak near 36 GB (8 does not fit). --fused-ops on is the
+    # record's setting: the compiled kernels are not in settings/env/anatomix.yml, so FireANTs uses its PyTorch paths either way
+    args: [--transform, deformable, --loss, masked_cc, --step-size, "1.0", --shrink-factors, 4x2x1, --iterations, 200x100x50,
+           --cc-kernel-widths, 9x5x3, --smooth-grad-sigma, "1.5", --smooth-warp-sigma, "0.5", --features, anatomix+mindssc,
+           --backbone, anatomix-dev-vit, --loss-channel-chunk, "2", --fused-ops, "on", --seed, "12345", --exp-name, reg,
+           --collapse-output-transforms, "1", --device, "cuda:0"]
+  unbias:                          # the mean map removed by composing every member's map with its inverse
+    max_folding_members: 2         # a member whose map folds is left unmoved in that round; more than this many stops the build
+    inverse_rounds: 80             # damped fixed point (step 0.5) until the residual is below inverse_tol_mm
+    inverse_tol_mm: 0.001
+    stop_residual_mm: 0.01
+  checks:                          # the step's checks on the final template (each against the start, T0s11, or step 8)
+    sharpness_ratio_min: 1.10      # mean gradient in step 8's photographed tissue eroded 1 mm, final / start
+    r_lowpass_min: 0.99            # final averaged onto step 8's 0.25 mm box, both low-passed (sigma 1 mm): r in step 8's brain
+    lowpass_sigma_mm: 1.0
+    shift_max_mm: 0.1              # the shift between the two, per axis

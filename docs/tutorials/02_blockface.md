@@ -8,6 +8,7 @@ Run every command from the top of the repository, in a shell set up as in [00_st
 
 The photographs are stacked in cutting order into a 3D volume, with camera jumps corrected, missing sections filled in and the illumination evened out; networks find the brain and the marker tubes.
 A brain with MRI then registers its volume to its own b0 and follows the b0 into the template (the MRI-based alignment); a brain without MRI registers it to the blockface template and follows the template link (the blockface-based alignment).
+A brain with histology takes the blockface-based alignment too, MRI or not: its labels reach the template that way ([03](03_histology.md)).
 No brain was photographed to its caudal end, so a network synthesizes the missing tissue from the b0 and marks it ([overview](../overview.md#the-templates)).
 
 ![From photographs to the template: reconstruction, registration to the own b0 or to the blockface template, and the synthesized tissue](figures/blockface_01_flow.png)
@@ -118,7 +119,7 @@ An existing transform folder stops the run unless you add `--overwrite`, which b
 
 *Figure 5. (a, c) MR252's b0 and (b, d) its blockface volume registered onto it (`paper/brains/sub-MR252/mri/`), with the b0 brain's outline; the volume's caudal end, never photographed, is missing in (b).*
 
-### Step 4. Register the volume to the blockface template (a brain without MRI)
+### Step 4. Register the volume to the blockface template (a brain without MRI, or with histology)
 
 ```bash
 $PY code/blockface/registration/linc-register blockface-template --subject MF191
@@ -129,8 +130,21 @@ $PY code/blockface/registration/linc-register direct-placement --subject MF191 \
 
 `blockface-template` registers the volume to the blockface template, so that the brain's chain into the template goes through the template link.
 `direct-placement`, the cross-modal alignment, registers it straight to the template's b0, only to give the brain the stand-in b0 that Step 5 needs.
+A brain with histology runs `blockface-template`, and the refinement below, even when it has MRI, because its labels reach the template through them; it does not need `direct-placement`.
 On MF191 they took about 6 and 8 minutes on a GPU.
 They write `$LINC_DATA/sub-<ID>/xfm/bf-native__to__bf-template/` and `bf-native__to__mri-template/`, and the stand-in b0 in `$LINC_DATA/sub-<ID>/mri/stand_in/`.
+
+`blockface-template` registers to the published blockface template (Step 7), used at 0.5 mm, so a small card is enough.
+The paper registered its own brains to the template of the eighth step; `--template-grey` and `--template-coverage` choose another template.
+The registration can then be refined the way the template's own brains were aligned, with one whole-brain registration to the template at 0.15 mm:
+
+```bash
+$ANATOMIX_PYTHON code/template/blockface_step9.py refine --subject <ID> --gpu 0
+```
+
+It needs a 48 GB card (about 7 minutes), and is optional for a brain without histology.
+It writes a refined entry, the refinement followed by the brain's own registration, to `$LINC_DATA/sub-<ID>/xfm_step9/bf-native__to__bf-template/`, or where `--registry` says, and leaves the brain's own entry in `xfm/` as it was; the labels' carry into the template ([03](03_histology.md)) reads it from `xfm_step9/`.
+Both entries lead into the same template frame, so either can be used.
 
 `$PY -m shared.xfm chain --from bf-native --to mri-template --subject MF191` lists the links the chain uses, which should go through the blockface template.
 
@@ -207,6 +221,25 @@ The members take about 5 minutes on the CPU.
 On a GPU, the first stage takes about 8.5 hours and the last step about 17 hours (estimated), plus about 2.5 hours of CPU steps; both need the card to themselves.
 The link takes about 13 minutes on a GPU.
 Everything is written under `$LINC_WORK/build_blockface_template/` and `$LINC_WORK/build_link/`; the finished blockface channel is the data folder's `template/outputs/template_blockface_*`.
+
+The published template goes one step further than MMORF's eighth.
+Eleven brains, the ones photographed at every section with few sections filled in and even lighting, are each registered to the average once more, whole brain, with the feature-based engine of Step 3; this is done three times, and after each round the brains are averaged again from their own photographs.
+The last average is written on a 0.15 mm grid.
+It keeps step 8's frame, so the template link and every brain's registration to step 8's template apply to it unchanged.
+
+```bash
+$ANATOMIX_PYTHON code/template/blockface_step9.py start                  # the brains carried from their photographs (CPU)
+$ANATOMIX_PYTHON code/template/blockface_step9.py round --it 1 --gpu 0   # then --it 2 and --it 3: registration, and the average again
+$ANATOMIX_PYTHON code/template/blockface_step9.py final                  # the average at 0.15 mm, and its checks
+$ANATOMIX_PYTHON code/template/blockface_step9.py in-mri                 # the same in the MRI template's frame
+```
+
+The start takes about 8 minutes on 8 cores.
+Each round registers 22 volumes (each brain and its mirror image), about 7 minutes each on a 48 GB card, of which a registration uses about 36 GB.
+A round takes under 3 hours on one card; `register --it <k> --gpu <n>` started on more cards shares the work.
+`final` writes the template to `$LINC_WORK/build_blockface_template/step9/final/` and its checks to `checks.json` there: sharper than the start, still matching step 8 at a coarse scale, exactly symmetric, and no folding anywhere.
+Without a GPU, `final --fields-from <the data folder's template/intermediate/construction/step9_fields>` averages the brains through the paper's own fields and reproduces the published template exactly, in about 20 minutes.
+`build_blockface_template.py` runs the same commands as its steps `s9-start` to `s9-in-mri`.
 
 ![The template's blockface channel, with the synthesized tissue marked](figures/blockface_07_template.png)
 

@@ -36,7 +36,9 @@ The match table gives the slice: sections 16 to 40 go with photograph 3 × secti
 
 ## 3. Steps
 
-The brain must already have its blockface volume and its transform to the template (02, and 01 for a brain with MRI).
+The brain must already have its blockface volume and its registration to the blockface template, refined at 0.15 mm ([02](02_blockface.md), Steps 1 and 4).
+A brain with MRI needs that registration too: the labels reach the template through it.
+The paper also reports them through the brain's own b0 ([01](01_mri.md)), the other route.
 None of the histology steps uses a GPU.
 
 ### Step A. The regions volume
@@ -128,14 +130,14 @@ These read, from the brain's histology folder: the labels, one OME-Zarr per clas
 
 - `push` moves each label class through each component's registration onto its blockface slice (about 3 minutes).
 - `interpolate` fills the slices between charted sections by demons registration between neighboring sections, treating the bundle classes as one group and the terminal classes as another (20 to 35 minutes).
-- `carry` resamples the labels into the template through the brain's chain of transforms (3 to 5 minutes).
+- `carry` resamples the labels into the template on the brain's route (3 to 5 minutes): through the blockface template, or through the brain's own MRI where `settings/labels.yaml` (`template_routes`) says so; `--route` chooses.
 - `connect` joins the carried bundles into one pathway and marks each join as inferred (under a minute).
 
 All four run on the CPU.
 The labels on the blockface go to `$LINC_DATA/sub-<ID>/labels/blockface/tracer/` (`<ID>_<class>_bfnative_L2.nii.gz`, and `_demons` for the interpolated ones), and those in the template to `$LINC_DATA/sub-<ID>/labels/template/tracer/` (`_mri-template`, `_density`, `_footprint`, and the pathway, `<ID>_Bundles_mri-template_connected.nii.gz`).
 In these names, density is the fraction of each voxel, solid is where the density exceeds 0.5, and connected has 1 for charted and 2 for inferred voxels.
 
-On the paper's data, `run.py` reruns the last three steps (`labels-interpolate-MR243` and so on) and checks each file against the original.
+On the paper's data, `run.py` reruns the last three steps (`labels-interpolate-MR243` and so on) and checks each file against the original, on both routes the paper reports: `labels-carry-route-MR243` through the blockface template, `labels-carry-MR243` through the brain's own MRI.
 For MR243, MR256 and MF191 it starts from the paper's pushed labels, because their components were masked again in a way the release's `masks` step does not repeat; only MR252's push is rerun from its registrations.
 
 ![MR243's tracer labels on the blockface and in the template](figures/histology_07_tracer.png)
@@ -150,8 +152,16 @@ $PY_TIRL code/labels/linc-labels push --subject <ID> --kind structures
 ```
 
 The LGN and STN were drawn on a different rendering of the sections, an image stack.
-Each drawn frame goes onto its component through the frame's own fitted transform, then onto the blockface as in step D, and `carry --labels <the four files>` takes them into the template.
+Each drawn frame goes onto its component through the frame's own fitted transform, then onto the blockface as in step D.
 This runs on the CPU and writes to `$LINC_DATA/sub-<ID>/labels/blockface/structures/`.
+
+```bash
+$PY code/labels/linc-labels carry --subject <ID> --kind structures --dense
+```
+
+This takes them into the template and into the brain's b0, one resampling each, and keeps a voxel where more than half of it is labeled; `--dense` takes the demons-interpolated labels (`<ID>_<nucleus>_bfnative_L2_demons.nii.gz`), as the paper does.
+Into the template they go on the brain's route in `settings/labels.yaml` (`template_routes`): through the blockface template for MR243, MR252 and MR256, as in the paper; `--route mri` takes the brain's own b0 instead, the paper's other route.
+It writes to `$LINC_DATA/sub-<ID>/labels/template/structures/` in 1 to 3 minutes per brain on the CPU.
 
 It reads, from `$H/structures/`: the stack (`histo_L6.nii.gz`), one drawing per nucleus (`histo_L6_<nucleus>.nii.gz`), `frame_map.json` (each frame's section), and each frame's transform onto its component (`transforms/f<frame>_<piece>.tfm`, with the moving image it was fitted on in `fitted_moving/`).
 

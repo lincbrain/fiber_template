@@ -13,13 +13,17 @@ What it does
   the same rules. No "connected" rule (Fig. 10 draws no pathway).
 
 You get
-  $LINC_NUMBERS/tracer_alic_topography_v5_h9.json (the labels carried through the registrations with the per-component nonlinear stiffness)
+  $LINC_NUMBERS/tracer_alic_topography_v5<tag>.json (the labels carried through the registrations with the per-component nonlinear stiffness)
 
     python code/figures/paper_numbers/tracer_alic_topography_v5.py
 """
+import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parents[1]))
+from shared.paths import template_chain_tag  # noqa: E402
+TAG = template_chain_tag()                    # (<tag> = settings/labels.yaml template_chain_tag)
 BASE = HERE / "tracer_alic_topography_r058d.py"
 src = BASE.read_text()
 SUBS = [
@@ -32,7 +36,7 @@ SUBS = [
      '    P = paths.products("products_blockface")\n'
      '    LAB, SARM6, RUN = P[a.labels], P["atlas_nmt"] / "SARM_level6_in_template.nii.gz", P["atlas_nmt"] / "run"\n',
      '    ap.add_argument("--labels", default="tracer_sections_v2", help="label folder: a key of configs/products_mri.yaml")\n'
-     '    ap.add_argument("--name", default="tracer_alic_topography_v5_h9", help="record name ($LINC_NUMBERS/<name>.json)")\n'
+     '    ap.add_argument("--name", default="tracer_alic_topography_v5' + TAG + '", help="record name ($LINC_NUMBERS/<name>.json)")\n'
      '    a = ap.parse_args()\n'
      '    P = paths.products("products_blockface"); P2 = paths.products("products_mri")\n'
      '    LAB, SARM6, RUN = P2[a.labels], P["atlas_nmt"] / "SARM_level6_in_template.nii.gz", P["atlas_nmt"] / "run"\n'),

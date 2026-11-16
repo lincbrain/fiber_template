@@ -13,8 +13,10 @@ The data folder, `fiber_template_data`, holds the inputs, the results and anothe
 
 *Figure 1. The whole chain, shown on MR243 (MM1).
 Each tile shows an image with its space in gray, and each arrow names the command that makes the transform.
-A histology section is registered to the blockface photograph of its own section ([03](tutorials/03_histology.md)), the blockface volume to the brain's own b0 ([02](tutorials/02_blockface.md)), and the b0 to the MRI template ([01](tutorials/01_mri.md)).
-Without MRI, the blockface volume is registered to the blockface template instead, and the template link carries it into the MRI template (02).*
+A histology section is registered to the blockface photograph of its own section ([03](tutorials/03_histology.md)).
+On the MRI route, the blockface volume is registered to the brain's own b0 ([02](tutorials/02_blockface.md)), and the b0 to the MRI template ([01](tutorials/01_mri.md)).
+On the blockface route, it is registered to the blockface template instead, and the template link carries it into the MRI template (02); a brain without MRI has only this route.
+The tracer labels and the LGN and STN take the blockface route in every brain; the paper also reports them on the MRI route.*
 
 ## The data
 
@@ -28,6 +30,7 @@ Each brain's inputs are in the data folder's `brains/sub-<ID>/inputs/`:
 Four brains with MRI only, MF283 to MF286, built the MRI template ([01](tutorials/01_mri.md)).
 The 21 photographed brains built the blockface template ([02](tutorials/02_blockface.md)); 13 of them have a b0, such as MR243, and 8 have no MRI, such as MF191.
 Six of these also have histology sections, four have tracer labels and three have the LGN and STN ([03](tutorials/03_histology.md)).
+The 11 brains photographed at every section, with few interpolated sections and steady lighting, also sharpened the blockface template at 0.15 mm.
 
 Files name a brain by its Specimen ID, such as MR243, which the paper calls MM1; [brain_identifiers.md](brain_identifiers.md) lists all 25 brains and what each was used for.
 MR brains are *Macaca mulatta* and MF brains *Macaca fascicularis*.
@@ -72,9 +75,12 @@ The mirror images make the template symmetric about the midsagittal plane ([01, 
 Each member had two channels, its blockface grayscale and its b0 (its own or the stand-in b0), and the MRI template's b0 joined as one extra, b0-only member.
 In the average, photographed tissue counts more than synthesized tissue, and tissue synthesized from a stand-in b0 not at all.
 The construction gives the template the mean shape of its members, so it has a space of its own ([02, Step 7](tutorials/02_blockface.md#step-7-the-blockface-template-and-its-link-to-the-mri-template)).
+A last step sharpened it at 0.15 mm with 11 brains (photographed at every section, with few interpolated sections and steady lighting) and their mirror images: each was registered to the template as a whole, with anatomix features and FireANTs, in three rounds, and they were averaged as before.
+That step keeps the template's space, so the link below still applies.
 
 **The template link** registers the blockface template's b0 to the MRI template's b0.
 The blockface template moved through it becomes the template's blockface channel, `template/outputs/template_blockface_*`.
+The blockface template itself, in its own space, is in `template/outputs/blockface_template/`.
 `build_link.py` also registers the template to NMT v2, INIA19 and CIVM-R.
 
 ## The networks

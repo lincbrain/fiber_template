@@ -39,7 +39,8 @@ This way of adding a brain's photographs has not been tried yet ([FAQ](../faq.md
 | a b0 | [01, Steps B1 and B2](../tutorials/01_mri.md#step-b1-prepare-the-b0), then [B3](../tutorials/01_mri.md#step-b3-bring-images-into-the-template) for any image on the b0 |
 | blockface photographs | its settings file ([02, Step 6](../tutorials/02_blockface.md#step-6-adding-a-new-brain-its-settings-file)), then [02, Steps 1 and 2](../tutorials/02_blockface.md#step-1-reconstruct-the-volume) |
 | photographs and a b0 | the two rows above, then [02, Step 3](../tutorials/02_blockface.md#step-3-register-the-volume-to-the-brains-own-b0-a-brain-with-mri) |
-| photographs and no MRI | [02, Step 4](../tutorials/02_blockface.md#step-4-register-the-volume-to-the-blockface-template-a-brain-without-mri) |
+| photographs and no MRI | [02, Step 4](../tutorials/02_blockface.md#step-4-register-the-volume-to-the-blockface-template-a-brain-without-mri-or-with-histology) |
+| photographs, MRI and histology | the first two rows, then [02, Step 4](../tutorials/02_blockface.md#step-4-register-the-volume-to-the-blockface-template-a-brain-without-mri-or-with-histology) with the refinement at its end (0.15 mm): the histology reaches the template this way, as in the paper. The route through the brain's own b0 ([02, Step 3](../tutorials/02_blockface.md#step-3-register-the-volume-to-the-brains-own-b0-a-brain-with-mri)) is the alternative the paper also reports |
 | a blockface volume that stops before the end of the brain | [02, Step 5](../tutorials/02_blockface.md#step-5-synthesize-the-tissue-that-was-never-photographed) |
 | histology sections with their photographs | [03, Steps A to C](../tutorials/03_histology.md#step-a-the-regions-volume) |
 | labels drawn on those sections | [03, Steps D and E](../tutorials/03_histology.md#step-d-tracer-labels) |

@@ -8,9 +8,9 @@ makes its grey version of 12 Nov 2026.
 
 Rows: sagittal at x = +2 mm (off the interhemispheric fissure; the template is exactly symmetric, so -2 mm is its mirror image),
 coronal and axial through the anterior commissure (acpc.json of the numbers of record). Columns: T2-weighted, soma fraction, neurite
-fraction, FA, MD, principal diffusion direction weighted by FA, and the blockface channel in color (--bf rgb: linc_bf_rgb, the
-blockface template's color mapped into the MRI template by the registration d2bs8_s5sym, inside its own mask; --bf grey: the
-blockface template's grey channel through the same registration, d2bs8_s5sym_in_mri_template = linc_bf_grey). The b0 image is not
+fraction, FA, MD, principal diffusion direction weighted by FA, and the blockface channel in color (--bf rgb: the blockface
+template of record (step 9) mapped into the MRI template by the registration d2bs8_s5sym, inside its own mask, T3s11_015_in_mri_rgb
+= the data folder's template_blockface_rgb; --bf grey: its grey channel through the same registration, T3s11_015_in_mri_grey). The b0 image is not
 shown: it is not a headline channel (it stays in the release as the registration target for new brains).
 Orientation: figstyle.section() (neurological; sagittal anterior-right; axial anterior-up). One true scale for every panel (print mm
 per tissue mm, the largest that fits the columns across 178 mm; written to the provenance), each panel cropped to the brain + 0.75 mm.
@@ -31,8 +31,8 @@ the in-brain 99.5th percentile; the blockface color divided by the in-brain 99.5
 for the three channels, so the hues stay; no display gamma); MD 2nd-99.5th percentile of the tissue mode (voxels above a quarter of
 the median, brain eroded 0.5 mm; um^2/ms). Display bilinear.
 Reads (settings/internal/products_mri*.yaml): template_mri/linc_mri_{brainmask,T2,frac1,frac2,FA,MD,DEC}.nii.gz,
-template2template/d2bs8_s5sym/d2bs8_s5sym{,_mask}_in_mri_template.nii.gz (--bf grey; the mask always), numbers_of_record/acpc.json,
-template_bf/linc_bf_rgb.nii.gz (--bf rgb).
+bftemplate_step9_in_mri/T3s11_015_in_mri_{grey,brainmask}.nii.gz (--bf grey; the mask always), numbers_of_record/acpc.json,
+bftemplate_step9_in_mri/T3s11_015_in_mri_rgb.nii.gz (--bf rgb).
 Writes the PNG and <name>.provenance.json beside it.
 """
 import argparse
@@ -51,6 +51,7 @@ from shared import paths                                         # noqa: E402
 
 PREFIX = "linc_mri"                                            # the MRI channels' file prefix
 BF_MAP = "d2bs8_s5sym"                                         # the registration that maps the blockface template into the MRI template
+BF_IN_MRI = paths.blockface_template_names()["in_mri"]   # the template of record through it (bftemplate_step9_in_mri; settings step9)
 CH = [("T2", "T2-weighted", "gray"), ("frac1", "Soma fraction", "turbo"),
       ("frac2", "Neurite fraction", "turbo"), ("FA", "FA", "gray"), ("MD", "MD", "gray"), ("DEC", "Principal direction", None),
       ("BF", "Blockface channel", "gray")]
@@ -134,13 +135,13 @@ def main():
     axes, titles, cbs = {}, {}, []
     for j, (key, title, cmap) in enumerate(CH):
         if key == "BF":
-            bfd = Path(PR["template2template"]) / BF_MAP
-            bimg, bmsk = bfd / f"{BF_MAP}_in_mri_template.nii.gz", bfd / f"{BF_MAP}_mask_in_mri_template.nii.gz"
+            bfd = Path(PR["bftemplate_step9_in_mri"])
+            bimg, bmsk = bfd / f"{BF_IN_MRI}_grey.nii.gz", bfd / f"{BF_IN_MRI}_brainmask.nii.gz"
             v, _ = S.canonical(nib.load(str(bimg))); v = v.astype(np.float32); inputs += [bimg, bmsk]
             bm_ = S.canonical(nib.load(str(bmsk)))[0] > 0.5
             v[~bm_] = np.nan                                                          # the blockface channel: its own mask
             if a.bf == "rgb":                                     # its color, through the same registration (linc_bf_grey = this grey)
-                crgb = Path(PR["template_bf"]) / "linc_bf_rgb.nii.gz"; inputs.append(crgb)
+                crgb = bfd / f"{BF_IN_MRI}_rgb.nii.gz"; inputs.append(crgb)
                 c_, _ = S.canonical(nib.load(str(crgb))); c_ = c_.astype(np.float32)
                 hi_c = np.percentile(c_[bm_ & brain].max(1), 99.5)                     # the brightest channel's in-brain 99.5th percentile
                 v = np.clip(c_ / hi_c, 0, 1) * bm_[..., None]                          # one factor for the three channels

@@ -153,23 +153,16 @@ def head2(ax, top, sub, letter=None):
 
 
 
-def mf8_chain():
-    """MRI-template world points -> MF8's blockface world points: the registration of the blockface template to the MRI template
-    (pull map), MF8's member warp of the blockface template's construction (fsl_rel on its canon grid; valid in photographed tissue,
-    where the tracer sheets lie), and the inverse of MF8's rigid placement (T_world_bf_to_run113)."""
-    from shared import xfm
-    from blockface.registration import xfmtools as X
-    link = X.load_map(str(P["bft_pull_map"]), "full")
-    w = json.load(open(P["bft_member_warps"]))
-    row = [r for r in w["data"] if r["member"] == "MF191"][0]
-    assert "photographed" in row["warp_validity"]["valid_in"], row["warp_validity"]
-    W = xfm.Warp(paths.rerooted(row["file"]), "fsl_rel", src_grid=paths.rerooted(row["src_grid"]))
-    T = np.array(json.load(open(P["mf8_rigid"]))["T_world_bf_to_run113"], float); Ti = np.linalg.inv(T)
+def bf_route_chain(S):
+    """MRI-template world points -> brain S's blockface world points on the blockface route (code/labels/route.py: the link, S's step-9
+    field, its member warp of step 8, its native map)."""
+    from labels import route
+    return route.blockface_pull(S, P)[0]
 
-    def f(y):
-        p = np.asarray(W.pull(link(y)))
-        return p @ Ti[:3, :3].T + Ti[:3, 3]
-    return f
+
+def mf8_chain():
+    """MF8's chain: MF8 is on the blockface route (it has no MRI)."""
+    return bf_route_chain("MF191")
 
 
 def _split_unbridged(G, CASES, A):
@@ -451,7 +444,7 @@ def main(argv=None):
               [str(MASK_), str(SARM6), str(ACPC)]
         rec["outputs"] = [out_png]
         rec["mf8_unbridged_outlined"] = split_rec
-        print(provenance.write_numbers("fig_tracer_r058_h9", rec, inputs=ins, md5=False, cmd=cmd))
+        print(provenance.write_numbers("fig_tracer_r058" + paths.template_chain_tag(), rec, inputs=ins, md5=False, cmd=cmd))
         return
 
     # ------------------------------------------------------------------ companion: the two rules side by side (5b) --------------

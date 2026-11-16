@@ -92,11 +92,12 @@ def load(p):
 
 
 def chain_pull(S, P):
-    """Template world points -> the brain's blockface world points, through the chain of record."""
-    if S == "MF191":
+    """Template world points -> the brain's blockface world points, through its route (settings/labels.yaml template_routes)."""
+    from labels import route
+    if route.routes()[S] == "blockface":
         import tracer
         tracer.roots()
-        return tracer.mf8_chain()
+        return tracer.bf_route_chain(S)
     B = json.loads(Path(P["r1_record"]).read_text()); B = (B.get("data") or B)["brains"]
     assert B[S]["qc"] == "pass"
     return xfm.Chain([xfm.Entry(paths.rerooted(B[S]["registry"])), xfm.Entry(str(P["data"] / f"sub-{S}" / "xfm" / "b0-native__to__mri-template"))],

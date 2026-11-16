@@ -1,0 +1,337 @@
+{
+ "data": {
+  "protocol": "Per-section tracer labels in the MRI template, WITHOUT any interpolation between sections (paper: Fig. 10's sections panel; the\nplacement record's `sections` rows; Supplementary S2): the sheets of record (products_mri `push_tracer_r058d`: one blockface slice per\ncharted section, per grade; `tracer_v2_bfnative`: the group unions Bundles / Terminals / Injection_site / Fibers) transformed by the\nregistrations of record (MR243 / MR252 / MR256, the MRI-based alignment: the blockface -> b0 registration of record named in the R1 manifest of\n`numbers_of_record`/r1_current_2026-10-03.json, then the b0 -> template entry $LINC_DATA/sub-<S>/xfm/b0-native__to__mri-template;\nMF191, the blockface-based alignment: the blockface-template -> MRI-template pull map, MF8's member warp and the inverse of its rigid placement, products_figures\n`bft_pull_map`, `bft_member_warps`, `mf8_rigid`), with the resampling rule of record (linc/histology/carry.py: crop, per-axis anti-aliasing,\none linear resample; configs/labels.yaml carry).\nOutputs, $LINC_WORK/tracer_sections_v2/<S>/ (what the released volumes `tracer_sections_v2` hold):\n  <S>_<label>_mri-template_sections_density.nii.gz   float 0-1: the transformed fraction of the sheet (a section = a ~0.25-0.4 mm slab)\n  <S>_<label>_mri-template_sections_footprint.nii.gz uint8: density >= foot\n  <S>_section_index_mri-template.nii.gz                uint16: the section number of record at every template voxel a charted section's\n      slice lands on (nearest neighbor through the same chain; the slice plane filled, then cut to the template brain). A slice that\n      holds parts of two sections (a hemisphere part of each) is indexed by the lower number; the JSON lists these slices\n  <S>_sections.json                                     per charted section: number, blockface slice, voxels in the template, plane centroid\n      (mm), unit normal (PCA), spacing to the previous section along the mean normal (mm)\n  <S>_sections_points.csv                               x_mm,y_mm,z_mm,group,grade,section: every footprint voxel of every grade (world RAS,\n      MF191 unmirrored), the section from the index volume (nearest filled)\nand the record $LINC_NUMBERS/tracer_sections_v2_h9.json (the four cases), as the analysis wrote\nit (per case: route (A = blockface-based, B = MRI-based alignment), links, per-label counts, sections, spacing: the absolute spacing between consecutive charted sections along their\nmean normal, median / p90 / max, point rows).\n",
+  "template_voxel_mm": 0.25,
+  "foot": 0.1,
+  "cases": {
+   "MR243": {
+    "route": "A",
+    "links": [
+     "mri-template->bf-template (d2bs8_s5sym)",
+     "bf-template step 9->step 8 (MR243 step-9 field)",
+     "bf-template->MR243 canon (d2bs8 member warp)",
+     "MR243 canon->bf-native (R1 of record)"
+    ],
+    "labels": {
+     "Bundles": {
+      "sections": 34,
+      "voxels_bf": 31615,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 8371,
+      "density_sum_mm3": 51.769
+     },
+     "Terminals": {
+      "sections": 35,
+      "voxels_bf": 36595,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 9126,
+      "density_sum_mm3": 59.114
+     },
+     "Injection_site": {
+      "sections": 1,
+      "voxels_bf": 1599,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 137,
+      "density_sum_mm3": 0.97
+     },
+     "Fibers": {
+      "sections": 30,
+      "voxels_bf": 301,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 61,
+      "density_sum_mm3": 0.439
+     },
+     "Fiber_light_bundle": {
+      "sections": 32,
+      "voxels_bf": 18567,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 5170,
+      "density_sum_mm3": 31.909
+     },
+     "Fiber_moderate_bundle": {
+      "sections": 28,
+      "voxels_bf": 10973,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 2782,
+      "density_sum_mm3": 17.106
+     },
+     "Fiber_dense_bundle": {
+      "sections": 17,
+      "voxels_bf": 2187,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 485,
+      "density_sum_mm3": 2.903
+     },
+     "Terminal_light": {
+      "sections": 32,
+      "voxels_bf": 6989,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 2071,
+      "density_sum_mm3": 12.277
+     },
+     "Terminal_moderate": {
+      "sections": 23,
+      "voxels_bf": 11163,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 2507,
+      "density_sum_mm3": 15.996
+     },
+     "Terminal_dense": {
+      "sections": 29,
+      "voxels_bf": 18487,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 4564,
+      "density_sum_mm3": 30.902
+     }
+    },
+    "sections": 35,
+    "points_rows": 17777,
+    "section_spacing_mm": {
+     "median": 0.932,
+     "p90": 1.065,
+     "max": 1.893
+    },
+    "spacing_note": "absolute spacing along the mean section normal; see <S>_sections.json"
+   },
+   "MR252": {
+    "route": "A",
+    "links": [
+     "mri-template->bf-template (d2bs8_s5sym)",
+     "bf-template step 9->step 8 (MR252 step-9 field)",
+     "bf-template->MR252 canon (d2bs8 member warp)",
+     "MR252 canon->bf-native (R1 of record)"
+    ],
+    "labels": {
+     "Bundles": {
+      "sections": 26,
+      "voxels_bf": 10309,
+      "widened_half_slices": 3,
+      "voxels_template_footprint": 2269,
+      "density_sum_mm3": 14.835
+     },
+     "Injection_site": {
+      "sections": 2,
+      "voxels_bf": 436,
+      "widened_half_slices": 3,
+      "voxels_template_footprint": 32,
+      "density_sum_mm3": 0.207
+     },
+     "Fibers": {
+      "sections": 12,
+      "voxels_bf": 17,
+      "widened_half_slices": 3,
+      "voxels_template_footprint": 1,
+      "density_sum_mm3": 0.026
+     },
+     "Fiber_light_bundle": {
+      "sections": 10,
+      "voxels_bf": 4270,
+      "widened_half_slices": 3,
+      "voxels_template_footprint": 940,
+      "density_sum_mm3": 6.119
+     },
+     "Fiber_moderate_bundle": {
+      "sections": 13,
+      "voxels_bf": 5788,
+      "widened_half_slices": 3,
+      "voxels_template_footprint": 1272,
+      "density_sum_mm3": 8.425
+     },
+     "Fiber_dense_bundle": {
+      "sections": 3,
+      "voxels_bf": 251,
+      "widened_half_slices": 3,
+      "voxels_template_footprint": 57,
+      "density_sum_mm3": 0.291
+     },
+     "Bundle": {
+      "sections": 25,
+      "voxels_bf": 10035,
+      "widened_half_slices": 3,
+      "voxels_template_footprint": 2234,
+      "density_sum_mm3": 14.592
+     }
+    },
+    "sections": 27,
+    "points_rows": 4536,
+    "section_spacing_mm": {
+     "median": 0.95,
+     "p90": 2.21,
+     "max": 3.845
+    },
+    "spacing_note": "absolute spacing along the mean section normal; see <S>_sections.json"
+   },
+   "MR256": {
+    "route": "A",
+    "links": [
+     "mri-template->bf-template (d2bs8_s5sym)",
+     "bf-template step 9->step 8 (MR256 step-9 field)",
+     "bf-template->MR256 canon (d2bs8 member warp)",
+     "MR256 canon->bf-native (R1 of record)"
+    ],
+    "labels": {
+     "Bundles": {
+      "sections": 31,
+      "voxels_bf": 22692,
+      "widened_half_slices": 3,
+      "voxels_template_footprint": 5118,
+      "density_sum_mm3": 33.263
+     },
+     "Terminals": {
+      "sections": 34,
+      "voxels_bf": 16884,
+      "widened_half_slices": 3,
+      "voxels_template_footprint": 3463,
+      "density_sum_mm3": 22.028
+     },
+     "Fibers": {
+      "sections": 3,
+      "voxels_bf": 11,
+      "widened_half_slices": 3,
+      "voxels_template_footprint": 2,
+      "density_sum_mm3": 0.022
+     },
+     "Fiber_light_bundle": {
+      "sections": 26,
+      "voxels_bf": 8267,
+      "widened_half_slices": 3,
+      "voxels_template_footprint": 1891,
+      "density_sum_mm3": 12.012
+     },
+     "Fiber_moderate_bundle": {
+      "sections": 27,
+      "voxels_bf": 13824,
+      "widened_half_slices": 3,
+      "voxels_template_footprint": 3112,
+      "density_sum_mm3": 20.529
+     },
+     "Fiber_dense_bundle": {
+      "sections": 16,
+      "voxels_bf": 629,
+      "widened_half_slices": 3,
+      "voxels_template_footprint": 134,
+      "density_sum_mm3": 0.758
+     },
+     "Terminal_light": {
+      "sections": 29,
+      "voxels_bf": 4786,
+      "widened_half_slices": 3,
+      "voxels_template_footprint": 986,
+      "density_sum_mm3": 6.199
+     },
+     "Terminal_moderate": {
+      "sections": 30,
+      "voxels_bf": 9343,
+      "widened_half_slices": 3,
+      "voxels_template_footprint": 1817,
+      "density_sum_mm3": 11.459
+     },
+     "Terminal_dense": {
+      "sections": 18,
+      "voxels_bf": 2897,
+      "widened_half_slices": 3,
+      "voxels_template_footprint": 689,
+      "density_sum_mm3": 4.504
+     }
+    },
+    "sections": 36,
+    "points_rows": 8631,
+    "section_spacing_mm": {
+     "median": 0.95,
+     "p90": 1.093,
+     "max": 1.51
+    },
+    "spacing_note": "absolute spacing along the mean section normal; see <S>_sections.json"
+   },
+   "MF191": {
+    "route": "A",
+    "links": [
+     "mri-template->bf-template (d2bs8_s5sym)",
+     "bf-template step 9->step 8 (MF191 step-9 field)",
+     "bf-template->MF191 canon (d2bs8 member warp)",
+     "MF191 canon->bf-native (s2lin)"
+    ],
+    "labels": {
+     "Bundles": {
+      "sections": 31,
+      "voxels_bf": 30090,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 25992,
+      "density_sum_mm3": 168.01
+     },
+     "Terminals": {
+      "sections": 32,
+      "voxels_bf": 71158,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 59096,
+      "density_sum_mm3": 398.021
+     },
+     "Injection_site": {
+      "sections": 3,
+      "voxels_bf": 656,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 775,
+      "density_sum_mm3": 5.299
+     },
+     "Fibers": {
+      "sections": 35,
+      "voxels_bf": 30571,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 33044,
+      "density_sum_mm3": 172.006
+     },
+     "Fiber_light_bundle": {
+      "sections": 24,
+      "voxels_bf": 5634,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 5162,
+      "density_sum_mm3": 31.032
+     },
+     "Fiber_moderate_bundle": {
+      "sections": 27,
+      "voxels_bf": 12827,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 11161,
+      "density_sum_mm3": 74.506
+     },
+     "Fiber_dense_bundle": {
+      "sections": 19,
+      "voxels_bf": 12293,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 10167,
+      "density_sum_mm3": 66.046
+     },
+     "Terminal_light": {
+      "sections": 30,
+      "voxels_bf": 14993,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 14151,
+      "density_sum_mm3": 84.521
+     },
+     "Terminal_moderate": {
+      "sections": 24,
+      "voxels_bf": 24401,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 19735,
+      "density_sum_mm3": 129.533
+     },
+     "Terminal_dense": {
+      "sections": 19,
+      "voxels_bf": 31815,
+      "widened_half_slices": 0,
+      "voxels_template_footprint": 25267,
+      "density_sum_mm3": 184.296
+     }
+    },
+    "sections": 29,
+    "points_rows": 119462,
+    "section_spacing_mm": {
+     "median": 1.384,
+     "p90": 2.047,
+     "max": 2.678
+    },
+    "spacing_note": "absolute spacing along the mean section normal; see <S>_sections.json"
+   }
+  }
+ }
+}

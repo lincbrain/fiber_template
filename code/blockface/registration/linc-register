@@ -17,9 +17,9 @@ What it does
                       template's b0; its last stage (CPU) writes what `linc-complete prepare` reads, into mri/stand_in/. On a
                       brain with its own b0 (after `mri`): the same, for training the stand-in network, with the stand-in b0 on
                       that b0's grid
-  blockface-template  the blockface-based alignment, the paper's route for a brain without MRI: the blockface volume registered to the
-                      blockface template; `python -m shared.xfm chain` then goes through the template's registration to the MRI template,
-                      in preference to the cross-modal alignment
+  blockface-template  the blockface-based alignment, the paper's route for every brain's histology (the only one for a brain without
+                      MRI): the blockface volume registered to the blockface template; `python -m shared.xfm chain` then goes through
+                      the template's registration to the MRI template, in preference to the cross-modal alignment
   qc                  the paper's acceptance checks of one registration, on the fixed grid: the linear part (scales, rotations, no
                       reflection); the normalized cross-correlation (NCC) between the fixed and moved images inside both brain
                       masks; folds of the warp (negative Jacobian determinants) and its 95th-percentile displacement; the Dice
@@ -136,8 +136,14 @@ def blockface_template_route(a):
     _entry_free("bf-native", "bf-template", a)
     out = Path(a.out or (paths.work_root() / "register_direct" / a.subject)); out.mkdir(parents=True, exist_ok=True)
     paths.refuse_records(out)                     # never write through a link into the records (code/shared/make_local_data.sh)
-    T, P = paths.template_root(), paths.products("products_blockface")["bftemplate_step8"]
-    grey, cover = a.template_grey or P / "d2bs8_grey.nii.gz", a.template_coverage or P / "d2bs8_coverage.nii.gz"
+    T = paths.template_root()
+    if a.template_grey or a.template_coverage:
+        if not (a.template_grey and a.template_coverage):
+            sys.exit("give both --template-grey and --template-coverage, or neither (the published template)")
+        grey, cover = a.template_grey, a.template_coverage
+    else:                                         # the published template (step 9) on step 8's grid, made once from its files
+        from template.blockface_step9 import route_template
+        grey, cover = route_template(paths.work_root() / "register_direct" / "_blockface_template")
     frame, bridge = a.frame or T / "frames" / "mri_template_0p5.nii.gz", a.bridge or T / "bridge_run113_to_canonical" / "linear.json"
     for p in (grey, cover, frame, bridge):
         if not Path(p).exists():
@@ -237,8 +243,10 @@ def main():
     sp.add_parser("mri-template", add_help=False, help="the brain's own b0 -> the MRI template's b0 (options: mri-template -h)")
     b = sp.add_parser("blockface-template", help="the blockface-based alignment: blockface -> a blockface template")
     b.add_argument("--subject", required=True)
-    b.add_argument("--template-grey", default=None, help="default: the blockface template of record (settings/internal/products_blockface.yaml bftemplate_step8)")
-    b.add_argument("--template-coverage", default=None, help="default: its coverage")
+    b.add_argument("--template-grey", default=None, help="a template on step 8's 0.25 mm run-113 grid (default: the published template, "
+                   "settings/internal/products_blockface.yaml bftemplate_step9, put on that grid by code/template/blockface_step9.py route_template; "
+                   "the paper registered its brains to step 8's, bftemplate_step8 d2bs8_grey.nii.gz)")
+    b.add_argument("--template-coverage", default=None, help="with --template-grey: its coverage (step 8's: d2bs8_coverage.nii.gz)")
     b.add_argument("--frame", default=None, help="the 0.5 mm frame the template is the 2x refinement of (default $LINC_TEMPLATE/frames/mri_template_0p5.nii.gz)")
     b.add_argument("--bridge", default=None, help="the run-113 -> canonical bridge, for the flat brainstem cut (default $LINC_TEMPLATE/bridge_run113_to_canonical/linear.json)")
     b.add_argument("--out", default=None); b.add_argument("--device", default="cuda:0")

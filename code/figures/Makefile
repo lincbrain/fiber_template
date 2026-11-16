@@ -38,7 +38,7 @@ export LINC_WORK ?= $(OUT)/work
 export PYTHONNOUSERSITE ?= 1
 
 NUMBERS_LINC := \
-  bf_camera_exif bf_cohort bf_sanity bf_spacing_used bf_template_metrics_d2b \
+  bf_camera_exif bf_cohort bf_sanity bf_spacing_used bf_template_metrics_d2b bf_template_metrics_s9_015_s11 \
   precision_weights_b1_d2b_s8 r1_edge_summary route_test_1c \
   atlas_final_v2_summary fig_histology_simple histo_tube_landmarks \
   mm_mri_check_r054 mri_recipe registration_qc_histo2bf_20261001 s5_link_d2bs8 s5_link_regions_d2bs8 table1_rebuild \

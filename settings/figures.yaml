@@ -25,6 +25,11 @@ alignment_comparison:
   crop_height_pct: 50                 # panel b: the crop's center height = this percentile of the section's tissue (centered on it)
   difference_window_z: 2.0            # panel b: |difference| display window (z units), one for both routes
 
+link:                                 # Fig. 6 (link.py); its command-line options override these
+  layout: 2x3                         # rows sagittal and coronal; columns the T2, the blockface template, the distance map (3x2: the earlier layout)
+  wm_line: t2                         # the orange line: the T2's two-class gray/white split (fa: the white matter's boundary, FA = 0.25)
+  fa_smooth: 0.0                      # wm_line fa: Gaussian sigma (voxels) of the FA on the plane
+
 bf_template:
   nmt_sections_mm: [2.0, 19.5, 15.5]  # the sections (NMT v2 x, y, z mm): those of the MRI channels figure, carried through the link
   margin_mm: [1.0, 1.0, 1.0]          # black around the template's brain box (x, y, z), the 3D box the views are cut from
@@ -66,7 +71,7 @@ tracer_sections3d:
   cases: [MR243, MR252, MR256, MF191]      # Fig. 9 (the author's option C, 12 Nov 2026): (a) MM1, MM2, MM3 beside MF8 alone, (b) all
   views: [[MR243, MR252, MR256], [MF191]]  #   four; until then MM1, MF8, MM2 in one view (cases [MR243, MF191, MR252], no views,
   arrange: side                            #   record fig_tracer_sections3d_v6_h9); the options compared: A3 (cases [MR243, MR252,
-  record: fig_tracer_sections3d_v6_h9_c    #   MR256]), C2 (arrange: stack)
+  record: fig_tracer_sections3d_v6{tag}_c  #   MR256]), C2 (arrange: stack)
 histology:
   panels: [a, b]                           # the panels drawn (the author, 12 Nov 2026: (c) and (d) left out; the text gives their numbers);
                                            #   empty: all four

@@ -19,10 +19,14 @@ What it does (one line per stage; --plan lists every step with its command, inpu
   3. the eighth step: the members on the 0.25 mm grid, the first stage's state taken over, then MMORF's eighth step
   4. the final average: every input resampled once through its final warp and averaged (weighted by expected error, symmetrized);
      the b0 channel; the products embedded on the MRI template's grid
+  5. step 9, the published template: 12 of the brains registered whole brain to the average three more times, on one 48 GB card
+     ($ANATOMIX_PYTHON, settings/env/anatomix.yml), and averaged again from their photographs at 0.15 mm
+     (code/template/blockface_step9.py). It starts from step 8 of record, so it does not need stages 1 to 4 to have run here
 You get
   under --work (default $LINC_WORK/build_blockface_template): the member folders (canon*), the frames and the eighth step's box, the
-  two run folders (runs/), and the template in final/ (on the eighth step's box) and final_run113/ (the published files: grayscale,
-  RGB, b0, masks, NIfTI; warps/ and d2_member_warps.json, each member's warp).
+  two run folders (runs/), and step 8's template in final/ (on the eighth step's box) and final_run113/ (grayscale, RGB, b0, masks,
+  NIfTI; warps/ and d2_member_warps.json, each member's warp); step 9 in step9/ (its rounds, final/: the published template, and
+  in_mri/: the same in the MRI template's frame).
 
     python code/template/build_blockface_template.py --plan                 every step, its environment, time, inputs, outputs
     python code/template/build_blockface_template.py --step prep-frame      one step (or several, in order)
@@ -84,6 +88,10 @@ def make_steps(W, paths):
         spec["view"] = "design 2b step-8 blockface view: TPL left out of the blockface finish"
         json.dump(spec, open(view / "run_spec.json", "w"), indent=1)
 
+    C9 = TCFG["step9"]; n9 = int(C9["iterations"]); tg = C9["tag"]; s9_lbl = f"5. step 9 ({C9['template_mm']:g} mm)"
+    S9 = [str(D.REPO / "code" / "template" / "blockface_step9.py")]; s9w = ["--work", str(w("step9"))]
+    s9it = lambda k: w("step9", "nln_step_09", f"iteration_{k:02d}")                  # noqa: E731
+    s9in = [P1["bftemplate_step8"], P1["bf_step8_box"], P1["bf_canon2_tpl"], precision, root, cache]
     mm_a = ["-aff", "False", "-nln", "True", "-nres", str(na), "-nit", str(ni), "-b", str(MM["plan_a"]["batch"])]
     mm_8 = ["-aff", "False", "-nln", "True", "--resume_from", f"{s8}:1", "-nres", str(s8), "-nit", str(ni8), "-b", str(MM["step8"]["batch"])]
     S = D.Step
@@ -169,6 +177,17 @@ def make_steps(W, paths):
           [w("final_run113")], [w("final")], "2 min", "the box products onto the run-113 grid's 2x refinement: the published files"),
         S("member-warps", "4. finish and publish", "linc", [*B, "member-warps", "--run", run_8, "--iteration", it8, "--plan-a-iteration", it7, "--canon2", w("canon2_tpl"), "--arm", r8, "--out", w("final_run113")],
           [w("final_run113", "d2_member_warps.json")], [it8, w("final_run113"), w("canon2_tpl")], "2 min", "every member's step-8 warp and their list, which the link's consistency check reads"),
+        # 5. step 9: from step 8 of record (products_blockface.yaml), not from this build's step 8
+        S("s9-start", s9_lbl, "anatomix", [*S9, "start", *s9w, "-j", "8"], [s9it(0) / f"T0{tg}_grey.nii.gz"], s9in, "10 min",
+          f"the {2 * len(C9['members'])} inputs carried from their photographs onto the {C9['grid_mm']:g} mm grid, averaged: the start T0{tg}"),
+        *[S(f"s9-round-{k}", s9_lbl, "anatomix", [*S9, "round", "--it", str(k), *s9w, "--gpu", "0"], [s9it(k) / f"T{k}{tg}_grey.nii.gz"],
+            [s9it(k - 1) / f"T{k - 1}{tg}_grey.nii.gz"], "3 h", (f"each input registered whole brain to T{k - 1}{tg} on one 48 GB card (about 7 min each; "
+            f"more cards join with `blockface_step9.py register --it {k} --gpu <n>`), the mean map removed, every input carried again"
+            + (", in color" if k == n9 else "")), gpu=True) for k in range(1, n9 + 1)],
+        S("s9-final", s9_lbl, "anatomix", [*S9, "final", *s9w, "-j", "8"], [w("step9", "final", "checks.json")], [s9it(n9) / "fields"], "40 min",
+          f"the last round's fields onto the {C9['template_mm']:g} mm grid, every input carried again, the start and the template averaged; the checks"),
+        S("s9-in-mri", s9_lbl, "anatomix", [*S9, "in-mri", *s9w], [w("step9", "in_mri", "linc_bf_grey.nii.gz")],
+          [w("step9", "final", "checks.json"), P1["template_link"]], "2 min", "the template in the MRI template's frame through the template link"),
     ]
 
 
