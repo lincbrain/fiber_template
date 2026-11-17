@@ -1,0 +1,33 @@
+# The documentation site, built from docs/ as it is. How to build it: code/docs/README.md
+site_name: fiber_template
+site_description: Code and documentation for a multimodal macaque template that aligns ex vivo MRI and microscopy
+repo_url: https://github.com/lincbrain/fiber_template
+repo_name: lincbrain/fiber_template
+edit_uri: ""
+docs_dir: docs
+theme:
+  name: material
+  font: false                     # no font is fetched from another site
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+hooks:
+  - code/docs/site_links.py       # a link that leaves docs/ goes to that file on GitHub
+validation:
+  links:
+    anchors: warn                 # with --strict, a link to a heading that does not exist stops the build
+nav:
+  - Home: README.md
+  - Overview: overview.md
+  - Tutorials:
+      - Start here: tutorials/00_start_here.md
+      - 01 MRI: tutorials/01_mri.md
+      - 02 Blockface: tutorials/02_blockface.md
+      - 03 Histology: tutorials/03_histology.md
+  - How-to:
+      - Bring a new brain into the template: how-to/new_brain.md
+      - Train the networks again: how-to/train_models.md
+  - Brain identifiers: brain_identifiers.md
+  - FAQ: faq.md
+  - Troubleshooting: troubleshooting.md

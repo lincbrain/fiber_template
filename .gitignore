@@ -18,3 +18,4 @@ settings/internal/*.local.yaml
 /local_data/
 /local_rebuild/
 /local_mri/
+/site/
