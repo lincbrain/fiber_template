@@ -2,7 +2,7 @@
  "data": {
   "templates": [
    {
-    "label": "step 9 at 0.15 mm, S11 (option C, the author's go 15 Nov)",
+    "label": "step 9 at 0.15 mm, 11 brains",
     "arm": "s9_015_s11",
     "folder": "bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_03",
     "n_brains": 11,
@@ -14,7 +14,7 @@
      537,
      347
     ],
-    "rule": "addendum 10 (tissue probability, mask-normalized values, precision weights)",
+    "rule": "tissue probability, mask-normalized values, precision weights",
     "brain_cm3": 68.41372190555055,
     "photographed_cm3": 60.175632798493865,
     "predicted_cm3": 8.238089107056672,
@@ -42,6 +42,6 @@
     }
    }
   ],
-  "definition": "s9_015_numbers_s11.py = s9_015_numbers.py for S11 (option C; TESTS.md addendum 16) -> paper/numbers/bf_template_metrics_s9_015_s11.json.\nThe bf_template_metrics numbers for the step-9 blockface template on the 0.15 mm grid (TESTS.md addenda 13 and 16; option C, S11),\nfrom its saved products only, beside the 2b record (bf_template_metrics_d2b.json, d2bs8 at 0.25 mm, unchanged):\n  members: S11 = 11 brains (S12 without MR263), 22 blockface inputs (each brain and its mirror), no b0-only member;\n  brain = the template's brainmask (P >= 0.5); photographed = brain & photo_share >= 0.5 (the real mask);\n  synthesized (the paper's \"predicted\") = brain & photo_share < 0.5, the same rule as d2bs8's synth_mask; also brain & photo_share = 0;\n  symmetry: max |V - mirror(V)| of grey, rgb, brainmask, real mask (exact 0 expected);\n  the same in the MRI template's frame (out_015_s11/in_mri_template, through d2bs8_s5sym, 0.25 mm), for information.\n    python step9/s9_015_numbers_s11.py  -> paper/numbers/bf_template_metrics_s9_015_s11.json"
+  "definition": "The blockface template's numbers, step 9 at 0.15 mm, from its saved products only, beside step 8's record (bf_template_metrics_d2b, at 0.25 mm):\n  members: 11 brains (photographed at every section, with few interpolated sections and even lighting), 22 blockface inputs (each brain and its mirror image), no b0-only member;\n  brain = the template's brain mask (P >= 0.5); photographed = brain & photographed fraction >= 0.5 (the real mask);\n  synthesized (the paper's \"predicted\") = brain & photographed fraction < 0.5, the rule of step 8's synthesized mask; also brain & photographed fraction = 0;\n  symmetry: max |V - mirror(V)| of the gray, color, brain mask and real mask (exact 0 expected);\n  the same in the MRI template's frame (through the template link, at 0.25 mm), for information."
  }
 }

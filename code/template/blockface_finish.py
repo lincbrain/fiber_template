@@ -238,7 +238,7 @@ def combine(acc, a, n_inputs, A):
 
 def b0_scale(S, root):
     """The member's b0 normalisation (mlo, mhi) as its export recorded it (summary_d3_full_A_s0 for the 13, summary_d3p_full_A_s0
-    for the 8; L4 04:52: the 8 have mlo = 0, the 13 their own 0.5th percentile, lo/hi 0.02-0.20)."""
+    for the 8; as the exports wrote them, the 8 have mlo = 0, the 13 their own 0.5th percentile, lo/hi 0.02-0.20)."""
     for f in ("summary_d3_full_A_s0.json", "summary_d3p_full_A_s0.json"):
         p = f"{root}/{f}"
         if os.path.exists(p):

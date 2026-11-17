@@ -56,7 +56,7 @@ whole_from_table_default: "no_corpus_callosum_range"
 # --- pieces from atlas regions (Methods, "Histology registration and label propagation": piece partition) ---
 regions:
   sample_level: 1                 # regions are sampled through the world affine of the store's level 1 (the analysis' L2 nifti)
-  punch_hole_label: 4             # punch holes count as the left hemisphere, where they are drilled
+  punch_hole_label: 4             # the fiducial markers count as the left hemisphere, where they were made
   punch_hole_as: 1
   anatomical: {left: 1, right: 2, cerebellum: 3}
   fill_unlabeled_tissue: nearest  # tissue outside the regions gets the label of the nearest labeled pixel

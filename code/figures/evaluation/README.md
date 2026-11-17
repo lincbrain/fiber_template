@@ -11,6 +11,6 @@ These scripts compute the measures the paper reports; `code/figures/paper_number
 | `route_test.py`           | the blockface-based and MRI-based alignments, compared |
 | `direct_placement.py`     | the accuracy of the cross-modal alignment |
 | `regeval.py`              | how well a registration aligns the inside of the brain |
-| `tubes.py`                | marker-tube offsets, a measure of histology registration error |
+| `tubes.py`                | the offsets of the fiducial markers (the round holes in the block face), a measure of histology registration error |
 | `labels_agreement.py`     | agreement of the LGN and STN labels in the template |
 | `plan.py`                 | what an evaluation script would do, without running it |

@@ -26,7 +26,7 @@ MR243's files are in the data folder's `brains/sub-MR243/`, except the section m
 | `inputs/manual_annotations/MR243_section_match.txt` | the match table, made manually: which photograph each section's components go with |
 | `inputs/manual_annotations/sub-MR243_histo_L6.nii.gz` and `_lhLGN`, `_rhLGN`, `_lhSTN`, `_rhSTN` | the histology stack the LGN and STN were drawn on, and the four drawings |
 | `intermediate/volume/MR243_blockface.ome.zarr` | the blockface volume in cutting order (02) |
-| `intermediate/histology/MR243_regions_t2.nii.gz`, `.tsv` | the regions volume on the blockface: 1 left, 2 right, 3 cerebellum and brainstem, 4 marker tubes (Step A) |
+| `intermediate/histology/MR243_regions_t2.nii.gz`, `.tsv` | the regions volume on the blockface: 1 left, 2 right, 3 cerebellum and brainstem, 4 fiducial markers (Step A) |
 | `paper/analysis/labels/section_maps/MR243_LY.tsv`, at the top of the data folder | the section map: which section each image of the label stack is |
 
 ![Section 36 as scanned beside the blockface photograph of its own section](figures/histology_02_input.png)
@@ -51,8 +51,8 @@ $PY -m shared.xfm apply --from mri-template --to bf-native --subject <ID> --near
 ```
 
 This carries the template's left, right and cerebellum regions onto the blockface volume in seconds on the CPU, and the later steps use it to divide each photograph into the section's components.
-Then set the voxels of the left hemisphere's marker tubes in `regions.nii.gz` to 4.
-The tubes are in `$LINC_DATA/sub-<ID>/blockface/<ID>_holes.nii.gz` from 02, or, for a paper brain, in the data folder's `outputs/<ID>_tubes.nii.gz`.
+Then set the voxels of the left hemisphere's fiducial markers in `regions.nii.gz` to 4.
+The markers are in `$LINC_DATA/sub-<ID>/blockface/<ID>_holes.nii.gz` from 02, or, for a paper brain, in the data folder's `outputs/<ID>_tubes.nii.gz`.
 
 ![MR243's regions volume on one blockface slice, and the regions' outlines on its photograph](figures/histology_03_regions.png)
 
@@ -156,10 +156,11 @@ Each drawn frame goes onto its component through the frame's own fitted transfor
 This runs on the CPU and writes to `$LINC_DATA/sub-<ID>/labels/blockface/structures/`.
 
 ```bash
+$PY code/labels/linc-labels carry --subject <ID> --kind structures
 $PY code/labels/linc-labels carry --subject <ID> --kind structures --dense
 ```
 
-This takes them into the template and into the brain's b0, one resampling each, and keeps a voxel where more than half of it is labeled; `--dense` takes the demons-interpolated labels (`<ID>_<nucleus>_bfnative_L2_demons.nii.gz`), as the paper does.
+These take them into the template and, for a brain with MRI, into its b0, one resampling each, and keep a voxel where more than half of it is labeled: the first the labels as drawn, rebuilt in 3D between sections, the second (`--dense`) the demons-interpolated labels (`<ID>_<nucleus>_bfnative_L2_demons.nii.gz`), as the paper does.
 Into the template they go on the brain's route in `settings/labels.yaml` (`template_routes`): through the blockface template for MR243, MR252 and MR256, as in the paper; `--route mri` takes the brain's own b0 instead, the paper's other route.
 It writes to `$LINC_DATA/sub-<ID>/labels/template/structures/` in 1 to 3 minutes per brain on the CPU.
 

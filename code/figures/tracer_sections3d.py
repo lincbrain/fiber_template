@@ -43,7 +43,7 @@ fig_tracer_sections3d_v6_h9_a3; until then MM1, MF8 and MM2, record fig_tracer_s
 12 Nov 2026: Jingjing's three cases are MM1, MM2 and MM3) can be drawn too, in the fourth tracer color (figstyle TRACER); it has no
 annotated injection site, so no marker and no tag, and its key says so. The layers go from the largest case to the smallest
 (LAYER_ORDER). (a) can show the cases in groups, one view per group at the same camera, crop and scale
-(tracer_sections3d.views, e.g. [[MR243, MR252, MR256], [MF191]], arrange: side or stack; the author's option C, 12 Nov 2026: the
+(tracer_sections3d.views, e.g. [[MR243, MR252, MR256], [MF191]], arrange: side or stack; the paper's figure: the
 dense MF8 apart); (b) and the key always hold every case. One group (the default) is the single view above.
 Orientation letters (the author, 12 Nov 2026, one rule for every figure: figstyle.orient_letters): (a)'s P and A and (b)'s L and R
 beside their row, ORIENT_GAP_MM from the tissue, at the middle of the row's tissue (before, (a)'s were low, under the area tags); a

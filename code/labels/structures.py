@@ -12,7 +12,8 @@ Per structure (settings/labels.yaml push.structures):
 Targets:
   mri-template  the MRI template's b0 grid, through the brain's route (settings/labels.yaml template_routes; labels/route.py
                 template_chain): the blockface template, or the brain's own MRI (its R1 of record, then its b0's registration)
-  b0-native     the brain's b0 grid, through its R1 of record (route.r1_entry)
+  b0-native     the brain's b0 grid, for a brain with a b0 registration (b0_source): its R1 of record (route.r1_entry) for the paper's
+                brains, else its own registration from `linc-register mri`; a brain without one is carried into the template only
 You get, in the output folder, per structure and target
   <S>_<struct>_bfnative_3d{sfx}.nii.gz, <S>_<struct>_<target>_prob{sfx}.nii.gz (+ provenance), <S>_<struct>_<target>_mask{sfx}.nii.gz,
   <S>_labels_demons_prov_<target>.nii.gz (dense), to_template_<S>{sfx}.json        (sfx = _demons for dense labels)
@@ -118,11 +119,34 @@ def carry_structures(S, src_dir, out_dir, targets, structs, dense, log=print):
     return rec
 
 
+def b0_source(S):
+    """Where S's blockface -> b0 registration comes from: ("record", <variant>) for a paper brain (settings/brains/<S>.yaml
+    registration_to_own_mri.variant_of_record, read by route.r1_entry), ("own", <entry folder>) for a brain registered to its b0 by
+    `linc-register mri` ($LINC_DATA/sub-<S>/xfm/bf-native__to__b0-native), or None (no b0 registration: a brain without MRI, or one not
+    registered to it yet)."""
+    import yaml
+    from shared import paths
+    f = Path(__file__).resolve().parents[2] / "settings" / "brains" / f"{S}.yaml"
+    c = (yaml.safe_load(f.read_text()) if f.exists() else None) or {}
+    v = (c.get("registration_to_own_mri") or {}).get("variant_of_record")
+    if v:
+        return ("record", v)
+    d = paths.subject_dir(S) / "xfm" / "bf-native__to__b0-native"
+    return ("own", d) if (d / "meta.json").exists() else None
+
+
 def targets_for(S, route):
-    """{"mri-template": (the MRI template's b0, S's chain on `route`), "b0-native": (S's b0 grid, its R1 of record)}, in that order."""
+    """{"mri-template": (the MRI template's b0, S's chain on `route`), "b0-native": (S's b0 grid, its b0 registration)}, in that order;
+    without a b0 registration (b0_source is None) only the template."""
     from shared import paths, xfm
     from labels import route as RT
     P = paths.products("products_blockface")
-    meta = json.loads((P["data"] / f"sub-{S}" / "xfm" / "bf-native__to__b0-native" / "meta.json").read_text())
-    return {"mri-template": (P["template_mri"] / "linc_mri_b0.nii.gz", RT.template_chain(S, route)),
-            "b0-native": (paths.rerooted(meta["dst_grid"]), xfm.Chain([RT.r1_entry(S)], strict=True))}
+    out = {"mri-template": (P["template_mri"] / "linc_mri_b0.nii.gz", RT.template_chain(S, route))}
+    src = b0_source(S)
+    if src is not None:
+        if src[0] == "record":
+            e = RT.r1_entry(S); meta = e.meta                     # the variant of record's own entry (its b0 grid): in the data folder
+        else:
+            meta = json.loads((src[1] / "meta.json").read_text()); e = xfm.Entry(src[1])
+        out["b0-native"] = (paths.rerooted(meta["dst_grid"]), xfm.Chain([e], strict=True))
+    return out

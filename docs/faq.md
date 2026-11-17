@@ -34,7 +34,7 @@ The longest are the template builds, which only a rebuild needs ([00](tutorials/
 ### What do MR243, MM1 and M1 mean?
 
 MR243 is a Specimen ID, which every file and folder uses, and MM1 is the same brain's name in the paper.
-M1 is a LINC published ID; so far only MF283 has one.
+M1 is MF283's published ID: the four brains of the MRI template are M1 to M4 in DANDI dataset 001372, where part of their MRI is public.
 [brain_identifiers.md](brain_identifiers.md) lists all 25 brains.
 
 ### Why does `$LINC_DATA` point inside the repository?
@@ -52,7 +52,8 @@ Its transform to the template carries along every image already aligned with it 
 ### Why is there a blockface template?
 
 Eight of the 21 photographed brains have no MRI.
-Their blockface volumes are registered to a template of the same contrast and then follow the template link into the template ([02, Step 4](tutorials/02_blockface.md#step-4-register-the-volume-to-the-blockface-template-a-brain-without-mri-or-with-histology)).
+Their blockface volumes are registered to a template of the same contrast and then follow the template link into the template.
+Histology takes the same route in every brain, MRI or not, because the sections are registered to the blockface photographs; the route through a brain's own b0 is the other one the paper reports ([02, Step 4](tutorials/02_blockface.md#step-4-register-the-volume-to-the-blockface-template-a-brain-without-mri-or-with-histology)).
 
 ### Why synthesize tissue that was never photographed?
 
@@ -67,7 +68,7 @@ It is also a slice of the blockface volume, which already has its transform to t
 
 ### How accurate is it?
 
-The paper reports the accuracy, measured with data that no registration used: marker tubes hidden from the histology registration, and the LGN and STN carried through the whole chain.
+The paper reports the accuracy, measured with data that no registration used: fiducial markers (the round holes in the block face) hidden from the histology registration, and the LGN and STN carried through the whole chain.
 Each tutorial's checks give the numbers for its own step.
 
 ## Running
@@ -92,10 +93,16 @@ For a FAIL, [troubleshooting](troubleshooting.md) lists the causes we have met f
 Follow [Bring a new brain into the template](how-to/new_brain.md), which aligns the brain without changing the template.
 Adding a brain into the template itself is a rebuild ([00](tutorials/00_start_here.md#adding-a-new-brain-two-different-things)).
 
+### Can I train the networks again?
+
+Yes: [Train the networks again](how-to/train_models.md) gives each network's training data, commands, run time and how to check the result.
+A rerun of the MRI brain-mask network gave the shipped weights bit for bit; the synthesis networks follow their recipe but not bit for bit.
+
 ### What has been tested on a brain that is not one of the paper's?
 
 - The b0 to the template: once, on a paper brain's b0 treated as new, with the network's mask; it lay a median of 0.2 mm from the original registration.
 - A blockface volume to the blockface template: MF191, treated as new, passed its check.
+- The refinement at 0.15 mm ([02, Step 4](tutorials/02_blockface.md#step-4-register-the-volume-to-the-blockface-template-a-brain-without-mri-or-with-histology)): MF191, from its own registration as a new brain starts, on one 48 GB card in about 6 minutes; no folds, closer to the template than before, and its refined transform equal to the refinement followed by the brain's own registration.
 - A blockface volume to its own b0: MR257, treated as new, through the placement, the estimated start pose and the linear stage.
   The deformable stage has not yet been run on a brain treated as new.
 - Not tried yet: a brain that is not one of the paper's, with its own settings file and its photographs made visible through a new link or new rows in `settings/files.tsv`.

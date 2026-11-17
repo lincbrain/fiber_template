@@ -124,7 +124,7 @@ def check(S, data_root):
                 + (f", but {d2:.3f} A-P MIRRORED -> re-run prep_bf" if d2 > r["grey_vs_mask_dice"] + 0.05
                    else ") -> investigate"))
 
-    # CHIRAL: drill holes must be LEFT of the brain centre
+    # CHIRAL: the fiducial markers (holes) must be LEFT of the brain centre
     h = final("holes")
     if h and os.path.exists(h):
         hi_ = nib.load(h)
@@ -135,7 +135,7 @@ def check(S, data_root):
             bx = float(_world(np.argwhere(m), A)[:, 0].mean())
             r["holes_dx_mm"] = round(hx - bx, 1)
             if hx - bx > 0:
-                r["findings"].append(f"CHIRAL: drill holes sit {hx - bx:+.1f} mm RIGHT of brain centre "
+                r["findings"].append(f"CHIRAL: the fiducial markers sit {hx - bx:+.1f} mm RIGHT of brain centre "
                                      f"(they mark the LEFT hemisphere)")
         else:
             r["findings"].append(f"holes mask has only {int(H.sum())} voxels (under-segmented?)")

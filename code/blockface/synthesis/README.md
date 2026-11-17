@@ -20,6 +20,7 @@ $PY_DEEP code/blockface/synthesis/linc-complete train --root <prepared folders> 
 
 `train` takes about 1 hour on a GPU with 8 GB free, on the 13 brains with MRI; a retrained network has the same recipe but not the same bits.
 `models/completion/` also holds `d3_lso_A_s0` and `d3p_lso_A_s0`, the leave-slab-out networks of the paper's evaluation.
+[Train the networks again](../../../docs/how-to/train_models.md) gives each network's training data, commands, run time and how to check the result.
 
 ## Files
 

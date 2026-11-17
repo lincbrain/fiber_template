@@ -3,7 +3,7 @@
 #     code/shared/make_local_data.sh <dest> [ID ...] [--rebuild ID] [--raw NAME=PATH] [--link ID:PATH=TARGET] [--copy ID:PATH=SOURCE]
 #
 # You need
-#   LINC_RECORDS: the project folder holding data/ and template/ (settings/lab.sh sets it, and runs this script for you).
+#   LINC_RECORDS: the project folder holding data/ and template/ (settings/roots.sh sets it, and runs this script for you).
 # What it does
 #   For each brain (default MR252 MF191, the walkthrough brains) it re-creates $LINC_RECORDS/data/sub-<ID>/ under <dest>/data as
 #   real folders of yours, with every file inside a link to the record (an OME-Zarr store is one link). Safe to rerun: what exists
@@ -26,11 +26,11 @@
 #   <dest>/template/       (point LINC_TEMPLATE here)  links to $LINC_RECORDS/template/*, plus frames/mri_template_0p5.nii.gz (the
 #                          frame linc-register --place-b0 reads)
 #   <dest>/raw/            (point LINC_RAW here)       the --raw links
-#   <dest>/.complete       written last, when the tree is complete (settings/lab.sh builds again when it is missing)
+#   <dest>/.complete       written last, when the tree is complete (settings/roots.sh builds again when it is missing)
 set -eu
 [ $# -ge 1 ] && [ "$1" != "-h" ] && [ "$1" != "--help" ] || { sed -n '2,28p' "$0" | cut -c3-; exit 0; }
 DEST=$1; shift; ARGS="$*"
-REC=${LINC_RECORDS:?set LINC_RECORDS to the project folder holding data/ and template/ (settings/lab.sh sets it)}
+REC=${LINC_RECORDS:?set LINC_RECORDS to the project folder holding data/ and template/ (settings/roots.sh sets it)}
 REPO=$(cd "$(dirname "$0")/../.." && pwd)
 IDS=(); REBUILD=(); RAWS=(); LINKS=(); COPIES=()
 while [ $# -gt 0 ]; do
@@ -132,6 +132,6 @@ for kv in "${COPIES[@]:-}"; do               # ID:PATH=SOURCE -> <dest>/data/sub
   [ -r "$src" ] || { echo "--copy $kv: cannot read $src"; exit 1; }
   mkdir -p "$(dirname "$DEST/data/sub-$id/$rel")"; copy "$src" "$DEST/data/sub-$id/$rel"
 done
-echo "$(date '+%F %T') code/shared/make_local_data.sh $DEST $ARGS" > "$DEST/.complete"   # written last: settings/lab.sh rebuilds a tree without it
+echo "$(date '+%F %T') code/shared/make_local_data.sh $DEST $ARGS" > "$DEST/.complete"   # written last: settings/roots.sh rebuilds a tree without it
 echo "made $DEST: $n_link links, $n_copy copies"
 echo "  export LINC_DATA=$DEST/data LINC_TEMPLATE=$DEST/template LINC_RAW=$DEST/raw"

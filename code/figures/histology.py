@@ -164,11 +164,11 @@ def draw_cd(fig, S, e_inp, ps, x0, yc, wrow, CH):
     """(c) the ECDF of the offsets and (d) the per-brain medians, side by side under (b)"""
     wc = wrow * 0.54                                                  # (c) wide enough for (d)'s horizontal brain labels
     ax = S.axes_mm(fig, x0 + 12.0, yc, wc - 12.0, CH)
-    s = np.sort(e_inp); ax.step(s, np.arange(1, len(s) + 1) / len(s), where="post", color=S.FG, lw=1.1, ls="-", label="tubes hidden")
+    s = np.sort(e_inp); ax.step(s, np.arange(1, len(s) + 1) / len(s), where="post", color=S.FG, lw=1.1, ls="-", label="markers hidden")
     ax.axvline(np.median(e_inp), color=S.FG, lw=0.6, ls=":")
     ax.annotate(f"{np.median(e_inp):.2f}", xy=(np.median(e_inp), 1), xycoords=("data", "axes fraction"), xytext=(0, 2),
                 textcoords="offset points", ha="center", va="bottom", color=S.FG, annotation_clip=False)
-    ax.set_xlabel("tube offset (mm)"); ax.set_ylabel("fraction of components")
+    ax.set_xlabel("marker offset (mm)"); ax.set_ylabel("fraction of components")
     ax.set_xlim(0, ECDF_XMAX); ax.set_ylim(0, 1.02); ax.spines[["top", "right"]].set_visible(False)
     S.letter(ax, "c", dx=-16 - 12.0 / 25.4 * 72, dy=2)                 # aligned with a / b
     # (d) per-brain medians
@@ -274,7 +274,7 @@ def main():
     scale_a = wa / (w_px * fmm_a)                                  # (a): print mm per tissue mm
     xb = xa + wa + ga
     heads = ["Blockface photograph", "Registered section outlined", "Registered histology"]   # (a): title, sub-label, bottom label
-    TOP = MG + L1_PT * pt + max(T.ink("b", S.LETTER_PT, fontweight="bold"), T.ink("Tubes"),     # the title line's ink, or (b)'s bar
+    TOP = MG + L1_PT * pt + max(T.ink("b", S.LETTER_PT, fontweight="bold"), T.ink("Markers"),     # the title line's ink, or (b)'s bar
                                 (2.0 + 1.2) * pt + T.ink(f"{SCALEBARS_MM[1]:g} mm"))            # length above it (scalebar_title: 2 pt over a 1.2 pt bar)
     Y2 = TOP + ph + GUT + L2_PT * pt + T.ink("Registered histology")                        # the bottom row, its labels a gutter down
     PANELS = CFG.get("panels") or ["a", "b", "c", "d"]
@@ -322,7 +322,7 @@ def main():
         ax.set_xticks([]); ax.set_yticks([]); [s_.set_visible(False) for s_ in ax.spines.values()]
         S.header(ax, f"{S.label(S_)}, {qq}th percentile", dx=0, dy=L2_PT)
         if k == 0:
-            S.letter(ax, "b", dx=0, dy=L1_PT); tb = S.header(ax, "Tubes hidden from the registration", dx=11, dy=L1_PT)
+            S.letter(ax, "b", dx=0, dy=L1_PT); tb = S.header(ax, "Markers hidden from the registration", dx=11, dy=L1_PT)
         if k == len(QUANT) - 1:                                   # zoomed: the bar in its standard place, on (b)'s title line
             S.scalebar_title(ax, 1.0, SCALEBARS_MM[1], tb)        # (tissue-mm axes)
         # bottom: the histology about the carried center (+), o = the hole found

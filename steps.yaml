@@ -58,9 +58,9 @@ steps:
     hours: 0.15
     timed: clone
     optional: false
-    note: 'Tested: 7 min 6 s, 132,901 links and 15,571 copies (1.0 GB), check 21 of 21. Adds to the folders settings/lab.sh built and overwrites nothing,
-      so it is safe to rerun; but not beside another code/shared/make_local_data.sh writing to the same folder (two runs can race on one link): run other
-      lanes'' data-folder steps after it.'
+    note: 'Tested: 7 min 6 s, 132,901 links and 15,571 copies (1.0 GB), check 21 of 21. Adds to the folders settings/roots.sh built and overwrites nothing,
+      so it is safe to rerun; but not beside another code/shared/make_local_data.sh writing to the same folder (two runs can race on one link): run the other
+      data-folder steps after it.'
 
   # ---- paper
   - name: paper-numbers
@@ -125,7 +125,7 @@ steps:
   - name: paper-figures
     group: paper
     title: Draw the paper's figures
-    reads: the paper's products (records, read only); HISTOLOGY_ARGS and LINC_RAW (settings/lab.sh)
+    reads: the paper's products (records, read only); HISTOLOGY_ARGS (code/figures/Makefile) and LINC_RAW (settings/roots.sh)
     writes: outputs/figures/<target>.{pdf,png} and their provenance
     run: LINC_DATA=$LINC_PRODUCTS/data make -C code/figures -j 2 figures
     check: '$PY -c "import pathlib, sys; T = sys.argv[1:]; m = [t for t in T if not any(pathlib.Path(''outputs/figures'').glob(t + ''.*''))]; print(f''{len(T)
@@ -172,7 +172,7 @@ steps:
     group: mri-template
     for: mri_template
     title: Stage the brain's preprocessed MRI as the build's inputs (N4, fractions)
-    reads: the preprocessed files ($LINC_MRI_PREPROCESSED/{id}); the brain masks (local_mri, built by settings/lab.sh)
+    reads: the preprocessed files ($LINC_MRI_PREPROCESSED/{id}); the brain masks (local_mri, built by settings/roots.sh)
     writes: $LINC_MRI_DATA/sub-{id}/mri/{dwi,t2,micro}/ and dwi/raw/ (the tensor's inputs)
     run: LINC_DATA=$LINC_MRI_DATA $PY code/template/build_mri_channels.py --step stage-{id}
     check: $PY tests/compare/compare_mri_build.py staged $LINC_MRI_DATA/sub-{id}/mri $LINC_PRODUCTS/mri/data/sub-{id} --min 17
@@ -473,7 +473,7 @@ steps:
     hours: 0.01
     timed: clone
     optional: false
-    note: 'On 6 Nov from a clone with settings/lab.sh''s ANTs 2.5.4: 3 of 3 identical, 29 s. Without ANTs it skips N4 and still exits 0, and the check
+    note: 'On 6 Nov from a clone with ANTs 2.5.4: 3 of 3 identical, 29 s. Without ANTs it skips N4 and still exits 0, and the check
       then fails.'
 
   # ---- blockface
@@ -1173,6 +1173,33 @@ steps:
       the card, chunk 2), 3 h 25 min with the CPU steps; on one card about 7 h of registrations plus about 3 h of CPU steps. More cards
       join a round with `blockface_step9.py register --it <k> --gpu <n>`. One registration rerun from a clone (15 Nov: MF278, round 1 of
       the analysis''s 12-brain run, on another RTX 6000 Ada): 5 min 53 s, peak 36.5 GB, its field byte-identical to that run''s'
+  - name: bf-template-step9-refine
+    group: blockface-template
+    for: [MF191]
+    title: Refine a brain's registration to the published blockface template, whole brain at 0.15 mm (GPU)
+    reads: the published blockface template (step 9); the brain's photographs and its step-8 member warp (a brain of step 8) or its own
+      entry bf-native__to__bf-template (any other brain)
+    writes: $LINC_WORK/build_blockface_template/step9/final/refine/ ({id}.npy, the field; inputs/, the start); for a brain outside step 8 also
+      the refined entry in $LINC_DATA/sub-{id}/xfm_step9/
+    run: $ANATOMIX_PYTHON code/template/blockface_step9.py refine --subject {id} --gpu 0
+    check: 'cmp $LINC_WORK/build_blockface_template/step9/final/refine/{id}.npy $LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_015_s11/outside10/fields/{id}.npy
+      && echo "{id}: the field identical to the paper''s"'
+    expect: the field identical to the paper's (MF191 belongs to step 8, so it starts from its member warp, as the paper's field did)
+    needs: [data-folders]
+    gpu_gb: 46
+    gpu_model: RTX 6000 Ada
+    gpu_alone: true
+    ram_gb: 16
+    cores: 1
+    disk_gb: 2
+    hours: 0.15
+    timed: estimated
+    optional: true
+    note: 'Not yet run from a clone on the GPU. Its start (MF191 carried from its photographs onto the published grid, on the CPU) took 45 s
+      from a clone and is byte-identical to the start of the paper''s field, and one registration of the rounds, rerun on another RTX 6000
+      Ada, gave the paper''s field byte for byte. From its own registration, as a brain outside the paper starts (15 Nov): 6 min 22 s, peak
+      35.5 GB, no folds, closer to the template (r 0.796 to 0.821), and the refined entry equal to the field followed by the own entry.
+      tests/test_refine_entry.py checks the refined entry without data'
   # ---- link
   - name: link
     group: link
@@ -1427,7 +1454,7 @@ steps:
     hours: 3
     timed: clone
     optional: false
-    note: 'The tables are the manual ones the paper''s run read ($LINC_RAW/match_tables_manual_annotations, a line in settings/lab.sh). The lab run of 6 Nov: MM1
+    note: 'The tables are the manual ones the paper''s run read ($LINC_RAW/match_tables_manual_annotations, a line in settings/roots.sh). The lab run of 6 Nov: MM1
       63 of 97 identical, the other 34 within 1.5 pixels (0.050 in TIRL''s mm, 0.06 mm of tissue; 3.1 h); MM3 34 of 53 identical, the other 19 within
       0.8 pixels (0.028, 0.03 mm; 1.7 h); every input of TIRL
       (matched photographs, pieces, moving and fixed images) identical to the paper''s. TIRL''s last stage can end round-off steps apart from the
@@ -1465,7 +1492,7 @@ steps:
     group: labels
     for: [MR252]
     title: Push the tracer annotations through each registration onto the blockface
-    reads: the annotations, section map, match table and regions (settings/lab.sh links them for MM2); histology's masks and pieces; the registration
+    reads: the annotations, section map, match table and regions (settings/roots.sh links them for MM2); histology's masks and pieces; the registration
       the paper's labels used (before the tubes' holes were filled)
     writes: $LINC_DATA/sub-{id}/labels/blockface/tracer/{id}_*_bfnative_L2.nii.gz
     run: $PY_TIRL code/labels/linc-labels push --subject {id} --registrations $LINC_PRODUCTS/data_arm_h9_preinp/sub-{id}/blockface/06_histo2bf/tirl
@@ -1579,7 +1606,7 @@ steps:
   - name: labels-carry
     group: labels
     for: [MR243]
-    title: Carry the interpolated labels into the MRI template in one resampling
+    title: Carry the interpolated labels into the MRI template through the brain's own MRI, the route the paper compares with
     reads: the paper's interpolated labels (labels/tracer_v2_h9); the blockface-to-b0 and b0-to-template registrations of record
     writes: $LINC_WORK/labels/{id}/template/{id}_*_mri-template{,_density,_footprint}.nii.gz
     run: $PY code/labels/linc-labels carry --subject {id} --labels $LINC_PRODUCTS/labels/tracer_v2_h9/{id}/{id}_*_bfnative_L2_demons.nii.gz --entry $LINC_PRODUCTS/data/sub-{id}/xfm_r1v3/bf-native__to__b0-native
@@ -1597,11 +1624,12 @@ steps:
     hours: 0.06
     timed: clone
     optional: false
-    note: 'On 6 Nov from a clone: 30 of 30, 186 s.'
+    note: 'The MRI-route comparison (MM1-MM3), checked against the MRI-route labels of record (labels/tracer_template_v2_h9); the paper''s
+      route is labels-carry-route. On 6 Nov: 30 of 30, 186 s.'
   - name: labels-carry
     group: labels
     for: [MR252, MR256]
-    title: Carry the interpolated labels into the MRI template in one resampling
+    title: Carry the interpolated labels into the MRI template through the brain's own MRI, the route the paper compares with
     reads: the paper's interpolated labels (labels/tracer_v2_h9); the blockface-to-b0 and b0-to-template registrations of record
     writes: $LINC_WORK/labels/{id}/template/{id}_*_mri-template{,_density,_footprint}.nii.gz
     run: $PY code/labels/linc-labels carry --subject {id} --labels $LINC_PRODUCTS/labels/tracer_v2_h9/{id}/{id}_*_bfnative_L2_demons.nii.gz --entry $LINC_PRODUCTS/data/sub-{id}/xfm_r1v3mr/bf-native__to__b0-native
@@ -1619,51 +1647,8 @@ steps:
     hours: 0.08
     timed: clone
     optional: false
-    note: 'On 6 Nov from a clone: MM2 21 of 21 (285 s), MM3 27 of 27 (304 s).'
-  - name: labels-carry
-    group: labels
-    for: [MF191]
-    title: Carry the labels into the MRI template through the blockface template
-    reads: the paper's interpolated labels; MF8's warp from the blockface template's construction and rigid placement; the link of the two templates
-    writes: $LINC_WORK/labels/{id}/template/{id}_*_mri-template{,_density,_footprint}.nii.gz
-    run: $PY code/labels/linc-labels carry --subject {id} --labels $LINC_PRODUCTS/labels/tracer_v2_h9/{id}/{id}_*_bfnative_L2_demons.nii.gz --map $LINC_PRODUCTS/template/xfm/bf-template__to__mri-template:full
-      --warp $LINC_PRODUCTS/data/sub-{id}/xfm_member/bf-native__to__bf-template/{id}_d2bs8_warp.nii.gz:fsl_rel:$LINC_PRODUCTS/data/sub-{id}/xfm_member/bf-native__to__bf-template/src_grid.nii.gz
-      --ras-pull $LINC_PRODUCTS/data/sub-{id}/xfm_member/bf-native__to__bf-template/{id}_rigid_pull_ras.txt --out $LINC_WORK/labels/{id}/template
-    check: $PY tests/compare/compare_nifti.py $LINC_WORK/labels/{id}/template $LINC_PRODUCTS/labels/tracer_template_v2_h9/{id} $(ls $LINC_PRODUCTS/labels/tracer_template_v2_h9/{id}
-      | grep -E '^{id}_.*_mri-template(_density|_footprint)?\.nii\.gz$')
-    expect: every carried label, density and footprint identical to the paper's (30 of 30)
-    needs: []
-    gpu_gb: 0
-    gpu_model: ''
-    gpu_alone: false
-    ram_gb: 4
-    cores: 4
-    disk_gb: 0.5
-    hours: 0.08
-    timed: clone
-    optional: false
-    note: 'On 6 Nov from a clone: 30 of 30, 41 s (the walkthrough''s form, with the records'' paths).'
-  - name: labels-connect
-    group: labels
-    for: labels
-    title: Join the carried bundles into one pathway, marking each join as inferred
-    reads: labels-carry's densities; the template's brain mask and FA
-    writes: $LINC_WORK/labels/{id}/template/{id}_Bundles_mri-template_{connected,solid_v2c,bridges}.nii.gz, {id}_connect_v2c.json, the solid2 labels
-    run: $PY code/labels/linc-labels connect --subject {id} --labels-dir $LINC_WORK/labels/{id}/template
-    check: $PY tests/compare/compare_nifti.py $LINC_WORK/labels/{id}/template $LINC_PRODUCTS/labels/tracer_template_v2c_h9/{id} {id}_Bundles_mri-template_connected.nii.gz
-      {id}_Bundles_mri-template_solid_v2c.nii.gz {id}_Bundles_mri-template_bridges.nii.gz
-    expect: the pathway, its solid label and its joins identical to the paper's (3 of 3)
-    needs: [labels-carry]
-    gpu_gb: 0
-    gpu_model: ''
-    gpu_alone: false
-    ram_gb: 2
-    cores: 1
-    disk_gb: 0.1
-    hours: 0.03
-    timed: clone
-    optional: false
-    note: 'On 6 Nov from a clone, all four cases: 3 of 3 identical; 11 to 15 s for MM1 to MM3, 58 s for MF8.'
+    note: 'The MRI-route comparison (MM1-MM3), checked against the MRI-route labels of record (labels/tracer_template_v2_h9); the paper''s
+      route is labels-carry-route. On 6 Nov: MM2 21 of 21 (285 s), MM3 27 of 27 (304 s).'
   - name: labels-carry-route
     group: labels
     for: labels
@@ -1684,7 +1669,8 @@ steps:
     hours: 0.1
     timed: estimated
     optional: false
-    note: 'The labels-carry steps carry the same labels on the MRI route (MF8 through step 8 alone), the route the paper compares with.'
+    note: 'The paper''s route for every brain, checked against the published labels (labels/tracer_template_v2_h9_s11, {chain_tag} in
+      settings/labels.yaml); labels-carry carries MM1-MM3 on the MRI route, the comparison the paper reports.'
   - name: labels-connect-route
     group: labels
     for: labels
@@ -1705,7 +1691,7 @@ steps:
     hours: 0.05
     timed: estimated
     optional: false
-    note: ''
+    note: 'The paper''s route, checked against labels/tracer_template_v2c_h9_s11; the paper reports the pathway on this route only.'
   - name: labels-carry-structures
     group: labels
     for: [MR243, MR252, MR256]
@@ -1727,7 +1713,8 @@ steps:
     hours: 0.08
     timed: clone
     optional: false
-    note: 'On 15 Nov from a clone, on the 12-brain dry run: 42 of 42 per brain with the 3D labels, 2 to 5 minutes.'
+    note: 'The paper''s route, checked against the published LGN and STN ({lgnstn_dir}: labels/push_current_h9_s11). On 15 Nov: 126 of 126
+      on both routes (42 per brain with the 3D labels), 2 to 5 minutes per brain.'
   - name: labels-carry-structures-mri
     group: labels
     for: [MR243, MR252, MR256]
@@ -1749,7 +1736,8 @@ steps:
     hours: 0.06
     timed: clone
     optional: false
-    note: 'On 15 Nov from a clone: 42 of 42 per brain with the 3D labels, 1 to 3 minutes.'
+    note: 'The MRI-route comparison, checked against labels/push_current_h9. On 15 Nov: 126 of 126 on both routes (42 per brain with the
+      3D labels), 1 to 3 minutes per brain.'
   - name: labels-sections
     group: labels
     title: Carry each charted section into the template, without interpolation

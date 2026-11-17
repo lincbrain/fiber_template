@@ -16,7 +16,7 @@ camera_jumps:
 # Steps 4 and 6: the 3D networks' inputs and post-processing, on the 0.40 mm section grid, at in-plane level L4.
 volume_segmentation:
   tubes_min_voxels: 3                # tube components smaller than this are dropped (specks)
-  tubes_left_tolerance_vox: 3.0      # tubes are kept only left of the brain's x-centroid + this tolerance (drilled on the left)
+  tubes_left_tolerance_vox: 3.0      # tubes are kept only left of the brain's x-centroid + this tolerance (made on the left)
 
 # The reconstruction itself (code/blockface/reconstruct.py), at in-plane level L1 and the native section step.
 reconstruction:

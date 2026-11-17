@@ -36,12 +36,12 @@
 #   bash install.sh [--prefix DIR] [--tirl-src DIR] [--with-figures-3d] [--only NAME[,NAME...]]
 #
 #   --prefix DIR       where the environments go (default: envs/ in this clone)
-#   --tirl-src DIR     TIRL's source trees (above); on the lab cluster settings/lab.sh sets LINC_TIRL_SRC
+#   --tirl-src DIR     TIRL's source trees (above), or set LINC_TIRL_SRC to them (in the lab, its own settings file, not part of the public repository, sets it)
 #   --with-figures-3d  also the 3D tracer figure's environment (settings/env/viz3d.yml: pyvista on a headless VTK; ~1 min, 1.1 GB)      -> PY_VIZ3D
 #   --only NAMES       just these (linc, deep, anatomix, tirl, figures-3d), without make test
 set -u
 REPO=$(cd "$(dirname "$0")" && pwd)
-PREFIX="$REPO/envs"; TIRL_SRC="${LINC_TIRL_SRC:-}"; VIZ3D=0; ONLY=""   # LINC_TIRL_SRC: the TIRL sources (settings/lab.sh)
+PREFIX="$REPO/envs"; TIRL_SRC="${LINC_TIRL_SRC:-}"; VIZ3D=0; ONLY=""   # LINC_TIRL_SRC: the TIRL sources, as --tirl-src
 while [ $# -gt 0 ]; do
   case $1 in
     --prefix) PREFIX=$2; shift 2;; --tirl-src) TIRL_SRC=$2; shift 2;; --with-figures-3d) VIZ3D=1; shift;;

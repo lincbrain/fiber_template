@@ -30,7 +30,7 @@
   are drawn at voxel accuracy (outline()).
 - Slice positions are given in NMT v2 mm: the MRI template's world is the NMT v2 symmetric frame, and a blockface-template
   point is carried there by the template link of record (to_nmt()).
-v1 (29 Sep, white background) is in _sessionbak/2026-09-30/L1/figstyle.py.v1_2303. Names kept from v1: setup, letter, header,
+Names kept from the first version (29 Sep 2026, white background): setup, letter, header,
 lr, scalebar, to_nmt, save, COL["A"/"B"/"photo"/"pred"/"band"/"b1"/"b2"], FULL_W_IN, DPI, MIN_PT, LETTER_PT.
 """
 import glob

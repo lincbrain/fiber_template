@@ -24,17 +24,17 @@ import nibabel as nib
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "code"))
 from shared import paths, provenance  # noqa: E402
 
-# the record's `definition`, verbatim (it is part of the record's data)
-DEFINITION = ('s9_015_numbers_s11.py = s9_015_numbers.py for S11 (option C; TESTS.md addendum 16) -> paper/numbers/bf_template_metrics_s9_015_s11.json.\n'
-              'The bf_template_metrics numbers for the step-9 blockface template on the 0.15 mm grid (TESTS.md addenda 13 and 16; option C, S11),\n'
-              'from its saved products only, beside the 2b record (bf_template_metrics_d2b.json, d2bs8 at 0.25 mm, unchanged):\n'
-              '  members: S11 = 11 brains (S12 without MR263), 22 blockface inputs (each brain and its mirror), no b0-only member;\n'
-              "  brain = the template's brainmask (P >= 0.5); photographed = brain & photo_share >= 0.5 (the real mask);\n"
-              '  synthesized (the paper\'s "predicted") = brain & photo_share < 0.5, the same rule as d2bs8\'s synth_mask; also brain & photo_share = 0;\n'
-              '  symmetry: max |V - mirror(V)| of grey, rgb, brainmask, real mask (exact 0 expected);\n'
-              "  the same in the MRI template's frame (out_015_s11/in_mri_template, through d2bs8_s5sym, 0.25 mm), for information.\n"
-              '    python step9/s9_015_numbers_s11.py  -> paper/numbers/bf_template_metrics_s9_015_s11.json')
-LABEL, ARM = "step 9 at 0.15 mm, S11 (option C, the author's go 15 Nov)", "s9_015_s11"   # the record's strings
+# the record's `definition` (it is part of the record's data)
+DEFINITION = ("The blockface template's numbers, step 9 at 0.15 mm, from its saved products only, beside step 8's record "
+              "(bf_template_metrics_d2b, at 0.25 mm):\n"
+              "  members: 11 brains (photographed at every section, with few interpolated sections and even lighting), 22 blockface inputs "
+              "(each brain and its mirror image), no b0-only member;\n"
+              "  brain = the template's brain mask (P >= 0.5); photographed = brain & photographed fraction >= 0.5 (the real mask);\n"
+              "  synthesized (the paper's \"predicted\") = brain & photographed fraction < 0.5, the rule of step 8's synthesized mask; "
+              "also brain & photographed fraction = 0;\n"
+              "  symmetry: max |V - mirror(V)| of the gray, color, brain mask and real mask (exact 0 expected);\n"
+              "  the same in the MRI template's frame (through the template link, at 0.25 mm), for information.")
+LABEL, ARM = "step 9 at 0.15 mm, 11 brains", "s9_015_s11"   # the record's label and arm
 
 
 def main():
@@ -58,7 +58,7 @@ def main():
     m8 = json.load(open(prod["bftemplate_step8"] / "metrics.json")); m8 = m8.get("data", m8)
     row = dict(label=LABEL, arm=ARM, folder=cfg["bftemplate_step9"],
                n_brains=len(members), n_blockface_inputs=2 * len(members), members=members_text,
-               grid_mm=vox, grid_shape=list(B.shape), rule="addendum 10 (tissue probability, mask-normalized values, precision weights)",
+               grid_mm=vox, grid_shape=list(B.shape), rule="tissue probability, mask-normalized values, precision weights",
                brain_cm3=float(B.sum() * v), photographed_cm3=float((B & (PS >= 0.5)).sum() * v),
                predicted_cm3=float(syn.sum() * v), predicted_share_of_brain=float(syn.sum() / B.sum()),
                photo_share_zero_cm3=float(zero.sum() * v), symmetry=dict(max_abs_mirror_diff=sym),

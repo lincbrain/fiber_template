@@ -87,23 +87,23 @@ Its photograph is damaged or missing; add `[before, after]` to `missing`.
 **The brain is upside down.**
 The photographs were taken upside down; set `rotate180: true`.
 
-**The brain is upside down, and no marker tubes were found.**
-`rotate180: true` was set on photographs that were already upright, so the tubes ended up on the right and were dropped.
+**The brain is upside down, and no fiducial markers (the round holes in the block face) were found.**
+`rotate180: true` was set on photographs that were already upright, so the markers ended up on the right and were dropped.
 Look at `00_slices/`, set `rotate180` to match, and reconstruct again.
 
 **A photograph is pushed off the canvas.**
 A large camera jump did this; raise `stack_pad`.
 
-**The mask or the tubes are wrong.**
+**The mask or the markers are wrong.**
 The network missed or added tissue; correct them manually ([02, Step 2](tutorials/02_blockface.md#step-2-correct-the-masks-manually-optional)).
 
-**Corrected tubes do not show in the volume.**
+**Corrected markers do not show in the volume.**
 They were saved after `tubes`, which does not fill them again.
 Run `volume` and `tubes` again with the working folders (`--keep-work`; Step 2).
 
 **`prepare`, `mask` or `volume` cannot be run again.**
 `volume` and `tubes` deleted the working folders.
-Run the steps one at a time with `--keep-work`, or start again from `photos`.
+Start again from `photos`; to keep the working folders next time, run `volume` and `tubes` (or `all`) with `--keep-work`, the only steps that take it.
 
 **Corrected masks no longer line up after a change of `vz`.**
 The manual-edit grid follows round(400 µm / `vz`); pin `curation_f` to the value the corrections were made with.

@@ -242,7 +242,7 @@ def seg_lines(r, inp, grid, data, out):
                                                          data]
 
 
-CLASS_OUT = {"brain": "brain mask", "tube": "marker-tube mask"}
+CLASS_OUT = {"brain": "brain mask", "tube": "marker mask"}
 
 
 def facts(R):
@@ -352,7 +352,7 @@ def main():
     vol_row("mri", "Brain mask, MRI", mri["subject"], mri["img"], mri["pred"].astype(np.float32), mri["A"], mri["A"], mri["pred"],
             (pt[1] * ts[1], pt[2] * ts[2]), x_mm=x_b)
     planes["mri"].update(left_of_center_mm=round(off_b, 2), largest_piece_share=round(share_b, 4))
-    for key, title, v in (("bf", "Brain mask, blockface volume", bf), ("tubes", "Marker tubes, blockface volume", tubes)):
+    for key, title, v in (("bf", "Brain mask, blockface volume", bf), ("tubes", "Fiducial markers, blockface volume", tubes)):
         ts = R[key]["input"]["target_spacing"]; pt = R[key]["input"]["patch"]
         tissue = v["img"].max(-1) > 0                                   # the tube network's input is masked to the brain
         vol_row(key, title, S, v["img"], v["pred"].astype(np.float32), v["A"], v["A"], v["pred"] if key == "bf" else tissue,

@@ -82,7 +82,7 @@ def test_postprocess():
 
 
 def test_fill_holes():
-    """the photograph rule (code/tasks.py normalize_masks): enclosed holes filled, nothing else changed"""
+    """the photograph rule (code/blockface/mask_rules.py fill_photo_mask): enclosed holes filled, nothing else changed"""
     from scipy.ndimage import binary_fill_holes
     m = np.zeros((60, 80), np.uint8); m[10:50, 10:70] = 1; m[20:30, 20:30] = 0; m[0:5, 0:5] = 1
     f = predict.postprocess_mask(m, {"kind": "fill_holes"}, 2)

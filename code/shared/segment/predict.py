@@ -84,12 +84,13 @@ def sliding_window(net, img, patch, device, step=0.5, mirror_axes=(), batch=4):
 
 def postprocess_mask(mask, pp, n_classes, case_mask=None):
     """pp: None / "none", "largest_component", or a dict {"kind": ...}:
-      largest_cc_fill        the largest 26-connected component, interior holes filled (code/segment.py _largest_cc_fill)
-      fill_holes             enclosed holes filled (scipy binary_fill_holes on the binary mask; code/tasks.py normalize_masks, the
-                             pipeline's rule for the photograph masks); on the output grid, so at native size for a native photograph
+      largest_cc_fill        the largest 26-connected component, interior holes filled (code/blockface/mask_rules.py largest_cc_fill)
+      fill_holes             enclosed holes filled (scipy binary_fill_holes on the binary mask; code/blockface/mask_rules.py
+                             fill_photo_mask, the pipeline's rule for the photograph masks); on the output grid, so at native size
+                             for a native photograph
       tubes_left_hemisphere  drop voxels at/right of the brain mask's x-centroid + left_tol_vox (axis 0 increasing = anatomical
-                             right), clamp to the brain mask, drop 26-connected components < min_vox (code/segment.py post_holes);
-                             needs the case's brain mask on the same grid"""
+                             right), clamp to the brain mask, drop 26-connected components < min_vox (code/blockface/mask_rules.py
+                             tube_rule); needs the case's brain mask on the same grid"""
     from scipy import ndimage as ndi
     kind = pp.get("kind") if isinstance(pp, dict) else pp
     if kind in (None, "none"):

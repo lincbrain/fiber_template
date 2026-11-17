@@ -923,8 +923,8 @@ def blockface_03_jumps(tr):
 
 @figure
 def blockface_04_volume(tr):
-    """MR252's volume (outputs/MR252_blockface_L2) in three planes through one marker tube, the brain mask's outline (white) and the
-    marker tubes (outputs/MR252_tubes, orange; filled in the volume)."""
+    """MR252's volume (outputs/MR252_blockface_L2) in three planes through one fiducial marker, the brain mask's outline (white) and the
+    fiducial markers (outputs/MR252_tubes, orange; filled in the volume)."""
     from matplotlib.lines import Line2D
     v, mk, tb, M, Tb, pl = bf_volume_planes(tr)
     P, O = [], []
@@ -937,7 +937,7 @@ def blockface_04_volume(tr):
     for p, (m3, t3) in zip(P, O):
         FS.outline(p.ax, m3, lw=0.5); FS.outline(p.ax, t3, lw=0.8, color=FS.COL["pred"])
     hs = [Line2D([], [], color=FS.ON_IMG, lw=0.6, label="Brain mask"),
-          Line2D([], [], color=FS.COL["pred"], lw=0.9, label="Marker tubes (filled in the volume)")]
+          Line2D([], [], color=FS.COL["pred"], lw=0.9, label="Fiducial markers (filled in the volume)")]
     key(fig, hs, P[1].x, P[1].y + P[1].h * sc + 3.0, ncol=1)
     orient(fig, rows)
     bar(fig, sc)

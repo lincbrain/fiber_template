@@ -7,6 +7,7 @@ If you are new, start with [tutorials/00_start_here.md](tutorials/00_start_here.
 - [overview.md](overview.md) explains how everything fits together and what the package cannot do, and ends with a glossary.
 - [tutorials/00_start_here.md](tutorials/00_start_here.md) sets you up and introduces the three tutorials: [01_mri.md](tutorials/01_mri.md), [02_blockface.md](tutorials/02_blockface.md) and [03_histology.md](tutorials/03_histology.md).
 - [how-to/new_brain.md](how-to/new_brain.md) lists what to do, in order, for a new brain.
+- [how-to/train_models.md](how-to/train_models.md) trains the networks again: what each was trained on, the commands, and how to check the result against the paper's.
 - [troubleshooting.md](troubleshooting.md) covers problems we have met and how to fix them.
 - [faq.md](faq.md) gives short answers, each with a link.
 - [brain_identifiers.md](brain_identifiers.md) explains names such as MF283, MF1 and M1, and which brain was used for what.

@@ -68,10 +68,10 @@ networks:
   max_height_mm: 203                  # the figure's height at most: its page with its caption
 
 tracer_sections3d:
-  cases: [MR243, MR252, MR256, MF191]      # Fig. 9 (the author's option C, 12 Nov 2026): (a) MM1, MM2, MM3 beside MF8 alone, (b) all
-  views: [[MR243, MR252, MR256], [MF191]]  #   four; until then MM1, MF8, MM2 in one view (cases [MR243, MF191, MR252], no views,
-  arrange: side                            #   record fig_tracer_sections3d_v6_h9); the options compared: A3 (cases [MR243, MR252,
-  record: fig_tracer_sections3d_v6{tag}_c  #   MR256]), C2 (arrange: stack)
+  cases: [MR243, MR252, MR256, MF191]      # the paper's tracer figure: (a) MM1, MM2, MM3 beside MF8 alone, (b) all four; before
+  views: [[MR243, MR252, MR256], [MF191]]  #   12 Nov 2026 MM1, MF8, MM2 in one view (cases [MR243, MF191, MR252], no views, record
+  arrange: side                            #   fig_tracer_sections3d_v6_h9); other layouts: cases [MR243, MR252, MR256] alone, or
+  record: fig_tracer_sections3d_v6{tag}_c  #   arrange: stack
 histology:
   panels: [a, b]                           # the panels drawn (the author, 12 Nov 2026: (c) and (d) left out; the text gives their numbers);
                                            #   empty: all four

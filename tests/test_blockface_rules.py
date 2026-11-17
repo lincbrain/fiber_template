@@ -80,7 +80,7 @@ def test_fill_photo_mask_same_rule():
     try:
         b = postprocess_mask(m.astype(np.uint8), {"kind": "fill_holes"}, 2)
     except ValueError:
-        skip("shared.segment has no fill_holes post-processing yet (L4 adds it after the models wrap-up's last launch)")
+        skip("this shared.segment has no fill_holes post-processing")
     assert (a == (b > 0)).all()
 
 

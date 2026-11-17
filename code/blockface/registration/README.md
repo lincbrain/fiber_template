@@ -10,11 +10,12 @@ The tutorials cover it in [01, Step B2](../../../docs/tutorials/01_mri.md#step-b
 |---|---|
 | `linc-register mri` | the blockface volume to the brain's own b0 |
 | `linc-register mri-template` | the brain's b0 to the template |
-| `linc-register blockface-template` | a brain without MRI: its blockface volume to the blockface template |
+| `linc-register blockface-template` | the blockface volume to the blockface template: a brain without MRI, and every brain with histology, whose labels take this route |
 | `linc-register direct-placement` | a brain without MRI: its blockface volume straight to the template's b0 (the cross-modal alignment), which gives its stand-in b0 |
 | `linc-register qc` | checks one registration; presets `bf2b0`, `direct`, `b02template`, `bf2bftemplate`, `template2template`; limits in `settings/registration.yaml` |
 
 A brain with MRI uses the first two, and a brain without MRI the next two.
+A brain with histology also runs `blockface-template`, MRI or not, and then the refinement at 0.15 mm of [02, Step 4](../../../docs/tutorials/02_blockface.md#step-4-register-the-volume-to-the-blockface-template-a-brain-without-mri-or-with-histology), because its labels reach the template that way; the route through its own b0 is the other one the paper reports.
 
 ## Inputs and outputs
 

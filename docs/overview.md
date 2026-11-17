@@ -25,7 +25,7 @@ Each brain's inputs are in the data folder's `brains/sub-<ID>/inputs/`:
 - `mri/`;
 - `photographs/`, one per section;
 - `histology/`, the scanned sections and the tracer labels drawn from their charts;
-- `manual_annotations/`, whatever a person drew or corrected, such as brain masks, marker tubes, match tables and the LGN and STN.
+- `manual_annotations/`, whatever a person drew or corrected, such as brain masks, fiducial markers (the round holes in the block face), match tables and the LGN and STN.
 
 Four brains with MRI only, MF283 to MF286, built the MRI template ([01](tutorials/01_mri.md)).
 The 21 photographed brains built the blockface template ([02](tutorials/02_blockface.md)); 13 of them have a b0, such as MR243, and 8 have no MRI, such as MF191.
@@ -90,7 +90,7 @@ The blockface template itself, in its own space, is in `template/outputs/blockfa
 | `mri_brainmask` | the brain mask of an ex vivo b0 or T2-weighted image | `linc-mri prep`, and `linc-register` when no mask is given |
 | `bf_mask2d` | the brain mask of each blockface photograph | `linc-reconstruct photos` |
 | `bf_mask3d` | the brain mask of a blockface volume | `linc-reconstruct mask` |
-| `bf_holes` | the marker tubes of a blockface volume | `linc-reconstruct tubes` |
+| `bf_holes` | the fiducial markers of a blockface volume | `linc-reconstruct tubes` |
 | `d3_full_A_s0` | the synthesis network: blockface grayscale from a brain's own b0 | `linc-complete` |
 | `d3p_full_A_s0` | the same, from a stand-in b0 | `linc-complete --stand-in` |
 
@@ -179,13 +179,13 @@ What has been tested on a brain treated as new is in the [FAQ](faq.md#what-has-b
 | camera jump | a shift of the camera between two sections, corrected in the reconstruction |
 | completion | joining the synthesized tissue to the photographs (`linc-complete`), which makes the completed volume |
 | component | the part of a histology section registered on its own: a hemisphere, or the cerebellum with the brainstem; the code calls it a piece |
+| fiducial markers | the round holes in the block face, seen in the blockface photographs and used as fiducials (files named `tubes` or `holes`) |
 | junction plane | where a brain's photographs end and its synthesized tissue begins |
-| marker tubes | holes drilled into the block as fiducials (files named `tubes` or `holes`) |
 | match table | which photograph each histology component goes with |
 | member | one input of a template: a brain or its mirror image |
 | MRI-based alignment | blockface volume to the brain's own b0, then the b0 to the template |
 | outline check | how far a moved brain outline lies from the target's, in six directions: PASS, WARN or FAIL |
-| regions volume | the template's left, right and cerebellum regions on a brain's blockface volume, plus its marker tubes |
+| regions volume | the template's left, right and cerebellum regions on a brain's blockface volume, plus its fiducial markers |
 | section step | the distance between two photographs (`vz`) |
 | stand-in b0 | for a brain without MRI, the template's b0 moved into the brain by the cross-modal alignment |
 | synthesized tissue | tissue the photographs do not cover, predicted from the b0 by the synthesis network (`_synthesized_mask`) |

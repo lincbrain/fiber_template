@@ -2,8 +2,9 @@
 """Are the LGN and STN visible on each brain's own b0, the precondition for outlining them on the MRI? (paper: Supplementary S3)
 
 For every brain and hemisphere-structure, the label carried to the brain's own b0 (histology -> blockface -> own b0, the R1 of record):
-the observer's labels for MM1-MM3 (products push_current/<ID>/<ID>_<struct>_b0-native_mask_demons.nii.gz) and the network's for every
-histology brain with MRI (products lgnstn_model_labels/<ID>/...), on that b0 (products_blockface data: sub-<ID>/mri/<ID>_mri_b0_native.nii.gz,
+the observer's labels for MM1-MM3 (products push_current/<ID>/<ID>_<struct>_b0-native_mask_demons.nii.gz; the set the paper reads) and,
+where they exist, the network's for every histology brain with MRI (products lgnstn_model_labels/<ID>/...; not in the data folder, so a
+data-release run writes that set empty), on that b0 (products_blockface data: sub-<ID>/mri/<ID>_mri_b0_native.nii.gz,
 the R1 target grid):
   contrast   (mean inside - mean in the ring 1-3 voxels outside) / mean ring;  CNR = (mean inside - mean ring) / sd ring
   null       the same label shape moved to 200 random positions inside the brain (b0 > 10 % of its 99th percentile, shape fully inside),

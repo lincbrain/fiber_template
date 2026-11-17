@@ -6,7 +6,7 @@ Run every command from the top of the repository, in a shell set up as in [00_st
 
 ## 1. What this part does
 
-The photographs are stacked in cutting order into a 3D volume, with camera jumps corrected, missing sections filled in and the illumination evened out; networks find the brain and the marker tubes.
+The photographs are stacked in cutting order into a 3D volume, with camera jumps corrected, missing sections filled in and the illumination evened out; networks find the brain and the fiducial markers (the round holes in the block face).
 A brain with MRI then registers its volume to its own b0 and follows the b0 into the template (the MRI-based alignment); a brain without MRI registers it to the blockface template and follows the template link (the blockface-based alignment).
 A brain with histology takes the blockface-based alignment too, MRI or not: its labels reach the template that way ([03](03_histology.md)).
 No brain was photographed to its caudal end, so a network synthesizes the missing tissue from the b0 and marks it ([overview](../overview.md#the-templates)).
@@ -24,7 +24,7 @@ MR252's inputs are in the data folder's `brains/sub-MR252/inputs/`:
 |---|---|
 | `photographs/MR252_slice0000.jpg` ... | the photographs, one JPEG per section, in cutting order; MR252 has 1,430, one every 50 µm, and a missing number is a section without a photograph |
 | `manual_annotations/MR252_brain_mask_edited.nii.gz` | the 3D brain mask, manually corrected |
-| `manual_annotations/MR252_tubes_edited.nii.gz` | the marker tubes, manually corrected |
+| `manual_annotations/MR252_tubes_edited.nii.gz` | the fiducial markers, manually corrected |
 | `manual_annotations/photograph_masks/` | the photographs' brain masks |
 | `mri/MR252_b0.nii.gz` | the b0 (prepared as in 01) |
 
@@ -33,7 +33,7 @@ Wherever a manually corrected file exists, it is used instead of the network's.
 
 ![One photograph of MR252 and its brain mask](figures/blockface_02_input.png)
 
-*Figure 2. (a) Photograph 700 of MR252 (MM2) and (b) its brain mask (`photograph_masks/MR252_slice0700.png`); the small dark hole in (a) is a marker tube.*
+*Figure 2. (a) Photograph 700 of MR252 (MM2) and (b) its brain mask (`photograph_masks/MR252_slice0700.png`); the small dark hole in (a) is a fiducial marker.*
 
 ## 3. Steps
 
@@ -55,8 +55,8 @@ $PY_TIRL code/blockface/linc-reconstruct all --subject <ID>                     
 | `stack` | stacks the photographs and their masks |
 | `prepare` | corrects each camera jump (registered with TIRL), fills the missing sections, crops the stack, evens out the illumination and brightness |
 | `mask` | makes the 3D brain mask (the network's, or your corrected one) |
-| `volume` | writes the volume, and fills the manually corrected marker tubes if they already exist |
-| `tubes` | finds the marker tubes with a network and fills them in the volume |
+| `volume` | writes the volume, and fills the manually corrected fiducial markers if they already exist |
+| `tubes` | finds the fiducial markers with a network and fills them in the volume |
 | `spacing` | writes the settings file's pixel size and section step into the headers |
 
 For a new brain, run `photos` and `stack` first, look through the stacked photographs in `$LINC_DATA/sub-<ID>/blockface/00_slices/`, and write the camera jumps and the missing or damaged sections into its settings file (Step 6) before running the other five.
@@ -68,15 +68,15 @@ The networks run on a GPU, and the rest on the CPU.
 A brain of 1,400 photographs takes about 10 hours, including about 15 minutes of `prepare` per camera jump.
 MR252 was rebuilt in 9 h 10 min, identical to the original, and MF191, with 77 photographs, in under an hour.
 
-The results go to `$LINC_DATA/sub-<ID>/blockface/`: `<ID>_blockface.ome.zarr` (the volume, in color, at four resolutions), `<ID>_blockface_L2.nii.gz` (a lighter copy), `<ID>_mask.nii.gz` (the brain mask), `<ID>_holes.nii.gz` (the marker tubes) and `<ID>.info`.
+The results go to `$LINC_DATA/sub-<ID>/blockface/`: `<ID>_blockface.ome.zarr` (the volume, in color, at four resolutions), `<ID>_blockface_L2.nii.gz` (a lighter copy), `<ID>_mask.nii.gz` (the brain mask), `<ID>_holes.nii.gz` (the fiducial markers) and `<ID>.info`.
 
 ![MR252's largest camera jump, before and after the correction](figures/blockface_03_jumps.png)
 
 *Figure 3. MR252 (MM2)'s largest camera jump (5.3 mm): the outlines of photograph 495 (white) and of 494 before it (orange), (a) as photographed and (b) after `prepare`.*
 
-![MR252's blockface volume in three planes, with its brain mask and marker tubes](figures/blockface_04_volume.png)
+![MR252's blockface volume in three planes, with its brain mask and fiducial markers](figures/blockface_04_volume.png)
 
-*Figure 4. MR252 (MM2)'s blockface volume (`outputs/MR252_blockface_L2.nii.gz`) through one marker tube, with its brain mask's outline (white) and where its tubes were before they were filled (orange, `outputs/MR252_tubes.nii.gz`).
+*Figure 4. MR252 (MM2)'s blockface volume (`outputs/MR252_blockface_L2.nii.gz`) through one fiducial marker, with its brain mask's outline (white) and where its markers were before they were filled (orange, `outputs/MR252_tubes.nii.gz`).
 Axial views have anterior up; (c) ends flat at the back, where the photographed slab ends.*
 
 ### Step 2. Correct the masks manually (optional)
@@ -89,9 +89,9 @@ The `curated/` folder is in `$LINC_DATA/sub-<ID>/blockface/`, on the manual-edit
 |---|---|---|---|
 | the photographs' masks | before `prepare` | `linc-reconstruct edit-photo-masks export`, edit, then `import` | `prepare` and the steps after it |
 | the 3D brain mask | after `mask`, before `volume` | `curated/<ID>_mask_edited.nii.gz`, from `curated/<ID>_mask.nii.gz`, over `curated/<ID>_bg.nii.gz` | `volume`, `tubes`, `spacing` |
-| the marker tubes | after `tubes` | `curated/<ID>_holes_edited.nii.gz`, from `curated/<ID>_holes.nii.gz` | `volume` and `tubes` (with the working folders that `--keep-work` kept), then `spacing` |
+| the fiducial markers | after `tubes` | `curated/<ID>_holes_edited.nii.gz`, from `curated/<ID>_holes.nii.gz` | `volume` and `tubes` (with the working folders that `--keep-work` kept), then `spacing` |
 
-`volume` runs again for corrected tubes because tubes saved after `tubes` are filled by `volume`, not by `tubes` alone.
+`volume` runs again for corrected markers because markers saved after `tubes` are filled by `volume`, not by `tubes` alone.
 When you keep the brain, copy the corrected masks into the data folder's `inputs/manual_annotations/`.
 
 ### Step 3. Register the volume to the brain's own b0 (a brain with MRI)
@@ -122,7 +122,7 @@ An existing transform folder stops the run unless you add `--overwrite`, which b
 ### Step 4. Register the volume to the blockface template (a brain without MRI, or with histology)
 
 ```bash
-$PY code/blockface/registration/linc-register blockface-template --subject MF191
+$PY code/blockface/registration/linc-register blockface-template --subject MF191 --overwrite
 $PY code/blockface/registration/linc-register direct-placement --subject MF191 \
     --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz \
     --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
@@ -130,9 +130,11 @@ $PY code/blockface/registration/linc-register direct-placement --subject MF191 \
 
 `blockface-template` registers the volume to the blockface template, so that the brain's chain into the template goes through the template link.
 `direct-placement`, the cross-modal alignment, registers it straight to the template's b0, only to give the brain the stand-in b0 that Step 5 needs.
-A brain with histology runs `blockface-template`, and the refinement below, even when it has MRI, because its labels reach the template through them; it does not need `direct-placement`.
+A brain with histology runs `blockface-template` and the refinement below even when it has MRI, because its labels reach the template that way.
+Step 5 needs a b0 in any case: a brain with MRI has Step 3's registration, and a brain without MRI gets its stand-in b0 from `direct-placement`.
 On MF191 they took about 6 and 8 minutes on a GPU.
 They write `$LINC_DATA/sub-<ID>/xfm/bf-native__to__bf-template/` and `bf-native__to__mri-template/`, and the stand-in b0 in `$LINC_DATA/sub-<ID>/mri/stand_in/`.
+As in Step 3, `--overwrite` replaces an existing transform folder and backs up the old one; `linc-register qc --preset bf2bftemplate` then checks the registration (section 4).
 
 `blockface-template` registers to the published blockface template (Step 7), used at 0.5 mm, so a small card is enough.
 The paper registered its own brains to the template of the eighth step; `--template-grey` and `--template-coverage` choose another template.
@@ -193,7 +195,7 @@ If the photographs keep the camera's names, such as `Img8527.JPG`, use `raw_glob
 After `stack`, add `jumps` and `missing` if the stack has any, and `rotate180: true` if the photographs are upside down.
 [settings/brains](../../settings/brains/README.md#every-field) lists every field with its default and when to set it, and `TEMPLATE.yaml` explains each in a comment.
 
-Look at `00_slices/` before you set `rotate180`: on upright photographs it turns the volume upside down, and the marker tubes are lost, because only tubes on the brain's left, where they were drilled, are kept.
+Look at `00_slices/` before you set `rotate180`: on upright photographs it turns the volume upside down, and the fiducial markers are lost, because only markers in the brain's left hemisphere are kept.
 
 **The spacing.**
 For a new brain, `vx` and `vz` are used as you measured them; no step calibrates them against the brain's MRI (the paper's brains were calibrated in an earlier analysis; see `reconstruction_spacing_um`).
@@ -209,16 +211,16 @@ These commands rebuild the templates; a new brain does not need them ([00](00_st
 $PY code/template/build_blockface_template.py --plan                                    # every step, its time, inputs and outputs; runs nothing
 $PY code/template/build_blockface_template.py --from prep-frame --to tpl-costmask-0p5   # the members
 $PY code/template/build_blockface_template.py --from run-plan-a --to plan-a-mmorf       # the first stage
-$PY code/template/build_blockface_template.py --from s8-frame --to member-warps         # the last step, at 0.25 mm
+$PY code/template/build_blockface_template.py --from s8-frame --to member-warps         # the eighth step, at 0.25 mm
 $PY code/template/build_link.py --plan                                                  # the template link
 ```
 
 The build prepares the members ([overview](../overview.md#the-templates)), runs the groupwise registration (seven nonlinear steps at 0.5 mm, an eighth at 0.25 mm), and averages every member moved once through its final warp.
-For a brain without MRI, only the photographed sections count fully, with a smooth ramp at their end, and at the last step its stand-in b0 also counts less where the tissue was not photographed.
+For a brain without MRI, only the photographed sections count fully, with a smooth ramp at their end, and at the eighth step its stand-in b0 also counts less where the tissue was not photographed.
 `build_link.py` registers the blockface template's b0 to the MRI template's b0, checks it against the registrations composed through each brain, and registers the template to NMT v2, INIA19 and CIVM-R.
 
 The members take about 5 minutes on the CPU.
-On a GPU, the first stage takes about 8.5 hours and the last step about 17 hours (estimated), plus about 2.5 hours of CPU steps; both need the card to themselves.
+On a GPU, the first stage takes about 8.5 hours and the eighth step about 17 hours (estimated), plus about 2.5 hours of CPU steps; both need the card to themselves.
 The link takes about 13 minutes on a GPU.
 Everything is written under `$LINC_WORK/build_blockface_template/` and `$LINC_WORK/build_link/`; the finished blockface channel is the data folder's `template/outputs/template_blockface_*`.
 
@@ -237,6 +239,7 @@ $ANATOMIX_PYTHON code/template/blockface_step9.py in-mri                 # the s
 The start takes about 8 minutes on 8 cores.
 Each round registers 22 volumes (each brain and its mirror image), about 7 minutes each on a 48 GB card, of which a registration uses about 36 GB.
 A round takes under 3 hours on one card; `register --it <k> --gpu <n>` started on more cards shares the work.
+The paper's run, the three rounds and the final average, took 3 hours 25 minutes on four 48 GB cards; on one card it takes about 10 hours.
 `final` writes the template to `$LINC_WORK/build_blockface_template/step9/final/` and its checks to `checks.json` there: sharper than the start, still matching step 8 at a coarse scale, exactly symmetric, and no folding anywhere.
 Without a GPU, `final --fields-from <the data folder's template/intermediate/construction/step9_fields>` averages the brains through the paper's own fields and reproduces the published template exactly, in about 20 minutes.
 `build_blockface_template.py` runs the same commands as its steps `s9-start` to `s9-in-mri`.
@@ -249,7 +252,7 @@ Axial views have anterior up.*
 ## 4. Checks
 
 **Look through the volume** (`<ID>_blockface_L2.nii.gz`, in FSLeyes or ITK-SNAP) from front to back.
-A good volume has the brain dorsal side up, no step in the brain's outline from one section to the next (an uncorrected camera jump), and a mask and tubes that follow the tissue.
+A good volume has the brain dorsal side up, no step in the brain's outline from one section to the next (an uncorrected camera jump), and a mask and markers that follow the tissue.
 
 **Check each registration** with `linc-register qc`, which records pass or fail in the transform's folder, with a picture in three planes and a JSON row of every measure.
 Its presets (`bf2b0`, `direct`, `bf2bftemplate`, `b02template`, `template2template`) hold the paper's settings for each kind of registration, and it fails a registration when:

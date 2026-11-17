@@ -47,7 +47,7 @@ NUMBERS_LINC := \
   blockface_params_r073 registration_params_r073 tracer_label_volumes_r058d tracer_alic_topography_r058d r060_target_comparison \
   lgnstn_targets_r060c mf8_s46_drop_r068 histology_h9 \
   tracer_sections_v2 tracer_connected_v2c tracer_label_volumes_v2c tracer_alic_topography_v2c tracer_interp_accounting_v2 \
-  tracer_placement_v2c tracer_template_v2_all tracer_alic_topography_v5 lgnstn_label_volumes
+  tracer_placement_v2c tracer_template_v2_all tracer_alic_topography_v5 lgnstn_label_volumes lgnstn_label_extents
 NUMBERS_MRI := variants_leave_self_out_rebuild_fa025 variability_four_brains_r061 lobo_t2_rebuild \
   labels_overlap_current lgnstn_geometry_current \
   lgnstn_b0_visibility_r059 lgnstn_midplane_planes_r059 r057_mri_facts_b

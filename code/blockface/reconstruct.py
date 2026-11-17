@@ -530,7 +530,7 @@ def _clear_outside(vol, keep4, US):
 
 
 def _inpaint_holes(vol, holes, dilate=None, margin=None):
-    """Fill the drilled punch-hole tubes of a masked brain (D0,nz,H,3) with a MULTISCALE biharmonic fill.
+    """Fill the fiducial markers (the round holes in the block face) of a masked brain (D0,nz,H,3) with a MULTISCALE biharmonic fill.
 
     The holes live on the L4 (0.32 mm) grid; at the reconstruction level (L1, US=2**(4-RECON_LEVEL)) their soft
     dark rim is RESOLVED and pokes beyond the block-upsampled mask, and a direct L1 biharmonic over the big blocky

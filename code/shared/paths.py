@@ -9,7 +9,7 @@ Set once per shell (or pass the same values on the command line of each entry po
     LINC_RAW       the raw acquisitions as delivered (blockface photographs, MRI, histology); read-only inputs
     LINC_MODELS    the trained networks' weights (see models/: cards, checksums, download)
     LINC_PRODUCTS  the intermediate products the scripts in code/figures and code/template read (per-piece tables, carried labels, warped inputs, ...);
-                   logical names map to paths relative to this root in settings/internal/products_<lane>.yaml (see products())
+                   logical names map to paths relative to this root in settings/internal/products_<part>.yaml (products_mri, products_blockface, products_figures, ...; see products())
 """
 import os
 from pathlib import Path

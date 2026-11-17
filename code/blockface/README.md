@@ -6,8 +6,8 @@ It runs in `$PY_TIRL` (`settings/env/tirl.yml`) with the settings in `settings/b
 ## Commands
 
 ```bash
-$PY_TIRL code/blockface/linc-reconstruct all --subject <ID>
-$PY_TIRL code/blockface/linc-reconstruct <step> --subject <ID> [--keep-work]
+$PY_TIRL code/blockface/linc-reconstruct all --subject <ID> [--keep-work]
+$PY_TIRL code/blockface/linc-reconstruct <step> --subject <ID>             # volume and tubes also take --keep-work
 $PY_TIRL code/blockface/linc-reconstruct edit-photo-masks export|import --subject <ID>
 ```
 
@@ -15,7 +15,7 @@ $PY_TIRL code/blockface/linc-reconstruct edit-photo-masks export|import --subjec
 
 ## Inputs and outputs
 
-It reads the photographs from `$LINC_RAW/<raw>`, the brain's settings file and any corrected masks in `$LINC_DATA/sub-<ID>/blockface/curated/`, and writes the volume, its brain mask and its marker tubes to `$LINC_DATA/sub-<ID>/blockface/`.
+It reads the photographs from `$LINC_RAW/<raw>`, the brain's settings file and any corrected masks in `$LINC_DATA/sub-<ID>/blockface/curated/`, and writes the volume, its brain mask and its fiducial markers (the round holes in the block face) to `$LINC_DATA/sub-<ID>/blockface/`.
 [02, Step 1](../../docs/tutorials/02_blockface.md#step-1-reconstruct-the-volume) lists the files.
 
 ## Files

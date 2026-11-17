@@ -592,7 +592,7 @@ def main():
         return x0, x1
 
     HEAD = dict(a=("Photograph", ""), b=("Camera jump", ""), c=("Interpolated sections", "Aligned stack"), d=("3D mask", ""),
-                e=("Intensity correction", ""), f=("Marker tubes", ""), g0=("Reconstructed volume", ""), g1=("", ""), g2=("", ""))
+                e=("Intensity correction", ""), f=("Fiducial markers", ""), g0=("Reconstructed volume", ""), g1=("", ""), g2=("", ""))
     # the planes are in the caption; the direction letters show each view (the author, 12 Nov 2026)
     PAGE = FS.FULL_W_IN / FS.MM
 

@@ -485,8 +485,8 @@ def main():
                 assert a1 <= b0 or b1 <= a0 or a3 <= b2 or b3 <= a2, f"direction letter {t.get_text()} touches an image or a label"
 
     # (1) two constructions of one style
-    for k, x, y, s in (("i_t2", C1, R1, "T2-weighted"), ("i_dec", C2, R1, "Tensor"), ("i_f1", C1, R2, "Soma fraction"),
-                       ("i_f2", C2, R2, "Neurite fraction"), ("t_t2", T1c, R1, "T2-weighted"), ("t_dec", T2c, R1, "Tensor"),
+    for k, x, y, s in (("i_t2", C1, R1, "T2-weighted"), ("i_dec", C2, R1, "Principal direction"), ("i_f1", C1, R2, "Soma fraction"),
+                       ("i_f2", C2, R2, "Neurite fraction"), ("t_t2", T1c, R1, "T2-weighted"), ("t_dec", T2c, R1, "Principal direction"),
                        ("t_f1", T1c, R2, "Soma fraction"), ("t_f2", T2c, R2, "Neurite fraction"), ("photo", xp, R3, "Photograph"),
                        ("bfvol", xv, R3, "Blockface volume")):
         image(k, x, y); label(k, s)

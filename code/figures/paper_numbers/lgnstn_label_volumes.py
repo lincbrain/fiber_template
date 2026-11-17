@@ -14,8 +14,9 @@ What it does
   and their mean and range over the three brains and both hemispheres.
 
 You get
-  $LINC_NUMBERS/lgnstn_label_volumes<tag>.json, one per set (the labels carried through the histology registrations with the
-  per-component nonlinear stiffness)
+  $LINC_NUMBERS/lgnstn_label_volumes<tag>b.json, one per set (the labels carried through the histology registrations with the
+  per-component nonlinear stiffness). The values are not rounded: the paper rounds once, when it prints them. The records without the
+  final b, written before 16 Nov 2026, rounded to 2 or 3 decimals first, so a printed value could differ from them in its last digit.
 
     python code/figures/paper_numbers/lgnstn_label_volumes.py
 """
@@ -31,7 +32,7 @@ sys.path.insert(0, str(REPO / "code"))
 from shared import paths, provenance  # noqa: E402
 from labels import route as RT  # noqa: E402
 
-NAME = "lgnstn_label_volumes"                                       # + the set's tag
+NAME = "lgnstn_label_volumes"                                       # + the set's tag + "b" (unrounded values)
 SUBJ = ["MR243", "MR252", "MR256"]
 EDGES = ("ventral", "lateral", "dorsal", "medial")
 NOTE = ("mm3 = voxel count x voxel volume on the template grid; edges = 5th/95th percentiles of the label's voxel coordinates "
@@ -62,18 +63,18 @@ def record(tag, labdir):
             o = {}
             for S in SUBJ:
                 p = labdir / S / f"{S}_{st}_mri-template_mask_demons.nii.gz"; o[names[S]] = measure(p); inputs.append(p)
-            per[st] = dict(sarm_mm3=round(s["mm3"], 2), drawn_mm3={k: round(v["mm3"], 2) for k, v in o.items()},
-                           drawn_mean_mm3=round(float(np.mean([v["mm3"] for v in o.values()])), 2),
-                           **{f"sarm_minus_drawn_{e}_edge_mm": {k: round(s[e] - v[e], 3) for k, v in o.items()} for e in EDGES})
-        out[nuc] = dict(sarm_mm3=round(float(np.mean([per[h + nuc]["sarm_mm3"] for h in ("lh", "rh")])), 2),
-                        drawn_mm3=round(float(np.mean([v for h in ("lh", "rh") for v in per[h + nuc]["drawn_mm3"].values()])), 2),
+            per[st] = dict(sarm_mm3=s["mm3"], drawn_mm3={k: v["mm3"] for k, v in o.items()},
+                           drawn_mean_mm3=float(np.mean([v["mm3"] for v in o.values()])),
+                           **{f"sarm_minus_drawn_{e}_edge_mm": {k: float(s[e] - v[e]) for k, v in o.items()} for e in EDGES})
+        out[nuc] = dict(sarm_mm3=float(np.mean([per[h + nuc]["sarm_mm3"] for h in ("lh", "rh")])),
+                        drawn_mm3=float(np.mean([v for h in ("lh", "rh") for v in per[h + nuc]["drawn_mm3"].values()])),
                         per_hemisphere=per)
         for e in EDGES:
             v = [x for h in ("lh", "rh") for x in per[h + nuc][f"sarm_minus_drawn_{e}_edge_mm"].values()]
-            out[nuc][f"sarm_minus_drawn_{e}_edge_mm_mean_range"] = [round(float(np.mean(v)), 3), round(float(min(v)), 3), round(float(max(v)), 3)]
-        print(nuc, "SARM", out[nuc]["sarm_mm3"], "drawn", out[nuc]["drawn_mm3"], flush=True)
+            out[nuc][f"sarm_minus_drawn_{e}_edge_mm_mean_range"] = [float(np.mean(v)), float(min(v)), float(max(v))]
+        print(nuc, "SARM", round(out[nuc]["sarm_mm3"], 2), "drawn", round(out[nuc]["drawn_mm3"], 2), flush=True)
     out["note"] = NOTE
-    print(provenance.write_numbers(NAME + tag, out, inputs=inputs, md5=False, cmd="python code/figures/paper_numbers/lgnstn_label_volumes.py"))
+    print(provenance.write_numbers(NAME + tag + "b", out, inputs=inputs, md5=False, cmd="python code/figures/paper_numbers/lgnstn_label_volumes.py"))
 
 
 if __name__ == "__main__":

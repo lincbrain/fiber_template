@@ -19,7 +19,7 @@ It builds a macaque brain template from ex vivo MRI and blockface photographs, a
 - Move images between the template and NMT v2, INIA19 or CIVM-R ([01, Step B3](docs/tutorials/01_mri.md#step-b3-bring-images-into-the-template)).
 - Align a brain's MRI to the template through its b0 ([01, part B](docs/tutorials/01_mri.md#b-a-new-brains-b0)).
 - Reconstruct a 3D blockface volume from blockface photographs ([02, Step 1](docs/tutorials/02_blockface.md#step-1-reconstruct-the-volume)).
-- Register a blockface volume to the brain's own b0 or, if the brain has no MRI, to the blockface template ([02, Steps 3 and 4](docs/tutorials/02_blockface.md#step-3-register-the-volume-to-the-brains-own-b0-a-brain-with-mri)).
+- Register a blockface volume to the brain's own b0 or to the blockface template, the route every brain's histology takes; a brain without MRI has only the second ([02, Steps 3 and 4](docs/tutorials/02_blockface.md#step-3-register-the-volume-to-the-brains-own-b0-a-brain-with-mri)).
 - Synthesize the tissue that a brain's photographs do not cover ([02, Step 5](docs/tutorials/02_blockface.md#step-5-synthesize-the-tissue-that-was-never-photographed)).
 - Register histology sections to their blockface photographs and carry their labels into the template ([03](docs/tutorials/03_histology.md)).
 - Make brain masks of MRI images and blockface photographs ([code/shared/segment](code/shared/segment/README.md)).
@@ -45,7 +45,7 @@ Then continue with [docs/tutorials/00_start_here.md](docs/tutorials/00_start_her
 ## Documentation
 
 The [tutorials](docs/tutorials/00_start_here.md) walk through the method on the paper's brains, and the [overview](docs/overview.md) explains how the parts fit together.
-[docs/README.md](docs/README.md) lists every other page, including the [how-to](docs/how-to/new_brain.md) for a new brain, [troubleshooting](docs/troubleshooting.md) and the [FAQ](docs/faq.md).
+[docs/README.md](docs/README.md) lists every other page, including the [how-to](docs/how-to/new_brain.md) for a new brain, [training the networks again](docs/how-to/train_models.md), [troubleshooting](docs/troubleshooting.md) and the [FAQ](docs/faq.md).
 
 ## The data
 

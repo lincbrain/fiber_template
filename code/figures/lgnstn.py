@@ -25,7 +25,7 @@ where both nuclei show as dark bodies between bright fiber tracts (T2 shows them
 its carried probability map (lgnstn_labels <ID>_<struct>_mri-template_prob_demons; the mask of record is prob > 0.5), drawn with
 sub-voxel interpolation instead of voxel steps; SARM's binary nucleus is smoothed by the anti-aliasing rule of record (FWHM 0.25 mm)
 before its 0.5 contour. The same layout, section centers, colors and window.
-11 Nov 2026 (AY's comment, the author's request): orientation letters once, on the left hemisphere's view headers: L and R on the
+11 Nov 2026 (a co-author's comment, the author's request): orientation letters once, on the left hemisphere's view headers: L and R on the
 coronal and axial views, P and A on the sagittal views (as figstyle.section draws them: neurological, anterior up on axial, anterior
 right on sagittal); the axial view's A on one more header line above and its P below the bottom row, because the panels sit 0.5 mm
 apart. The header band is 2.54 mm taller (60 px at 600 ppi) and the group headers one line higher; nothing else moves.
