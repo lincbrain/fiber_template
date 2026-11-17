@@ -117,7 +117,7 @@ for S in "${IDS[@]}"; do
   fi
   echo "sub-$S: $( is_rebuild "$S" && echo "rebuild (manual inputs copied)" || echo "products of record linked" )"
 done
-for e in "$REC/template"/*; do link "$e" "$DEST/template/$(basename "$e")"; done
+for e in "$REC/template"/*; do [ -e "$e" ] || [ -L "$e" ] || continue; link "$e" "$DEST/template/$(basename "$e")"; done
 link "$REC/template/mri_template_0p5.nii.gz" "$DEST/template/frames/mri_template_0p5.nii.gz"
 for kv in "${RAWS[@]:-}"; do [ -n "$kv" ] && link "${kv#*=}" "$DEST/raw/${kv%%=*}"; done
 for kv in "${LINKS[@]:-}"; do                # ID:PATH=TARGET -> <dest>/data/sub-ID/PATH links to TARGET (an input kept elsewhere)

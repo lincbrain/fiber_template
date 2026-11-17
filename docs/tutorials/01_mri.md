@@ -42,7 +42,7 @@ Its manually corrected brain mask is `manual_annotations/MR243_b0_brain_mask.nii
 
 Part A rebuilds the template; you do not need it for a new brain.
 Its driver, `code/template/build_mri_channels.py`, has one step per stage and brain: `--plan` lists them, and `$PY run.py --plan --only mri-template` prints the exact commands and checks.
-The driver works in its own folder, which is why its commands set `LINC_DATA=$LINC_MRI_DATA`, and it reruns a step whose outputs exist only with `--force`.
+The driver works in its own folder, which is why its commands set `LINC_DATA=$LINC_MRI_DATA`, and it reruns a step whose outputs exist only with `--force`, which replaces them; a step that stopped partway needs it too.
 
 Steps A1 to A7 run once for each of MF283, MF284, MF285 and MF286:
 

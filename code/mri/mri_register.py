@@ -25,8 +25,10 @@ You get
   nmt        <MRI folder>/landmarks/nmt_affine_0GenericAffine.mat and SARM6_in_subject.nii.gz
   links      the registry entries b0-native__to__mri-canonical/ and mri-canonical__to__mri-template/, so that python -m shared.xfm moves
              images between the brain's spaces and the template
+  A registry entry that exists is refused before any work is done; --overwrite replaces it, after a backup of the old one under
+  $LINC_WORK/xfm_backup/.
 
-    python -m mri.mri_register t2 --subject MF283 [--out <dir>] [--device cuda:0]
+    python -m mri.mri_register t2 --subject MF283 [--out <dir>] [--device cuda:0] [--overwrite]
     python -m mri.mri_register micro --subject MF283
     python -m mri.mri_register nmt --subject MF283
     python -m mri.mri_register links --subject MF283 --run $LINC_WORK/build_mri_channels/runs/rb_final
@@ -45,7 +47,7 @@ import nibabel as nib
 import numpy as np
 
 from shared import paths, xfm
-from mri.mri_prep import Brain
+from mri.mri_prep import Brain, remove_own
 from template.tools import REPO, ants, recipe, run
 
 ENGINE = "anatomix + FireANTs (settings/env/anatomix.yml)"
@@ -63,18 +65,32 @@ def affine_init(fixed, moving, fmask, mmask, prefix):
     return f"{prefix}0GenericAffine.mat"
 
 
-def _entry(b, src, warp, engine, sigma):
+def _free(b, src, dst, overwrite):
+    """Stop before any work when the registry entry exists, unless it is to be replaced. A folder without meta.json is what a write
+    that stopped partway left: not an entry, and in the way of the next one, so with overwrite it is removed."""
+    d = xfm.xfm_dir(src, dst, b.subject, b.xfm_root)
+    if (d / "meta.json").exists():
+        if not overwrite:
+            sys.exit(f"{d} exists: --overwrite replaces it (the old entry is backed up under $LINC_WORK/xfm_backup/)")
+    elif d.exists() or d.is_symlink():
+        if not overwrite:
+            sys.exit(f"{d} holds an entry that was not finished: --overwrite removes it")
+        remove_own(d)
+
+
+def _entry(b, src, warp, engine, sigma, overwrite=False):
     return xfm.register(src, "b0-native", [("warp", "itk_lps_disp", warp)], subject=b.subject, dst_grid=b("b0"), engine=engine,
-                        config=dict(resolution_mm=0.25, warp_sigma=sigma), root=b.xfm_root)
+                        config=dict(resolution_mm=0.25, warp_sigma=sigma), root=b.xfm_root, overwrite=overwrite)
 
 
-def t2(b, out, device):
+def t2(b, out, device, overwrite=False):
     from blockface.registration import featurereg
+    _free(b, "t2-native", "b0-native", overwrite)
     aff = affine_init(b("b0_n4_brain"), b("t2_brain"), b("dwi_mask"), b("t2_mask"), out / "affine_")
     featurereg.register(str(b("b0_n4_brain")), str(b("t2_brain")), str(b("dwi_mask")), str(b("t2_mask")), str(out), affine=aff,
                         resolution=0.25, device=device, loss="cc", lr=1.0, smooth_grad_sigma=1.5, smooth_warp_sigma=1.25,
                         channel_chunk=8)
-    return _entry(b, "t2-native", out / "warp_mri_to_psoct.nii.gz", f"featurereg, {ENGINE}", 1.25)
+    return _entry(b, "t2-native", out / "warp_mri_to_psoct.nii.gz", f"featurereg, {ENGINE}", 1.25, overwrite)
 
 
 class _Pull:
@@ -93,7 +109,8 @@ class _Pull:
         return [c.label for c in self.comps]
 
 
-def micro(b, out, device):
+def micro(b, out, device, overwrite=False):
+    _free(b, "micro-native", "b0-native", overwrite)
     micro_b0 = b.mri_root / "micro" / "b0_brain_n4.nii.gz"
     aff = affine_init(b("b0_n4_brain"), micro_b0, b("dwi_mask"), b("micro_mask"), out / "affine_")
     S = np.linalg.inv(xfm.read_itk_affine(aff))                       # micro world -> b0 world (RAS, push): the symmetric start
@@ -108,7 +125,7 @@ def micro(b, out, device):
     Hinv = xfm.Affine(np.loadtxt(sym / "Hinv.txt"))
     chain = _Pull([Hinv, xfm.Warp(sym / "F_ras_disp.nii.gz", "ras_disp"), Hinv])
     xfm.compose(chain, b("b0"), out / "warp_mri_to_psoct.nii.gz", fmt="itk")
-    return _entry(b, "micro-native", out / "warp_mri_to_psoct.nii.gz", f"symreg, {ENGINE}", 0.75)
+    return _entry(b, "micro-native", out / "warp_mri_to_psoct.nii.gz", f"symreg, {ENGINE}", 0.75, overwrite)
 
 
 def nmt(b, out, device):
@@ -128,20 +145,22 @@ def nmt(b, out, device):
     return b("sarm_in_subject")
 
 
-def links(b, run, out):
+def links(b, run, out, overwrite=False):
+    for src, dst in (("b0-native", "mri-canonical"), ("mri-canonical", "mri-template")):
+        _free(b, src, dst, overwrite)
     R = recipe(); k = R["channels"]; mod = R["scalar_modalities"][0]["name"]; run = Path(run)
     grid = run / "standardspace.nii.gz"                               # the canonical grid, which is also the template's
     T = out / "T_subject_to_canonical.txt"
     M = np.asarray(json.loads((b.mri_root / "landmarks" / "canonical.json").read_text())["T_subject_to_canonical"], float)
     np.savetxt(T, M)
     e = xfm.register("b0-native", "mri-canonical", [("affine", "ras_push", T)], subject=b.subject, dst_grid=grid, src_grid=b("b0"),
-                     engine="the canonical frame (mri.canonical)", root=b.xfm_root)
+                     engine="the canonical frame (mri.canonical)", root=b.xfm_root, overwrite=overwrite)
     off = float(np.abs(M[:3, :3].T @ M[:3, :3] - np.eye(3)).max())    # rigid: its rotation part is orthonormal
     xfm.set_qc(e.dir, "pass" if off < 1e-6 else "fail", check="the frame is rigid", orthonormality_error=off)
     it = run / "out" / f"nln_step_{k['step']:02d}" / f"iteration_{k['iteration']:02d}"
     warp = it / f"{b.subject}_scalar_mod_01_to_template_warp_resampled_unbiased_full.nii.gz"
     e = xfm.register("mri-canonical", "mri-template", [("warp", "fsl_rel", warp)], subject=b.subject, dst_grid=grid, src_grid=grid,
-                     engine="MMORF 1.0.1 through the patched template-construction driver", root=b.xfm_root)
+                     engine="MMORF 1.0.1 through the patched template-construction driver", root=b.xfm_root, overwrite=overwrite)
     moved = out / "t2_input_in_template.nii.gz"                       # the entry against the driver's own resampling of this input
     xfm.apply(xfm.Chain([e]), run / "data" / mod / b.subject / mod / f"{mod}_unbiased_brain.nii.gz", grid, moved)
     x = np.asanyarray(nib.load(str(moved)).dataobj).astype(np.float64)
@@ -158,13 +177,19 @@ def main(argv=None):
     ap.add_argument("--out", help="the run files (default $LINC_WORK/mri_register/<ID>/<what>)")
     ap.add_argument("--device", default="cuda:0")
     ap.add_argument("--run", help="links: the finished MMORF run's folder")
+    ap.add_argument("--overwrite", action="store_true", help="t2, micro, links: replace an existing registry entry (the old one is backed up)")
     a = ap.parse_args(argv)
     os.umask(0o002)
     b = Brain(a.subject, a.mri_root, a.xfm_root)
     out = Path(a.out) if a.out else paths.work_root() / "mri_register" / a.subject / a.what
     out.mkdir(parents=True, exist_ok=True)
     t0 = time.time()
-    made = links(b, a.run, out) if a.what == "links" else {"t2": t2, "micro": micro, "nmt": nmt}[a.what](b, out, a.device)
+    if a.what == "links":
+        made = links(b, a.run, out, a.overwrite)
+    elif a.what == "nmt":
+        made = nmt(b, out, a.device)
+    else:
+        made = {"t2": t2, "micro": micro}[a.what](b, out, a.device, a.overwrite)
     print(made, f"({time.time() - t0:.0f} s)")
 
 

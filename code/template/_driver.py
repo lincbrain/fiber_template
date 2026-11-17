@@ -8,7 +8,9 @@ What it does
   --plan              prints every step (environment, estimated time, command, inputs, outputs) and runs nothing
   --step NAME [...]   runs these steps, in recipe order
   --from A --to B     runs the steps from A through B, in recipe order
-  --force             runs a step whose outputs already exist (by default it refuses: products are never overwritten silently)
+  --force             runs a step whose outputs already exist, and replaces them (by default it refuses: products are never
+                      overwritten silently). A step whose own command refuses existing files is told to replace them
+                      (the step's force_argv), so a step that broke partway can be run again
 You get
   for each step that ran, <work>/provenance/<NN>_<name>.json (the command, the environment variables it needs, start, end and wall
   time, the repository commit, every input and output with its size and, for files, md5; code/shared/provenance.py's record).
@@ -28,15 +30,17 @@ sys.path.insert(0, str(REPO / "code"))
 
 
 class Step:
-    def __init__(self, name, stage, env, argv, outputs, inputs=(), est="", note="", setenv=None, gpu=False, fn=None, plan_argv=None, driver_var="LINC_TEMPLATE_DRIVER"):
+    def __init__(self, name, stage, env, argv, outputs, inputs=(), est="", note="", setenv=None, gpu=False, fn=None, plan_argv=None, driver_var="LINC_TEMPLATE_DRIVER",
+                 force_argv=()):
         """env: "linc" (this script's python, settings/env/linc.yml), "mri" ($PY_MRI, settings/env/linc.yml's python), "driver" (the patched template
         driver, settings/env/linc.yml's python, MMORF on a GPU) or "anatomix" ($ANATOMIX_PYTHON, settings/env/anatomix.yml: the feature-based registration engine). argv: the command after the python (a list), or a callable returning it (evaluated at run time,
-        e.g. the driver's command line, which reads the run tree). fn: a Python function run in-process instead of a command. driver_var: the variable naming the driver's folder (the blockface build has its own)."""
+        e.g. the driver's command line, which reads the run tree). fn: a Python function run in-process instead of a command. driver_var: the variable naming the driver's folder (the blockface build has its own).
+        force_argv: what --force adds to the command, for a command that refuses to write over existing files unless told to."""
         self.name, self.stage, self.env, self.argv, self.outputs, self.inputs = name, stage, env, argv, list(outputs), list(inputs)
         self.est, self.note, self.setenv, self.gpu, self.fn, self.plan_argv = est, note, dict(setenv or {}), gpu, fn, plan_argv
-        self.driver_var = driver_var
+        self.driver_var, self.force_argv = driver_var, list(force_argv)
 
-    def command(self, plan=False):
+    def command(self, plan=False, force=False):
         if self.fn is not None:
             return [f"(in-process) {self.fn.__name__}"]
         argv = self.argv
@@ -49,7 +53,7 @@ class Step:
                 argv = self.plan_argv or ["<computed at run time from the run tree>"]
         py = (sys.executable if self.env == "linc" else os.environ.get("ANATOMIX_PYTHON", "$ANATOMIX_PYTHON") if self.env == "anatomix"
               else os.environ.get("PY_MRI", "$PY_MRI"))
-        return [py, *[str(a) for a in argv]]
+        return [py, *[str(a) for a in argv], *(self.force_argv if force else [])]
 
 
 def _record(p):
@@ -116,18 +120,21 @@ def run_step(i, step, work, force=False):
     _check_env(step)
     done = [p for p in step.outputs if Path(p).exists()]
     if done and not force:
-        raise SystemExit(f"step {step.name}: outputs exist ({', '.join(map(str, done))}); pass --force to run it again")
+        raise SystemExit(f"step {step.name}: outputs exist ({', '.join(map(str, done))}); pass --force to run it again and replace them")
     missing = [p for p in step.inputs if not Path(p).exists()]
     if missing:
         raise SystemExit(f"step {step.name}: inputs missing: {', '.join(map(str, missing))}")
-    cmd = step.command()
+    cmd = step.command(force=force)
     env = dict(os.environ, **{k: v.replace("$PATH", os.environ.get("PATH", "")) for k, v in step.setenv.items()})
     t0, start = time.time(), datetime.datetime.now().astimezone().isoformat(timespec="seconds")
     print(f"== {step.name}\n  $ " + " ".join(shlex.quote(c) for c in cmd), flush=True)
     if step.fn is not None:
         step.fn()
     else:
-        subprocess.run(cmd, check=True, cwd=str(REPO), env=env)
+        rc = subprocess.run(cmd, cwd=str(REPO), env=env).returncode
+        if rc:                                                                 # the command's own message is the last thing it printed
+            hint = f"; --force here passes it {' '.join(step.force_argv)}" if step.force_argv and not force else ""
+            raise SystemExit(f"step {step.name} stopped (exit status {rc}): its message is above{hint}")
     wall = round(time.time() - t0, 1)
     from shared.provenance import provenance_dict
     rec = provenance_dict(step.name, cmd=" ".join(shlex.quote(c) for c in cmd), wall_s=wall,

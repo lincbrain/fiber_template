@@ -2,7 +2,8 @@
 # Check that the installation works, before downloading any data.
 #
 # You need
-#   the environments' interpreters (settings/env/README.md), or linc_envs.sh sourced:
+#   the environments' interpreters (settings/env/README.md). It takes them from envs/linc_envs.sh, which install.sh writes, unless PY
+#   is already set (a shell that sourced linc_envs.sh or settings/roots.sh, or your own choice):
 #     PY       settings/env/linc.yml        (default: python3 on PATH)
 #     PY_DEEP  settings/env/deep.yml        (default: PY)
 #     PY_TIRL  settings/env/tirl.yml        for the reconstruction and histology steps; without it or without TIRL those two steps SKIP and name the
@@ -21,6 +22,10 @@
 #   bash tests/selftest.sh                       # or: make -C code/figures test
 set -u
 cd "$(dirname "$0")/.."
+if [ -z "${PY:-}" ]; then                       # the environments install.sh built, unless the shell already names them
+  if [ -f envs/linc_envs.sh ]; then . envs/linc_envs.sh
+  else echo "linc self-test: PY is not set and there is no envs/linc_envs.sh: run bash install.sh first, or source <prefix>/linc_envs.sh. Trying python3 on PATH"; fi
+fi
 PY=${PY:-python3}; PY_DEEP=${PY_DEEP:-$PY}; PY_TIRL=${PY_TIRL:-}
 export PYTHONNOUSERSITE=1                       # packages in ~/.local must not shadow the environment's own (settings/env/README.md)
 LOG=${TMPDIR:-/tmp}/linc_selftest_$$; mkdir -p "$LOG"
@@ -47,6 +52,8 @@ step weights               bash -c "$PY tests/verify_weights.py settings/models/
 step test_segment          "$PY_DEEP" tests/run.py tests/test_segment.py
 step test_completion       "$PY_DEEP" tests/run.py tests/test_completion.py
 step test_blockface_rules  "$PY_DEEP" tests/run.py tests/test_blockface_rules.py
+step test_data_folder      "$PY"      tests/run.py tests/test_link_data.py
+step test_build_force      "$PY"      tests/run.py tests/test_build_force.py
 
 # --- the command lines on toy data
 step linc-info             "$PY"      code/shared/linc-info

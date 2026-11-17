@@ -18,7 +18,7 @@ $PY code/template/build_mri_channels.py --step <name>        one step
 $PY code/template/build_mri_channels.py --from <a> --to <b>  a range
 ```
 
-A step whose outputs exist does not run again without `--force`, and each step writes a provenance file.
+A step whose outputs exist, or that stopped partway, does not run again without `--force`, which replaces what is there; each step writes a provenance file.
 The groupwise registrations run MMORF through the template-construction driver of Arthofer et al. with our edits ([patches/](patches/README.md)).
 
 ## Inputs and outputs

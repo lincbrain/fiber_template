@@ -21,7 +21,7 @@ reference grid), T2 (multi-echo MSME, 0.5 mm) and SANDI microstructure (0.5 mm).
        model_mask    the final mask (lossless uint8 copy; the mask file itself is never modified)
      plus every output's exact mirror (<name>_flip; tensors with xy, xz negated).
 
-    python -m mri.mri_prep stage --subject MF283 --preprocessed <folder: dwi/, msme/, dt2/> [--mri-root ...]
+    python -m mri.mri_prep stage --subject MF283 --preprocessed <folder: dwi/, msme/, dt2/> [--mri-root ...] [--overwrite]
     python -m mri.mri_prep prepare --subject MF283 --final-mask <MF283_mask_EDIT.nii.gz> --tensor <tensor_d9_dwigrid>
         [--mri-root $LINC_DATA/sub-MF283/mri] [--xfm-root $LINC_DATA/sub-MF283/xfm] [--canonical <canonical.json>] [--out <dir>]
 
@@ -219,17 +219,33 @@ def stage_micro(b, sandi_fracs_mean, sandi_fracs_std):
     normalize_fracs_and_weights(b)
 
 
-def stage(b, preprocessed):
+def remove_own(folder):
+    """Remove a folder an earlier run of this module wrote, to write it again. A link inside it is removed, never the file it leads
+    to; a folder that is itself a link is not ours to remove."""
+    import shutil
+    folder = Path(folder)
+    if folder.is_symlink():
+        raise SystemExit(f"{folder} is a link, not a folder this step wrote: not removed")
+    if folder.exists():
+        shutil.rmtree(folder)
+
+
+def stage(b, preprocessed, overwrite=False):
     """One brain's staged inputs from its three folders of preprocessed files (<preprocessed>/dwi, msme, dt2): stage_raw,
     stage_dwi, stage_t2, stage_micro (SANDIdot's fractions), and the tensor's diffusion files copied under dwi/raw/.
-    Refuses when the brain's staged b0 exists (released data are never overwritten)."""
+    Refuses when the brain's staged b0 exists (staged data are never overwritten silently), also when an earlier run stopped
+    partway. With overwrite it starts over: the brain's dwi/, t2/ and micro/ folders, which hold only staged files, are removed
+    first; the masks, which are inputs, stay."""
     import shutil
     pre = Path(preprocessed); d, t, m = pre / "dwi", pre / "msme", pre / "dt2" / "tortoise"
-    if b("b0").exists():
-        raise SystemExit(f"{b('b0')} exists: this brain is staged already")
+    if b("b0").exists() and not overwrite:
+        raise SystemExit(f"{b('b0')} exists: this brain is staged already, or an earlier run stopped partway (--overwrite stages it again)")
     missing = [str(b(k)) for k in ("dwi_mask", "t2_mask", "micro_mask") if not b(k).exists()]
     if missing:
         raise SystemExit("the brain masks are inputs: missing " + ", ".join(missing))
+    if overwrite:
+        for sub in ("dwi", "t2", "micro"):
+            remove_own(b.mri_root / sub)
     stage_raw(b, d / "dwi_biascorr.nii.gz", t / "msme_denoised_las.nii.gz", m / "dwi_biascorr.nii.gz")
     stage_dwi(b); stage_t2(b)
     sandi = m / "microstructure" / "SANDIdot"
@@ -346,13 +362,15 @@ def check_masked(image, mask, tol=0.001, dist_mm=2.0, rel=0.01, label=""):
     return dict(label=label, image=str(image), nonzero=n, out_dilated=round(out, 5), far_signal=round(bad, 5))
 
 
-def prepare(b, final_mask, tensor, out, canonical_json=None, check_inputs=True):
+def prepare(b, final_mask, tensor, out, canonical_json=None, check_inputs=True, overwrite=False):
     """The construction inputs of one brain (see the module docstring) -> out/. `b` is a Brain; final_mask the brain's final
     manually edited mask on the dwi b0 grid (values exactly {0, 1}); tensor the D9 tensor on the dwi grid; canonical_json the brain's
-    frame (default <mri_root>/landmarks/canonical.json)."""
+    frame (default <mri_root>/landmarks/canonical.json). Refuses an existing out/ unless overwrite, which removes it first."""
     out = Path(out)
-    if out.exists():
-        raise SystemExit(f"{out} exists: refusing to overwrite")
+    if out.exists() or out.is_symlink():
+        if not overwrite:
+            raise SystemExit(f"{out} exists: refusing to overwrite (--overwrite replaces it)")
+        remove_own(out)
     mask_src = Path(final_mask).resolve()
     b0 = nib.load(str(b("b0"))); mk = nib.load(str(mask_src))
     M = np.asanyarray(mk.dataobj)
@@ -446,19 +464,21 @@ def main(argv=None):
     p.add_argument("--tensor", required=True, help="the D9 tensor on the dwi grid (tensor_d9)")
     p.add_argument("--mri-root"); p.add_argument("--xfm-root"); p.add_argument("--canonical")
     p.add_argument("--out", help="default <mri-root>/construction_inputs")
+    p.add_argument("--overwrite", action="store_true", help="replace an existing output folder (by default it refuses)")
     g = sub.add_parser("stage", help="one brain's staged inputs from its preprocessed files")
     g.add_argument("--subject", required=True); g.add_argument("--preprocessed", required=True, help="the brain's folder: dwi/, msme/, dt2/")
     g.add_argument("--mri-root")
+    g.add_argument("--overwrite", action="store_true", help="stage the brain again: its dwi/, t2/ and micro/ folders are removed first (by default it refuses)")
     t = sub.add_parser("tensor", help="the D9 tensor of one brain")
     for k in ("eddy-series", "ecclog", "bvecs", "bvals", "fit-mask", "dwi-mask", "out"):
         t.add_argument(f"--{k}", required=True)
     t.add_argument("--current-tensor"); t.add_argument("--threads", type=int, default=8)
     a = ap.parse_args(argv)
     if a.cmd == "stage":
-        stage(Brain(a.subject, a.mri_root), a.preprocessed)
+        stage(Brain(a.subject, a.mri_root), a.preprocessed, a.overwrite)
     elif a.cmd == "prepare":
         b = Brain(a.subject, a.mri_root, a.xfm_root)
-        rec = prepare(b, a.final_mask, a.tensor, a.out or b.mri_root / "construction_inputs", a.canonical)
+        rec = prepare(b, a.final_mask, a.tensor, a.out or b.mri_root / "construction_inputs", a.canonical, overwrite=a.overwrite)
         print(json.dumps(rec["coverage_in_model_mask"], indent=1))
     else:
         print(tensor_d9(a.eddy_series, a.ecclog, a.bvecs, a.bvals, a.fit_mask, a.dwi_mask, a.out, a.threads, a.current_tensor))

@@ -3,6 +3,26 @@
 Problems we have run into, why they happen, and what to do.
 To judge whether a registration is good, see each tutorial's checks: [01](tutorials/01_mri.md#4-checks), [02](tutorials/02_blockface.md#4-checks), [03](tutorials/03_histology.md#4-checks).
 
+## Setup
+
+The steps are in the README's [quick start](../README.md#quick-start) and in [00](tutorials/00_start_here.md#before-you-start).
+
+**`source settings/roots.sh` says a folder is not the data folder.**
+`LINC_DATA` must be the data folder itself, the one that holds `brains/`, `template/`, `models/` and `paper/`, not a folder inside it such as `brains/`.
+Set `LINC_DATA` again and source the file again; the message names the folder that looks right when it is one or two levels up.
+
+**`source settings/roots.sh` says `outputs/` was built from another data folder.**
+The working folders in `outputs/` hold copies of one data folder's manual inputs, and your results from it, so they are not reused for another.
+Move `outputs/` aside or delete it, then source the file again; or go back to the first folder.
+
+**An error names a file under `outputs/in/`.**
+`outputs/in/` holds one link per file of the data folder, under the name the code knows it by, so the data folder does not have that file.
+`settings/files.tsv` says where it belongs: search it for the part of the name after `outputs/in/`.
+
+**The self-test fails with import errors.**
+It ran with the system's Python instead of the environments.
+It takes them from `envs/linc_envs.sh`, which `install.sh` writes; if they were installed elsewhere (`--prefix`), source that folder's `linc_envs.sh` first.
+
 ## MRI
 
 The steps are in [01](tutorials/01_mri.md).
@@ -47,7 +67,12 @@ A6's canonical frame can land on a slightly different plane (up to 0.8 degrees o
 Compare after undoing the frame: the images agree.
 
 **A build step does nothing.**
-Its outputs exist; add `--force`.
+Its outputs exist; add `--force`, which replaces them (a registration's earlier transform is backed up in `$LINC_WORK/xfm_backup/`).
+
+**A build step stopped partway and will not start again.**
+The files it wrote before it stopped count as its outputs.
+Fix what stopped it, then run the step again with `--force`.
+In the staging (A1) the usual cause is a program that was not found: it needs FSL (`FSLDIR`) and ANTs 2.5.4 (`ANTSPATH`), and the tensor (A2) needs MRtrix (`MRTRIX`).
 
 ## Blockface
 

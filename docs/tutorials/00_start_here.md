@@ -20,6 +20,7 @@ export LINC_DATA=<the data folder>
 source settings/roots.sh
 ```
 
+`LINC_DATA` is the data folder itself, the one that holds `brains/`, `template/`, `models/` and `paper/`; given any other folder, `roots.sh` stops and says so ([troubleshooting](../troubleshooting.md#setup)).
 It sets `$PY`, `$PY_TIRL` and `$PY_DEEP` to the Python environments that `install.sh` built, and every command in the tutorials assumes them.
 It also points `$LINC_DATA` to a working folder inside the repository, since the code never writes into the data folder ([overview](../overview.md#the-data-folder)).
 

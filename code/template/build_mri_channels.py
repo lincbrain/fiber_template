@@ -26,7 +26,8 @@ What it does, one step per brain, then together (each step one command; --plan p
   channels        makes the template channels from the final step's warps
   links-<ID>      registers the brain's links up to the template: b0-native -> mri-canonical (the frame), mri-canonical -> mri-template (the warp)
 
-You get, in the brain's $LINC_DATA/sub-<ID>/, never over existing files: mri/ (the staged inputs; landmarks/ with the frame canonical.json) and
+You get, in the brain's $LINC_DATA/sub-<ID>/, never over existing files unless --force is given (it then replaces the step's own files, also what a
+run that stopped partway left; a registration's old entry is backed up): mri/ (the staged inputs; landmarks/ with the frame canonical.json) and
 xfm/ (the transforms). Under --work (default $LINC_WORK/build_mri_channels):
   tensor_d9/<ID>/tensor_d9_dwigrid.nii.gz, prep/<ID>/ (the construction inputs and their
   _flip mirrors, NIfTI on the 0.25 mm canonical grid), runs/<run>/ (the MMORF run), channels/linc_mri_*.nii.gz + provenance.json
@@ -76,7 +77,7 @@ def make_steps(W, paths):
                    outputs=[m(S, k) for k in ("b0", "b0_n4_brain", "t2_head", "t2_brain", "frac1", "frac2", "dwi_eddy")],
                    inputs=[pre / "dwi" / "dwi_biascorr.nii.gz", pre / "msme" / "msme_denoised_las.nii.gz", pre / "dt2" / "tortoise" / "microstructure" / "SANDIdot" / "est.fracs.mean.nii.gz"]
                           + [m(S, k) for k in ("dwi_mask", "t2_mask", "micro_mask")],
-                   est="3 min (CPU)", note="writes the brain's MRI folder; refuses when its staged files exist (the data release's)"),
+                   est="3 min (CPU)", note="writes the brain's MRI folder; refuses when staged files exist, also after a run that stopped partway: --force stages the brain again", force_argv=["--overwrite"]),
             D.Step(f"nmt-{S}", f"per brain: {S}", "mri",
                    ["-m", "mri.mri_register", "nmt", "--subject", S, "--out", w("register", S, "nmt")],
                    outputs=[m(S, "nmt_affine"), m(S, "sarm_in_subject")], inputs=[m(S, "b0_n4_brain"), m(S, "dwi_mask")], gpu=True,
@@ -85,12 +86,12 @@ def make_steps(W, paths):
                    ["-m", "mri.mri_register", "t2", "--subject", S, "--out", w("register", S, "t2")],
                    outputs=[sub(S) / "xfm" / R["prep"]["within_mri_xfm"]["t2"] / "meta.json"],
                    inputs=[m(S, k) for k in ("b0_n4_brain", "dwi_mask", "t2_brain", "t2_mask")], gpu=True,
-                   est="6 min (GPU)", note="ANTs affine, then anatomix + FireANTs ($ANATOMIX_PYTHON)"),
+                   est="6 min (GPU)", note="ANTs affine, then anatomix + FireANTs ($ANATOMIX_PYTHON); --force replaces the entry, after a backup", force_argv=["--overwrite"]),
             D.Step(f"microreg-{S}", f"per brain: {S}", "mri",
                    ["-m", "mri.mri_register", "micro", "--subject", S, "--out", w("register", S, "micro")],
                    outputs=[sub(S) / "xfm" / R["prep"]["within_mri_xfm"]["micro"] / "meta.json"],
                    inputs=[m(S, "b0_n4_brain"), m(S, "dwi_mask"), sub(S) / "mri" / "micro" / "b0_brain_n4.nii.gz", m(S, "micro_mask")],
-                   gpu=True, est="10 min (GPU)", note="ANTs affine, then the symmetric registration ($ANATOMIX_PYTHON), composed into one field"),
+                   gpu=True, est="10 min (GPU)", note="ANTs affine, then the symmetric registration ($ANATOMIX_PYTHON), composed into one field; --force replaces the entry, after a backup", force_argv=["--overwrite"]),
             D.Step(f"tensor-{S}", f"per brain: {S}", "mri",
                    ["-m", "mri.mri_prep", "tensor", "--eddy-series", m(S, "dwi_eddy"), "--ecclog", m(S, "dwi_ecclog"),
                     "--bvecs", m(S, "dwi_bvecs"), "--bvals", m(S, "dwi_bvals"), "--fit-mask", m(S, "dwi_fit_mask"),
@@ -113,7 +114,7 @@ def make_steps(W, paths):
                    inputs=[m(S, "final_mask"), tensor, cj, m(S, "b0"), m(S, "b0_n4_bias"), m(S, "dwi_mask"), m(S, "t2_head"), m(S, "t2_brain"),
                            m(S, "t2_mask"), m(S, "frac1"), m(S, "frac2"), m(S, "micro_mask"),
                            sub(S) / "xfm" / R["prep"]["within_mri_xfm"]["t2"], sub(S) / "xfm" / R["prep"]["within_mri_xfm"]["micro"]],
-                   est="2.5 min (CPU)", note="antsApplyTransforms ($ANTSPATH) and vecreg ($FSLDIR); refuses to overwrite its output folder"),
+                   est="2.5 min (CPU)", note="antsApplyTransforms ($ANTSPATH) and vecreg ($FSLDIR); refuses to overwrite its output folder without --force", force_argv=["--overwrite"]),
         ]
     prep_pat = str(w("prep", "{id}"))
     steps += [
@@ -146,7 +147,7 @@ def make_steps(W, paths):
         steps.append(D.Step(f"links-{S}", "template links", "mri", ["-m", "mri.mri_register", "links", "--subject", S, "--run", run],
                             outputs=[sub(S) / "xfm" / "b0-native__to__mri-canonical", sub(S) / "xfm" / "mri-canonical__to__mri-template"],
                             inputs=[run / read, sub(S) / "mri" / "landmarks" / "canonical.json"], est="seconds (CPU)",
-                            note="with t2reg and microreg, moves images between the brain's spaces and the template (python -m shared.xfm)"))
+                            note="with t2reg and microreg, moves images between the brain's spaces and the template (python -m shared.xfm); --force replaces the entries, after a backup", force_argv=["--overwrite"]))
     return steps
 
 

@@ -35,7 +35,7 @@ export LINC_TIRL_SRC=<folder with the TIRL sources>
 bash install.sh                  # the Python environments: about 25 minutes and 23 GB
 bash tests/selftest.sh           # a few minutes, no data, no GPU
 
-export LINC_DATA=<your copy of the data folder>
+export LINC_DATA=<your copy of the data folder>   # the folder that holds brains/, template/, models/ and paper/
 source settings/roots.sh         # in every new shell
 $PY run.py --plan                # every step of the paper and what it needs; runs nothing
 ```
