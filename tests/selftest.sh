@@ -54,6 +54,7 @@ step test_completion       "$PY_DEEP" tests/run.py tests/test_completion.py
 step test_blockface_rules  "$PY_DEEP" tests/run.py tests/test_blockface_rules.py
 step test_data_folder      "$PY"      tests/run.py tests/test_link_data.py
 step test_build_force      "$PY"      tests/run.py tests/test_build_force.py
+step test_construction     "$PY"      tests/run.py tests/test_construction_inputs.py
 step test_docs_site        "$PY"      tests/run.py tests/test_docs_site.py
 
 # --- the command lines on toy data

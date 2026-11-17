@@ -69,7 +69,9 @@ Steps A8 to A11 run through `run.py`:
 | A10 | `$PY run.py --run --only mri-channels` | moves each brain's images into the template in one resampling (the tensor rotated with its warp) and averages them: T2-weighted, b0, the tensor and its maps, the soma and neurite fractions, the masks | CPU, about 15 min | `$LINC_WORK/mri_paper_run/channels/linc_mri_*.nii.gz`, which are `template/outputs/template_*.nii.gz` in the data folder |
 | A11 | `$PY run.py --run --only mri-links-MF283` | writes the brain's two transforms: from its b0 to its canonical frame, and from that frame to the template | CPU; under half a minute | `$LINC_WORK/mri_links/<ID>/xfm/` |
 
-A9 starts from the paper's own construction inputs, so that its result can be compared with the paper's file by file; to build from your own A7 outputs, point `$LINC_WORK/mri_construction/prep/<ID>` at them.
+A8 and A9 start from the paper's own construction inputs, so that the result can be compared with the paper's file by file.
+When your data folder does not hold them, A8 starts from your own A7 outputs and says so; its comparison then has nothing to compare with.
+To build from your own A7 outputs although the data folder holds the paper's, point `$LINC_WORK/mri_construction/prep/<ID>` at them before A8: a link that already leads to construction inputs is left alone.
 The data folder keeps each template brain's whole transforms as single files: `brains/sub-MF283/outputs/MF283_b0_to_template.nii.gz`, `_t2_to_template` and `_micro_to_template`.
 
 ![The template's channels in one coronal plane](figures/mri_03_template_channels.png)

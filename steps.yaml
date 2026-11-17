@@ -175,6 +175,7 @@ steps:
     reads: the preprocessed files ($LINC_MRI_PREPROCESSED/{id}); the brain masks (local_mri, built by settings/roots.sh)
     writes: $LINC_MRI_DATA/sub-{id}/mri/{dwi,t2,micro}/ and dwi/raw/ (the tensor's inputs)
     run: LINC_DATA=$LINC_MRI_DATA $PY code/template/build_mri_channels.py --step stage-{id}
+    again: --force
     check: $PY tests/compare/compare_mri_build.py staged $LINC_MRI_DATA/sub-{id}/mri $LINC_PRODUCTS/mri/data/sub-{id} --min 17
     expect: every staged image (23 on MF1) identical to the paper's, N4 included
     needs: []
@@ -188,7 +189,7 @@ steps:
     timed: clone
     optional: false
     note: 'All four brains identical from a clone on 4 Nov; MF1 again on 6 Nov, 231 s, 23 of 23. Steps of the build refuse to write over their own
-      writes: rerun a failed step with --force added.'
+      writes: run.py adds --force when it runs a step again (the `again` field), and by hand a failed step is rerun with --force added.'
   - name: mri-tensor
     group: mri-template
     for: mri_template
@@ -196,6 +197,7 @@ steps:
     reads: mri-stage's dwi/raw/ files
     writes: $LINC_WORK/build_mri_channels/tensor_d9/{id}/tensor_d9_dwigrid.nii.gz
     run: LINC_DATA=$LINC_MRI_DATA $PY code/template/build_mri_channels.py --step tensor-{id}
+    again: --force
     check: $PY tests/compare/compare_nifti.py $LINC_WORK/build_mri_channels/tensor_d9/{id} $LINC_PRODUCTS/mri/tensor_refit_d9/{id}_existing tensor_d9_dwigrid.nii.gz
     expect: the tensor identical to the paper's, voxel for voxel
     needs: [mri-stage]
@@ -216,6 +218,7 @@ steps:
     reads: mri-stage's b0 and mask; NMT v2
     writes: $LINC_MRI_DATA/sub-{id}/mri/landmarks/{nmt_affine_0GenericAffine.mat,SARM6_in_subject.nii.gz}
     run: LINC_DATA=$LINC_MRI_DATA $PY code/template/build_mri_channels.py --step nmt-{id}
+    again: --force
     check: $PY tests/compare/compare_mri_build.py nmt $LINC_MRI_DATA/sub-{id}/mri $LINC_PRODUCTS/mri/data/sub-{id} --min-agree 93
     expect: the SARM labels agree with the paper's on at least 93 % of the brain's voxels (93.3 to 94.3 % from a clone)
     needs: [mri-stage]
@@ -305,6 +308,7 @@ steps:
     reads: mri-nmt's labels and affine; mri-stage's b0 and mask
     writes: $LINC_MRI_DATA/sub-{id}/mri/landmarks/{landmarks.json,canonical.json}
     run: LINC_DATA=$LINC_MRI_DATA $PY code/template/build_mri_channels.py --from landmarks-{id} --to frames-{id}
+    again: --force
     check: $PY tests/compare/compare_mri_build.py frame $LINC_MRI_DATA/sub-{id}/mri $LINC_PRODUCTS/mri/data/sub-{id} --deg 1.0 --mm 0.5
     expect: the frame within 1 degree and a mean move of 0.5 mm of the paper's (0.04 to 0.81 degrees, 0.09 to 0.31 mm from a clone)
     needs: [mri-nmt]
@@ -326,6 +330,7 @@ steps:
     reads: mri-frames' frame; mri-tensor's tensor; mri-t2reg's and mri-microreg's fields; the staged images; the final mask
     writes: $LINC_WORK/build_mri_channels/prep/{id}/ (the construction inputs and their _flip mirrors)
     run: LINC_DATA=$LINC_MRI_DATA $PY code/template/build_mri_channels.py --step prepare-{id}
+    again: --force
     check: $PY tests/compare/compare_mri_build.py prepare $LINC_WORK/build_mri_channels/prep/{id} $LINC_PRODUCTS/mri/data/sub-{id}/canonical_rebuild_manual_annotations_frac
     expect: inside both masks, r with the paper's of at least 0.88 (T2), 0.87 (b0), 0.84 (fractions), 0.98 (tensor), mask Dice at least 0.97
     needs: [mri-frames, mri-tensor, mri-t2reg, mri-microreg]
@@ -342,11 +347,13 @@ steps:
       T2 r 0.885, b0 0.879, fractions 0.871 and 0.845, tensor 0.981, Dice 0.979, near the limits; with its own microreg it was never run.'
   - name: mri-assemble
     group: mri-template
-    title: Write the MMORF run folder from the paper's construction inputs
-    reads: the paper's construction inputs ($LINC_PRODUCTS/mri/data/sub-<ID>/canonical_rebuild_manual_annotations_frac); settings/mri_construction.yaml
+    title: Write the MMORF run folder from the construction inputs
+    reads: the paper's construction inputs ($LINC_PRODUCTS/mri/data/sub-<ID>/canonical_rebuild_manual_annotations_frac), or mri-prepare's ($LINC_WORK/build_mri_channels/prep/<ID>)
+      when the data folder does not hold the paper's; settings/mri_construction.yaml
     writes: $LINC_WORK/mri_construction/runs/rb_final/ (config/, subject_ids.csv, standardspace.nii.gz, data/ links, run_spec.json)
-    run: mkdir -p $LINC_WORK/mri_construction/prep && for S in MF283 MF284 MF285 MF286; do ln -sfn $LINC_PRODUCTS/mri/data/sub-$S/canonical_rebuild_manual_annotations_frac
-      $LINC_WORK/mri_construction/prep/$S; done && $PY code/template/build_mri_channels.py --work $LINC_WORK/mri_construction --step assemble
+    run: $PY code/template/construction_inputs.py --work $LINC_WORK/mri_construction --paper "$LINC_PRODUCTS/mri/data/sub-<ID>/canonical_rebuild_manual_annotations_frac"
+      --own "$LINC_WORK/build_mri_channels/prep/<ID>" MF283 MF284 MF285 MF286 && $PY code/template/build_mri_channels.py --work $LINC_WORK/mri_construction
+      --step assemble --force
     check: $PY tests/compare/compare_mri_build.py run $LINC_WORK/mri_construction/runs/rb_final $LINC_PRODUCTS/mri/tc/rb_final --parts config subject_ids.csv
       standardspace.nii.gz --min 16
     expect: the 14 parameter files, the subject list and the standard space identical to the paper's run (16 of 16)
@@ -360,8 +367,9 @@ steps:
     hours: 0.01
     timed: clone
     optional: false
-    note: 'The construction starts from the paper''s inputs, not from mri-prepare''s, so that its comparison can be exact. On 6 Nov from a clone:
-      11 s, 16 of 16.'
+    note: 'The construction starts from the paper''s inputs, not from mri-prepare''s, so that its comparison can be exact. When the data folder does
+      not hold them it starts from mri-prepare''s and says so; the comparison then has nothing to compare with, or differs. A prep/<ID> link
+      that already leads to construction inputs is left alone. On 6 Nov from a clone: 11 s, 16 of 16.'
   - name: mri-construction-step1
     group: mri-template
     title: Run the groupwise construction through its affine stage and step 1
@@ -388,11 +396,11 @@ steps:
   - name: mri-construction-full
     group: mri-template
     title: Run the whole groupwise construction (8 steps), 3.5 days on one card
-    reads: the paper's construction inputs; MMORF 1.0.1; the patched driver
+    reads: the paper's construction inputs, or mri-prepare's when the data folder does not hold the paper's (as mri-assemble); MMORF 1.0.1; the patched driver
     writes: '$LINC_WORK/mri_construction_full/runs/rb_final/out/ (nln_step_08/iteration_03: the warps the channels read)'
-    run: mkdir -p $LINC_WORK/mri_construction_full/prep && for S in MF283 MF284 MF285 MF286; do ln -sfn $LINC_PRODUCTS/mri/data/sub-$S/canonical_rebuild_manual_annotations_frac
-      $LINC_WORK/mri_construction_full/prep/$S; done && $PY code/template/build_mri_channels.py --work $LINC_WORK/mri_construction_full --from
-      assemble --to mmorf
+    run: $PY code/template/construction_inputs.py --work $LINC_WORK/mri_construction_full --paper "$LINC_PRODUCTS/mri/data/sub-<ID>/canonical_rebuild_manual_annotations_frac"
+      --own "$LINC_WORK/build_mri_channels/prep/<ID>" MF283 MF284 MF285 MF286 && $PY code/template/build_mri_channels.py --work $LINC_WORK/mri_construction_full
+      --from assemble --to mmorf
     check: $PY tests/compare/compare_mri_build.py run $LINC_WORK/mri_construction_full/runs/rb_final/out $LINC_PRODUCTS/mri/tc/rb_final/out --parts nln_step_08
       --skip-ini --min 175
     expect: the final step's 175 files identical to the paper's run (steps 2 to 8 never rerun)
@@ -413,7 +421,8 @@ steps:
     title: Make the template's MRI channels from the paper's construction run
     reads: the paper's run ($LINC_PRODUCTS/mri/tc/rb_final, step 8 iteration 3); the brains' native images, fields and construction inputs of record
     writes: $LINC_WORK/mri_paper_run/channels/linc_mri_*.nii.gz and provenance.json
-    run: W=$LINC_WORK/mri_paper_run && mkdir -p $W/prep $W/runs && ln -sfn $LINC_PRODUCTS/mri/tc/rb_final $W/runs/rb_final && for S in MF283 MF284
+    run: W=$LINC_WORK/mri_paper_run && { [ -d $LINC_PRODUCTS/mri/tc/rb_final/out ] || { echo "mri-channels makes the channels from the paper's construction
+      run, which this data folder does not hold ($LINC_PRODUCTS/mri/tc/rb_final)"; exit 1; }; } && mkdir -p $W/prep $W/runs && ln -sfn $LINC_PRODUCTS/mri/tc/rb_final $W/runs/rb_final && for S in MF283 MF284
       MF285 MF286; do mkdir -p $W/data/sub-$S && ln -sfn $LINC_PRODUCTS/mri/data/sub-$S $W/data/sub-$S/mri && ln -sfn $LINC_PRODUCTS/mri/data/sub-$S/xfm
       $W/data/sub-$S/xfm && ln -sfn $LINC_PRODUCTS/mri/data/sub-$S/canonical_rebuild_manual_annotations_frac $W/prep/$S; done && LINC_DATA=$W/data $PY code/template/build_mri_channels.py
       --work $W --step channels

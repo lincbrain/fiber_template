@@ -123,6 +123,8 @@ def prepare(a):
 
 def run(a):
     mine, paper = Path(a.mine), Path(a.paper)
+    if not paper.exists():
+        finish(False, f"nothing to compare with: the data folder does not hold the paper's run ({paper})")
     n = bad = missing = 0
     for part in a.parts:
         top = paper / part

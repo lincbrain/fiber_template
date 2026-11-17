@@ -72,7 +72,17 @@ Its outputs exist; add `--force`, which replaces them (a registration's earlier 
 **A build step stopped partway and will not start again.**
 The files it wrote before it stopped count as its outputs.
 Fix what stopped it, then run the step again with `--force`.
+Through `run.py` you do not add anything: `$PY run.py --run --only <step>` runs a failed step again and tells it to replace what the earlier attempt left, and `--force` does the same for a step that passed.
 In the staging (A1) the usual cause is a program that was not found: it needs FSL (`FSLDIR`) and ANTs 2.5.4 (`ANTSPATH`), and the tensor (A2) needs MRtrix (`MRTRIX`).
+
+**`mri-assemble` (A8) stops with "no construction inputs for <ID>".**
+The construction starts from the files A7 (`prepare`) writes.
+Your data folder does not hold the paper's, and A7 has not been run for that brain.
+Run `prepare-<ID>` for the four brains, then A8 again; it says which inputs it uses.
+
+**A8's comparison says there is nothing to compare with.**
+Your data folder does not hold the paper's construction run, so there is no file to compare with.
+The run folder A8 wrote is complete, and A9 reads it.
 
 ## Blockface
 

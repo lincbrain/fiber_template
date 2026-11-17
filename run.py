@@ -10,7 +10,8 @@ What it does
   --run               tests the installation on each machine, then runs every step whose inputs are ready on a machine with room
                       for it, and the step's check after it. It returns when nothing is left to run. Each step is a process of its
                       own: it goes on if this command stops, and the next --run takes it up. A step that passed is not run again; a
-                      step that failed is.
+                      step that failed is. A step that is run again (it failed, or --force or --redo names it) is told to replace
+                      what its earlier attempt left, where the plan gives it the words for that (`again`).
   --status            prints one line per step
   --wait [MINUTES]    returns when a step fails or differs, when the run is over, or after MINUTES (default 30); prints what changed
   --stop              stops the running steps and the --run that started them
@@ -55,7 +56,7 @@ OUT = REPO / "outputs" / "build_everything"
 
 # a step's fields in the plan and their defaults (None: required)
 FIELDS = dict(name=None, group=None, title=None, run=None, reads="", writes="", check="", expect="", needs=(), gpu_gb=0,
-              gpu_model="", gpu_alone=False, ram_gb=4, cores=1, disk_gb=0, hours=0, timed="", optional=False, note="")
+              gpu_model="", gpu_alone=False, ram_gb=4, cores=1, disk_gb=0, hours=0, timed="", optional=False, note="", again="")
 TEXT = ("title", "reads", "writes", "run", "check", "expect", "note")
 PUBLIC = ("name", "base", "brain", "label", "group") + tuple(k for k in FIELDS if k not in ("name", "group"))
 RAN = ("passed", "differs")             # a step that needs another one starts once that one has run to its end
@@ -446,6 +447,7 @@ def write_env():
 def launch(s, host, gpu):
     d = OUT / "steps" / s["name"]
     d.mkdir(parents=True, exist_ok=True)
+    again = s.get("again", "") if (d / "launched").exists() else ""     # run again: the plan's words that make the step replace what it left
     if (d / "launched").exists():         # an earlier attempt: its files move to previous/
         shutil.rmtree(d / "previous", ignore_errors=True)
         (d / "previous").mkdir()
@@ -457,7 +459,9 @@ def launch(s, host, gpu):
              f"D={q(str(d))}", f"cd {q(str(REPO))} || exit 1", f". {q(str(OUT / 'env.sh'))}"]
     if gpu >= 0:
         lines.append(f"export CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES={gpu}")
-    lines += ["echo $$ > $D/pid", f"( set -o pipefail; {s['run']} ) > $D/run.log 2>&1 < /dev/null",
+    if again:
+        lines.append(f"# run again: {again} is added, so that the step replaces what the earlier attempt left")
+    lines += ["echo $$ > $D/pid", f"( set -o pipefail; {s['run']}{' ' + again if again else ''} ) > $D/run.log 2>&1 < /dev/null",
               "rc=$?; echo $rc > $D/run.exit.part; mv $D/run.exit.part $D/run.exit"]
     if s["check"]:
         lines += ["if [ $rc -eq 0 ]; then", f"  ( set -o pipefail; {s['check']} ) > $D/check.log 2>&1 < /dev/null",
