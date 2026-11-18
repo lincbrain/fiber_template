@@ -72,7 +72,7 @@ training:
     d3_full_A_s0: {input: own b0, protocol: full, hours: 0.93, gpu: NVIDIA RTX 6000 Ada Generation}
     d3p_full_A_s0: {input: stand-in b0, protocol: full, hours: 0.93, gpu: NVIDIA RTX 6000 Ada Generation}
     d3_lso_A_s0: {input: own b0, protocol: lso, hours: 1.54, gpu: NVIDIA RTX 3090}
-    d3p_lso_A_s0: {input: stand-in b0, protocol: lso, hours: 0.93, gpu: NVIDIA RTX 6000 Ada Generation}
+    d3p_lso_prod_A_s0: {input: stand-in b0, protocol: lso, hours: 0.90, gpu: NVIDIA RTX 6000 Ada Generation}
 
 # --- the prepared folder of a brain (code/blockface/synthesis/prepare.py: `linc-complete prepare --subject <ID> --out DIR`) ---
 prepare:

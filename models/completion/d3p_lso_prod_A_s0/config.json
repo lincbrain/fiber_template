@@ -57,80 +57,80 @@
   "MF275"
  ],
  "photographed_only": 0.5,
- "root": "$LINC_PRODUCTS/isbi2027/data/canon_d3p_dev",
+ "root": "$LINC_PRODUCTS/isbi2027/data/canon_d3p_prod",
  "canon_root": {
-  "what": "d3p cache: canon_d3 with the S2 pseudo-b0 as input (nonlinear_s2val); targets unchanged",
+  "what": "d3p cache: canon_d3 with the S2 pseudo-b0 as input (nonlinear_s2val_prod); targets unchanged",
   "frame": "run113",
   "brains": {
    "MF275": {
     "batch": "d2_mf275",
     "nonlin": "nonlinear_r1v3",
-    "pseudo_md5": "73d7b67965e3bbde349c6e251c079669"
+    "pseudo_md5": "e83038ae28dfc85773490ce676f14d2f"
    },
    "MF278": {
     "batch": "d3_mf278",
     "nonlin": "nonlinear_r1v3mr",
-    "pseudo_md5": "d4bfa11ecdf3761586f604d31b5f67a7"
+    "pseudo_md5": "c68aef6c582683fe28aed0acfa7bad68"
    },
    "MF282": {
     "batch": "1c2_a",
     "nonlin": "nonlinear_r1v3",
-    "pseudo_md5": "136ff05a8742d1741bba8c173d122113"
+    "pseudo_md5": "ee407361418896a6dd0eb792ae3f4f5a"
    },
    "MR243": {
     "batch": "1c2_a",
     "nonlin": "nonlinear_r1v3",
-    "pseudo_md5": "4e0cc62da98b7fa88554bb55d52eeff4"
+    "pseudo_md5": "1c3274a306f02297600da0a54b04ea35"
    },
    "MR249": {
     "batch": "1c2_c",
     "nonlin": "nonlinear_r1v3mr",
-    "pseudo_md5": "efe94d89b84255563db6f9ad4cdd5d96"
+    "pseudo_md5": "f2dcfdc69f13d3790958b2c638f696ea"
    },
    "MR250": {
     "batch": "1c2_a",
     "nonlin": "nonlinear_r1v3",
-    "pseudo_md5": "a67ae21cea561e2c2c802dc081f7577d"
+    "pseudo_md5": "f56c94d17b8c6df2ab713180b564b825"
    },
    "MR251": {
     "batch": "1c2_a",
     "nonlin": "nonlinear_r1v3",
-    "pseudo_md5": "20948aa6c50984313841bcdbd6eeeebb"
+    "pseudo_md5": "e017b1a5684c7b6322ec32151a79252c"
    },
    "MR252": {
     "batch": "1c2_c",
     "nonlin": "nonlinear_r1v3mr",
-    "pseudo_md5": "8ac305ee0c84d6d1e77f025eb3d08580"
+    "pseudo_md5": "7eec056a43d712f43194477ad6d668e6"
    },
    "MR253": {
     "batch": "1c2_a",
     "nonlin": "nonlinear_r1v3",
-    "pseudo_md5": "14328a43bb92448575a25a76829125c5"
+    "pseudo_md5": "3baba4883a4b92f813bd45b9ce03609a"
    },
    "MR254": {
     "batch": "1c2_d",
     "nonlin": "nonlinear_r1v3mr",
-    "pseudo_md5": "9ff6725390f6193817a0bae8ba1df4ca"
+    "pseudo_md5": "50ca8c4bc4a78400f2b927b531bb1f90"
    },
    "MR256": {
     "batch": "1c2_c",
     "nonlin": "nonlinear_r1v3mr",
-    "pseudo_md5": "3d2bafc0c227c95e0520874e063f04c1"
+    "pseudo_md5": "b87a6bd740b1e1af40f934b09dd913fe"
    },
    "MR257": {
     "batch": "1c2_b",
     "nonlin": "nonlinear_r1v3m",
-    "pseudo_md5": "4937908de5ce398a80c5371748f3e816"
+    "pseudo_md5": "59b31455810701e782cf5936748d90f6"
    },
    "MR261": {
     "batch": "1c2_c",
     "nonlin": "nonlinear_r1v3mr",
-    "pseudo_md5": "8a33dde5ea4d55959efcc2d00ddb7403"
+    "pseudo_md5": "d6e71f744cbcff7191120aa787162b00"
    }
   },
   "updated": "2026-10-03T23:12:56-04:00",
   "source_root": "$LINC_PRODUCTS/isbi2027/data/canon_d3",
-  "created": "2026-10-04T01:41:13-04:00"
+  "created": "2026-10-04T04:35:04-04:00"
  },
  "subjects": {
   "MF278": {
@@ -459,5 +459,5 @@
    ]
   }
  },
- "name": "d3p_lso_A_s0"
+ "name": "d3p_lso_prod_A_s0"
 }

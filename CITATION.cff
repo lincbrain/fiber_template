@@ -18,6 +18,8 @@ authors:
     family-names: Huszar
   - given-names: Neel
     family-names: Dey
+  - given-names: Malte
+    family-names: Hoffmann
   - given-names: Jingjing
     family-names: Wu
   - given-names: Chiara
@@ -55,6 +57,8 @@ preferred-citation:
       family-names: Huszar
     - given-names: Neel
       family-names: Dey
+    - given-names: Malte
+      family-names: Hoffmann
     - given-names: Jingjing
       family-names: Wu
     - given-names: Chiara

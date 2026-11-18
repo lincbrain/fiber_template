@@ -56,8 +56,8 @@ Every brain's inputs and results, the template and the trained networks are in t
 
 If you use this code or the template, please cite the paper ([CITATION.cff](CITATION.cff)):
 
-> Gonzales RA, Habte E, Gong T, Huszar IN, Dey N, Wu J, Maffei C, Celestine MR, Lehman JF, Haber SN,
-> Balbastre Y, Yendiki A. A multimodal macaque template for aligning
+> Gonzales RA, Habte E, Gong T, Huszar IN, Dey N, Hoffmann M, Wu J, Maffei C, Celestine MR, Lehman JF,
+> Haber SN, Balbastre Y, Yendiki A. A multimodal macaque template for aligning
 > ex vivo MRI and microscopy. In preparation.
 
 The code is under the Apache License 2.0 ([LICENSE](LICENSE), [NOTICE](NOTICE)), and the template (LINC dataset 000059) is under CC BY 4.0.
