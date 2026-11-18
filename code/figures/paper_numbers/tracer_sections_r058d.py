@@ -5,7 +5,7 @@ You need
 What it does
   Counts the sections as code/figures/paper_numbers/tracer_sections_r054.py does, on the labels after the two corrections of Supplementary S2.
 You get
-  $LINC_NUMBERS/tracer_sections_r058d.json
+  $LINC_NUMBERS/tracer_sections_r058d_r17.json
     python code/figures/paper_numbers/tracer_sections_r058d.py"""
 import json
 import sys
@@ -30,7 +30,7 @@ def main():
                                with_fibers=count_sections(J, "px_L2", lambda c: True),
                                drawn_shown_classes=count_sections(J, "px_section", lambda c: c != LEFT_OUT))
     out["total"] = {k: sum(v[k] for v in out["cases"].values()) for k in out["cases"][CASES[0]]}
-    provenance.write_numbers("tracer_sections_r058d", out, inputs=ins, md5=False, cmd="python code/figures/paper_numbers/tracer_sections_r058d.py")
+    provenance.write_numbers("tracer_sections_r058d_r17", out, inputs=ins, md5=False, cmd="python code/figures/paper_numbers/tracer_sections_r058d.py")
 
 
 if __name__ == "__main__":

@@ -24,7 +24,7 @@ for the LGN, STh = 91 for the STN, split by hemisphere at x = 0): each brain's l
 mapping's own quality from numbers_of_record/atlas_final_v2_NMT_v2.0_sym.json.
 Metrics as lgnstn_geometry_current: Dice, ASSD and HD95 over the pooled symmetric surface distances (surface = m & ~erosion),
 centroid offsets b - a in world mm.
--> $LINC_NUMBERS/lgnstn_budget_r059_h9.json; the slab labels and the SARM nuclei on the template grid in $LINC_WORK/lgnstn_budget_r059/slab/
+-> $LINC_NUMBERS/lgnstn_budget_r059_h9r17.json; the slab labels and the SARM nuclei on the template grid in $LINC_WORK/lgnstn_budget_r059/slab/
     python code/figures/paper_numbers/lgnstn_budget_r059.py
 """
 import os
@@ -132,7 +132,7 @@ def main():
     PUSH = P["lgnstn_labels"]
     NUM = P["numbers_of_record"]
     REF, SARM, SARM_KEY = P["template_mri"] / "linc_mri_b0.nii.gz", P["sarm_in_template"], P["sarm_key"]
-    R1MAN, GEOM, ATLAS = NUM / "r1_current_2026-10-03.json", NUM / "lgnstn_geometry_current_h9.json", NUM / "atlas_final_v2_NMT_v2.0_sym.json"
+    R1MAN, GEOM, ATLAS = NUM / "r1_current_2026-10-03.json", NUM / "lgnstn_geometry_current_h9r17.json", NUM / "atlas_final_v2_NMT_v2.0_sym.json"
     SLABDIR = paths.work_root() / "lgnstn_budget_r059" / "slab"
     ref = nib.load(REF); aff = ref.affine; shape = ref.shape[:3]
     vox = tuple(float(z) for z in ref.header.get_zooms()[:3])
@@ -285,7 +285,7 @@ def main():
         reproduction=dict(note="all 12 demons pair rows of lgnstn_geometry_current (Dice, ASSD, centroid, per-axis offsets) "
                                "recomputed from the same files and asserted equal to 1e-3", checks=checks),
         summary=summary, pairs=rows, per_brain=per_brain, mirror=mirror, sarm=dict(nuclei=sarm_info, mapping=mapping, rows=vs_sarm))
-    provenance.write_numbers("lgnstn_budget_r059_h9", data, inputs=inputs, md5=False, cmd="python code/figures/paper_numbers/lgnstn_budget_r059.py")
+    provenance.write_numbers("lgnstn_budget_r059_h9r17", data, inputs=inputs, md5=False, cmd="python code/figures/paper_numbers/lgnstn_budget_r059.py")
     for nuc in ("LGN", "STN"):
         s = summary[nuc]
         print(nuc, "between", {v_: (s["between_brains"][v_]["centroid_mm"]["median"],

@@ -14,7 +14,7 @@ You need
 What it does
   Rules: footprint = density >= 0.1 (what Fig. 9 shows; the _footprint files); solid = density > 0.5 (the _mri-template files);
   both recomputed from the density and asserted equal to the files. Groups as Fig. 9 draws them: bundles =
-  Fiber_{light,moderate,dense}_bundle + Bundle (the "Fibers" strokes left out); terminals = Terminal_{light,moderate,dense}.
+  Fiber_{light,moderate,dense}_bundle + Bundle + Fiber_bundles + Unnamed_outline (the "Fibers" strokes left out); terminals = Terminal_{light,moderate,dense}.
 You get
   $LINC_NUMBERS/tracer_label_volumes_r058d.json: volumes in mm^3 (voxels x 0.015625) and fractions of the label's own voxels.
 
@@ -39,7 +39,7 @@ IC_LABEL = 50
 CASES = ["MR243", "MR252", "MR256", "MF191"]
 RULES = {"footprint": lambda d: d >= 0.1, "solid": lambda d: d > 0.5}
 RULE_TEXT = {"footprint": "density >= 0.1 (what Fig. 9 shows)", "solid": "density > 0.5"}
-BUNDLES = ("Fiber_light_bundle", "Fiber_moderate_bundle", "Fiber_dense_bundle", "Bundle")
+BUNDLES = ("Fiber_light_bundle", "Fiber_moderate_bundle", "Fiber_dense_bundle", "Bundle", "Fiber_bundles", "Unnamed_outline")
 TERMINALS = ("Terminal_light", "Terminal_moderate", "Terminal_dense")
 
 

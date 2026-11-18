@@ -9,8 +9,8 @@ Labels: the final tracer labels in the MRI template (products tracer_template: <
 demons-interpolated labels carried by the chains of record; MM1 / MM2 / MM3 through their own MRI, MF8 through the blockface
 template), on the template's T2 and FA channels, with the internal capsule of the SARM atlas (level 6, label 50) carried from NMT v2.
 Main figure (the layout the author chose on 30 Oct):
-  (a) lateral and dorsal projections of the bundles, dense and moderate classes and MM2's ungraded class, drawn where the carried
-      density exceeds 0.5; injection sites as white outlines;
+  (a) lateral and dorsal projections of the bundles, dense and moderate classes and the ungraded classes of MM2, MF8 and MM1,
+      drawn where the carried density exceeds 0.5; injection sites as white outlines;
   (b) injection sites in 0.5 mm coronal slabs of the T2 channel;
   (c) bundles in the anterior limb of the internal capsule in 0.5 mm coronal slabs of the FA channel (faded outside the capsule);
   (d) 0.5 mm coronal slabs of the T2 channel, one case per column; dense and moderate terminals as lighter contours.
@@ -49,9 +49,9 @@ ALL_CASES = ["MR243", "MR252", "MR256", "MF191"]
 DRAW_ORDER = ["MF191", "MR256", "MR243", "MR252"]                            # bottom to top (v3's order)
 MIRROR = {"MF191"}
 TRACER = {"MR243": "Lucifer yellow", "MR252": "fluorescein", "MR256": "Lucifer yellow", "MF191": "Fluoro-Ruby"}
-BUNDLE_A = ["Fiber_dense_bundle", "Fiber_moderate_bundle", "Bundle"]         # (a): dense + moderate, and MR252's ungraded "Bundle"
+BUNDLE_A = ["Fiber_dense_bundle", "Fiber_moderate_bundle", "Bundle", "Fiber_bundles", "Unnamed_outline"]         # (a): dense + moderate, the ungraded "Bundle" (MR252), "Fiber_bundles" (MF191) and "Unnamed_outline" (MR243)
 TERM_A = ["Terminal_dense", "Terminal_moderate"]                              # (d) only, contours
-V3_FIB = ["Fiber_dense_bundle", "Fiber_moderate_bundle", "Fiber_light_bundle", "Bundle"]   # v3's group (no "Fibers")
+V3_FIB = ["Fiber_dense_bundle", "Fiber_moderate_bundle", "Fiber_light_bundle", "Bundle", "Fiber_bundles", "Unnamed_outline"]   # v3's group (no "Fibers")
 V3_TERM = ["Terminal_dense", "Terminal_moderate", "Terminal_light"]
 SOLID, FOOT = 0.5, 0.1
 ALIC_Y = [20.0, 22.0, 24.0]

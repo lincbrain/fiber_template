@@ -1,0 +1,423 @@
+{
+ "data": {
+  "definitions": "For every 3D stage (bf_3d, b0, template) and both label sources, the left-right asymmetry (asym = dL - dR, > 0: the left nucleus lies\nfarther from the midline) against the plane fitted near the nuclei (\"local\", within 20 mm) and against the plane fitted to the whole\nbrain mask (\"global\"), each in template-equivalent mm (asym_frac x the template-stage dL + dR of the same brain and nucleus, the\ntemplate's planes being x = 0 for both fits). Also the change at each registration step (R1: bf_3d -> b0; R5: b0 -> template) under each\nplane. bf_sections and chart were measured against the local plane only and are not repeated here. Read from the record; no refit.",
+  "cases": {
+   "MM1": {
+    "LGN": {
+     "observer": {
+      "local": {
+       "bf_3d": 0.111,
+       "b0": -0.02,
+       "template": -0.135,
+       "R1_change": -0.131,
+       "R5_change": -0.115
+      },
+      "global": {
+       "bf_3d": 0.352,
+       "b0": 0.082,
+       "template": -0.135,
+       "R1_change": -0.27,
+       "R5_change": -0.217
+      }
+     },
+     "model": {
+      "local": {
+       "bf_3d": 0.251,
+       "b0": 0.136,
+       "template": -0.014,
+       "R1_change": -0.115,
+       "R5_change": -0.15
+      },
+      "global": {
+       "bf_3d": 0.49,
+       "b0": 0.237,
+       "template": -0.014,
+       "R1_change": -0.253,
+       "R5_change": -0.251
+      }
+     }
+    },
+    "STN": {
+     "observer": {
+      "local": {
+       "bf_3d": -0.157,
+       "b0": -0.404,
+       "template": -0.373,
+       "R1_change": -0.247,
+       "R5_change": 0.031
+      },
+      "global": {
+       "bf_3d": 0.08,
+       "b0": -0.325,
+       "template": -0.373,
+       "R1_change": -0.405,
+       "R5_change": -0.048
+      }
+     },
+     "model": {
+      "local": {
+       "bf_3d": -0.074,
+       "b0": -0.314,
+       "template": -0.29,
+       "R1_change": -0.24,
+       "R5_change": 0.024
+      },
+      "global": {
+       "bf_3d": 0.164,
+       "b0": -0.236,
+       "template": -0.29,
+       "R1_change": -0.4,
+       "R5_change": -0.054
+      }
+     }
+    }
+   },
+   "MM2": {
+    "LGN": {
+     "observer": {
+      "local": {
+       "bf_3d": 0.3,
+       "b0": 0.219,
+       "template": -0.202,
+       "R1_change": -0.081,
+       "R5_change": -0.421
+      },
+      "global": {
+       "bf_3d": 0.743,
+       "b0": 0.331,
+       "template": -0.202,
+       "R1_change": -0.412,
+       "R5_change": -0.533
+      }
+     },
+     "model": {
+      "local": {
+       "bf_3d": 0.304,
+       "b0": 0.212,
+       "template": -0.234,
+       "R1_change": -0.092,
+       "R5_change": -0.446
+      },
+      "global": {
+       "bf_3d": 0.746,
+       "b0": 0.328,
+       "template": -0.234,
+       "R1_change": -0.418,
+       "R5_change": -0.562
+      }
+     }
+    },
+    "STN": {
+     "observer": {
+      "local": {
+       "bf_3d": 0.362,
+       "b0": 0.195,
+       "template": -0.171,
+       "R1_change": -0.167,
+       "R5_change": -0.366
+      },
+      "global": {
+       "bf_3d": 0.724,
+       "b0": 0.343,
+       "template": -0.171,
+       "R1_change": -0.381,
+       "R5_change": -0.514
+      }
+     },
+     "model": {
+      "local": {
+       "bf_3d": 0.306,
+       "b0": 0.114,
+       "template": -0.242,
+       "R1_change": -0.192,
+       "R5_change": -0.356
+      },
+      "global": {
+       "bf_3d": 0.667,
+       "b0": 0.262,
+       "template": -0.242,
+       "R1_change": -0.405,
+       "R5_change": -0.504
+      }
+     }
+    }
+   },
+   "MM3": {
+    "LGN": {
+     "observer": {
+      "local": {
+       "bf_3d": 0.212,
+       "b0": 0.218,
+       "template": 0.236,
+       "R1_change": 0.006,
+       "R5_change": 0.018
+      },
+      "global": {
+       "bf_3d": 0.101,
+       "b0": 0.057,
+       "template": 0.236,
+       "R1_change": -0.044,
+       "R5_change": 0.179
+      }
+     },
+     "model": {
+      "local": {
+       "bf_3d": 0.099,
+       "b0": 0.096,
+       "template": 0.139,
+       "R1_change": -0.003,
+       "R5_change": 0.043
+      },
+      "global": {
+       "bf_3d": -0.011,
+       "b0": -0.064,
+       "template": 0.14,
+       "R1_change": -0.053,
+       "R5_change": 0.204
+      }
+     }
+    },
+    "STN": {
+     "observer": {
+      "local": {
+       "bf_3d": 0.369,
+       "b0": 0.247,
+       "template": 0.449,
+       "R1_change": -0.122,
+       "R5_change": 0.202
+      },
+      "global": {
+       "bf_3d": 0.184,
+       "b0": 0.073,
+       "template": 0.45,
+       "R1_change": -0.111,
+       "R5_change": 0.377
+      }
+     },
+     "model": {
+      "local": {
+       "bf_3d": 0.303,
+       "b0": 0.13,
+       "template": 0.284,
+       "R1_change": -0.173,
+       "R5_change": 0.154
+      },
+      "global": {
+       "bf_3d": 0.122,
+       "b0": -0.042,
+       "template": 0.284,
+       "R1_change": -0.164,
+       "R5_change": 0.326
+      }
+     }
+    }
+   }
+  },
+  "planes": {
+   "MM1": {
+    "bf_local": {
+     "n": [
+      0.99981,
+      0.01918,
+      0.00297
+     ],
+     "d": 41.7857,
+     "ncc": 0.8747,
+     "ncc_start": 0.7184,
+     "tilt_deg": 2.262
+    },
+    "bf_global": {
+     "n": [
+      0.9998,
+      0.01796,
+      0.00852
+     ],
+     "d": 42.0173,
+     "ncc": 0.7507,
+     "ncc_start": 0.6214,
+     "tilt_deg": 1.956
+    },
+    "b0_local": {
+     "n": [
+      0.99992,
+      -0.0122,
+      -0.00259
+     ],
+     "d": 32.815,
+     "ncc": 0.8299,
+     "ncc_start": 0.7132,
+     "tilt_deg": 1.86
+    },
+    "b0_global": {
+     "n": [
+      0.99989,
+      -0.01211,
+      0.00861
+     ],
+     "d": 33.2669,
+     "ncc": 0.7131,
+     "ncc_start": 0.6485,
+     "tilt_deg": 1.321
+    },
+    "template_local": {
+     "n": [
+      1.0,
+      0.0,
+      0.0
+     ],
+     "d": 0.0001,
+     "ncc": 1.0,
+     "ncc_start": 0.8756,
+     "tilt_deg": 1.458
+    },
+    "template_global": {
+     "n": [
+      1.0,
+      -0.0,
+      -0.0
+     ],
+     "d": -0.0001,
+     "ncc": 1.0,
+     "ncc_start": 0.8141,
+     "tilt_deg": 1.458
+    }
+   },
+   "MM2": {
+    "bf_local": {
+     "n": [
+      0.99907,
+      -0.01551,
+      0.04028
+     ],
+     "d": 43.4282,
+     "ncc": 0.83,
+     "ncc_start": 0.7754,
+     "tilt_deg": 0.614
+    },
+    "bf_global": {
+     "n": [
+      0.99878,
+      -0.00707,
+      0.0489
+     ],
+     "d": 44.0706,
+     "ncc": 0.7065,
+     "ncc_start": 0.6208,
+     "tilt_deg": 0.223
+    },
+    "b0_local": {
+     "n": [
+      0.99483,
+      0.07609,
+      -0.06726
+     ],
+     "d": 33.3937,
+     "ncc": 0.7714,
+     "ncc_start": 0.7,
+     "tilt_deg": 1.355
+    },
+    "b0_global": {
+     "n": [
+      0.99617,
+      0.06641,
+      -0.05685
+     ],
+     "d": 33.5756,
+     "ncc": 0.6399,
+     "ncc_start": 0.5369,
+     "tilt_deg": 1.741
+    },
+    "template_local": {
+     "n": [
+      1.0,
+      0.0,
+      0.0
+     ],
+     "d": 0.0001,
+     "ncc": 1.0,
+     "ncc_start": 0.9708,
+     "tilt_deg": 0.346
+    },
+    "template_global": {
+     "n": [
+      1.0,
+      0.0,
+      0.0
+     ],
+     "d": -0.0,
+     "ncc": 1.0,
+     "ncc_start": 0.9568,
+     "tilt_deg": 0.346
+    }
+   },
+   "MM3": {
+    "bf_local": {
+     "n": [
+      0.9945,
+      -0.01919,
+      0.10294
+     ],
+     "d": 41.2057,
+     "ncc": 0.8146,
+     "ncc_start": 0.754,
+     "tilt_deg": 1.193
+    },
+    "bf_global": {
+     "n": [
+      0.9956,
+      -0.00938,
+      0.09324
+     ],
+     "d": 41.1516,
+     "ncc": 0.7076,
+     "ncc_start": 0.6664,
+     "tilt_deg": 0.997
+    },
+    "b0_local": {
+     "n": [
+      0.99181,
+      0.02588,
+      -0.12507
+     ],
+     "d": 28.473,
+     "ncc": 0.7067,
+     "ncc_start": 0.6724,
+     "tilt_deg": 1.026
+    },
+    "b0_global": {
+     "n": [
+      0.99081,
+      0.0253,
+      -0.13286
+     ],
+     "d": 28.0504,
+     "ncc": 0.5967,
+     "ncc_start": 0.5793,
+     "tilt_deg": 0.61
+    },
+    "template_local": {
+     "n": [
+      1.0,
+      -0.0,
+      0.0
+     ],
+     "d": -0.0,
+     "ncc": 1.0,
+     "ncc_start": 0.9222,
+     "tilt_deg": 0.581
+    },
+    "template_global": {
+     "n": [
+      1.0,
+      -0.0,
+      0.0
+     ],
+     "d": 0.0,
+     "ncc": 1.0,
+     "ncc_start": 0.9017,
+     "tilt_deg": 0.581
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,173 @@
+{
+ "data": {
+  "LGN": {
+   "sarm_mm3": 56.43750000000003,
+   "drawn_mm3": 33.94791666666668,
+   "per_hemisphere": {
+    "lhLGN": {
+     "sarm_mm3": 57.68750000000003,
+     "drawn_mm3": {
+      "MM1": 37.718750000000014,
+      "MM2": 31.609375000000014,
+      "MM3": 29.406250000000014
+     },
+     "drawn_mean_mm3": 32.91145833333335,
+     "sarm_minus_drawn_ventral_edge_mm": {
+      "MM1": 0.25,
+      "MM2": 0.25,
+      "MM3": -0.25
+     },
+     "sarm_minus_drawn_lateral_edge_mm": {
+      "MM1": 0.25,
+      "MM2": 0.0,
+      "MM3": 0.0
+     },
+     "sarm_minus_drawn_dorsal_edge_mm": {
+      "MM1": 0.5,
+      "MM2": 0.25,
+      "MM3": 0.25
+     },
+     "sarm_minus_drawn_medial_edge_mm": {
+      "MM1": -0.25,
+      "MM2": -0.75,
+      "MM3": -0.75
+     }
+    },
+    "rhLGN": {
+     "sarm_mm3": 55.18750000000002,
+     "drawn_mm3": {
+      "MM1": 35.031250000000014,
+      "MM2": 33.984375000000014,
+      "MM3": 35.937500000000014
+     },
+     "drawn_mean_mm3": 34.984375000000014,
+     "sarm_minus_drawn_ventral_edge_mm": {
+      "MM1": 0.0,
+      "MM2": 0.0,
+      "MM3": 0.0
+     },
+     "sarm_minus_drawn_lateral_edge_mm": {
+      "MM1": 0.0,
+      "MM2": 0.0,
+      "MM3": 0.25
+     },
+     "sarm_minus_drawn_dorsal_edge_mm": {
+      "MM1": 0.25,
+      "MM2": 0.25,
+      "MM3": 0.25
+     },
+     "sarm_minus_drawn_medial_edge_mm": {
+      "MM1": -0.5,
+      "MM2": -0.75,
+      "MM3": -0.5
+     }
+    }
+   },
+   "sarm_minus_drawn_ventral_edge_mm_mean_range": [
+    0.041666666666666664,
+    -0.25,
+    0.25
+   ],
+   "sarm_minus_drawn_lateral_edge_mm_mean_range": [
+    0.08333333333333333,
+    0.0,
+    0.25
+   ],
+   "sarm_minus_drawn_dorsal_edge_mm_mean_range": [
+    0.2916666666666667,
+    0.25,
+    0.5
+   ],
+   "sarm_minus_drawn_medial_edge_mm_mean_range": [
+    -0.5833333333333334,
+    -0.75,
+    -0.25
+   ]
+  },
+  "STN": {
+   "sarm_mm3": 15.289062500000007,
+   "drawn_mm3": 6.289062500000003,
+   "per_hemisphere": {
+    "lhSTN": {
+     "sarm_mm3": 14.890625000000007,
+     "drawn_mm3": {
+      "MM1": 5.437500000000003,
+      "MM2": 7.1875000000000036,
+      "MM3": 4.828125000000002
+     },
+     "drawn_mean_mm3": 5.817708333333336,
+     "sarm_minus_drawn_ventral_edge_mm": {
+      "MM1": -0.25,
+      "MM2": 0.25,
+      "MM3": -0.5
+     },
+     "sarm_minus_drawn_lateral_edge_mm": {
+      "MM1": 0.5,
+      "MM2": 0.5,
+      "MM3": 0.0
+     },
+     "sarm_minus_drawn_dorsal_edge_mm": {
+      "MM1": 0.75,
+      "MM2": 0.5,
+      "MM3": 0.25
+     },
+     "sarm_minus_drawn_medial_edge_mm": {
+      "MM1": 0.5,
+      "MM2": 0.5,
+      "MM3": -0.25
+     }
+    },
+    "rhSTN": {
+     "sarm_mm3": 15.687500000000007,
+     "drawn_mm3": {
+      "MM1": 6.453125000000003,
+      "MM2": 7.9843750000000036,
+      "MM3": 5.843750000000003
+     },
+     "drawn_mean_mm3": 6.7604166666666705,
+     "sarm_minus_drawn_ventral_edge_mm": {
+      "MM1": -0.5,
+      "MM2": 0.25,
+      "MM3": -0.25
+     },
+     "sarm_minus_drawn_lateral_edge_mm": {
+      "MM1": 0.25,
+      "MM2": 0.5,
+      "MM3": 0.5
+     },
+     "sarm_minus_drawn_dorsal_edge_mm": {
+      "MM1": 0.5,
+      "MM2": 0.5,
+      "MM3": 0.5
+     },
+     "sarm_minus_drawn_medial_edge_mm": {
+      "MM1": 0.0,
+      "MM2": 0.5,
+      "MM3": 0.0
+     }
+    }
+   },
+   "sarm_minus_drawn_ventral_edge_mm_mean_range": [
+    -0.16666666666666666,
+    -0.5,
+    0.25
+   ],
+   "sarm_minus_drawn_lateral_edge_mm_mean_range": [
+    0.375,
+    0.0,
+    0.5
+   ],
+   "sarm_minus_drawn_dorsal_edge_mm_mean_range": [
+    0.5,
+    0.25,
+    0.75
+   ],
+   "sarm_minus_drawn_medial_edge_mm_mean_range": [
+    0.20833333333333334,
+    -0.25,
+    0.5
+   ]
+  },
+  "note": "mm3 = voxel count x voxel volume on the template grid; edges = 5th/95th percentiles of the label's voxel coordinates (ventral = p5 of z, dorsal = p95 of z, lateral = p95 of |x|, medial = p5 of |x|); positive differences = SARM's edge higher / more lateral"
+ }
+}

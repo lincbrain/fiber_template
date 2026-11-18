@@ -71,7 +71,7 @@ TV = 0.25
 OUTLINE = "#00e5ff"
 SB_MM = 5                                                # one bar per row, on its label's line, at the right
 TITLE_GAP_PT = 1.5 / 25.4 * 72 + 0.3                     # the column titles above the first row's label line (pt): 1.5 mm off its bar
-GROUPS = [("bundles", ("Fiber_dense_bundle", "Fiber_moderate_bundle", "Bundle"), "#D55E00", 0.9),
+GROUPS = [("bundles", ("Fiber_dense_bundle", "Fiber_moderate_bundle", "Bundle", "Fiber_bundles", "Unnamed_outline"), "#D55E00", 0.9),
           ("light bundles", ("Fiber_light_bundle",), "#E69F00", 0.5),
           ("terminal fields", ("Terminal_dense", "Terminal_moderate", "Terminal_light"), "#56B4E9", 0.5),
           ("injection site", ("Injection_site",), "#ffffff", 0.9)]

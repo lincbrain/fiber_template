@@ -10,7 +10,8 @@ Pairs: consecutive section slices (a, b) are interpolated only if (i) (b - a) x 
 agree (Dice >= footprint_dice_min: a one-hemisphere slice is never blended into a whole section). Everything skipped is recorded with its
 reason.
 Demons: multi-resolution symmetric forces (the reconstruction's schedule scaled by `upsample`) on the luminance of each section normalized
-to its tissue p99.5, masked by the dilated union of the two footprints; fields both ways.
+to its tissue p99.5 (capped at scale_max_over_median x the brain's median: `section_scales`), masked by the dilated union of the two
+footprints; fields both ways.
 Slice z (t = (z - a) / (b - a)): RGB = (1 - t) A warped by t f_AB + t B warped by (1 - t) f_BA. Labels: signed distance maps (negative
 inside) of each label on a and b, warped the same way, blended with the same weights, thresholded at 0; a label present on only one of
 the two sections tapers towards the other (its SDF there = +far).
@@ -91,6 +92,22 @@ def warp3(rgb, df, fr):
 
 # --- the interpolation ---
 
+def section_scales(sec, idxs, limit=None):
+    """Each section's intensity scale for the demons input: the 99.5th percentile of its tissue's RGB values (at least 1.0; 1.0 for a
+    section with no tissue). A section whose scale is more than `limit` times the median scale of the brain's sections takes that
+    median instead (one-sided: a scale below the limit is kept as it is). A saturated fold or stain spot can push one section's
+    percentile far above the others, its luminance then collapses after the division, and the demons fields of its two pairs fail
+    (MR252's sections 24 and 39: 5.7 and 4.3 times the median). None: no limit (the rule before 17 Nov 2026)."""
+    hi = {i: max(np.percentile(sec[i][sec[i].max(-1) > 0], 99.5), 1.0) if (sec[i].max(-1) > 0).any() else 1.0 for i in idxs}
+    if limit:                                                   # all of the run's sections, outliers included, in one pass; strictly >
+        med = np.median(np.array([hi[i] for i in idxs], dtype=np.float64))
+        # the median takes the type of the section's own scale, so the division keeps the section's float32: under NumPy 2,
+        # np.percentile of float32 data is float32 and a float64 divisor would make the result float64, where the analysis (NumPy 1,
+        # whose percentile is float64 but whose float32 / float64-scalar division stays float32) divided in float32
+        hi = {i: (type(hi[i])(med) if hi[i] > limit * med else hi[i]) for i in idxs}
+    return hi
+
+
 def interpolate(subject, *, registrations, match_table_path, first_photo_number, grid, label_files, interp_dir, out_for=None,
                 cfg=None, log=print):
     """Interpolate the registered sections and `label_files` (sheets on `grid`) between sections.
@@ -130,7 +147,7 @@ def interpolate(subject, *, registrations, match_table_path, first_photo_number,
     out_rgb = np.zeros((X, Y, Z, 3), np.uint8)
     prov = np.zeros((X, Y, Z), np.uint8)
     dense = {p: L.copy() for p, L in labs.items()}
-    hi = {i: max(np.percentile(sec[i][sec[i].max(-1) > 0], 99.5), 1.0) if (sec[i].max(-1) > 0).any() else 1.0 for i in idxs}
+    hi = section_scales(sec, idxs, C.get("scale_max_over_median"))
     for i in idxs:
         out_rgb[:, i] = np.clip(sec[i] / hi[i] * 255, 0, 255).astype(np.uint8)
         prov[:, i][sec[i].max(-1) > 0] = 1
@@ -202,7 +219,7 @@ def interpolate(subject, *, registrations, match_table_path, first_photo_number,
 
 # --- the interpolation of record since 3 Nov 2026: groups, per-hemisphere pairing, end extension ---
 
-GROUPS = {"Bundles": ["Fiber_light_bundle", "Fiber_moderate_bundle", "Fiber_dense_bundle", "Bundle"],
+GROUPS = {"Bundles": ["Fiber_light_bundle", "Fiber_moderate_bundle", "Fiber_dense_bundle", "Bundle", "Fiber_bundles", "Unnamed_outline"],
           "Terminals": ["Terminal_light", "Terminal_moderate", "Terminal_dense"],
           "Injection_site": ["Injection_site"], "Fibers": ["Fibers"]}
 
@@ -308,7 +325,7 @@ def interpolate_v2(subject, *, registrations, match_table_path, first_photo_numb
         q = od / f"{subject}_{g}_bfnative_L2.nii.gz"; nib.save(nib.Nifti1Image(L.astype(np.uint8), im.affine), str(q)); outputs.append(str(q))
     # 3. hemispheres on the grid; per-hemisphere section lists
     LR = regions_on_grid(regions, im, regions_scale)
-    hi = {i: max(np.percentile(sec[i][sec[i].max(-1) > 0], 99.5), 1.0) if (sec[i].max(-1) > 0).any() else 1.0 for i in idxs}
+    hi = section_scales(sec, idxs, C.get("scale_max_over_median"))
     foot = {i: sec[i].max(-1) > 0 for i in idxs}
     hemi_slices = {}
     for h, hv in (("left", 1), ("right", 2)):

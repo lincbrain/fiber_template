@@ -7,7 +7,7 @@ al. 2011; Safadi et al. 2018). Results, tracer labels; Fig. 9 (c).
 
 You need
   labels   the final tracer labels in the template (settings/internal/products_blockface.yaml `tracer_template_r058d`):
-           <S>/<S>_<class>_mri-template_density.nii.gz; bundles = Fiber_{light,moderate,dense}_bundle + Bundle (the "Fibers" strokes
+           <S>/<S>_<class>_mri-template_density.nii.gz; bundles = Fiber_{light,moderate,dense}_bundle + Bundle + Fiber_bundles + Unnamed_outline (the "Fibers" strokes
            left out, as in Fig. 9); both rules: density >= 0.1 (the figure's) and > 0.5 (solid).
   capsule  SARM level 6 label 50 (ic) in the template (`atlas_nmt`/SARM_level6_in_template.nii.gz); also + 0.5 mm (2 dilations), as
            Fig. 9 (c) draws it.
@@ -58,7 +58,7 @@ CASES = ["MR243", "MR252", "MR256", "MF191"]
 SIDE = {"MR243": 1, "MR252": 1, "MR256": 1, "MF191": -1}          # injection hemisphere (RAS x sign); MF191 left (tube side)
 RULES = {"footprint": lambda d: d >= 0.1, "solid": lambda d: d > 0.5}
 RULE_TEXT = {"footprint": "density >= 0.1 (what Fig. 9 shows)", "solid": "density > 0.5"}
-BUNDLES = ("Fiber_light_bundle", "Fiber_moderate_bundle", "Fiber_dense_bundle", "Bundle")
+BUNDLES = ("Fiber_light_bundle", "Fiber_moderate_bundle", "Fiber_dense_bundle", "Bundle", "Fiber_bundles", "Unnamed_outline")
 Y_RANGE, PLANES, HALF = (20.0, 24.0), (20.0, 22.0, 24.0), 0.75
 VENTRAL_PFC = {"OFC", "med_OFC", "lat_OFC", "caudal_OFC", "vmPFC", "area_25", "area_32", "area_14", "area_10", "areas_11/13"}
 DORSAL = {"dlPFC", "area_8A", "area_8B", "SMA/preSMA", "SMA", "preSMA", "MCC", "area_9", "area_46", "motor", "M1/PM"}

@@ -1,0 +1,34 @@
+{
+ "data": {
+  "method": [
+   "sections carrying a shown tracer class (any class but Fibers) with >= 1 L2 pixel after the registration, per case; labels/tracer_sections_r054.py on the final labels labels/push_tracer_r058d"
+  ],
+  "cases": {
+   "MR243": {
+    "shown_classes": 36,
+    "with_fibers": 36,
+    "drawn_shown_classes": 36
+   },
+   "MR252": {
+    "shown_classes": 27,
+    "with_fibers": 27,
+    "drawn_shown_classes": 27
+   },
+   "MR256": {
+    "shown_classes": 36,
+    "with_fibers": 36,
+    "drawn_shown_classes": 36
+   },
+   "MF191": {
+    "shown_classes": 30,
+    "with_fibers": 32,
+    "drawn_shown_classes": 30
+   }
+  },
+  "total": {
+   "shown_classes": 129,
+   "with_fibers": 131,
+   "drawn_shown_classes": 129
+  }
+ }
+}

@@ -11,7 +11,7 @@ the R1 target grid):
              the same measures; the percentile of the true |CNR| among them (a visible nucleus stands out: percentile near 100).
 The random positions come from one generator seeded 0, drawn in the record's order (sets, brains, structures).
 Ported from the analysis project's labels/r059/visibility_r059.py; its description is kept verbatim as METHOD (part of the record).
--> $LINC_NUMBERS/lgnstn_b0_visibility_r059_h9.json
+-> $LINC_NUMBERS/lgnstn_b0_visibility_r059_h9r17.json
     python code/figures/paper_numbers/lgnstn_b0_visibility_r059.py          (settings/env/linc.yml, PY_MRI)"""
 import os
 
@@ -88,7 +88,7 @@ def main():
                                   null_abs_cnr_median=round(float(np.median(null)), 3) if null else None, abs_cnr_percentile_in_null=pct)
                 print(setname, NAME[S], st, res[S][st], flush=True)
         out["sets"][setname] = res
-    print(provenance.write_numbers("lgnstn_b0_visibility_r059_h9", out, inputs=inputs, md5=False,
+    print(provenance.write_numbers("lgnstn_b0_visibility_r059_h9r17", out, inputs=inputs, md5=False,
                                    cmd="python code/figures/paper_numbers/lgnstn_b0_visibility_r059.py"))
 
 

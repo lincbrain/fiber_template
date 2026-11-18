@@ -130,6 +130,7 @@ These read, from the brain's histology folder: the labels, one OME-Zarr per clas
 
 - `push` moves each label class through each component's registration onto its blockface slice (about 3 minutes).
 - `interpolate` fills the slices between charted sections by demons registration between neighboring sections, treating the bundle classes as one group and the terminal classes as another (20 to 35 minutes).
+  Each section's brightness is scaled to its own tissue before the registration; a section whose scale is more than 3.5 times the median of the brain's sections (two of MR252's, which carry a saturated fold) takes that median instead (`settings/labels.yaml`, `scale_max_over_median`).
 - `carry` resamples the labels into the template on the brain's route (3 to 5 minutes): through the blockface template, or through the brain's own MRI where `settings/labels.yaml` (`template_routes`) says so; `--route` chooses.
 - `connect` joins the carried bundles into one pathway and marks each join as inferred (under a minute).
 
@@ -139,6 +140,9 @@ In these names, density is the fraction of each voxel, solid is where the densit
 
 On the paper's data, `run.py` reruns the last three steps (`labels-interpolate-MR243` and so on) and checks each file against the original, on both routes the paper reports: `labels-carry-route-MR243` through the blockface template, `labels-carry-MR243` through the brain's own MRI.
 For MR243, MR256 and MF191 it starts from the paper's pushed labels, because their components were masked again in a way the release's `masks` step does not repeat; only MR252's push is rerun from its registrations.
+MF191 and MR243 each have one more bundle class, drawn on their charts but missing from the tracer annotations of LINC dataset 000003: MF191's `Fiber_bundles`, the one outline its chart names "fiber bundles" (section 12), and MR243's `Unnamed_outline`, three outlines drawn under the software's default names ("User Line 1" on sections 13 and 14, "User Line 5" on section 16) where the neighboring sections chart a named bundle.
+Each was fitted to its section and pushed onto the blockface through the section's registration; the results are in `inputs/manual_annotations/` (`MF191_Fiber_bundles_bfnative_L2.nii.gz`, `MR243_Unnamed_outline_bfnative_L2.nii.gz`), and `labels-interpolate` reads them with the other pushed labels.
+Both are counted with the bundles, like MR252's ungraded `Bundle`.
 
 ![MR243's tracer labels on the blockface and in the template](figures/histology_07_tracer.png)
 

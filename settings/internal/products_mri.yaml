@@ -11,12 +11,12 @@ tube_landmarks: labels/tube_landmarks                 # per-piece tube offsets: 
 tube_landmarks_h9: labels/tube_landmarks_h9           # the same on the registrations with the per-component nonlinear stiffness: h9hole_<ID>_native.json, h9preinp_MR256_native.json
 
 # --- labels ---
-push_current: labels/push_current_h9                  # LGN/STN labels carried into the MRI template (the registrations with the per-component nonlinear stiffness, 12 Nov 2026)
-lgnstn_template_labels: labels/push_current_h9_s11        # the LGN/STN on the blockface route (code/labels/route.py lgnstn_sets): push_current<template_chain_tag>
+push_current: labels/push_current_h9r17                  # LGN/STN labels carried into the MRI template (the registrations with the per-component nonlinear stiffness, 12 Nov 2026)
+lgnstn_template_labels: labels/push_current_h9_s11r17        # the LGN/STN on the blockface route (code/labels/route.py lgnstn_sets): push_current<template_chain_tag>
                                                      # when settings/labels.yaml template_routes sends MM1-MM3 that way; unused while they take the MRI route
 template_gt: labels/template_gt                       # template-space reference labels for the LGN/STN geometry
 push_tracer: labels/push_tracer                       # tracer labels on the blockface grid (sheets + demons-interpolated)
-push_tracer_r058d: labels/push_tracer_h9              # the per-density-class sheets pushed onto the blockface (the registrations with the per-component nonlinear stiffness, 12 Nov 2026) (one slice per charted section; the chain of record since 3 Nov 2026 starts from them)
+push_tracer_r058d: labels/push_tracer_h9r17              # the per-density-class sheets pushed onto the blockface (the registrations with the per-component nonlinear stiffness, 12 Nov 2026) (one slice per charted section; the chain of record since 3 Nov 2026 starts from them)
 tracer_template_demons: labels/tracer_template_current_demons   # tracer labels in the MRI template (Fig. 10)
 
 # --- MRI channels: construction runs, evaluation caches, template ---
@@ -42,9 +42,9 @@ mri_inputs: mri/data                                  # sub-<ID>/micro/frac{1,2}
 tensor_d9: mri/tensor_refit_d9                        # <ID>_existing/run.json: the tensor of record's volumes, b-values and gradient check
 
 # --- tracer labels, the chain of record since 3 Nov 2026 (v2 interpolation + the connected pathways, v2c) ---
-tracer_v2_bfnative: labels/tracer_v2_h9               # the interpolated tracer labels on the blockface grid, per group and density class (<S>/<S>_<label>_bfnative_L2_demons.nii.gz)
+tracer_v2_bfnative: labels/tracer_v2_h9r17               # the interpolated tracer labels on the blockface grid, per group and density class (<S>/<S>_<label>_bfnative_L2_demons.nii.gz)
                                                       #   made by the v2 interpolation (linc-labels interpolate --method v2); the release's run reproduces them byte for byte
                                                       #   (MR252, 3 Nov 2026: 11 of 11 volumes, the pairs and the summary of interp_v2.json)
-tracer_template_v2: labels/tracer_template_v2_h9_s11     # the same carried into the MRI template (density, footprint, solid, solid2 = the connected solid per group)
-tracer_template_v2c: labels/tracer_template_v2c_h9_s11   # the connected pathways: <S>_Bundles_mri-template_{connected (1 = solid, 2 = inferred), solid_v2c, bridges}.nii.gz + <S>_connect_v2c.json
-tracer_sections_v2: labels/tracer_v2_h9_s11/sections_template   # the per-section sheets carried into the template without interpolation (Fig. 9's sections view)
+tracer_template_v2: labels/tracer_template_v2_h9_s11r17     # the same carried into the MRI template (density, footprint, solid, solid2 = the connected solid per group)
+tracer_template_v2c: labels/tracer_template_v2c_h9_s11r17   # the connected pathways: <S>_Bundles_mri-template_{connected (1 = solid, 2 = inferred), solid_v2c, bridges}.nii.gz + <S>_connect_v2c.json
+tracer_sections_v2: labels/tracer_v2_h9_s11r17/sections_template   # the per-section sheets carried into the template without interpolation (Fig. 9's sections view)

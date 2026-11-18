@@ -1,0 +1,452 @@
+{
+ "data": {
+  "method": [
+   "For every brain and hemisphere-structure, the label carried to the brain's own b0 (histology -> blockface -> own b0, the R1 of record; the",
+   "observer's labels for MM1-MM3: labels/push_current/<S>/<S>_<st>_b0-native_mask_demons.nii.gz; the model's for every histology brain with",
+   "MRI: labels/nnunet/deploy_r059/<S>/...) on that b0 (data/sub-<S>/mri/<S>_mri_b0_native.nii.gz, the R1 target grid):",
+   "  contrast   (mean inside - mean in the ring 1-3 voxels outside) / mean ring;  CNR = (mean inside - mean ring) / sd ring",
+   "  null       the same label shape moved to 200 random positions inside the brain (b0 > 10 % of its 99th percentile, shape fully inside), the",
+   "             same measures; |CNR| percentile of the true position among them (a visible nucleus stands out: percentile near 100)",
+   "-> paper/numbers/lgnstn_b0_visibility_r059.json",
+   "    mri/env/mmorf/bin/python labels/r059/visibility_r059.py"
+  ],
+  "sets": {
+   "observer": {
+    "MR243": {
+     "lhLGN": {
+      "voxels": 102,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": -0.017,
+      "cnr": -0.048,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.349,
+      "abs_cnr_percentile_in_null": 8.0
+     },
+     "lhSTN": {
+      "voxels": 19,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": 0.0721,
+      "cnr": 0.54,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.376,
+      "abs_cnr_percentile_in_null": 69.5
+     },
+     "rhLGN": {
+      "voxels": 103,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": 0.044,
+      "cnr": 0.102,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.305,
+      "abs_cnr_percentile_in_null": 18.5
+     },
+     "rhSTN": {
+      "voxels": 18,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": 0.1291,
+      "cnr": 0.908,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.396,
+      "abs_cnr_percentile_in_null": 94.0
+     }
+    },
+    "MR252": {
+     "lhLGN": {
+      "voxels": 102,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": -0.0053,
+      "cnr": -0.01,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.266,
+      "abs_cnr_percentile_in_null": 1.5
+     },
+     "lhSTN": {
+      "voxels": 29,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": 0.0004,
+      "cnr": 0.003,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.318,
+      "abs_cnr_percentile_in_null": 2.0
+     },
+     "rhLGN": {
+      "voxels": 125,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": 0.021,
+      "cnr": 0.043,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.286,
+      "abs_cnr_percentile_in_null": 7.000000000000001
+     },
+     "rhSTN": {
+      "voxels": 29,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": -0.0119,
+      "cnr": -0.084,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.399,
+      "abs_cnr_percentile_in_null": 11.5
+     }
+    },
+    "MR256": {
+     "lhLGN": {
+      "voxels": 94,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": -0.0119,
+      "cnr": -0.034,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.304,
+      "abs_cnr_percentile_in_null": 6.5
+     },
+     "lhSTN": {
+      "voxels": 13,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": 0.0854,
+      "cnr": 0.693,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.346,
+      "abs_cnr_percentile_in_null": 84.0
+     },
+     "rhLGN": {
+      "voxels": 118,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": 0.0276,
+      "cnr": 0.078,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.316,
+      "abs_cnr_percentile_in_null": 13.0
+     },
+     "rhSTN": {
+      "voxels": 17,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": 0.0558,
+      "cnr": 0.497,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.449,
+      "abs_cnr_percentile_in_null": 55.50000000000001
+     }
+    }
+   },
+   "model": {
+    "MR243": {
+     "lhLGN": {
+      "voxels": 107,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": -0.0067,
+      "cnr": -0.019,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.274,
+      "abs_cnr_percentile_in_null": 4.0
+     },
+     "lhSTN": {
+      "voxels": 18,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": 0.0746,
+      "cnr": 0.57,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.38,
+      "abs_cnr_percentile_in_null": 67.5
+     },
+     "rhLGN": {
+      "voxels": 109,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": 0.0482,
+      "cnr": 0.111,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.309,
+      "abs_cnr_percentile_in_null": 17.0
+     },
+     "rhSTN": {
+      "voxels": 16,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": 0.1256,
+      "cnr": 0.9,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.386,
+      "abs_cnr_percentile_in_null": 92.0
+     }
+    },
+    "MR252": {
+     "lhLGN": {
+      "voxels": 106,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": 0.0017,
+      "cnr": 0.003,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.264,
+      "abs_cnr_percentile_in_null": 1.0
+     },
+     "lhSTN": {
+      "voxels": 25,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": -0.0095,
+      "cnr": -0.072,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.318,
+      "abs_cnr_percentile_in_null": 12.0
+     },
+     "rhLGN": {
+      "voxels": 116,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": 0.0352,
+      "cnr": 0.077,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.324,
+      "abs_cnr_percentile_in_null": 13.0
+     },
+     "rhSTN": {
+      "voxels": 28,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": -0.0144,
+      "cnr": -0.103,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.333,
+      "abs_cnr_percentile_in_null": 23.5
+     }
+    },
+    "MR256": {
+     "lhLGN": {
+      "voxels": 95,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": -0.0053,
+      "cnr": -0.016,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.307,
+      "abs_cnr_percentile_in_null": 2.5
+     },
+     "lhSTN": {
+      "voxels": 13,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": 0.0854,
+      "cnr": 0.693,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.397,
+      "abs_cnr_percentile_in_null": 75.0
+     },
+     "rhLGN": {
+      "voxels": 117,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": 0.018,
+      "cnr": 0.048,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.32,
+      "abs_cnr_percentile_in_null": 9.5
+     },
+     "rhSTN": {
+      "voxels": 19,
+      "voxel_mm": [
+       0.7,
+       0.7,
+       0.7
+      ],
+      "contrast": 0.0549,
+      "cnr": 0.498,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.443,
+      "abs_cnr_percentile_in_null": 55.50000000000001
+     }
+    },
+    "MF278": {
+     "lhLGN": {
+      "voxels": 110,
+      "voxel_mm": [
+       0.5,
+       0.5,
+       0.5
+      ],
+      "contrast": 0.0478,
+      "cnr": 0.161,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.264,
+      "abs_cnr_percentile_in_null": 34.0
+     },
+     "lhSTN": {
+      "voxels": 21,
+      "voxel_mm": [
+       0.5,
+       0.5,
+       0.5
+      ],
+      "contrast": 0.0934,
+      "cnr": 0.64,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.324,
+      "abs_cnr_percentile_in_null": 85.0
+     },
+     "rhLGN": {
+      "voxels": 113,
+      "voxel_mm": [
+       0.5,
+       0.5,
+       0.5
+      ],
+      "contrast": 0.0162,
+      "cnr": 0.058,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.282,
+      "abs_cnr_percentile_in_null": 15.0
+     },
+     "rhSTN": {
+      "voxels": 17,
+      "voxel_mm": [
+       0.5,
+       0.5,
+       0.5
+      ],
+      "contrast": 0.0259,
+      "cnr": 0.185,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.299,
+      "abs_cnr_percentile_in_null": 30.5
+     }
+    },
+    "MF275": {
+     "lhLGN": {
+      "voxels": 199,
+      "voxel_mm": [
+       0.5,
+       0.5,
+       0.5
+      ],
+      "contrast": 0.171,
+      "cnr": 0.3,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.271,
+      "abs_cnr_percentile_in_null": 56.00000000000001
+     },
+     "lhSTN": {
+      "voxels": 33,
+      "voxel_mm": [
+       0.5,
+       0.5,
+       0.5
+      ],
+      "contrast": 0.1115,
+      "cnr": 0.462,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.378,
+      "abs_cnr_percentile_in_null": 68.5
+     },
+     "rhLGN": {
+      "voxels": 110,
+      "voxel_mm": [
+       0.5,
+       0.5,
+       0.5
+      ],
+      "contrast": 0.0787,
+      "cnr": 0.167,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.309,
+      "abs_cnr_percentile_in_null": 30.5
+     },
+     "rhSTN": {
+      "voxels": 29,
+      "voxel_mm": [
+       0.5,
+       0.5,
+       0.5
+      ],
+      "contrast": 0.0659,
+      "cnr": 0.363,
+      "null_n": 200,
+      "null_abs_cnr_median": 0.372,
+      "abs_cnr_percentile_in_null": 47.5
+     }
+    }
+   }
+  }
+ }
+}

@@ -39,7 +39,7 @@ from labels.labels import config  # noqa: E402
 from blockface.registration import xfmtools as X  # noqa: E402
 
 NAME = "tracer_sections_v2" + paths.template_chain_tag()
-GROUPS = {"Bundles": ["Fiber_light_bundle", "Fiber_moderate_bundle", "Fiber_dense_bundle", "Bundle"],
+GROUPS = {"Bundles": ["Fiber_light_bundle", "Fiber_moderate_bundle", "Fiber_dense_bundle", "Bundle", "Fiber_bundles", "Unnamed_outline"],
           "Terminals": ["Terminal_light", "Terminal_moderate", "Terminal_dense"], "Injection_site": ["Injection_site"], "Fibers": ["Fibers"]}
 from labels import route as RT  # noqa: E402
 ROUTE = {S: ("A" if r == "blockface" else "B") for S, r in RT.routes().items()}   # A = blockface-based, B = MRI-based (settings/labels.yaml template_routes)

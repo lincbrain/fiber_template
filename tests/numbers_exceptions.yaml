@@ -80,9 +80,9 @@ lgnstn_geometry_current:
 lgnstn_b0_visibility_r059:
   reason: "history: the paper reads lgnstn_b0_visibility_r059_h9"
   not_regenerated: true
-lgnstn_b0_visibility_r059_h9:
+lgnstn_b0_visibility_r059_h9r17:
   reason: "the paper reads the observer set only; the network's labels (the 'model' set) are not in the data folder, so a data-release run writes that set empty"
-  # the paper reads: lgnstn_b0_visibility_r059_h9.sets.observer...
+  # the paper reads: lgnstn_b0_visibility_r059_h9r17.sets.observer...
   compare: ["method", "sets.observer"]
 lgnstn_midplane_planes_r059:
   reason: "history: the paper reads lgnstn_midplane_planes_r059_h9"
@@ -175,7 +175,7 @@ tracer_sections_v2_h9:
 tracer_template_v2_all_h9:
   reason: "history: since 15 Nov 2026 the paper reads tracer_template_v2_all_h9_s11 (MF8 through the step-9 blockface template; MM1-MM3 unchanged)"
   not_regenerated: true
-fig_tracer_r058_h9_s11:
+fig_tracer_r058_h9_s11r17:
   reason: "written by the tracer figure's script (code/figures/tracer.py): its free-text method field is that script's docstring and its outputs field the figure files it wrote, which name the analysis project's variant script and paths; every value is regenerated"
   compare: ["cases", "voxel_mm3", "rules", "groups", "slab", "colors", "mirrored_for_display", "alic_counts_slab_solid", "injection_sites_b",
             "mf8_unbridged_outlined"]
@@ -183,17 +183,17 @@ fig_tracer_r058_h9_s11:
 # The LGN and STN records of 16 Nov 2026 (lgnstn_label_volumes.py, lgnstn_label_extents.py) are written without rounding, so a value the
 # paper prints is rounded once; the records before them rounded to 2 or 3 decimals first, and a few printed values moved by one in the
 # last digit.
-lgnstn_label_volumes_h9_s11b:
+lgnstn_label_volumes_h9_s11r17b:
   reason: "the record of record also holds unrounded_note, how it was made (the earlier script with rounding turned off); every value and the note are compared"
   compare: ["LGN", "STN", "note"]
-lgnstn_label_extents_h9_s11b:
+lgnstn_label_extents_h9_s11r17b:
   reason: "the record of record also holds unrounded_note, how it was made (the earlier script with rounding turned off); every value and the note are compared"
   compare: ["rows", "sarm_minus_ours_mean", "note"]
-lgnstn_label_volumes_h9b:
-  reason: "the MRI route's labels, written beside the blockface route's lgnstn_label_volumes_h9_s11b; the paper reads only the latter"
+lgnstn_label_volumes_h9r17b:
+  reason: "the MRI route's labels, written beside the blockface route's lgnstn_label_volumes_h9_s11r17b; the paper reads only the latter"
   no_reference: true
-lgnstn_label_extents_h9b:
-  reason: "the MRI route's labels, written beside the blockface route's lgnstn_label_extents_h9_s11b; the paper reads only the latter"
+lgnstn_label_extents_h9r17b:
+  reason: "the MRI route's labels, written beside the blockface route's lgnstn_label_extents_h9_s11r17b; the paper reads only the latter"
   no_reference: true
 lgnstn_label_volumes_h9:
   reason: "history: since 16 Nov 2026 the paper reads lgnstn_label_volumes_h9_s11b; the MRI route's values, unrounded, are in lgnstn_label_volumes_h9b"
@@ -201,3 +201,80 @@ lgnstn_label_volumes_h9:
 lgnstn_label_volumes_h9_s11:
   reason: "history: since 16 Nov 2026 the paper reads lgnstn_label_volumes_h9_s11b, the same values without rounding"
   not_regenerated: true
+
+# The corrected set of 17 Nov 2026 (r17): MF191's chart outline "fiber bundles" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN).
+# settings/labels.yaml template_chain_tag _h9_s11r17 and the MRI route's _h9r17; the records before it are history.
+tracer_alic_topography_v2c_h9_s11:
+  reason: "history: since 17 Nov 2026 the paper reads tracer_alic_topography_v2c_h9_s11r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+tracer_alic_topography_v5_h9_s11:
+  reason: "history: since 17 Nov 2026 the paper reads tracer_alic_topography_v5_h9_s11r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+tracer_connected_v2c_h9_s11:
+  reason: "history: since 17 Nov 2026 the paper reads tracer_connected_v2c_h9_s11r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+tracer_label_volumes_v2c_h9_s11:
+  reason: "history: since 17 Nov 2026 the paper reads tracer_label_volumes_v2c_h9_s11r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+tracer_placement_v2c_h9_s11:
+  reason: "history: since 17 Nov 2026 the paper reads tracer_placement_v2c_h9_s11r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+tracer_sections_v2_h9_s11:
+  reason: "history: since 17 Nov 2026 the paper reads tracer_sections_v2_h9_s11r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+tracer_template_v2_all_h9_s11:
+  reason: "history: since 17 Nov 2026 the paper reads tracer_template_v2_all_h9_s11r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+labels_overlap_current_h9:
+  reason: "history: since 17 Nov 2026 the paper reads labels_overlap_current_h9r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+labels_overlap_current_h9_s11:
+  reason: "history: since 17 Nov 2026 the paper reads labels_overlap_current_h9_s11r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+lgnstn_geometry_current_h9:
+  reason: "history: since 17 Nov 2026 the paper reads lgnstn_geometry_current_h9r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+lgnstn_geometry_current_h9_s11:
+  reason: "history: since 17 Nov 2026 the paper reads lgnstn_geometry_current_h9_s11r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+lgnstn_b0_visibility_r059_h9:
+  reason: "history: since 17 Nov 2026 the paper reads lgnstn_b0_visibility_r059_h9r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+  compare: ["method", "sets.observer"]
+lgnstn_budget_r059_h9:
+  reason: "history: since 17 Nov 2026 the paper reads lgnstn_budget_r059_h9r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+lgnstn_targets_r060c_h9:
+  reason: "history: since 17 Nov 2026 the paper reads lgnstn_targets_r060c_h9r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+lgnstn_midplane_planes_r059_h9:
+  reason: "history: since 17 Nov 2026 the paper reads lgnstn_midplane_planes_r059_h9r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+tracer_interp_accounting_v2_h9:
+  reason: "history: since 17 Nov 2026 the paper reads tracer_interp_accounting_v2_h9r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+fig_tracer_r058_h9_s11:
+  reason: "history: since 17 Nov 2026 the paper reads fig_tracer_r058_h9_s11r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+  compare: ["cases", "voxel_mm3", "rules", "groups", "slab", "colors", "mirrored_for_display", "alic_counts_slab_solid", "injection_sites_b",
+            "mf8_unbridged_outlined"]
+lgnstn_label_volumes_h9_s11b:
+  reason: "history: since 17 Nov 2026 the paper reads lgnstn_label_volumes_h9_s11r17b (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+  compare: ["LGN", "STN", "note"]
+lgnstn_label_extents_h9_s11b:
+  reason: "history: since 17 Nov 2026 the paper reads lgnstn_label_extents_h9_s11r17b (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+  compare: ["rows", "sarm_minus_ours_mean", "note"]
+fig_tracer_sections3d_v6_h9_s11_c:
+  reason: "history: since 17 Nov 2026 the paper reads fig_tracer_sections3d_v6_h9_s11r17_c (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+tracer_sections_r058d:
+  reason: "history: since 17 Nov 2026 the paper reads tracer_sections_r058d_r17 (the corrected set of 17 Nov 2026: MF191's chart outline \"fiber bundles\" (class Fiber_bundles), MR243's three outlines under the charts' default names (Unnamed_outline), and the label interpolation's section-scale rule (MR252's tracer labels and LGN/STN))"
+  not_regenerated: true
+lgnstn_label_volumes_h9b:
+  reason: "history: the MRI route's labels before the corrected set, written beside lgnstn_label_volumes_h9_s11b; since 17 Nov 2026 the release writes lgnstn_label_volumes_h9r17b"
+  no_reference: true
+lgnstn_label_extents_h9b:
+  reason: "history: the MRI route's labels before the corrected set, written beside lgnstn_label_extents_h9_s11b; since 17 Nov 2026 the release writes lgnstn_label_extents_h9r17b"
+  no_reference: true

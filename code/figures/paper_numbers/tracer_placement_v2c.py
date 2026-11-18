@@ -28,7 +28,7 @@ from shared import paths, provenance  # noqa: E402
 
 NAME = "tracer_placement_v2c" + paths.template_chain_tag()   # (<tag> = settings/labels.yaml template_chain_tag)
 CASES = ["MR243", "MR252", "MR256", "MF191"]
-GROUPS = {"Bundles": ["Fiber_light_bundle", "Fiber_moderate_bundle", "Fiber_dense_bundle", "Bundle"],
+GROUPS = {"Bundles": ["Fiber_light_bundle", "Fiber_moderate_bundle", "Fiber_dense_bundle", "Bundle", "Fiber_bundles", "Unnamed_outline"],
           "Terminals": ["Terminal_light", "Terminal_moderate", "Terminal_dense"]}
 TV = 0.25
 # the record's method text, fixed (it was this script's docstring when the record was made; the docstring may change)

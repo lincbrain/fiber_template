@@ -47,6 +47,8 @@ interpolate:
                                                 # label grid (80 um in-plane)
   far: 60.0                                     # signed distance (pixels) of a label absent from a section
   luminance: [0.299, 0.587, 0.114]              # RGB -> luminance (Rec. 601) for the demons input
+  scale_max_over_median: 3.5                    # a section's p99.5 scale above this x the median of the brain's sections takes
+                                                # the median (a saturated fold; MR252's sections 24 and 39); null = no limit
   demons:                                       # multi-resolution symmetric-forces demons (the reconstruction's schedule)
     shrink: [4, 2, 1]                           # x upsample
     sigma: [2, 1, 0]                            # x upsample (pixels)
@@ -67,7 +69,7 @@ carry:
   slab: 8                                       # template slices per evaluation of a pull map
 
 # --- the chain the tracer labels in the template come from: their products keys' folders and the tracer records' names <base><tag> ---
-template_chain_tag: _h9_s11                      # the H9 histology registration; MF8 through the step-9 blockface template (15 Nov 2026)
+template_chain_tag: _h9_s11r17                      # the H9 histology registration; MF8 through the step-9 blockface template (15 Nov 2026)
 # each tracer case's route into the MRI template (code/labels/route.py): blockface (the blockface template of record: the link, the
 # brain's step-9 field, its member warp of step 8, its native map) or mri (its R1 of record and its b0's registration to the template)
 template_routes: {MR243: blockface, MR252: blockface, MR256: blockface, MF191: blockface}
