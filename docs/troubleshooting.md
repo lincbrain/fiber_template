@@ -19,6 +19,10 @@ Move `outputs/` aside or delete it, then source the file again; or go back to th
 `outputs/in/` holds one link per file of the data folder, under the name the code knows it by, so the data folder does not have that file.
 `settings/files.tsv` says where it belongs: search it for the part of the name after `outputs/in/`.
 
+**You added files to the data folder, or pulled a newer version of the repository, and the code does not see the change.**
+`roots.sh` links the data folder's files and fills the working folders once, and afterwards it only checks that the table and the folder's path are the same.
+Run `source settings/roots.sh refresh`: it links the files again and adds what the working folders lack, and it deletes and overwrites nothing of yours.
+
 **The self-test fails with import errors.**
 It ran with the system's Python instead of the environments.
 It takes them from `envs/linc_envs.sh`, which `install.sh` writes; if they were installed elsewhere (`--prefix`), source that folder's `linc_envs.sh` first.
@@ -83,6 +87,17 @@ Run `prepare-<ID>` for the four brains, then A8 again; it says which inputs it u
 **A8's comparison says there is nothing to compare with.**
 Your data folder does not hold the paper's construction run, so there is no file to compare with.
 The run folder A8 wrote is complete, and A9 reads it.
+
+**`mri-channels` (A10) or `mri-links` (A11) says your data folder does not hold all it reads.**
+These two steps remake the template's channels and the four brains' transforms from the paper's finished construction run (3.5 days on a GPU), to compare them with the paper's files.
+The run is `template/intermediate/construction/` in the data folder, and the steps also read `template/` and `brains/sub-MF283` to `sub-MF286` whole.
+Add them to your data folder, run `source settings/roots.sh refresh`, and run the step again.
+You do not need either step for a new brain.
+
+**`linc-register mri-template` stops with "not found: the template's b0", or its mask, frame or frame bridge.**
+The registration reads four of the template's files, and your data folder does not hold the ones it names.
+They are `template/outputs/template_b0.nii.gz`, `template_brain_mask.nii.gz` and `template_frame_500um.nii.gz`, and `template/intermediate/construction/bridge_run113_to_canonical/linear.json`.
+Add them to your data folder and run `source settings/roots.sh refresh`.
 
 ## Blockface
 

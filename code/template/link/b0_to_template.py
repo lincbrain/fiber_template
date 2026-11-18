@@ -46,7 +46,7 @@ from scipy import ndimage as ndi
 from shared import paths, xfm
 from blockface.registration import featurereg, fsl, xfmtools as X
 from . import qc
-from template.link.common import bridge, config
+from template.link.common import bridge, config, inputs, product
 
 SRC, DST = "b0-native", "mri-template"
 def cfg():
@@ -235,6 +235,13 @@ def main(argv=None, prog=None):
     b0 = a.b0 or str(md / f"{S}_mri_b0_native.nii.gz")
     mask = a.mask or str(md / f"{S}_mri_mask_native.nii.gz")
     out = Path(a.out or (paths.work_root() / "b0_to_template" / S))
+    need = [("the template's b0", a.template_b0), ("the template's brain mask", a.template_mask), ("the frame bridge", a.bridge or product(inputs()["bridge"]))]
+    need += [("the 0.5 mm frame", a.place_b0)] if a.place_b0 else []
+    missing = [f"{what} ({p})" for what, p in need if not Path(p).exists()]
+    if missing:                                       # before any work: the template's files, not the brain's
+        raise SystemExit("not found: " + "; ".join(missing) + ". These are the template's files. In the data folder they are template/outputs/ "
+                         "(template_b0, template_brain_mask, template_frame_500um) and template/intermediate/construction/bridge_run113_to_canonical/. "
+                         "Add them to your data folder, then run 'source settings/roots.sh refresh'.")
     if a.place_b0:
         from blockface.registration import to_own_mri
         r = to_own_mri.place_b0(b0, mask, a.place_b0, str(out / "placement"), S)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Give the code its working names for the files of the data tree: one link per row of settings/files.tsv.
 
-    python code/shared/link_data.py <data tree> <folder of links> [--table settings/files.tsv] [--built <folder> ...]
+    python code/shared/link_data.py <data tree> <folder of links> [--table settings/files.tsv] [--built <folder> ...] [--refresh]
 
 You need
     the data tree (LINC_DATA) and the table. Each row has new_path, the file's path in the data tree, and old_path, the path the code knows
@@ -12,6 +12,8 @@ What it does
     tree does not hold (a row with upload = local, in a tree downloaded from the archive) gets no link and is counted. A folder that holds
     none of the table's files is not a data tree: it stops there, says which folder looks like one, and changes nothing. Run again with the
     same table and tree it does nothing; with another table or tree it starts over. It deletes only that folder's links, never the data.
+    --refresh makes the links again although the table and the tree are the same: use it after files were added to the tree, which it
+    cannot see by itself (`source settings/roots.sh refresh` does).
     --built names the folders made from these links (the working folders of settings/roots.sh): when one exists and the links were made
     from another tree, it stops instead of starting over, because those folders hold that tree's files and the results made from them.
 You get
@@ -44,6 +46,7 @@ def main():
     ap.add_argument("links", type=Path)
     ap.add_argument("--table", type=Path, default=Path(__file__).resolve().parents[2] / "settings" / "files.tsv")
     ap.add_argument("--built", type=Path, nargs="*", default=[])
+    ap.add_argument("--refresh", action="store_true", help="make the links again although the table and the tree are the same")
     a = ap.parse_args()
     tree = a.tree.resolve()
     if not tree.is_dir():
@@ -51,7 +54,7 @@ def main():
     linc = os.environ.get("LINC_000003", "").rstrip("/")
     state = [hashlib.md5(a.table.read_bytes()).hexdigest(), str(tree), linc]
     stamp = a.links / ".complete"
-    if stamp.exists() and stamp.read_text().split("\n")[:-1] == state:
+    if not a.refresh and stamp.exists() and stamp.read_text().split("\n")[:-1] == state:
         print(f"{a.links}: up to date")
         return
     with open(a.table) as f:

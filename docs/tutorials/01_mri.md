@@ -32,11 +32,26 @@ They were preprocessed before this code (denoising, eddy-current and motion corr
 MR243's is `mri/MR243_b0.nii.gz` in `brains/sub-MR243/inputs/`, at 0.7 mm isotropic; it is already masked to the brain and bias-corrected, so it has no background.
 Its manually corrected brain mask is `manual_annotations/MR243_b0_brain_mask.nii.gz`.
 
+**What each part reads from the data folder.**
+The whole data folder has all of it.
+If yours holds less, this is what each part needs:
+
+| Part | Reads |
+|---|---|
+| B, a new brain | the template: `template/outputs/` (its b0, brain mask and 0.5 mm frame) and `template/intermediate/construction/bridge_run113_to_canonical/` |
+| A1 to A7 | the four brains' `inputs/`, and `template/inputs/` |
+| A8 and A9 | the same; with `brains/sub-<ID>/intermediate/construction/` they start from the paper's construction inputs, and without it from your own A7 outputs |
+| A10 and A11 | the paper's finished construction run, `template/intermediate/construction/`, with `template/` and `brains/sub-MF283` to `sub-MF286` whole |
+
+After you add any of these to your data folder, run `source settings/roots.sh refresh` once ([00](00_start_here.md#before-you-start)).
+
 ![Coronal planes of MF283's T2-weighted image, FA and soma fraction, and of MR243's b0](figures/mri_02_input.png)
 
 *Figure 2. (a-c) MF283's T2-weighted image (the echo the build uses), FA and soma fraction (`outputs/MF283_t2_T2w.nii.gz`, `_tensor_dti`, `_micro_soma_fraction`), each in its own space; (d) MR243's b0.*
 
 ## 3. Steps
+
+For a new brain, go straight to [part B](#b-a-new-brains-b0): it needs the template, not part A.
 
 ### A. The MRI template, on the paper's four brains
 
@@ -72,6 +87,9 @@ Steps A8 to A11 run through `run.py`:
 A8 and A9 start from the paper's own construction inputs, so that the result can be compared with the paper's file by file.
 When your data folder does not hold them, A8 starts from your own A7 outputs and says so; its comparison then has nothing to compare with.
 To build from your own A7 outputs although the data folder holds the paper's, point `$LINC_WORK/mri_construction/prep/<ID>` at them before A8: a link that already leads to construction inputs is left alone.
+A10 and A11 do not read your own A9 run.
+They remake the template's channels and each brain's transforms from the paper's finished run, so that the result can be compared with the paper's file by file.
+When your data folder does not hold that run, each of them stops and says what to add.
 The data folder keeps each template brain's whole transforms as single files: `brains/sub-MF283/outputs/MF283_b0_to_template.nii.gz`, `_t2_to_template` and `_micro_to_template`.
 
 ![The template's channels in one coronal plane](figures/mri_03_template_channels.png)
@@ -115,6 +133,7 @@ This places the b0 rigidly on the template's 0.5 mm frame, fits a similarity and
 Every input is masked to the brain.
 The step ends with the outline check (section 4) and records its verdict.
 It takes about 12 minutes on a GPU.
+It reads four of the template's files, the three in the command and the frame bridge; if one is missing it stops before any work and names it (section 2 lists where they are in the data folder).
 
 The transform goes to `$LINC_DATA/sub-<ID>/xfm/b0-native__to__mri-template/`, with the warp, the start affine and `meta.json` holding the verdict.
 The b0 and its mask moved into the template, and the check's numbers, go to `$LINC_WORK/b0_to_template/<ID>/`.

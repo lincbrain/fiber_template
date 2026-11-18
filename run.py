@@ -355,7 +355,8 @@ def sh(host, command, timeout=40):
     return subprocess.run(argv, capture_output=True, text=True, timeout=timeout, stdin=subprocess.DEVNULL)
 
 
-PROBE = ("nproc; cut -d' ' -f1 /proc/loadavg; awk '/MemTotal/{t=$2}/MemAvailable/{a=$2}END{print t, a}' /proc/meminfo; "
+# the cores are counted without OMP_NUM_THREADS and OMP_THREAD_LIMIT, which nproc would return in their place
+PROBE = ("env -u OMP_NUM_THREADS -u OMP_THREAD_LIMIT nproc; cut -d' ' -f1 /proc/loadavg; awk '/MemTotal/{t=$2}/MemAvailable/{a=$2}END{print t, a}' /proc/meminfo; "
          "nvidia-smi --query-gpu=index,uuid,name,memory.total,memory.used --format=csv,noheader,nounits 2>/dev/null; echo ---; "
          "nvidia-smi --query-compute-apps=gpu_uuid --format=csv,noheader 2>/dev/null")
 

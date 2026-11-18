@@ -116,7 +116,9 @@ Each folder in the table, and each of a brain's three parts, has a `README.txt` 
 
 The code reads the data folder and never writes into it.
 `settings/files.tsv` has one row per file of the data folder, saying where it is and what name the code knows it by.
-`source settings/roots.sh` turns each row into a link under the repository's `outputs/in/` and sets these variables:
+`source settings/roots.sh` turns each row into a link under the repository's `outputs/in/` and sets these variables.
+A data folder may hold less than the whole, for example the inputs alone: a step that needs a missing file then says which.
+After you add files to it, `source settings/roots.sh refresh` links them.
 
 | Variable | Folder | What is there |
 |---|---|---|

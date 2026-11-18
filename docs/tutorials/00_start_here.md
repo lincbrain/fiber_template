@@ -24,6 +24,15 @@ source settings/roots.sh
 It sets `$PY`, `$PY_TIRL` and `$PY_DEEP` to the Python environments that `install.sh` built, and every command in the tutorials assumes them.
 It also points `$LINC_DATA` to a working folder inside the repository, since the code never writes into the data folder ([overview](../overview.md#the-data-folder)).
 
+After you add files to the data folder, or after a `git pull`, add the word `refresh` once:
+
+```bash
+source settings/roots.sh refresh
+```
+
+The first time, `roots.sh` links the data folder's files and fills its working folders, and it does not look again by itself.
+With `refresh` it links the files again and adds what the working folders lack; it deletes and overwrites nothing of yours.
+
 ## Two ways to run a step
 
 **On the paper's brains, with checks.**

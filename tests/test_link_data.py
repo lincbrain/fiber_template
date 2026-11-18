@@ -7,7 +7,9 @@ You need
 What it does
   It writes a toy table and toy data folders, and checks that the links are made once; that a folder holding none of the table's
   files is refused, with the folder that looks right named and nothing changed; that a second data folder is refused while a working
-  folder built from the first exists; and that settings/roots.sh stops on a wrong LINC_DATA before it makes anything.
+  folder built from the first exists; that files added to the data folder are linked on a refresh, and only then; and that
+  settings/roots.sh stops on a wrong LINC_DATA before it makes anything, and with the word refresh makes the links again and fills
+  the working folders again.
 You get
   pytest's pass / fail per test.
 """
@@ -93,9 +95,30 @@ def test_another_data_folder_is_refused_while_built_folders_exist(tmp_path):
     assert link(a, links, table, "--built", built).returncode == 0
 
 
-def source_roots(repo, **env):
-    """source <repo>/settings/roots.sh in a bare shell: (stdout with rc= and tree=, stderr)"""
-    r = subprocess.run(["bash", "-c", f'source "{repo}/settings/roots.sh"; echo "rc=$? tree=${{LINC_DATA_TREE:-}}"'],
+def test_files_added_to_the_folder_are_linked_on_a_refresh(tmp_path):
+    table, tree = toy(tmp_path, "tree", keep=(0, 2))
+    links, built = tmp_path / "out" / "in", tmp_path / "out" / "local_data"
+    assert "2 links" in link(tree, links, table, "--built", built).stdout
+    built.mkdir()                                                  # a working folder made from these links
+    for k in (1, 3):                                               # the folder gains a Zarr store and a file
+        f = tree / ROWS[k][0]
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.mkdir() if f.name.endswith(".zarr") else f.write_text("later")
+    assert "up to date" in link(tree, links, table, "--built", built).stdout        # the same table and folder: it cannot see them
+    assert not os.path.lexists(str(links / ROWS[3][1]))
+    r = link(tree, links, table, "--built", built, "--refresh")
+    assert r.returncode == 0 and "4 links" in r.stdout and "0 files of the table are not in this tree" in r.stdout, r.stderr
+    for new, old in ROWS:
+        assert os.readlink(str(links / old)) == f"{tree}/{new}"
+    _, other = toy(tmp_path, "other")                              # a refresh does not let another data folder in
+    r = link(other, links, table, "--built", built, "--refresh")
+    assert r.returncode != 0 and f"was built from another data folder, {tree}" in r.stderr
+    assert os.readlink(str(links / ROWS[0][1])) == f"{tree}/{ROWS[0][0]}"
+
+
+def source_roots(repo, word="", **env):
+    """source <repo>/settings/roots.sh [word] in a bare shell: (stdout with rc= and tree=, stderr)"""
+    r = subprocess.run(["bash", "-c", f'source "{repo}/settings/roots.sh" {word}; echo "rc=$? tree=${{LINC_DATA_TREE:-}}"'],
                        env=dict(PATH=os.environ.get("PATH", "/usr/bin:/bin"), PY=sys.executable, **{k: str(v) for k, v in env.items()}),
                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
     return r.stdout, r.stderr
@@ -126,3 +149,43 @@ def test_roots_stops_on_a_wrong_data_folder(tmp_path):
 
     for built in ("in", "local_data", "local_rebuild", "local_mri", "models"):
         assert not (repo / "outputs" / built).exists()             # it stopped before making anything
+
+
+def test_roots_refresh_links_again_and_fills_the_working_folders_again(tmp_path):
+    table, tree = toy(tmp_path, "tree", keep=(0, 2))
+    repo = tmp_path / "repo"                                       # the two files under test, the toy table, and stand-ins for the two helpers
+    for rel in ("settings/roots.sh", "code/shared/link_data.py"):
+        (repo / rel).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(str(REPO / rel), str(repo / rel))
+    shutil.copy(str(table), str(repo / "settings" / "files.tsv"))
+    calls = repo / "calls.txt"
+    (repo / "code" / "shared" / "join_weights.sh").write_text("exit 0\n")
+    helper = repo / "code" / "shared" / "make_local_data.sh"       # what the real one does that matters here: it writes <dest>/.complete last
+    helper.write_text(f'#!/bin/bash\nmkdir -p "$1"\necho "$1" >> "{calls}"\necho done > "$1/.complete"\n')
+    helper.chmod(0o755)
+    out = repo / "outputs"
+
+    stdout, err = source_roots(repo, LINC_DATA=tree)
+    assert stdout.strip() == f"rc=0 tree={tree}", err
+    assert calls.read_text().split() == [str(out / "local_data"), str(out / "local_rebuild"), str(out / "local_mri")]
+    assert "building" in err and "(once; " in err
+    mine = out / "local_data" / "my_result.txt"                    # something the user made in a working folder
+    mine.write_text("mine")
+
+    later = tree / ROWS[3][0]                                      # the data folder gains a file
+    later.parent.mkdir(parents=True, exist_ok=True)
+    later.write_text("later")
+    stdout, err = source_roots(repo, LINC_DATA=tree)               # sourced again as usual: nothing changes
+    assert stdout.strip() == f"rc=0 tree={tree}" and "building" not in err and "adding" not in err
+    assert not os.path.lexists(str(out / "in" / ROWS[3][1])) and len(calls.read_text().split()) == 3
+
+    stdout, err = source_roots(repo, "refresh", LINC_DATA=tree)    # with the word: the new file is linked, the working folders filled again
+    assert stdout.strip() == f"rc=0 tree={tree}", err
+    assert os.readlink(str(out / "in" / ROWS[3][1])) == f"{tree}/{ROWS[3][0]}"
+    assert "the links are made again (3 links" in err and err.count("adding what is missing to") == 3 and "once" not in err
+    assert len(calls.read_text().split()) == 6
+    assert all((out / d / ".complete").exists() for d in ("local_data", "local_rebuild", "local_mri"))
+    assert mine.read_text() == "mine"                              # nothing of the user's is touched
+
+    stdout, err = source_roots(repo, LINC_DATA=tree)               # and afterwards it is quiet again
+    assert "adding" not in err and len(calls.read_text().split()) == 6

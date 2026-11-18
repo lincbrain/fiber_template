@@ -421,8 +421,11 @@ steps:
     title: Make the template's MRI channels from the paper's construction run
     reads: the paper's run ($LINC_PRODUCTS/mri/tc/rb_final, step 8 iteration 3); the brains' native images, fields and construction inputs of record
     writes: $LINC_WORK/mri_paper_run/channels/linc_mri_*.nii.gz and provenance.json
-    run: W=$LINC_WORK/mri_paper_run && { [ -d $LINC_PRODUCTS/mri/tc/rb_final/out ] || { echo "mri-channels makes the channels from the paper's construction
-      run, which this data folder does not hold ($LINC_PRODUCTS/mri/tc/rb_final)"; exit 1; }; } && mkdir -p $W/prep $W/runs && ln -sfn $LINC_PRODUCTS/mri/tc/rb_final $W/runs/rb_final && for S in MF283 MF284
+    run: W=$LINC_WORK/mri_paper_run && { [ -d $LINC_PRODUCTS/mri/tc/rb_final/out ] && ls $LINC_PRODUCTS/mri/data/sub-MF28{3,4,5,6}/landmarks/canonical.json
+      > /dev/null 2>&1 || { echo "mri-channels remakes the template's channels from the paper's finished construction run, and your data folder does not
+      hold all it reads. It reads template/ (the run is template/intermediate/construction) and brains/sub-MF283 to sub-MF286, each whole (inputs,
+      intermediate, outputs). Add them to your data folder, then run 'source settings/roots.sh refresh' and this step again. A new brain does not need
+      this step (docs/tutorials/01_mri.md, part B)."; exit 1; }; } && mkdir -p $W/prep $W/runs && ln -sfn $LINC_PRODUCTS/mri/tc/rb_final $W/runs/rb_final && for S in MF283 MF284
       MF285 MF286; do mkdir -p $W/data/sub-$S && ln -sfn $LINC_PRODUCTS/mri/data/sub-$S $W/data/sub-$S/mri && ln -sfn $LINC_PRODUCTS/mri/data/sub-$S/xfm
       $W/data/sub-$S/xfm && ln -sfn $LINC_PRODUCTS/mri/data/sub-$S/canonical_rebuild_manual_annotations_frac $W/prep/$S; done && LINC_DATA=$W/data $PY code/template/build_mri_channels.py
       --work $W --step channels
@@ -446,8 +449,12 @@ steps:
     title: Register the brain's links to the template (frame, construction warp)
     reads: the paper's run; the brain's frame of record (landmarks/canonical.json)
     writes: $LINC_WORK/mri_links/{id}/xfm/{b0-native__to__mri-canonical,mri-canonical__to__mri-template}/
-    run: $PY -m mri.mri_register links --subject {id} --run $LINC_PRODUCTS/mri/tc/rb_final --mri-root $LINC_PRODUCTS/mri/data/sub-{id}
-      --xfm-root $LINC_WORK/mri_links/{id}/xfm --out $LINC_WORK/mri_links/{id}/run
+    run: '{ [ -d $LINC_PRODUCTS/mri/tc/rb_final/out ] && [ -f $LINC_PRODUCTS/mri/data/sub-{id}/landmarks/canonical.json ] || { echo "mri-links remakes
+      this brain''s two transforms from the paper''s finished construction run, and your data folder does not hold all it reads. It reads template/
+      (the run is template/intermediate/construction) and brains/sub-{id}, each whole (inputs, intermediate, outputs). Add them to your data folder,
+      then run ''source settings/roots.sh refresh'' and this step again. A new brain does not need this step (docs/tutorials/01_mri.md, part B).";
+      exit 1; }; } && $PY -m mri.mri_register links --subject {id} --run $LINC_PRODUCTS/mri/tc/rb_final --mri-root $LINC_PRODUCTS/mri/data/sub-{id}
+      --xfm-root $LINC_WORK/mri_links/{id}/xfm --out $LINC_WORK/mri_links/{id}/run'
     check: $PY tests/compare/compare_mri_build.py entries $LINC_WORK/mri_links/{id}/xfm $LINC_PRODUCTS/mri/xfm_rb_final/sub-{id}/xfm b0-native__to__mri-canonical
       mri-canonical__to__mri-template
     expect: both entries' files identical to the paper's, and their QC passes

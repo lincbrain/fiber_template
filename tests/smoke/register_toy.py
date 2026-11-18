@@ -12,9 +12,11 @@ What it does
   place-b0   the b0 step of `linc-register mri --place-b0` (a rigid FLIRT registration onto the template grid, 6 degrees of
              freedom) on the toy b0 and its mask; the deformable stage needs the anatomix environment and a GPU, and is not part
              of the smoke test
+  no template `linc-register mri-template` given a template b0, frame and bridge that do not exist
 You get
   PASS when the good registration passes (the JSON row and PNG written, pass recorded in a toy registry entry), the bad one fails
-  with the rotation named, and the b0 step writes its outputs.
+  with the rotation named, the b0 step writes its outputs, and the registration to the template stops before any work with one
+  message that names the missing template files and what to do.
 """
 import json
 import os
@@ -77,6 +79,16 @@ def main():
         print("== qc: a bad registration (the linear part rotated 45 degrees)", flush=True)
         row = qc(t, t["mat_bad"], "bad")
         assert not row["gate_pass"] and any("rotation" in r for r in row["gate_fail_reasons"]), row["gate_fail_reasons"]
+        print("== mri-template without the template's files", flush=True)
+        cmd = [sys.executable, str(REPO / "code" / "blockface" / "registration" / "linc-register"), "mri-template", "--subject", "TOY", "--b0", t["moved"],
+               "--mask", t["moved_mask"], "--template-b0", tmp / "no_b0.nii.gz", "--template-mask", t["fixed_mask"], "--place-b0", tmp / "no_frame.nii.gz",
+               "--bridge", tmp / "no_bridge.json", "--out", tmp / "b0_to_template", "--registry", tmp / "xfm", "--device", "cpu"]
+        r = subprocess.run([str(c) for c in cmd], capture_output=True, text=True, env=dict(os.environ, PYTHONNOUSERSITE="1"))
+        last = (r.stderr.strip().splitlines() or [""])[-1]
+        print("  ", last[:160], "...")
+        assert r.returncode != 0 and last.startswith("not found: the template's b0 (") and "the frame bridge (" in last and "the 0.5 mm frame (" in last, r.stderr
+        assert "brain mask" not in last.split(". These are")[0] and "source settings/roots.sh refresh" in last      # the mask is there; the fix is named
+        assert not (tmp / "b0_to_template").exists()                                                                # it stopped before any work
         if os.environ.get("FSLDIR"):
             print("== place-b0 (FLIRT 6 dof onto a toy frame)", flush=True)
             from blockface.registration import to_own_mri
