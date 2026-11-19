@@ -28,8 +28,8 @@ d3_domain_shift_prod:
   tol: 1.0e-4
 
 r057_s1_synthesis:
-  reason: "a record of copies: its isbi block is copied unchanged from the number records of the synthesis network's own paper (products isbi_numbers, dated snapshots; this release does not recompute that paper's evaluations), its precision block from two records of record (numbers_of_record); every value is compared, and every source's md5 except the brain-name file's: the release reads the names from settings/specimen_labels.json (the same mapping as the record's paper/numbers/specimen_labels.json, another file), and the sources' paths name the machine that ran it"
-  # the paper reads: r057_s1_synthesis.isbi.*, .precision.*, .inference.* (Supplementary S1.2-S1.4)
+  reason: "a record of copies: its isbi block is copied unchanged from the number records of the synthesis evaluation (products isbi_numbers, dated snapshots; reported in the paper's Supplementary Section S5; this release does not recompute these evaluations), its precision block from two records of record (numbers_of_record); every value is compared, and every source's md5 except the brain-name file's: the release reads the names from settings/specimen_labels.json (the same mapping as the record's paper/numbers/specimen_labels.json, another file), and the sources' paths name the machine that ran it"
+  # the paper reads: r057_s1_synthesis.isbi.*, .precision.*, .inference.* (Results, Discussion, Supplementary Sections S1 and S5)
   compare: ["what", "isbi", "precision", "inference", "evaluated", "sources.table1_v3.md5", "sources.extra_v3.md5", "sources.results_v3.md5",
             "sources.data_v3.md5", "sources.compute_v3.md5", "sources.brain_labels_v4.md5", "sources.precision_weights_b1_d2b_s8.md5",
             "sources.d3_A_sigma2_pred_flat.md5", "sources.tau2_json.md5"]
@@ -278,3 +278,37 @@ lgnstn_label_volumes_h9b:
 lgnstn_label_extents_h9b:
   reason: "history: the MRI route's labels before the corrected set, written beside lgnstn_label_extents_h9_s11b; since 17 Nov 2026 the release writes lgnstn_label_extents_h9r17b"
   no_reference: true
+
+# Records the paper reads whose inputs are working files of the analysis that the data folder does not hold (added 19 Nov 2026).
+# Each reference is the record's data, values unchanged (free text without machine paths or working names; the leave-one-brain-out
+# rows name their card model instead of the machine). Listed by check_numbers.py, not compared; each reason says what is missing.
+lobo_allchannels_rebuild:
+  reason: "the leave-one-brain-out evaluation of the MRI template (Methods, Leave-one-brain-out evaluation): four held-out template builds, each from three brains and their mirrors, and each held-out brain's registrations to them, all run on GPUs; the data folder holds the template of record, not the held-out builds"
+  not_regenerated: true
+inverse_residuals_r079:
+  reason: "the inversion errors of the mean deformation in the last construction iteration of the MRI template and of the blockface template's eighth step: it reads those iterations' average warp and its inverse, which stay in the constructions' working folders, not in the data folder"
+  not_regenerated: true
+mri_template_frac_renormalization:
+  reason: "what the renormalization of the soma and neurite fractions changes in the MRI template: it reads the build's per-input warped fractions and masks (40 working files of the template build), which the data folder does not hold"
+  not_regenerated: true
+bf_step9_settings_s11b:
+  reason: "the final step's settings and grids as the paper prints them, read from the paper's run's job, average and mean-removal records; a run of the final step with this release (code/template/blockface_step9.py) writes records of the same kind under $LINC_WORK, but the paper's run's records are not in the data folder"
+  not_regenerated: true
+bf_outside10_s9_015_s11_onepass_v2:
+  reason: "the ten brains outside the final step, before and after their registration to the final template, on the same voxels: it reads the working arrays of the eighth-step and final-step builds and each brain's carried images, kept with the analysis, not in the data folder; one of the ten registrations is reproduced by steps.yaml bf-template-step9-refine (MF191, field identical)"
+  not_regenerated: true
+fig_tracer_v11_h9_s11r17:
+  reason: "the numbers printed with the tracer figure (Fig. 10): written with the figure by a script of the analysis from the tracer labels carried into the template and the SARM atlas resampled to it; the figure's own script is not in this release"
+  not_regenerated: true
+s5_link_ncc_settings_r085:
+  reason: "the settings of the local NCC that scores the link between the two templates, read from the analysis code that ran it and the link's record; no step of this release writes it"
+  not_regenerated: true
+bf_markers_r079:
+  reason: "the depth and width of the fiducial markers along the cutting axis, from tracks of the markers followed section by section in the photographs; the tracks are working files of the analysis, which the data folder does not hold"
+  not_regenerated: true
+bf_intensity_jumps_s11:
+  reason: "the section-to-section lighting steps of the final step's brains and of MM14 (Methods, Final step, criterion iii): it reads MM14's blockface volume from before its brightness correction, which is kept only with the analysis"
+  not_regenerated: true
+lgnstn_bfroute_s11r17:
+  reason: "the LGN and STN of MM1-MM3 carried into the template through the blockface route, from the results of a run of the analysis that this release does not include"
+  not_regenerated: true

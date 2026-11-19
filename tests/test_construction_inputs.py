@@ -92,7 +92,7 @@ def test_the_comparison_says_when_there_is_no_run_to_compare_with():
         (Path(t) / "mine").mkdir()
         r = subprocess.run([sys.executable, str(REPO / "tests/compare/compare_mri_build.py"), "run", str(Path(t) / "mine"), str(Path(t) / "absent"),
                             "--parts", "config", "--min", "1"], capture_output=True, text=True)
-        assert r.returncode == 1 and "nothing to compare with" in (r.stdout + r.stderr)
+        assert r.returncode == 3 and "nothing to compare with" in (r.stdout + r.stderr)
 
 
 def _runner():

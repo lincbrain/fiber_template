@@ -53,7 +53,7 @@ Its transform to the template carries along every image already aligned with it 
 
 Eight of the 21 photographed brains have no MRI.
 Their blockface volumes are registered to a template of the same contrast and then follow the template link into the template.
-Histology takes the same route in every brain, MRI or not, because the sections are registered to the blockface photographs; the route through a brain's own b0 is the other one the paper reports ([02, Step 4](tutorials/02_blockface.md#step-4-register-the-volume-to-the-blockface-template-a-brain-without-mri-or-with-histology)).
+Histology takes the blockface route in every brain, MRI or not, because the sections are registered to the blockface photographs. For the paper's brains, that route is the transforms that built the blockface template; a new brain is first registered to the template. The route through a brain's own b0 is the other one the paper reports ([02, Step 4](tutorials/02_blockface.md#step-4-register-the-volume-to-the-blockface-template-a-brain-without-mri-or-with-histology)).
 
 ### Why synthesize tissue that was never photographed?
 
@@ -118,7 +118,7 @@ Yes, if you have your own copy of that template: use `shared.xfm apply` with `at
 
 The template is in LINC dataset 000059 and the histology sections are in 000003.
 A brain's MRI results do not go into 000059; if they are shared at all, they go into that brain's own LINC dataset.
-The photographs, the blockface volumes and everything computed from them stay local.
+The photographs, the blockface volumes and everything computed from them stay with the laboratory; the per-brain data the paper reports (each sectioned brain's blockface volume, photographed-fraction map, mask of synthesized voxels and registrations, and the tracer labels of the four cases) are available on request ([contact](../README.md#contact)).
 
 ### How do I report a problem?
 

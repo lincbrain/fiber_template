@@ -2,7 +2,7 @@
 Registration Framework, makes the template's groupwise nonlinear steps).
 
 You need
-  settings/blockface_template.yaml (mmorf.ladders: per level, the knot spacing's scaling, the bending-energy weight and the Gaussian
+  settings/blockface_template.yaml (mmorf.ladders: per level, the knot spacing's scaling, the regularization weight and the Gaussian
   smoothing); the caller (blockface_build.py) sets the ladder (`set_ladder`) and the channel table (MODALITIES, NATIVE_MM) first.
 What it does
   step_ini writes one step's .ini from the ladder, with each channel's smoothing floored at its own measured resolution

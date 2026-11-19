@@ -1,0 +1,24 @@
+{
+ "data": {
+  "ncc_fwhm_mm": 0.5,
+  "erosion_mm": 1.0,
+  "erosion_iterations": 4,
+  "grid_mm": 0.25,
+  "fixed": "template/mri/linc_mri_b0.nii.gz",
+  "ncc_of_record": 0.9211,
+  "sources": {
+   "ncc_fwhm_mm": "mri/code/s5_b0link.py line 123: regqc.run_qc(..., ncc_fwhm_mm=0.5)",
+   "erosion": "code/regqc.py line 490: em = binary_erosion(fixed mask & moved mask, iterations=max(1, int(round(1.0 / float(vox.min())))))",
+   "grid": "zooms of template/mri/linc_mri_b0.nii.gz (s5_link.json 'fixed')"
+  },
+  "code_unchanged_since_run": {
+   "check": true,
+   "mtimes_epoch": {
+    "mri/code/s5_b0link.py": 1791171300.8421185,
+    "code/regqc.py": 1791121559.1117346,
+    "bftemplate/cv/s5_direct_d2bs8/sym/s5_link.json": 1791201073.8693018
+   }
+  },
+  "definition": "NCC between the two templates' b0 images (s5_link_d2bs8.links.direct_sym.ncc_b0): both images smoothed by a Gaussian of FWHM ncc_fwhm_mm (sigma = FWHM / 2.3548), Pearson r over the intersection of the MRI template's brain mask and the blockface template's carried mask, eroded by erosion_mm"
+ }
+}

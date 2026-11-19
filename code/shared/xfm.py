@@ -39,7 +39,8 @@ apply() point-samples (linear or nearest), with no anti-aliasing: FLIRT averages
 is coarser, so downsample-by->1.5x products should be smoothed first or made on a finer grid.
 
 Every entry is also invertible on the fly: affines analytically, each warp component by fixed-point
-iteration at the query points (residual reported), so inverse chains never need a stored field.
+iteration at the query points, with Newton steps for the points that iteration leaves unsolved
+(residual reported), so inverse chains never need a stored field.
 Registration QC (§0.12, §3.13): `meta["qc"]["status"]` is set by code/regqc.py; chains warn (or with
 strict=True refuse) when a link has no passing QC.
 
@@ -270,14 +271,21 @@ class Warp:
 
 
 class _InverseWarp:
-    """Pointwise inverse of a Warp: solve K x + B d(V x) = y by x <- K^-1 (y - B d(V x))."""
-    def __init__(self, w, iters, tol):
+    """Pointwise inverse of a Warp: solve K x + B d(V x) = y by x <- K^-1 (y - B d(V x)).
+
+    That iteration converges only where the displacement changes by less than the step itself. Where a warp stretches or compresses
+    strongly (the frontal pole of a large brain registered to a small template) it does not, and a point is left with a residual of
+    millimeters. Such points (residual above `newton_above`, in mm) are then solved by Newton steps on the same equation, with a
+    finite-difference Jacobian and a step that is halved until the residual falls. Points the iteration solved keep its value. A point whose solution lies at the edge of
+    the field's grid, where the displacement ends abruptly, can stay unsolved: `last_residual` reports it, as before."""
+    def __init__(self, w, iters, tol, newton_above=1e-2):
         if w.absolute:
             raise ValueError("cannot invert an absolute FSL warp pointwise; convert it to relative first")
-        self.w, self.iters, self.tol = w, iters, tol
+        self.w, self.iters, self.tol, self.newton_above = w, iters, tol, newton_above
         self.Ki = np.linalg.inv(w.K)
         self.label = f"inv({w.label})"
         self.last_residual = None
+        self.last_newton = 0                    # how many points of the last call needed the Newton steps
 
     def pull(self, Y):
         x = Y @ self.Ki[:3, :3].T + self.Ki[:3, 3]
@@ -289,8 +297,53 @@ class _InverseWarp:
             if step < self.tol:
                 break
         res = np.linalg.norm(self.w.pull(x) - Y, axis=1) if len(x) else np.zeros(0)
+        bad = np.isfinite(res) & (res > self.newton_above) if self.newton_above is not None else np.zeros(len(res), bool)
+        self.last_newton = int(bad.sum())
+        if self.last_newton:
+            x[bad], res[bad] = self._newton(Y[bad], x[bad], res[bad])
         self.last_residual = (float(np.median(res)), float(res.max())) if len(res) else (0.0, 0.0)
         return x
+
+    def _newton(self, Y, x_fp, res_fp, target=1e-6, iters=60, h=1e-3):
+        """Solve w.pull(x) = Y for the points the fixed-point iteration left unsolved; returns (x, residual in mm)."""
+        x0 = Y @ self.Ki[:3, :3].T + self.Ki[:3, 3]
+        r0 = np.linalg.norm(self.w.pull(x0) - Y, axis=1)
+        x = np.where((res_fp < r0)[:, None], x_fp, x0)       # start from the better of the two
+        F = self.w.pull(x) - Y
+        r = np.linalg.norm(F, axis=1)
+        live = np.isfinite(r) & (r > target)
+        for _ in range(iters):
+            if not live.any():
+                break
+            idx = np.flatnonzero(live)
+            xa, Fa, ra, Ya = x[idx], F[idx], r[idx], Y[idx]
+            J = np.empty((len(idx), 3, 3))
+            for a in range(3):
+                d = np.zeros(3); d[a] = h
+                J[:, :, a] = (self.w.pull(xa + d) - self.w.pull(xa - d)) / (2 * h)
+            ok = np.abs(np.linalg.det(J)) > 1e-8
+            step = np.empty_like(xa)
+            if ok.any():
+                step[ok] = np.linalg.solve(J[ok], Fa[ok][..., None])[..., 0]
+            if (~ok).any():
+                step[~ok] = np.einsum("nij,nj->ni", np.linalg.pinv(J[~ok]), Fa[~ok])
+            alpha = np.ones(len(idx))
+            done = np.zeros(len(idx), bool)
+            xn, Fn, rn = xa.copy(), Fa.copy(), ra.copy()
+            for _ in range(10):                              # halve the step until the residual falls
+                todo = np.flatnonzero(~done)
+                if not len(todo):
+                    break
+                xt = xa[todo] - alpha[todo, None] * step[todo]
+                Ft = self.w.pull(xt) - Ya[todo]
+                rt = np.linalg.norm(Ft, axis=1)
+                better = np.isfinite(rt) & (rt < ra[todo])
+                xn[todo[better]], Fn[todo[better]], rn[todo[better]] = xt[better], Ft[better], rt[better]
+                done[todo[better]] = True
+                alpha[todo[~better]] *= 0.5
+            x[idx], F[idx], r[idx] = xn, Fn, rn
+            live[idx] = done & (rn > target)                 # a point that no step improves stops where it is
+        return x, r
 
     def inverse(self):
         return self.w

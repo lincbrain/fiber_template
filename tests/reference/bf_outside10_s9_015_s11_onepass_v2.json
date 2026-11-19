@@ -1,0 +1,519 @@
+{
+ "data": {
+  "local_ncc_sigma_mm": 0.5,
+  "erosion_mm": 1.05,
+  "n_brains": 10,
+  "n_with_mri": 3,
+  "brains": {
+   "MF275": {
+    "alias": "MF6",
+    "ncc_step8": 0.7184,
+    "ncc_step9": 0.8391,
+    "gain": 0.1207,
+    "region_voxels": 6267383,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0023,
+    "max_disp_mm": 5.72786283493042,
+    "ncc_mri": 0.7199,
+    "ncc_step8_mri_region": 0.7184,
+    "ncc_step9_mri_region": 0.8391,
+    "mri_region_voxels": 6267349,
+    "check_onepass_16nov": {
+     "step8": true,
+     "step9": true,
+     "voxels": true
+    }
+   },
+   "MR243": {
+    "alias": "MM1",
+    "ncc_step8": 0.7315,
+    "ncc_step9": 0.8557,
+    "gain": 0.1242,
+    "region_voxels": 13601971,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0105,
+    "max_disp_mm": 2.893655776977539,
+    "ncc_mri": 0.721,
+    "ncc_step8_mri_region": 0.7315,
+    "ncc_step9_mri_region": 0.8557,
+    "mri_region_voxels": 13601881,
+    "check_onepass_16nov": {
+     "step8": true,
+     "step9": true,
+     "voxels": true
+    }
+   },
+   "MR249": {
+    "alias": "MM4",
+    "ncc_step8": 0.7091,
+    "ncc_step9": 0.8467,
+    "gain": 0.1376,
+    "region_voxels": 12573421,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0369,
+    "max_disp_mm": 3.335948944091797,
+    "ncc_mri": 0.7102,
+    "ncc_step8_mri_region": 0.7091,
+    "ncc_step9_mri_region": 0.8468,
+    "mri_region_voxels": 12566330,
+    "check_onepass_16nov": {
+     "step8": true,
+     "step9": true,
+     "voxels": true
+    }
+   },
+   "MF191": {
+    "alias": "MF8",
+    "ncc_step8": 0.6916,
+    "ncc_step9": 0.8057,
+    "gain": 0.114,
+    "region_voxels": 12911973,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0101,
+    "max_disp_mm": 6.096455097198486,
+    "check_onepass_16nov": {
+     "step8": true,
+     "step9": true,
+     "voxels": true
+    }
+   },
+   "MF196": {
+    "alias": "MF9",
+    "ncc_step8": 0.7402,
+    "ncc_step9": 0.8345,
+    "gain": 0.0943,
+    "region_voxels": 12733543,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0148,
+    "max_disp_mm": 5.766788959503174,
+    "check_onepass_16nov": {
+     "step8": true,
+     "step9": true,
+     "voxels": true
+    }
+   },
+   "MF204": {
+    "alias": "MF10",
+    "ncc_step8": 0.7329,
+    "ncc_step9": 0.8388,
+    "gain": 0.1059,
+    "region_voxels": 12190916,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0084,
+    "max_disp_mm": 6.4303879737854,
+    "check_onepass_16nov": {
+     "step8": true,
+     "step9": true,
+     "voxels": true
+    }
+   },
+   "MR244": {
+    "alias": "MM11",
+    "ncc_step8": 0.7445,
+    "ncc_step9": 0.8445,
+    "gain": 0.0999,
+    "region_voxels": 13109448,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0054,
+    "max_disp_mm": 5.2597527503967285,
+    "check_onepass_16nov": {
+     "step8": true,
+     "step9": true,
+     "voxels": true
+    }
+   },
+   "MR247": {
+    "alias": "MM12",
+    "ncc_step8": 0.6971,
+    "ncc_step9": 0.8295,
+    "gain": 0.1324,
+    "region_voxels": 11542151,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0206,
+    "max_disp_mm": 4.062071800231934,
+    "check_onepass_16nov": {
+     "step8": true,
+     "step9": true,
+     "voxels": true
+    }
+   },
+   "MR248": {
+    "alias": "MM13",
+    "ncc_step8": 0.5996,
+    "ncc_step9": 0.7586,
+    "gain": 0.159,
+    "region_voxels": 12610130,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0039,
+    "max_disp_mm": 4.601492404937744,
+    "check_onepass_16nov": {
+     "step8": true,
+     "step9": true,
+     "voxels": true
+    }
+   },
+   "MR263": {
+    "alias": "MM14",
+    "ncc_step8": 0.712,
+    "ncc_step9": 0.8337,
+    "gain": 0.1217,
+    "region_voxels": 5784174,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.01,
+    "max_disp_mm": 2.5599021911621094,
+    "check_onepass_16nov": {
+     "step8": true,
+     "step9": true,
+     "voxels": true
+    }
+   }
+  },
+  "per_brain": {
+   "step8": {
+    "n": 10,
+    "median": 0.7152,
+    "q1": 0.7001,
+    "q3": 0.7326,
+    "iqr": 0.0324,
+    "min": 0.5996,
+    "max": 0.7445
+   },
+   "step9": {
+    "n": 10,
+    "median": 0.8367,
+    "q1": 0.8306,
+    "q3": 0.8432,
+    "iqr": 0.0126,
+    "min": 0.7586,
+    "max": 0.8557
+   },
+   "gain": {
+    "n": 10,
+    "median": 0.1212,
+    "q1": 0.1079,
+    "q3": 0.1303,
+    "iqr": 0.0224,
+    "min": 0.0943,
+    "max": 0.159
+   },
+   "all_improve": true
+  },
+  "pairwise": {
+   "n_pairs": 45,
+   "step8": {
+    "n": 45,
+    "median": 0.603,
+    "q1": 0.5861,
+    "q3": 0.6308,
+    "iqr": 0.0447,
+    "min": 0.4952,
+    "max": 0.6868
+   },
+   "step9": {
+    "n": 45,
+    "median": 0.7525,
+    "q1": 0.7279,
+    "q3": 0.7618,
+    "iqr": 0.0339,
+    "min": 0.673,
+    "max": 0.7782
+   },
+   "after_ge_before": true,
+   "mask": "(p8_i>=0.5)&(p8_j>=0.5)&(p9_i>=0.5)&(p9_j>=0.5)&brain mask, eroded 1 mm: before and after on the same voxels",
+   "pairs": {
+    "MF275-MR243": {
+     "step8": 0.60377,
+     "step9": 0.75562,
+     "voxels": 6068641,
+     "check_onepass_16nov_rule": 0.757
+    },
+    "MF275-MR249": {
+     "step8": 0.59628,
+     "step9": 0.76089,
+     "voxels": 4940986,
+     "check_onepass_16nov_rule": 0.76424
+    },
+    "MF275-MF191": {
+     "step8": 0.5902,
+     "step9": 0.73089,
+     "voxels": 5979123,
+     "check_onepass_16nov_rule": 0.73291
+    },
+    "MF275-MF196": {
+     "step8": 0.61993,
+     "step9": 0.75619,
+     "voxels": 6109060,
+     "check_onepass_16nov_rule": 0.75747
+    },
+    "MF275-MF204": {
+     "step8": 0.61491,
+     "step9": 0.75247,
+     "voxels": 6127036,
+     "check_onepass_16nov_rule": 0.7538
+    },
+    "MF275-MR244": {
+     "step8": 0.61744,
+     "step9": 0.76048,
+     "voxels": 6115279,
+     "check_onepass_16nov_rule": 0.76154
+    },
+    "MF275-MR247": {
+     "step8": 0.58974,
+     "step9": 0.73981,
+     "voxels": 4818392,
+     "check_onepass_16nov_rule": 0.74234
+    },
+    "MF275-MR248": {
+     "step8": 0.4952,
+     "step9": 0.67876,
+     "voxels": 6032992,
+     "check_onepass_16nov_rule": 0.68122
+    },
+    "MF275-MR263": {
+     "step8": 0.60172,
+     "step9": 0.75656,
+     "voxels": 3705191,
+     "check_onepass_16nov_rule": 0.75596
+    },
+    "MR243-MR249": {
+     "step8": 0.61436,
+     "step9": 0.77618,
+     "voxels": 11936629,
+     "check_onepass_16nov_rule": 0.77641
+    },
+    "MR243-MF191": {
+     "step8": 0.59093,
+     "step9": 0.7375,
+     "voxels": 12472014,
+     "check_onepass_16nov_rule": 0.73755
+    },
+    "MR243-MF196": {
+     "step8": 0.6308,
+     "step9": 0.76566,
+     "voxels": 12215117,
+     "check_onepass_16nov_rule": 0.76627
+    },
+    "MR243-MF204": {
+     "step8": 0.62959,
+     "step9": 0.76801,
+     "voxels": 11718036,
+     "check_onepass_16nov_rule": 0.7681
+    },
+    "MR243-MR244": {
+     "step8": 0.63993,
+     "step9": 0.77821,
+     "voxels": 12703063,
+     "check_onepass_16nov_rule": 0.7783
+    },
+    "MR243-MR247": {
+     "step8": 0.60015,
+     "step9": 0.75476,
+     "voxels": 10936713,
+     "check_onepass_16nov_rule": 0.75515
+    },
+    "MR243-MR248": {
+     "step8": 0.52621,
+     "step9": 0.68936,
+     "voxels": 12161137,
+     "check_onepass_16nov_rule": 0.68853
+    },
+    "MR243-MR263": {
+     "step8": 0.60298,
+     "step9": 0.75859,
+     "voxels": 5313143,
+     "check_onepass_16nov_rule": 0.76042
+    },
+    "MR249-MF191": {
+     "step8": 0.568,
+     "step9": 0.73694,
+     "voxels": 11417255,
+     "check_onepass_16nov_rule": 0.73652
+    },
+    "MR249-MF196": {
+     "step8": 0.61016,
+     "step9": 0.76186,
+     "voxels": 11035610,
+     "check_onepass_16nov_rule": 0.76314
+    },
+    "MR249-MF204": {
+     "step8": 0.59507,
+     "step9": 0.75494,
+     "voxels": 10513881,
+     "check_onepass_16nov_rule": 0.75603
+    },
+    "MR249-MR244": {
+     "step8": 0.62139,
+     "step9": 0.77399,
+     "voxels": 11439220,
+     "check_onepass_16nov_rule": 0.77466
+    },
+    "MR249-MR247": {
+     "step8": 0.58881,
+     "step9": 0.76176,
+     "voxels": 10027987,
+     "check_onepass_16nov_rule": 0.76141
+    },
+    "MR249-MR248": {
+     "step8": 0.51975,
+     "step9": 0.69524,
+     "voxels": 10979730,
+     "check_onepass_16nov_rule": 0.69455
+    },
+    "MR249-MR263": {
+     "step8": 0.5726,
+     "step9": 0.74813,
+     "voxels": 4531131,
+     "check_onepass_16nov_rule": 0.74924
+    },
+    "MF191-MF196": {
+     "step8": 0.63846,
+     "step9": 0.75057,
+     "voxels": 11832217,
+     "check_onepass_16nov_rule": 0.75213
+    },
+    "MF191-MF204": {
+     "step8": 0.65523,
+     "step9": 0.76301,
+     "voxels": 11458533,
+     "check_onepass_16nov_rule": 0.76313
+    },
+    "MF191-MR244": {
+     "step8": 0.63849,
+     "step9": 0.74317,
+     "voxels": 12304463,
+     "check_onepass_16nov_rule": 0.74375
+    },
+    "MF191-MR247": {
+     "step8": 0.58615,
+     "step9": 0.71721,
+     "voxels": 10294656,
+     "check_onepass_16nov_rule": 0.72002
+    },
+    "MF191-MR248": {
+     "step8": 0.51756,
+     "step9": 0.67299,
+     "voxels": 11756443,
+     "check_onepass_16nov_rule": 0.67327
+    },
+    "MF191-MR263": {
+     "step8": 0.60208,
+     "step9": 0.72712,
+     "voxels": 5105186,
+     "check_onepass_16nov_rule": 0.73186
+    },
+    "MF196-MF204": {
+     "step8": 0.68679,
+     "step9": 0.77749,
+     "voxels": 11365233,
+     "check_onepass_16nov_rule": 0.77878
+    },
+    "MF196-MR244": {
+     "step8": 0.66924,
+     "step9": 0.76733,
+     "voxels": 12035173,
+     "check_onepass_16nov_rule": 0.76835
+    },
+    "MF196-MR247": {
+     "step8": 0.6199,
+     "step9": 0.74531,
+     "voxels": 10347637,
+     "check_onepass_16nov_rule": 0.74795
+    },
+    "MF196-MR248": {
+     "step8": 0.53777,
+     "step9": 0.68839,
+     "voxels": 11472797,
+     "check_onepass_16nov_rule": 0.68956
+    },
+    "MF196-MR263": {
+     "step8": 0.63836,
+     "step9": 0.75115,
+     "voxels": 5135985,
+     "check_onepass_16nov_rule": 0.75443
+    },
+    "MF204-MR244": {
+     "step8": 0.65825,
+     "step9": 0.76301,
+     "voxels": 11706995,
+     "check_onepass_16nov_rule": 0.76384
+    },
+    "MF204-MR247": {
+     "step8": 0.62195,
+     "step9": 0.74191,
+     "voxels": 10010462,
+     "check_onepass_16nov_rule": 0.74414
+    },
+    "MF204-MR248": {
+     "step8": 0.54545,
+     "step9": 0.69193,
+     "voxels": 11146464,
+     "check_onepass_16nov_rule": 0.6939
+    },
+    "MF204-MR263": {
+     "step8": 0.63943,
+     "step9": 0.75323,
+     "voxels": 5030878,
+     "check_onepass_16nov_rule": 0.7557
+    },
+    "MR244-MR247": {
+     "step8": 0.65223,
+     "step9": 0.76814,
+     "voxels": 10432230,
+     "check_onepass_16nov_rule": 0.76988
+    },
+    "MR244-MR248": {
+     "step8": 0.54426,
+     "step9": 0.69228,
+     "voxels": 12136658,
+     "check_onepass_16nov_rule": 0.69331
+    },
+    "MR244-MR263": {
+     "step8": 0.64013,
+     "step9": 0.75485,
+     "voxels": 4986547,
+     "check_onepass_16nov_rule": 0.75772
+    },
+    "MR247-MR248": {
+     "step8": 0.57257,
+     "step9": 0.70526,
+     "voxels": 9992558,
+     "check_onepass_16nov_rule": 0.7032
+    },
+    "MR247-MR263": {
+     "step8": 0.58928,
+     "step9": 0.7279,
+     "voxels": 4685510,
+     "check_onepass_16nov_rule": 0.72293
+    },
+    "MR248-MR263": {
+     "step8": 0.5144,
+     "step9": 0.6766,
+     "voxels": 4940306,
+     "check_onepass_16nov_rule": 0.67728
+    }
+   },
+   "check_onepass_16nov_rule_all_equal": true
+  },
+  "folds_total": 0,
+  "folds_total_engine_grid": 0,
+  "folds_total_template_grid": 0,
+  "template": "bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_03/T3s11",
+  "measure": "local NCC, Gaussian window (sigma above, truncate 3), mean over the region",
+  "engine": "as paper/numbers/bf_outside10_s9_015_s11.json (the outside10 fields of that record); the after image carried once (onepass.py)",
+  "reproduction": {
+   "saved_script": "the analysis's saved one-pass script (onepass.py)",
+   "reproduces_16nov_record_exactly": true
+  },
+  "definition": "18 Nov 2026 (rules in NOTE.md, written 16:04 before any v2 number): the ten brains outside the blockface template's\nfinal step, with the \"after\" image carried once (the 16 Nov onepass rule, saved here as onepass.py), every value the paper's\nparagraph needs in ONE record, before and after always on the same voxels.\n  0. check: this folder's onepass_eval.json (the rerun of the saved onepass.py) equals the data of\n     paper/numbers/bf_outside10_s9_015_s11_onepass.json (16 Nov) exactly; else stop;\n  1. per brain: local NCC with the template before (step 8) and after (one pass) on `common` (p8 & p9 & real mask, eroded 1 mm);\n  2. MRI route (MF6, MM1, MM4): MRI-based alignment, step 8 and after, on common & MRI-route validity;\n  3. pairwise (45 pairs): before and after on ONE joint mask (p8_i & p8_j & p9_i & p9_j & brain mask, eroded 1 mm); and the 16 Nov\n     rule's after (p9 masks only) as a check;\n  4. folds per outside10 field (engine grid from its _done.json, template grid by hr.folds_field); the NCC window and erosion.\nKey names follow paper/numbers/bf_outside10_s9_015_s11.json so the paper's tokens change only the record name."
+ }
+}

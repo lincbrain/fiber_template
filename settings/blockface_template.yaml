@@ -17,7 +17,7 @@ grids:
   native_mm: {BF: 0.25, B0: 0.5}   # each channel's own resolution: step 8's smoothing floors
 
 mmorf:
-  lambda_scale: 10.0               # multiplies every bending-energy weight but the first (near-rigid) level
+  lambda_scale: 10.0               # multiplies the regularization weight of every level but the first (the log-Jacobian penalty; the first level's is bending energy)
   # batch = MMORF tasks at a time on one 48 GB card, scheduling only (the record ran the same tasks on three cards: 24 and 12 at a time)
   plan_a: {steps: 7, iterations: 3, batch: 8}   # 7 nonlinear steps x 3 template iterations
   step8: {step: 8, iterations: 3, batch: 4}     # the eighth step alone, from the state after step 7

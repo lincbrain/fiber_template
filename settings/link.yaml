@@ -1,6 +1,6 @@
 # The link (blockface template -> MRI template), its independent construction estimate, and the mappings to published templates.
-# Paper: Methods, "Registration of the blockface template into the MRI template" (label sec:m-link) and "Relation to published
-# templates" (sec:m-atlases); the engine is Methods, "Image registration" (sec:m-registration).
+# Paper: Methods, "Registration of the blockface template to the MRI template" (label sec:m-link) and "Relation to published
+# templates" (sec:m-atlases); the engine is Methods, "Image registration and segmentation" (sec:m-registration).
 # Code: code/template/link/register.py, code/template/link/estimate.py, code/template/link/atlas.py, code/template/link/symreg.py (engine), code/template/link/qc.py (scores).
 # Ported from the analysis project's mri/code/s5_b0link.py (--arm sym), s5_export_maps.py, s5_compose.py, s5_compare.py, atlas_v2.py and
 # symreg_upstream.py; the values below are those of the runs of record (link d2bs8, estimate s5_compose_d2bs8_r05_guard, atlas_v2).
@@ -32,14 +32,14 @@ register:
   init: bridge                  # start pose = the frame bridge (the dual-channel template lives in the run-113 frame)
   linear_factor: 2              # linear fits on images downsampled x2 (Powell on NCC, code/blockface/registration/xfmtools.py)
   affine_anisotropy_max: 1.5    # 7-dof similarity, then a 12-dof affine; the affine is rejected (similarity only) above this anisotropy
-  grid_res_mm: 0.35             # Methods: "on a 0.35 mm grid"
+  grid_res_mm: 0.35             # 0.35 mm working grid (the runs of record)
   grid_margin_mm: 8.0           # working grid = both brains (moving placed by the affine start) + 8 mm of zeros on every side
   grid_multiple: 16             # working-grid sizes rounded up to a multiple of 16
   brainstem_cut: true           # moving input zeroed below the fixed brain's lowest axial slice (registration input only; scores uncropped)
   point_chunk: 2000000          # points per chunk when evaluating maps
   engine:                       # code/template/link/symreg.py options of the run of record (sym/sym/metrics.json "argv")
     res: 0.35
-    smooth_warp_sigma: 1.25     # Methods: "warp smoothing sigma = 1.25 voxels"
+    smooth_warp_sigma: 1.25     # warp smoothing sigma, in voxels (the runs of record)
     channel_chunk: 4
     max_gpu_frac: 0.95
   qc:
@@ -72,7 +72,7 @@ symreg:
   lm_weight: 1.0
   input_mask_check: {dist_mm: 2.0, rel: 0.01, tol: 0.001}   # every input must be brain-masked (fail-closed)
 
-# --- the construction estimate (Methods, sec:m-link: "a second, independent estimate") ---
+# --- the construction estimate (Methods, sec:m-link: the second mapping, composed through each brain and averaged) ---
 estimate:
   res_mm: 0.5                   # estimate evaluated on the MRI template grid resampled to 0.5 mm (run s5_compose_d2bs8_r05_guard)
   inverse_iters: 40             # fixed-point inversion of each member's construction warp
@@ -82,7 +82,7 @@ estimate:
   groups:                       # subsets reported against the rest
     mri13: [MF275, MF278, MF282, MR243, MR249, MR250, MR251, MR252, MR253, MR254, MR256, MR257, MR261]
   point_chunk: 500000
-  compare_every: 8              # Methods: "These measures used every eighth voxel of the MRI template's brain mask"
+  compare_every: 8              # one in eight of the MRI template's brain voxels (Methods, sec:m-link)
   compare_direct: [greedy, sym] # direct links compared (folders under the link root, each with link_linear_world.txt + link_warp.nii.gz)
   compare_extra: {tpl: s5_tpl_d2bs8_r05_guard}   # extra estimate folders (relative to the estimate root) compared too
 
@@ -106,14 +106,14 @@ atlas:
     INIA19: {img: "{v1}/atlas-INIA19/INIA19_T1_SS.nii.gz", msk: "{v1}/atlas-INIA19/INIA19_brainmask_from_labels.nii.gz", channel: T2}
     CIVM-R: {img: "{ref}/CIVM-R_T2_DTI/CIVM-R_b0_brain.nii.gz", msk: "{ref}/CIVM-R_T2_DTI/CIVM-R_brain_mask.nii.gz", channel: b0}
 
-# --- outline check (Methods, "Evaluation of the pathway"; analysis project code/regqc_outline.py) ---
+# --- outline check (each registration's own check; analysis project code/regqc_outline.py) ---
 outline:
   fail_p99_mm: 3.5
   fail_max_mm: 5.0
   warn_p99_mm: 2.5
 
-# --- the MRI route (Methods, sec:m-link: "the b0 image of each brain with MRI was registered to the template's b0 channel by a
-# similarity transform and then the feature-based registration on a 0.35 mm grid (warp smoothing sigma = 1.25 voxels)") ---
+# --- the MRI route (Methods, sec:m-link, the MRI-based alignment): each brain's b0 registered to the template's b0 by a similarity,
+# then an affine, then the feature-based registration ---
 # Code: code/template/link/b0_to_template.py. Ported from the analysis project's mri/code/r5_canon_test.py (arm canon, --lin xag --tag d22, as run
 # by _nightlogs/L2_r5prod_queue.sh with the brains' record masks) with helpers from bftemplate/cv/b0_to_template.py; the registry entry
 # as mri/code/r5_production_register.py (recipe D22). Values are those of the runs of record (data/sub-<ID>/xfm/b0-native__to__mri-template).
@@ -129,12 +129,12 @@ b0_to_template:
   similarity_retry_grid_rad: [-0.15, 0.0, 0.15]
   linear_mode: xag              # 7-dof similarity, then a 12-dof affine on the similarity-placed b0 ("guarded canon-xa", decision D22)
   affine_anisotropy_max: 1.5    # the affine is rejected (similarity only) when the singular-value ratio of (A S) exceeds this
-  grid_res_mm: 0.35             # Methods: "on a 0.35 mm grid"
+  grid_res_mm: 0.35             # 0.35 mm working grid (the runs of record)
   grid_margin_mm: 8.0           # working grid centered on (start-placed b0 brain | template brain) + 8 mm of zeros (meta.json config margin_mm)
   grid_multiple: 16             # working-grid sizes rounded up to a multiple of 16
   brainstem_cut: true           # D11: moving input zeroed below the template brain's lowest axial slice, placed by the similarity (input only)
   engine:                       # code/blockface/registration/featurereg.py options (all others at its defaults: 32 anatomix + 12 MIND-SSC channels, two stages)
     resolution: 0.35
-    smooth_warp_sigma: 1.25     # Methods: "warp smoothing sigma = 1.25 voxels"
+    smooth_warp_sigma: 1.25     # warp smoothing sigma, in voxels (the runs of record)
     gpu_per_mvox: 1.41          # GPU memory of this stage, measured: 12.1 GiB for MR252's 208 x 256 x 160 grid (the whole process);
                                 # featurereg stops before the GPU stage when the card has less free (0.10 + 1.41 GiB per million voxels)

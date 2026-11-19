@@ -11,6 +11,7 @@ The code reads these files and does not repeat their values.
 | `files.tsv`               | every file of the data folder: where it is, what it is, what makes it |
 | `specimen_labels.json`    | each brain's Specimen ID and its name in the paper |
 | `photograph_counts.json`  | the number of photographs of each brain, for Table S1 |
+| `manual_inputs.tsv`       | every file a person drew or edited for the paper's products, in the data folder, with its md5 |
 | `segment/`                | the segmentation networks' training tasks |
 | `tirl/`                   | the TIRL settings of the camera-jump registrations |
 | `env/`                    | the Python environments |

@@ -1,0 +1,310 @@
+{
+ "data": {
+  "rule": "16 Nov 2026: inversion errors ||phi(phi^-1(x)) - x|| of the numerically inverted fields that carry data in the\npaper and had no recorded distribution. Read-only; writes paper/numbers/inverse_residuals_r079.json.\n  (1) Template construction unbiasing (the MMORF driver, run_template_construction.py): FSL invwarp of the average warp\n      (average_invwarp), composed into every member's <id>_scalar_mod_01_to_template_warp_resampled_unbiased_full. Builds of record:\n      the MRI template (mri/tc/rb_final, step 08 iteration 03) and the blockface template step 8 (bftemplate/d2b/s8/tc/d2bs8, step 08\n      iteration 03; its member warps are the blockface route's step-8 link). Both fields are FSL relative warps on the template grid\n      (xfm.Warp fsl_rel, src_grid = the iteration's template); x = every 2nd voxel of the template's published brain mask (linc_mri_brainmask; d2bs8_brainmask); both orders:\n      avg(inv(x)) and inv(avg(x)); and |average warp| for scale.\n  (2) (LGN/STN in each brain's histology space, labels/lgnstn_histospace_r073.py): xfm's pointwise fixed-point inverses\n      (code/xfm.py _InverseWarp: 30 iterations, step tolerance 1e-3 mm; affines analytically) of brain A's R5 (b0-native -> mri-template)\n      and R1 (bf-native -> b0-native) entries of record, A in MR243 (MM1), MR252 (MM2), MR256 (MM3). Brain points: y = every 4th MRI\n      template brain voxel; x = F(y) (A's b0 points), z = G(x) (A's blockface points); residual of the inverse = |F(F^-1(x)) - x| and\n      |G(G^-1(z)) - z|, and the source-side error |F^-1(F(y)) - y|, |G^-1(G(x)) - x|.",
+  "template_construction": {
+   "mri_template": {
+    "iteration": "mri/tc/rb_final/out/nln_step_08/iteration_03",
+    "engine": "FSL invwarp of the average warp (MMORF driver)",
+    "points": 1652891,
+    "avg_of_inv": {
+     "n": 1652891,
+     "nonfinite": 0,
+     "median": 0.000138,
+     "p99": 0.003043,
+     "p999": 0.006289,
+     "max": 0.027763,
+     "n_over": {
+      "0.01": 211,
+      "0.1": 0,
+      "1.0": 0
+     }
+    },
+    "inv_of_avg": {
+     "n": 1652891,
+     "nonfinite": 0,
+     "median": 0.000819,
+     "p99": 0.012419,
+     "p999": 0.023449,
+     "max": 0.075156,
+     "n_over": {
+      "0.01": 29557,
+      "0.1": 0,
+      "1.0": 0
+     }
+    },
+    "average_warp_magnitude_mm": {
+     "n": 1652891,
+     "nonfinite": 0,
+     "median": 0.032639,
+     "p99": 0.114493,
+     "p999": 0.16235,
+     "max": 0.334655,
+     "n_over": {
+      "0.01": 1560905,
+      "0.1": 32089,
+      "1.0": 0
+     }
+    }
+   },
+   "bf_template_step8": {
+    "iteration": "bftemplate/d2b/s8/tc/d2bs8/out/nln_step_08/iteration_03",
+    "engine": "FSL invwarp of the average warp (MMORF driver)",
+    "points": 2179538,
+    "avg_of_inv": {
+     "n": 2179538,
+     "nonfinite": 0,
+     "median": 0.003853,
+     "p99": 0.005208,
+     "p999": 0.007422,
+     "max": 0.030356,
+     "n_over": {
+      "0.01": 468,
+      "0.1": 0,
+      "1.0": 0
+     }
+    },
+    "inv_of_avg": {
+     "n": 2179538,
+     "nonfinite": 0,
+     "median": 0.003922,
+     "p99": 0.007995,
+     "p999": 0.014431,
+     "max": 0.034027,
+     "n_over": {
+      "0.01": 10377,
+      "0.1": 0,
+      "1.0": 0
+     }
+    },
+    "average_warp_magnitude_mm": {
+     "n": 2179538,
+     "nonfinite": 0,
+     "median": 0.06728,
+     "p99": 0.260666,
+     "p999": 0.326562,
+     "max": 0.403115,
+     "n_over": {
+      "0.01": 2172107,
+      "0.1": 533266,
+      "1.0": 0
+     }
+    }
+   }
+  },
+  "r073_inverses": {
+   "MM1_R5_residual_more_than_1mm_inside_brain_mm": {
+    "n": 637070,
+    "nonfinite": 0,
+    "median": 0.0,
+    "p99": 2e-06,
+    "p999": 0.131729,
+    "max": 3.37012,
+    "n_over": {
+     "0.01": 1272,
+     "0.1": 701,
+     "1.0": 226
+    }
+   },
+   "MM1": {
+    "subject": "MR243",
+    "R5": "data/sub-MR243/xfm/b0-native__to__mri-template",
+    "R1": "data/sub-MR243/xfm_r1v3/bf-native__to__b0-native",
+    "points": 826446,
+    "R5_inverse_residual_mm": {
+     "n": 826446,
+     "nonfinite": 0,
+     "median": 0.0,
+     "p99": 1.1e-05,
+     "p999": 0.338122,
+     "max": 3.37012,
+     "n_over": {
+      "0.01": 2291,
+      "0.1": 1272,
+      "1.0": 421
+     }
+    },
+    "R5_inverse_source_error_mm": {
+     "n": 826446,
+     "nonfinite": 0,
+     "median": 0.0,
+     "p99": 6e-06,
+     "p999": 0.161679,
+     "max": 1.936932,
+     "n_over": {
+      "0.01": 1942,
+      "0.1": 994,
+      "1.0": 97
+     }
+    },
+    "R1_inverse_residual_mm": {
+     "n": 826446,
+     "nonfinite": 0,
+     "median": 0.0,
+     "p99": 0.0,
+     "p999": 2.2e-05,
+     "max": 0.568926,
+     "n_over": {
+      "0.01": 78,
+      "0.1": 17,
+      "1.0": 0
+     }
+    },
+    "R1_inverse_source_error_mm": {
+     "n": 826446,
+     "nonfinite": 0,
+     "median": 0.0,
+     "p99": 0.0,
+     "p999": 1.3e-05,
+     "max": 0.284486,
+     "n_over": {
+      "0.01": 52,
+      "0.1": 10,
+      "1.0": 0
+     }
+    }
+   },
+   "MM2_R5_residual_more_than_1mm_inside_brain_mm": {
+    "n": 637070,
+    "nonfinite": 0,
+    "median": 0.0,
+    "p99": 0.000342,
+    "p999": 2.091165,
+    "max": 4.957794,
+    "n_over": {
+     "0.01": 3155,
+     "0.1": 2023,
+     "1.0": 1128
+    }
+   },
+   "MM2": {
+    "subject": "MR252",
+    "R5": "data/sub-MR252/xfm/b0-native__to__mri-template",
+    "R1": "data/sub-MR252/xfm_r1v3mr/bf-native__to__b0-native",
+    "points": 826446,
+    "R5_inverse_residual_mm": {
+     "n": 826446,
+     "nonfinite": 0,
+     "median": 0.0,
+     "p99": 0.000589,
+     "p999": 2.031426,
+     "max": 4.957794,
+     "n_over": {
+      "0.01": 4556,
+      "0.1": 2871,
+      "1.0": 1531
+     }
+    },
+    "R5_inverse_source_error_mm": {
+     "n": 826446,
+     "nonfinite": 0,
+     "median": 0.0,
+     "p99": 0.0003,
+     "p999": 0.9579,
+     "max": 2.366412,
+     "n_over": {
+      "0.01": 3882,
+      "0.1": 2414,
+      "1.0": 763
+     }
+    },
+    "R1_inverse_residual_mm": {
+     "n": 826446,
+     "nonfinite": 0,
+     "median": 0.0,
+     "p99": 0.0,
+     "p999": 1e-06,
+     "max": 1.62368,
+     "n_over": {
+      "0.01": 32,
+      "0.1": 16,
+      "1.0": 6
+     }
+    },
+    "R1_inverse_source_error_mm": {
+     "n": 826446,
+     "nonfinite": 0,
+     "median": 0.0,
+     "p99": 0.0,
+     "p999": 0.0,
+     "max": 0.878535,
+     "n_over": {
+      "0.01": 29,
+      "0.1": 13,
+      "1.0": 0
+     }
+    }
+   },
+   "MM3_R5_residual_more_than_1mm_inside_brain_mm": {
+    "n": 637070,
+    "nonfinite": 0,
+    "median": 0.0,
+    "p99": 0.010487,
+    "p999": 2.610201,
+    "max": 6.264931,
+    "n_over": {
+     "0.01": 6412,
+     "0.1": 4357,
+     "1.0": 2203
+    }
+   },
+   "MM3": {
+    "subject": "MR256",
+    "R5": "data/sub-MR256/xfm/b0-native__to__mri-template",
+    "R1": "data/sub-MR256/xfm_r1v3mr/bf-native__to__b0-native",
+    "points": 826446,
+    "R5_inverse_residual_mm": {
+     "n": 826446,
+     "nonfinite": 0,
+     "median": 0.0,
+     "p99": 0.018704,
+     "p999": 2.967956,
+     "max": 6.628752,
+     "n_over": {
+      "0.01": 9011,
+      "0.1": 6342,
+      "1.0": 3504
+     }
+    },
+    "R5_inverse_source_error_mm": {
+     "n": 826446,
+     "nonfinite": 0,
+     "median": 0.0,
+     "p99": 0.009779,
+     "p999": 1.483687,
+     "max": 3.562273,
+     "n_over": {
+      "0.01": 8245,
+      "0.1": 5505,
+      "1.0": 2058
+     }
+    },
+    "R1_inverse_residual_mm": {
+     "n": 826446,
+     "nonfinite": 0,
+     "median": 0.0,
+     "p99": 0.0,
+     "p999": 4.6e-05,
+     "max": 0.407882,
+     "n_over": {
+      "0.01": 54,
+      "0.1": 8,
+      "1.0": 0
+     }
+    },
+    "R1_inverse_source_error_mm": {
+     "n": 826446,
+     "nonfinite": 0,
+     "median": 0.0,
+     "p99": 0.0,
+     "p999": 2.7e-05,
+     "max": 0.210253,
+     "n_over": {
+      "0.01": 33,
+      "0.1": 1,
+      "1.0": 0
+     }
+    }
+   }
+  }
+ }
+}

@@ -824,7 +824,7 @@ steps:
     timed: estimated
     optional: false
     note: 'Never rerun from a clone. The paper''s runs (4 Oct, RTX 6000 Ada) are not reproducible bit for bit even on that model (tests/README.md:
-      medians 0.002 to 0.025 mm, 99th percentiles 0.04 to 0.47 mm in the brain), hence the tolerance. The median limit is 0.1 mm, not the 0.05 mm
+      medians 0.002 to 0.060 mm, 99th percentiles 0.04 to 0.47 mm), hence the tolerance. The median limit is 0.1 mm, not the 0.05 mm
       of the other registrations: reruns of these registrations on the paper''s own card model differ by floating point (tests/README.md,
       reproduction), and in the lab run of 6 Nov MM9''s differed by a median of 0.060 mm (99th percentile 0.35 mm, start affine identical); 0.1 mm
       is under a third of the 0.35 mm working voxel, and a failed registration differs by millimetres. In that run the 13 differed by medians of 0.002
@@ -1689,8 +1689,8 @@ steps:
     hours: 0.1
     timed: estimated
     optional: false
-    note: 'The paper''s route for every brain, checked against the published labels (labels/tracer_template_v2_h9_s11r17, {chain_tag} in
-      settings/labels.yaml); labels-carry carries MM1-MM3 on the MRI route, the comparison the paper reports.'
+    note: 'The paper''s route for every brain (the transforms that built the blockface template, code/labels/route.py), checked
+      against the published labels (labels/tracer_template_v2_h9_s11r17, {chain_tag} in settings/labels.yaml); labels-carry carries MM1-MM3 on the MRI route, the comparison the paper reports.'
   - name: labels-connect-route
     group: labels
     for: labels

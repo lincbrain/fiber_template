@@ -22,7 +22,8 @@
 # The `tirl` on an FSL 6.0.7.4 PATH is TIRL 2.2.1: linc-histology refuses it.
 # zarr 3.1.5 / numcodecs 0.16.5 and the packages listed with them: what the runs of record imported from the account's user
 # site-packages (which shadowed the env's zarr 3.0.1). Build and run with PYTHONNOUSERSITE=1.
-# The demons interpolation of record (code/labels/linc-labels interpolate) ran with SimpleITK 2.5.3: env/labels-interp.yml.
+# The demons interpolation of record (the corrected labels of 17 Nov 2026) ran in the TIRL environment of record, with SimpleITK
+# 2.4.0; code/labels/linc-labels interpolate runs in linc.yml, with SimpleITK 2.5.3, and gives the same labels (MF191, MR243, MR252).
 # nifti-zarr 1.0.0rc6 (zarr2nii / nii2zarr, the reconstruction's stage-3 exports and the 2D masks' manual-edit round trip; it ran in
 # env/niizarr.yml for the paper, removed 3 Nov 2026) is installed here too, with dask and its helpers at that env's versions:
 # MR243's two stage-3 exports (zarr2nii --level 2 of 02_blockface and 02_blockface_mask) are byte-identical to the env of record, and

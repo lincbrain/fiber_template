@@ -1,0 +1,4043 @@
+{
+ "data": {
+  "tag": "s11",
+  "template": "T3s11 (S11, option C)",
+  "members": {
+   "MR243": "MM1: outside the template image (registered to it)",
+   "MR252": "MM2: built the template image (u_3)",
+   "MR256": "MM3: built the template image (u_3)"
+  },
+  "routes": {
+   "MRI": "the MRI route of record: bf-native -> b0-native (R1) -> MRI template (R5); paper/numbers/lgnstn_geometry_current_h9",
+   "R8": "blockface route, step 8 only (U = 0)",
+   "R9": "blockface route: d2bs8_s5sym link -> step-9 field -> step-8 member warp -> native map"
+  },
+  "carry_rule": "labels_to_template.py --dense: crop + 2 mm, Gaussian FWHM = max(source spacing, 0.25 mm), one linear resample, > 0.5",
+  "measures": "labels/lgnstn_geometry.py row_metrics and stats: between-brain pairs per hemisphere-structure (6 rows per structure)",
+  "checks": {
+   "C1": true,
+   "C4": true,
+   "C2": true,
+   "C3": true
+  },
+  "check_details": {
+   "C1": {
+    "rows": {
+     "LGN centroid_mm": {
+      "recomputed": 0.489,
+      "record": 0.489,
+      "ok": true
+     },
+     "LGN assd_mm": {
+      "recomputed": 0.291,
+      "record": 0.291,
+      "ok": true
+     },
+     "LGN hd95_mm": {
+      "recomputed": 0.75,
+      "record": 0.75,
+      "ok": true
+     },
+     "LGN dice": {
+      "recomputed": 0.7262,
+      "record": 0.7262,
+      "ok": true
+     },
+     "STN centroid_mm": {
+      "recomputed": 0.4845,
+      "record": 0.4845,
+      "ok": true
+     },
+     "STN assd_mm": {
+      "recomputed": 0.277,
+      "record": 0.277,
+      "ok": true
+     },
+     "STN hd95_mm": {
+      "recomputed": 0.762,
+      "record": 0.762,
+      "ok": true
+     },
+     "STN dice": {
+      "recomputed": 0.5599,
+      "record": 0.5599,
+      "ok": true
+     }
+    },
+    "passed": true
+   },
+   "C4": {
+    "voxels_differ": {
+     "MR243 lhLGN": 0,
+     "MR243 lhSTN": 0,
+     "MR243 rhLGN": 0,
+     "MR243 rhSTN": 0,
+     "MR256 lhLGN": 0,
+     "MR256 lhSTN": 0,
+     "MR256 rhLGN": 0,
+     "MR256 rhSTN": 0
+    },
+    "passed": true
+   },
+   "C2": {
+    "per_brain": {
+     "MR243": {
+      "r": 0.9119,
+      "n": 764226
+     },
+     "MR252": {
+      "r": 0.9085,
+      "n": 786682
+     },
+     "MR256": {
+      "r": 0.8923,
+      "n": 759644
+     }
+    },
+    "passed": true
+   },
+   "C3": {
+    "per_label": {
+     "R8 primary MR243 lhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 2021
+     },
+     "R8 primary MR243 lhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 402
+     },
+     "R8 primary MR243 rhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 2139
+     },
+     "R8 primary MR243 rhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 352
+     },
+     "R8 primary MR252 lhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 1919
+     },
+     "R8 primary MR252 lhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 502
+     },
+     "R8 primary MR252 rhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 2151
+     },
+     "R8 primary MR252 rhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 466
+     },
+     "R8 primary MR256 lhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 1790
+     },
+     "R8 primary MR256 lhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 342
+     },
+     "R8 primary MR256 rhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 2309
+     },
+     "R8 primary MR256 rhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 317
+     },
+     "R8 composites MR243 lhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 2021
+     },
+     "R8 composites MR243 lhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 402
+     },
+     "R8 composites MR243 rhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 2139
+     },
+     "R8 composites MR243 rhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 352
+     },
+     "R8 composites MR252 lhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 1848
+     },
+     "R8 composites MR252 lhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 517
+     },
+     "R8 composites MR252 rhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 2048
+     },
+     "R8 composites MR252 rhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 471
+     },
+     "R8 composites MR256 lhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 1790
+     },
+     "R8 composites MR256 lhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 342
+     },
+     "R8 composites MR256 rhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 2309
+     },
+     "R8 composites MR256 rhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 317
+     },
+     "R9 primary MR243 lhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 2414
+     },
+     "R9 primary MR243 lhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 348
+     },
+     "R9 primary MR243 rhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 2242
+     },
+     "R9 primary MR243 rhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 413
+     },
+     "R9 primary MR252 lhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 2023
+     },
+     "R9 primary MR252 lhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 460
+     },
+     "R9 primary MR252 rhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 2175
+     },
+     "R9 primary MR252 rhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 511
+     },
+     "R9 primary MR256 lhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 1882
+     },
+     "R9 primary MR256 lhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 309
+     },
+     "R9 primary MR256 rhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 2300
+     },
+     "R9 primary MR256 rhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 374
+     },
+     "R9 composites MR243 lhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 2414
+     },
+     "R9 composites MR243 lhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 348
+     },
+     "R9 composites MR243 rhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 2242
+     },
+     "R9 composites MR243 rhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 413
+     },
+     "R9 composites MR252 lhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 1956
+     },
+     "R9 composites MR252 lhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 484
+     },
+     "R9 composites MR252 rhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 2080
+     },
+     "R9 composites MR252 rhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 520
+     },
+     "R9 composites MR256 lhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 1882
+     },
+     "R9 composites MR256 lhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 309
+     },
+     "R9 composites MR256 rhLGN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 2300
+     },
+     "R9 composites MR256 rhSTN": {
+      "nonempty": true,
+      "inside_box": true,
+      "voxels": 374
+     }
+    },
+    "passed": true
+   }
+  },
+  "table": {
+   "LGN centroid_mm": {
+    "MRI": 0.489,
+    "R8": 0.513,
+    "R9": 0.237
+   },
+   "LGN assd_mm": {
+    "MRI": 0.291,
+    "R8": 0.2515,
+    "R9": 0.1695
+   },
+   "LGN hd95_mm": {
+    "MRI": 0.75,
+    "R8": 0.7285,
+    "R9": 0.496
+   },
+   "LGN dice": {
+    "MRI": 0.7262,
+    "R8": 0.7613,
+    "R9": 0.8425
+   },
+   "STN centroid_mm": {
+    "MRI": 0.4845,
+    "R8": 0.6495,
+    "R9": 0.554
+   },
+   "STN assd_mm": {
+    "MRI": 0.277,
+    "R8": 0.3,
+    "R9": 0.204
+   },
+   "STN hd95_mm": {
+    "MRI": 0.762,
+    "R8": 0.7705,
+    "R9": 0.633
+   },
+   "STN dice": {
+    "MRI": 0.5599,
+    "R8": 0.5458,
+    "R9": 0.667
+   }
+  },
+  "table_composites": {
+   "LGN centroid_mm": {
+    "MRI": 0.4945,
+    "R8": 0.54,
+    "R9": 0.2745
+   },
+   "LGN assd_mm": {
+    "MRI": 0.279,
+    "R8": 0.245,
+    "R9": 0.163
+   },
+   "LGN hd95_mm": {
+    "MRI": 0.75,
+    "R8": 0.7,
+    "R9": 0.433
+   },
+   "LGN dice": {
+    "MRI": 0.7349,
+    "R8": 0.7673,
+    "R9": 0.8441
+   },
+   "STN centroid_mm": {
+    "MRI": 0.496,
+    "R8": 0.6435,
+    "R9": 0.5355
+   },
+   "STN assd_mm": {
+    "MRI": 0.278,
+    "R8": 0.302,
+    "R9": 0.2045
+   },
+   "STN hd95_mm": {
+    "MRI": 0.762,
+    "R8": 0.791,
+    "R9": 0.621
+   },
+   "STN dice": {
+    "MRI": 0.5585,
+    "R8": 0.549,
+    "R9": 0.6721
+   }
+  },
+  "summary": {
+   "MRI": {
+    "primary": {
+     "LGN": {
+      "pairwise_subjects": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.5575,
+        "median": 0.489,
+        "min": 0.288,
+        "max": 1.039,
+        "sd": 0.2561
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.2862,
+        "median": 0.291,
+        "min": 0.224,
+        "max": 0.373,
+        "sd": 0.056
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.7573,
+        "median": 0.75,
+        "min": 0.5,
+        "max": 1.031,
+        "sd": 0.1913
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.7301,
+        "median": 0.7262,
+        "min": 0.668,
+        "max": 0.7908,
+        "sd": 0.0462
+       }
+      },
+      "subject_vs_GT": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.587,
+        "median": 0.565,
+        "min": 0.437,
+        "max": 0.917,
+        "sd": 0.1747
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.2887,
+        "median": 0.2875,
+        "min": 0.222,
+        "max": 0.353,
+        "sd": 0.0471
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.7115,
+        "median": 0.7285,
+        "min": 0.559,
+        "max": 0.891,
+        "sd": 0.1169
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.7108,
+        "median": 0.7121,
+        "min": 0.6474,
+        "max": 0.7879,
+        "sd": 0.0492
+       }
+      }
+     },
+     "STN": {
+      "pairwise_subjects": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.552,
+        "median": 0.4845,
+        "min": 0.29,
+        "max": 0.886,
+        "sd": 0.2239
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.2815,
+        "median": 0.277,
+        "min": 0.246,
+        "max": 0.351,
+        "sd": 0.0383
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.8113,
+        "median": 0.762,
+        "min": 0.646,
+        "max": 1.09,
+        "sd": 0.1607
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.5604,
+        "median": 0.5599,
+        "min": 0.4668,
+        "max": 0.632,
+        "sd": 0.0555
+       }
+      },
+      "subject_vs_GT": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.5583,
+        "median": 0.449,
+        "min": 0.203,
+        "max": 1.015,
+        "sd": 0.3314
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.222,
+        "median": 0.2235,
+        "min": 0.166,
+        "max": 0.26,
+        "sd": 0.034
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.5743,
+        "median": 0.5855,
+        "min": 0.354,
+        "max": 0.75,
+        "sd": 0.1286
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.6248,
+        "median": 0.6252,
+        "min": 0.5722,
+        "max": 0.7159,
+        "sd": 0.052
+       }
+      }
+     }
+    },
+    "composites": {
+     "LGN": {
+      "pairwise_subjects": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.5857,
+        "median": 0.4945,
+        "min": 0.426,
+        "max": 1.039,
+        "sd": 0.2323
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.284,
+        "median": 0.279,
+        "min": 0.234,
+        "max": 0.373,
+        "sd": 0.051
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.742,
+        "median": 0.75,
+        "min": 0.559,
+        "max": 1.031,
+        "sd": 0.1638
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.7308,
+        "median": 0.7349,
+        "min": 0.668,
+        "max": 0.7803,
+        "sd": 0.0439
+       }
+      },
+      "subject_vs_GT": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.6035,
+        "median": 0.592,
+        "min": 0.437,
+        "max": 0.917,
+        "sd": 0.1761
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.2897,
+        "median": 0.289,
+        "min": 0.222,
+        "max": 0.353,
+        "sd": 0.0466
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.7183,
+        "median": 0.7285,
+        "min": 0.559,
+        "max": 0.891,
+        "sd": 0.1208
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.7094,
+        "median": 0.7089,
+        "min": 0.6474,
+        "max": 0.7879,
+        "sd": 0.0488
+       }
+      }
+     },
+     "STN": {
+      "pairwise_subjects": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.5447,
+        "median": 0.496,
+        "min": 0.275,
+        "max": 0.886,
+        "sd": 0.2171
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.2845,
+        "median": 0.278,
+        "min": 0.246,
+        "max": 0.35,
+        "sd": 0.0357
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.8113,
+        "median": 0.762,
+        "min": 0.646,
+        "max": 1.09,
+        "sd": 0.1607
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.5557,
+        "median": 0.5585,
+        "min": 0.4761,
+        "max": 0.632,
+        "sd": 0.0497
+       }
+      },
+      "subject_vs_GT": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.5457,
+        "median": 0.437,
+        "min": 0.203,
+        "max": 1.015,
+        "sd": 0.3215
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.2213,
+        "median": 0.224,
+        "min": 0.166,
+        "max": 0.255,
+        "sd": 0.033
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.574,
+        "median": 0.5845,
+        "min": 0.354,
+        "max": 0.75,
+        "sd": 0.1285
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.6261,
+        "median": 0.6252,
+        "min": 0.5722,
+        "max": 0.7159,
+        "sd": 0.0505
+       }
+      }
+     }
+    }
+   },
+   "R8": {
+    "primary": {
+     "LGN": {
+      "pairwise_subjects": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.5652,
+        "median": 0.513,
+        "min": 0.358,
+        "max": 0.984,
+        "sd": 0.2347
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.272,
+        "median": 0.2515,
+        "min": 0.238,
+        "max": 0.347,
+        "sd": 0.0417
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.7503,
+        "median": 0.7285,
+        "min": 0.612,
+        "max": 0.935,
+        "sd": 0.1083
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.7407,
+        "median": 0.7613,
+        "min": 0.6707,
+        "max": 0.7675,
+        "sd": 0.0382
+       }
+      },
+      "subject_vs_GT": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.523,
+        "median": 0.5025,
+        "min": 0.321,
+        "max": 0.785,
+        "sd": 0.15
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.2895,
+        "median": 0.289,
+        "min": 0.247,
+        "max": 0.344,
+        "sd": 0.0343
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.7052,
+        "median": 0.707,
+        "min": 0.612,
+        "max": 0.791,
+        "sd": 0.0567
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.7085,
+        "median": 0.7086,
+        "min": 0.6561,
+        "max": 0.7534,
+        "sd": 0.0386
+       }
+      }
+     },
+     "STN": {
+      "pairwise_subjects": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.6862,
+        "median": 0.6495,
+        "min": 0.423,
+        "max": 0.955,
+        "sd": 0.2139
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.2932,
+        "median": 0.3,
+        "min": 0.221,
+        "max": 0.358,
+        "sd": 0.0466
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.8378,
+        "median": 0.7705,
+        "min": 0.602,
+        "max": 1.146,
+        "sd": 0.2073
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.5534,
+        "median": 0.5458,
+        "min": 0.4978,
+        "max": 0.6338,
+        "sd": 0.056
+       }
+      },
+      "subject_vs_GT": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.5417,
+        "median": 0.4825,
+        "min": 0.113,
+        "max": 1.062,
+        "sd": 0.3634
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.2227,
+        "median": 0.215,
+        "min": 0.181,
+        "max": 0.297,
+        "sd": 0.0409
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.6053,
+        "median": 0.559,
+        "min": 0.473,
+        "max": 0.791,
+        "sd": 0.1329
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.6283,
+        "median": 0.6433,
+        "min": 0.4974,
+        "max": 0.6906,
+        "sd": 0.0683
+       }
+      }
+     }
+    },
+    "composites": {
+     "LGN": {
+      "pairwise_subjects": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.581,
+        "median": 0.54,
+        "min": 0.364,
+        "max": 0.984,
+        "sd": 0.2384
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.2702,
+        "median": 0.245,
+        "min": 0.238,
+        "max": 0.347,
+        "sd": 0.046
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.7162,
+        "median": 0.7,
+        "min": 0.559,
+        "max": 0.935,
+        "sd": 0.1375
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.7419,
+        "median": 0.7673,
+        "min": 0.6707,
+        "max": 0.7769,
+        "sd": 0.0444
+       }
+      },
+      "subject_vs_GT": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.5305,
+        "median": 0.517,
+        "min": 0.321,
+        "max": 0.785,
+        "sd": 0.1487
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.2908,
+        "median": 0.293,
+        "min": 0.247,
+        "max": 0.344,
+        "sd": 0.0345
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.7052,
+        "median": 0.707,
+        "min": 0.612,
+        "max": 0.791,
+        "sd": 0.0567
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.7064,
+        "median": 0.7064,
+        "min": 0.6561,
+        "max": 0.7534,
+        "sd": 0.0374
+       }
+      }
+     },
+     "STN": {
+      "pairwise_subjects": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.6662,
+        "median": 0.6435,
+        "min": 0.423,
+        "max": 0.955,
+        "sd": 0.2024
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.295,
+        "median": 0.302,
+        "min": 0.221,
+        "max": 0.349,
+        "sd": 0.0464
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.8447,
+        "median": 0.791,
+        "min": 0.602,
+        "max": 1.146,
+        "sd": 0.2045
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.5491,
+        "median": 0.549,
+        "min": 0.4657,
+        "max": 0.6338,
+        "sd": 0.0626
+       }
+      },
+      "subject_vs_GT": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.5198,
+        "median": 0.468,
+        "min": 0.113,
+        "max": 1.062,
+        "sd": 0.3471
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.2207,
+        "median": 0.2135,
+        "min": 0.181,
+        "max": 0.297,
+        "sd": 0.0406
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.6015,
+        "median": 0.559,
+        "min": 0.473,
+        "max": 0.768,
+        "sd": 0.1267
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.6323,
+        "median": 0.6487,
+        "min": 0.4974,
+        "max": 0.6906,
+        "sd": 0.0687
+       }
+      }
+     }
+    }
+   },
+   "R9": {
+    "primary": {
+     "LGN": {
+      "pairwise_subjects": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.318,
+        "median": 0.237,
+        "min": 0.112,
+        "max": 0.694,
+        "sd": 0.2277
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.1812,
+        "median": 0.1695,
+        "min": 0.137,
+        "max": 0.256,
+        "sd": 0.0446
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.5455,
+        "median": 0.496,
+        "min": 0.354,
+        "max": 0.866,
+        "sd": 0.2074
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.8352,
+        "median": 0.8425,
+        "min": 0.7719,
+        "max": 0.8827,
+        "sd": 0.0436
+       }
+      },
+      "subject_vs_GT": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.3703,
+        "median": 0.3345,
+        "min": 0.247,
+        "max": 0.622,
+        "sd": 0.1364
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.2272,
+        "median": 0.2345,
+        "min": 0.184,
+        "max": 0.254,
+        "sd": 0.0297
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.5492,
+        "median": 0.559,
+        "min": 0.5,
+        "max": 0.559,
+        "sd": 0.0241
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.7764,
+        "median": 0.7702,
+        "min": 0.7376,
+        "max": 0.8285,
+        "sd": 0.0363
+       }
+      }
+     },
+     "STN": {
+      "pairwise_subjects": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.5432,
+        "median": 0.554,
+        "min": 0.287,
+        "max": 0.817,
+        "sd": 0.211
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.2082,
+        "median": 0.204,
+        "min": 0.18,
+        "max": 0.243,
+        "sd": 0.0274
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.6372,
+        "median": 0.633,
+        "min": 0.5,
+        "max": 0.791,
+        "sd": 0.1135
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.6675,
+        "median": 0.667,
+        "min": 0.6138,
+        "max": 0.7268,
+        "sd": 0.0457
+       }
+      },
+      "subject_vs_GT": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.4673,
+        "median": 0.4285,
+        "min": 0.133,
+        "max": 0.945,
+        "sd": 0.341
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.1833,
+        "median": 0.181,
+        "min": 0.155,
+        "max": 0.221,
+        "sd": 0.0264
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.4972,
+        "median": 0.4565,
+        "min": 0.354,
+        "max": 0.75,
+        "sd": 0.1688
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.6887,
+        "median": 0.6959,
+        "min": 0.6411,
+        "max": 0.7355,
+        "sd": 0.0411
+       }
+      }
+     }
+    },
+    "composites": {
+     "LGN": {
+      "pairwise_subjects": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.3343,
+        "median": 0.2745,
+        "min": 0.112,
+        "max": 0.694,
+        "sd": 0.2145
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.1813,
+        "median": 0.163,
+        "min": 0.148,
+        "max": 0.256,
+        "sd": 0.0418
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.5282,
+        "median": 0.433,
+        "min": 0.354,
+        "max": 0.866,
+        "sd": 0.216
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.8352,
+        "median": 0.8441,
+        "min": 0.7719,
+        "max": 0.8732,
+        "sd": 0.0367
+       }
+      },
+      "subject_vs_GT": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.3742,
+        "median": 0.3345,
+        "min": 0.247,
+        "max": 0.622,
+        "sd": 0.1379
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.2305,
+        "median": 0.236,
+        "min": 0.184,
+        "max": 0.254,
+        "sd": 0.0278
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.5492,
+        "median": 0.559,
+        "min": 0.5,
+        "max": 0.559,
+        "sd": 0.0241
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.7722,
+        "median": 0.7653,
+        "min": 0.7389,
+        "max": 0.8285,
+        "sd": 0.0334
+       }
+      }
+     },
+     "STN": {
+      "pairwise_subjects": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.4912,
+        "median": 0.5355,
+        "min": 0.23,
+        "max": 0.681,
+        "sd": 0.1978
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.2073,
+        "median": 0.2045,
+        "min": 0.18,
+        "max": 0.244,
+        "sd": 0.027
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.6332,
+        "median": 0.621,
+        "min": 0.5,
+        "max": 0.791,
+        "sd": 0.111
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.6702,
+        "median": 0.6721,
+        "min": 0.6154,
+        "max": 0.7268,
+        "sd": 0.0415
+       }
+      },
+      "subject_vs_GT": {
+       "centroid_mm": {
+        "n": 6,
+        "mean": 0.4382,
+        "median": 0.4095,
+        "min": 0.133,
+        "max": 0.808,
+        "sd": 0.3017
+       },
+       "assd_mm": {
+        "n": 6,
+        "mean": 0.1793,
+        "median": 0.181,
+        "min": 0.155,
+        "max": 0.2,
+        "sd": 0.0208
+       },
+       "hd95_mm": {
+        "n": 6,
+        "mean": 0.4972,
+        "median": 0.4565,
+        "min": 0.354,
+        "max": 0.75,
+        "sd": 0.1688
+       },
+       "dice": {
+        "n": 6,
+        "mean": 0.6956,
+        "median": 0.6991,
+        "min": 0.6411,
+        "max": 0.7355,
+        "sd": 0.0346
+       }
+      }
+     }
+    }
+   }
+  },
+  "rows": {
+   "R8 primary": [
+    {
+     "struct": "lhLGN",
+     "a": "MR243",
+     "b": "MR252",
+     "dice": 0.7609,
+     "assd_mm": 0.238,
+     "hd95_mm": 0.75,
+     "hd95_max_directed_mm": 0.866,
+     "hd100_mm": 1.346,
+     "centroid_mm": 0.643,
+     "centroid_offset_mm_signed": {
+      "x": -0.352,
+      "y": -0.458,
+      "z": 0.283
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.352,
+      "y": 0.458,
+      "z": 0.283
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.41,
+      "y": 1.83,
+      "z": 1.13
+     },
+     "vox_a": 2021,
+     "vox_b": 1919
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR243",
+     "b": "MR256",
+     "dice": 0.6707,
+     "assd_mm": 0.347,
+     "hd95_mm": 0.935,
+     "hd95_max_directed_mm": 1.118,
+     "hd100_mm": 1.768,
+     "centroid_mm": 0.984,
+     "centroid_offset_mm_signed": {
+      "x": -0.42,
+      "y": -0.76,
+      "z": 0.463
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.42,
+      "y": 0.76,
+      "z": 0.463
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.68,
+      "y": 3.04,
+      "z": 1.85
+     },
+     "vox_a": 2021,
+     "vox_b": 1790
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR243",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6778,
+     "assd_mm": 0.307,
+     "hd95_mm": 0.707,
+     "hd95_max_directed_mm": 0.707,
+     "hd100_mm": 1.346,
+     "centroid_mm": 0.785,
+     "centroid_offset_mm_signed": {
+      "x": -0.08,
+      "y": -0.392,
+      "z": 0.676
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.08,
+      "y": 0.392,
+      "z": 0.676
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.32,
+      "y": 1.57,
+      "z": 2.7
+     },
+     "vox_a": 2021,
+     "vox_b": 2429
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR252",
+     "b": "MR256",
+     "dice": 0.7619,
+     "assd_mm": 0.253,
+     "hd95_mm": 0.707,
+     "hd95_max_directed_mm": 0.918,
+     "hd100_mm": 1.677,
+     "centroid_mm": 0.358,
+     "centroid_offset_mm_signed": {
+      "x": -0.069,
+      "y": -0.302,
+      "z": 0.18
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.069,
+      "y": 0.302,
+      "z": 0.18
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.28,
+      "y": 1.21,
+      "z": 0.72
+     },
+     "vox_a": 1919,
+     "vox_b": 1790
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR252",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6964,
+     "assd_mm": 0.29,
+     "hd95_mm": 0.707,
+     "hd95_max_directed_mm": 0.75,
+     "hd100_mm": 1.173,
+     "centroid_mm": 0.482,
+     "centroid_offset_mm_signed": {
+      "x": 0.272,
+      "y": 0.066,
+      "z": 0.392
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.272,
+      "y": 0.066,
+      "z": 0.392
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.09,
+      "y": 0.26,
+      "z": 1.57
+     },
+     "vox_a": 1919,
+     "vox_b": 2429
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR256",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6561,
+     "assd_mm": 0.344,
+     "hd95_mm": 0.791,
+     "hd95_max_directed_mm": 1.0,
+     "hd100_mm": 1.299,
+     "centroid_mm": 0.545,
+     "centroid_offset_mm_signed": {
+      "x": 0.341,
+      "y": 0.368,
+      "z": 0.213
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.341,
+      "y": 0.368,
+      "z": 0.213
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.36,
+      "y": 1.47,
+      "z": 0.85
+     },
+     "vox_a": 1790,
+     "vox_b": 2429
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR243",
+     "b": "MR252",
+     "dice": 0.4978,
+     "assd_mm": 0.315,
+     "hd95_mm": 0.791,
+     "hd95_max_directed_mm": 0.901,
+     "hd100_mm": 1.146,
+     "centroid_mm": 0.705,
+     "centroid_offset_mm_signed": {
+      "x": -0.223,
+      "y": 0.495,
+      "z": 0.45
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.223,
+      "y": 0.495,
+      "z": 0.45
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.89,
+      "y": 1.98,
+      "z": 1.8
+     },
+     "vox_a": 402,
+     "vox_b": 502
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR243",
+     "b": "MR256",
+     "dice": 0.5914,
+     "assd_mm": 0.265,
+     "hd95_mm": 0.707,
+     "hd95_max_directed_mm": 0.791,
+     "hd100_mm": 1.09,
+     "centroid_mm": 0.955,
+     "centroid_offset_mm_signed": {
+      "x": -0.836,
+      "y": -0.183,
+      "z": 0.424
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.836,
+      "y": 0.183,
+      "z": 0.424
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 3.34,
+      "y": 0.73,
+      "z": 1.7
+     },
+     "vox_a": 402,
+     "vox_b": 342
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR243",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.4974,
+     "assd_mm": 0.297,
+     "hd95_mm": 0.75,
+     "hd95_max_directed_mm": 0.791,
+     "hd100_mm": 1.146,
+     "centroid_mm": 1.062,
+     "centroid_offset_mm_signed": {
+      "x": -0.837,
+      "y": -0.059,
+      "z": 0.651
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.837,
+      "y": 0.059,
+      "z": 0.651
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 3.35,
+      "y": 0.23,
+      "z": 2.6
+     },
+     "vox_a": 402,
+     "vox_b": 382
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR252",
+     "b": "MR256",
+     "dice": 0.5118,
+     "assd_mm": 0.358,
+     "hd95_mm": 1.146,
+     "hd95_max_directed_mm": 1.311,
+     "hd100_mm": 1.75,
+     "centroid_mm": 0.915,
+     "centroid_offset_mm_signed": {
+      "x": -0.614,
+      "y": -0.678,
+      "z": -0.025
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.614,
+      "y": 0.678,
+      "z": 0.025
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 2.45,
+      "y": 2.71,
+      "z": 0.1
+     },
+     "vox_a": 502,
+     "vox_b": 342
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR252",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6267,
+     "assd_mm": 0.232,
+     "hd95_mm": 0.791,
+     "hd95_max_directed_mm": 1.031,
+     "hd100_mm": 1.436,
+     "centroid_mm": 0.852,
+     "centroid_offset_mm_signed": {
+      "x": -0.615,
+      "y": -0.554,
+      "z": 0.201
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.615,
+      "y": 0.554,
+      "z": 0.201
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 2.46,
+      "y": 2.22,
+      "z": 0.81
+     },
+     "vox_a": 502,
+     "vox_b": 382
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR256",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6685,
+     "assd_mm": 0.196,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.612,
+     "hd100_mm": 1.031,
+     "centroid_mm": 0.258,
+     "centroid_offset_mm_signed": {
+      "x": -0.001,
+      "y": 0.124,
+      "z": 0.227
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.001,
+      "y": 0.124,
+      "z": 0.227
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.01,
+      "y": 0.5,
+      "z": 0.91
+     },
+     "vox_a": 342,
+     "vox_b": 382
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR243",
+     "b": "MR252",
+     "dice": 0.7618,
+     "assd_mm": 0.249,
+     "hd95_mm": 0.707,
+     "hd95_max_directed_mm": 0.75,
+     "hd100_mm": 1.061,
+     "centroid_mm": 0.38,
+     "centroid_offset_mm_signed": {
+      "x": 0.29,
+      "y": 0.191,
+      "z": 0.156
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.29,
+      "y": 0.191,
+      "z": 0.156
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.16,
+      "y": 0.76,
+      "z": 0.62
+     },
+     "vox_a": 2139,
+     "vox_b": 2151
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR243",
+     "b": "MR256",
+     "dice": 0.7675,
+     "assd_mm": 0.25,
+     "hd95_mm": 0.612,
+     "hd95_max_directed_mm": 0.75,
+     "hd100_mm": 1.031,
+     "centroid_mm": 0.438,
+     "centroid_offset_mm_signed": {
+      "x": 0.17,
+      "y": -0.384,
+      "z": 0.127
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.17,
+      "y": 0.384,
+      "z": 0.127
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.68,
+      "y": 1.54,
+      "z": 0.51
+     },
+     "vox_a": 2139,
+     "vox_b": 2309
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR243",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7534,
+     "assd_mm": 0.247,
+     "hd95_mm": 0.612,
+     "hd95_max_directed_mm": 0.612,
+     "hd100_mm": 1.031,
+     "centroid_mm": 0.321,
+     "centroid_offset_mm_signed": {
+      "x": -0.147,
+      "y": -0.032,
+      "z": 0.284
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.147,
+      "y": 0.032,
+      "z": 0.284
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.59,
+      "y": 0.13,
+      "z": 1.14
+     },
+     "vox_a": 2139,
+     "vox_b": 2289
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR252",
+     "b": "MR256",
+     "dice": 0.7211,
+     "assd_mm": 0.295,
+     "hd95_mm": 0.791,
+     "hd95_max_directed_mm": 0.866,
+     "hd100_mm": 1.275,
+     "centroid_mm": 0.588,
+     "centroid_offset_mm_signed": {
+      "x": -0.12,
+      "y": -0.574,
+      "z": -0.029
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.12,
+      "y": 0.574,
+      "z": 0.029
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.48,
+      "y": 2.3,
+      "z": 0.11
+     },
+     "vox_a": 2151,
+     "vox_b": 2309
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR252",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7464,
+     "assd_mm": 0.261,
+     "hd95_mm": 0.707,
+     "hd95_max_directed_mm": 0.75,
+     "hd100_mm": 1.458,
+     "centroid_mm": 0.507,
+     "centroid_offset_mm_signed": {
+      "x": -0.437,
+      "y": -0.223,
+      "z": 0.128
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.437,
+      "y": 0.223,
+      "z": 0.128
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.75,
+      "y": 0.89,
+      "z": 0.51
+     },
+     "vox_a": 2151,
+     "vox_b": 2289
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR256",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7207,
+     "assd_mm": 0.288,
+     "hd95_mm": 0.707,
+     "hd95_max_directed_mm": 0.75,
+     "hd100_mm": 1.118,
+     "centroid_mm": 0.498,
+     "centroid_offset_mm_signed": {
+      "x": -0.316,
+      "y": 0.351,
+      "z": 0.157
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.316,
+      "y": 0.351,
+      "z": 0.157
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.27,
+      "y": 1.41,
+      "z": 0.63
+     },
+     "vox_a": 2309,
+     "vox_b": 2289
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR243",
+     "b": "MR252",
+     "dice": 0.5061,
+     "assd_mm": 0.307,
+     "hd95_mm": 0.75,
+     "hd95_max_directed_mm": 0.925,
+     "hd100_mm": 1.346,
+     "centroid_mm": 0.525,
+     "centroid_offset_mm_signed": {
+      "x": -0.136,
+      "y": 0.48,
+      "z": 0.165
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.136,
+      "y": 0.48,
+      "z": 0.165
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.54,
+      "y": 1.92,
+      "z": 0.66
+     },
+     "vox_a": 352,
+     "vox_b": 466
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR243",
+     "b": "MR256",
+     "dice": 0.6338,
+     "assd_mm": 0.221,
+     "hd95_mm": 0.602,
+     "hd95_max_directed_mm": 0.729,
+     "hd100_mm": 1.061,
+     "centroid_mm": 0.423,
+     "centroid_offset_mm_signed": {
+      "x": 0.213,
+      "y": 0.041,
+      "z": 0.362
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.213,
+      "y": 0.041,
+      "z": 0.362
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.85,
+      "y": 0.17,
+      "z": 1.45
+     },
+     "vox_a": 352,
+     "vox_b": 317
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR243",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6906,
+     "assd_mm": 0.181,
+     "hd95_mm": 0.473,
+     "hd95_max_directed_mm": 0.509,
+     "hd100_mm": 0.791,
+     "centroid_mm": 0.378,
+     "centroid_offset_mm_signed": {
+      "x": 0.264,
+      "y": 0.061,
+      "z": 0.263
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.264,
+      "y": 0.061,
+      "z": 0.263
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.06,
+      "y": 0.25,
+      "z": 1.05
+     },
+     "vox_a": 352,
+     "vox_b": 401
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR252",
+     "b": "MR256",
+     "dice": 0.5798,
+     "assd_mm": 0.293,
+     "hd95_mm": 1.031,
+     "hd95_max_directed_mm": 1.209,
+     "hd100_mm": 1.768,
+     "centroid_mm": 0.594,
+     "centroid_offset_mm_signed": {
+      "x": 0.349,
+      "y": -0.438,
+      "z": 0.198
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.349,
+      "y": 0.438,
+      "z": 0.198
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.4,
+      "y": 1.75,
+      "z": 0.79
+     },
+     "vox_a": 466,
+     "vox_b": 317
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR252",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6321,
+     "assd_mm": 0.225,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.791,
+     "hd100_mm": 1.275,
+     "centroid_mm": 0.587,
+     "centroid_offset_mm_signed": {
+      "x": 0.4,
+      "y": -0.418,
+      "z": 0.098
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.4,
+      "y": 0.418,
+      "z": 0.098
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.6,
+      "y": 1.67,
+      "z": 0.39
+     },
+     "vox_a": 466,
+     "vox_b": 401
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR256",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6546,
+     "assd_mm": 0.205,
+     "hd95_mm": 0.5,
+     "hd95_max_directed_mm": 0.612,
+     "hd100_mm": 0.901,
+     "centroid_mm": 0.113,
+     "centroid_offset_mm_signed": {
+      "x": 0.051,
+      "y": 0.02,
+      "z": -0.099
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.051,
+      "y": 0.02,
+      "z": 0.099
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.2,
+      "y": 0.08,
+      "z": 0.4
+     },
+     "vox_a": 317,
+     "vox_b": 401
+    }
+   ],
+   "R8 composites": [
+    {
+     "struct": "lhLGN",
+     "a": "MR243",
+     "b": "MR252",
+     "dice": 0.7769,
+     "assd_mm": 0.24,
+     "hd95_mm": 0.791,
+     "hd95_max_directed_mm": 1.061,
+     "hd100_mm": 1.837,
+     "centroid_mm": 0.642,
+     "centroid_offset_mm_signed": {
+      "x": -0.387,
+      "y": -0.432,
+      "z": 0.277
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.387,
+      "y": 0.432,
+      "z": 0.277
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.55,
+      "y": 1.73,
+      "z": 1.11
+     },
+     "vox_a": 2021,
+     "vox_b": 1848
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR243",
+     "b": "MR256",
+     "dice": 0.6707,
+     "assd_mm": 0.347,
+     "hd95_mm": 0.935,
+     "hd95_max_directed_mm": 1.118,
+     "hd100_mm": 1.768,
+     "centroid_mm": 0.984,
+     "centroid_offset_mm_signed": {
+      "x": -0.42,
+      "y": -0.76,
+      "z": 0.463
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.42,
+      "y": 0.76,
+      "z": 0.463
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.68,
+      "y": 3.04,
+      "z": 1.85
+     },
+     "vox_a": 2021,
+     "vox_b": 1790
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR243",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6778,
+     "assd_mm": 0.307,
+     "hd95_mm": 0.707,
+     "hd95_max_directed_mm": 0.707,
+     "hd100_mm": 1.346,
+     "centroid_mm": 0.785,
+     "centroid_offset_mm_signed": {
+      "x": -0.08,
+      "y": -0.392,
+      "z": 0.676
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.08,
+      "y": 0.392,
+      "z": 0.676
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.32,
+      "y": 1.57,
+      "z": 2.7
+     },
+     "vox_a": 2021,
+     "vox_b": 2429
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR252",
+     "b": "MR256",
+     "dice": 0.7675,
+     "assd_mm": 0.238,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.75,
+     "hd100_mm": 1.299,
+     "centroid_mm": 0.379,
+     "centroid_offset_mm_signed": {
+      "x": -0.034,
+      "y": -0.328,
+      "z": 0.186
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.034,
+      "y": 0.328,
+      "z": 0.186
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.14,
+      "y": 1.31,
+      "z": 0.74
+     },
+     "vox_a": 1848,
+     "vox_b": 1790
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR252",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6921,
+     "assd_mm": 0.298,
+     "hd95_mm": 0.707,
+     "hd95_max_directed_mm": 0.75,
+     "hd100_mm": 1.173,
+     "centroid_mm": 0.505,
+     "centroid_offset_mm_signed": {
+      "x": 0.307,
+      "y": 0.04,
+      "z": 0.399
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.307,
+      "y": 0.04,
+      "z": 0.399
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.23,
+      "y": 0.16,
+      "z": 1.59
+     },
+     "vox_a": 1848,
+     "vox_b": 2429
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR256",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6561,
+     "assd_mm": 0.344,
+     "hd95_mm": 0.791,
+     "hd95_max_directed_mm": 1.0,
+     "hd100_mm": 1.299,
+     "centroid_mm": 0.545,
+     "centroid_offset_mm_signed": {
+      "x": 0.341,
+      "y": 0.368,
+      "z": 0.213
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.341,
+      "y": 0.368,
+      "z": 0.213
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.36,
+      "y": 1.47,
+      "z": 0.85
+     },
+     "vox_a": 1790,
+     "vox_b": 2429
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR243",
+     "b": "MR252",
+     "dice": 0.4657,
+     "assd_mm": 0.331,
+     "hd95_mm": 0.791,
+     "hd95_max_directed_mm": 0.889,
+     "hd100_mm": 1.146,
+     "centroid_mm": 0.721,
+     "centroid_offset_mm_signed": {
+      "x": -0.301,
+      "y": 0.439,
+      "z": 0.487
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.301,
+      "y": 0.439,
+      "z": 0.487
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.2,
+      "y": 1.75,
+      "z": 1.95
+     },
+     "vox_a": 402,
+     "vox_b": 517
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR243",
+     "b": "MR256",
+     "dice": 0.5914,
+     "assd_mm": 0.265,
+     "hd95_mm": 0.707,
+     "hd95_max_directed_mm": 0.791,
+     "hd100_mm": 1.09,
+     "centroid_mm": 0.955,
+     "centroid_offset_mm_signed": {
+      "x": -0.836,
+      "y": -0.183,
+      "z": 0.424
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.836,
+      "y": 0.183,
+      "z": 0.424
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 3.34,
+      "y": 0.73,
+      "z": 1.7
+     },
+     "vox_a": 402,
+     "vox_b": 342
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR243",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.4974,
+     "assd_mm": 0.297,
+     "hd95_mm": 0.75,
+     "hd95_max_directed_mm": 0.791,
+     "hd100_mm": 1.146,
+     "centroid_mm": 1.062,
+     "centroid_offset_mm_signed": {
+      "x": -0.837,
+      "y": -0.059,
+      "z": 0.651
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.837,
+      "y": 0.059,
+      "z": 0.651
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 3.35,
+      "y": 0.23,
+      "z": 2.6
+     },
+     "vox_a": 402,
+     "vox_b": 382
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR252",
+     "b": "MR256",
+     "dice": 0.5192,
+     "assd_mm": 0.349,
+     "hd95_mm": 1.146,
+     "hd95_max_directed_mm": 1.299,
+     "hd100_mm": 1.75,
+     "centroid_mm": 0.823,
+     "centroid_offset_mm_signed": {
+      "x": -0.535,
+      "y": -0.621,
+      "z": -0.062
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.535,
+      "y": 0.621,
+      "z": 0.062
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 2.14,
+      "y": 2.49,
+      "z": 0.25
+     },
+     "vox_a": 517,
+     "vox_b": 342
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR252",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6429,
+     "assd_mm": 0.222,
+     "hd95_mm": 0.768,
+     "hd95_max_directed_mm": 1.031,
+     "hd100_mm": 1.436,
+     "centroid_mm": 0.75,
+     "centroid_offset_mm_signed": {
+      "x": -0.537,
+      "y": -0.497,
+      "z": 0.164
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.537,
+      "y": 0.497,
+      "z": 0.164
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 2.15,
+      "y": 1.99,
+      "z": 0.66
+     },
+     "vox_a": 517,
+     "vox_b": 382
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR256",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6685,
+     "assd_mm": 0.196,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.612,
+     "hd100_mm": 1.031,
+     "centroid_mm": 0.258,
+     "centroid_offset_mm_signed": {
+      "x": -0.001,
+      "y": 0.124,
+      "z": 0.227
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.001,
+      "y": 0.124,
+      "z": 0.227
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.01,
+      "y": 0.5,
+      "z": 0.91
+     },
+     "vox_a": 342,
+     "vox_b": 382
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR243",
+     "b": "MR252",
+     "dice": 0.7671,
+     "assd_mm": 0.239,
+     "hd95_mm": 0.65,
+     "hd95_max_directed_mm": 0.707,
+     "hd100_mm": 1.061,
+     "centroid_mm": 0.364,
+     "centroid_offset_mm_signed": {
+      "x": 0.209,
+      "y": 0.291,
+      "z": 0.063
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.209,
+      "y": 0.291,
+      "z": 0.063
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.83,
+      "y": 1.17,
+      "z": 0.25
+     },
+     "vox_a": 2139,
+     "vox_b": 2048
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR243",
+     "b": "MR256",
+     "dice": 0.7675,
+     "assd_mm": 0.25,
+     "hd95_mm": 0.612,
+     "hd95_max_directed_mm": 0.75,
+     "hd100_mm": 1.031,
+     "centroid_mm": 0.438,
+     "centroid_offset_mm_signed": {
+      "x": 0.17,
+      "y": -0.384,
+      "z": 0.127
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.17,
+      "y": 0.384,
+      "z": 0.127
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.68,
+      "y": 1.54,
+      "z": 0.51
+     },
+     "vox_a": 2139,
+     "vox_b": 2309
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR243",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7534,
+     "assd_mm": 0.247,
+     "hd95_mm": 0.612,
+     "hd95_max_directed_mm": 0.612,
+     "hd100_mm": 1.031,
+     "centroid_mm": 0.321,
+     "centroid_offset_mm_signed": {
+      "x": -0.147,
+      "y": -0.032,
+      "z": 0.284
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.147,
+      "y": 0.032,
+      "z": 0.284
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.59,
+      "y": 0.13,
+      "z": 1.14
+     },
+     "vox_a": 2139,
+     "vox_b": 2289
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR252",
+     "b": "MR256",
+     "dice": 0.7019,
+     "assd_mm": 0.307,
+     "hd95_mm": 0.75,
+     "hd95_max_directed_mm": 0.791,
+     "hd100_mm": 1.031,
+     "centroid_mm": 0.679,
+     "centroid_offset_mm_signed": {
+      "x": -0.039,
+      "y": -0.675,
+      "z": 0.064
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.039,
+      "y": 0.675,
+      "z": 0.064
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.16,
+      "y": 2.7,
+      "z": 0.26
+     },
+     "vox_a": 2048,
+     "vox_b": 2309
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR252",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7383,
+     "assd_mm": 0.261,
+     "hd95_mm": 0.707,
+     "hd95_max_directed_mm": 0.75,
+     "hd100_mm": 1.458,
+     "centroid_mm": 0.529,
+     "centroid_offset_mm_signed": {
+      "x": -0.356,
+      "y": -0.324,
+      "z": 0.221
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.356,
+      "y": 0.324,
+      "z": 0.221
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.42,
+      "y": 1.29,
+      "z": 0.88
+     },
+     "vox_a": 2048,
+     "vox_b": 2289
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR256",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7207,
+     "assd_mm": 0.288,
+     "hd95_mm": 0.707,
+     "hd95_max_directed_mm": 0.75,
+     "hd100_mm": 1.118,
+     "centroid_mm": 0.498,
+     "centroid_offset_mm_signed": {
+      "x": -0.316,
+      "y": 0.351,
+      "z": 0.157
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.316,
+      "y": 0.351,
+      "z": 0.157
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.27,
+      "y": 1.41,
+      "z": 0.63
+     },
+     "vox_a": 2309,
+     "vox_b": 2289
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR243",
+     "b": "MR252",
+     "dice": 0.5055,
+     "assd_mm": 0.309,
+     "hd95_mm": 0.791,
+     "hd95_max_directed_mm": 0.924,
+     "hd100_mm": 1.346,
+     "centroid_mm": 0.509,
+     "centroid_offset_mm_signed": {
+      "x": -0.111,
+      "y": 0.465,
+      "z": 0.174
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.111,
+      "y": 0.465,
+      "z": 0.174
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.44,
+      "y": 1.86,
+      "z": 0.7
+     },
+     "vox_a": 352,
+     "vox_b": 471
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR243",
+     "b": "MR256",
+     "dice": 0.6338,
+     "assd_mm": 0.221,
+     "hd95_mm": 0.602,
+     "hd95_max_directed_mm": 0.729,
+     "hd100_mm": 1.061,
+     "centroid_mm": 0.423,
+     "centroid_offset_mm_signed": {
+      "x": 0.213,
+      "y": 0.041,
+      "z": 0.362
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.213,
+      "y": 0.041,
+      "z": 0.362
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.85,
+      "y": 0.17,
+      "z": 1.45
+     },
+     "vox_a": 352,
+     "vox_b": 317
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR243",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6906,
+     "assd_mm": 0.181,
+     "hd95_mm": 0.473,
+     "hd95_max_directed_mm": 0.509,
+     "hd100_mm": 0.791,
+     "centroid_mm": 0.378,
+     "centroid_offset_mm_signed": {
+      "x": 0.264,
+      "y": 0.061,
+      "z": 0.263
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.264,
+      "y": 0.061,
+      "z": 0.263
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.06,
+      "y": 0.25,
+      "z": 1.05
+     },
+     "vox_a": 352,
+     "vox_b": 401
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR252",
+     "b": "MR256",
+     "dice": 0.5787,
+     "assd_mm": 0.295,
+     "hd95_mm": 1.031,
+     "hd95_max_directed_mm": 1.206,
+     "hd100_mm": 1.768,
+     "centroid_mm": 0.566,
+     "centroid_offset_mm_signed": {
+      "x": 0.324,
+      "y": -0.424,
+      "z": 0.188
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.324,
+      "y": 0.424,
+      "z": 0.188
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.29,
+      "y": 1.7,
+      "z": 0.75
+     },
+     "vox_a": 471,
+     "vox_b": 317
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR252",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6399,
+     "assd_mm": 0.223,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.791,
+     "hd100_mm": 1.275,
+     "centroid_mm": 0.558,
+     "centroid_offset_mm_signed": {
+      "x": 0.374,
+      "y": -0.404,
+      "z": 0.089
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.374,
+      "y": 0.404,
+      "z": 0.089
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.5,
+      "y": 1.62,
+      "z": 0.35
+     },
+     "vox_a": 471,
+     "vox_b": 401
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR256",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6546,
+     "assd_mm": 0.205,
+     "hd95_mm": 0.5,
+     "hd95_max_directed_mm": 0.612,
+     "hd100_mm": 0.901,
+     "centroid_mm": 0.113,
+     "centroid_offset_mm_signed": {
+      "x": 0.051,
+      "y": 0.02,
+      "z": -0.099
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.051,
+      "y": 0.02,
+      "z": 0.099
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.2,
+      "y": 0.08,
+      "z": 0.4
+     },
+     "vox_a": 317,
+     "vox_b": 401
+    }
+   ],
+   "R9 primary": [
+    {
+     "struct": "lhLGN",
+     "a": "MR243",
+     "b": "MR252",
+     "dice": 0.7987,
+     "assd_mm": 0.207,
+     "hd95_mm": 0.707,
+     "hd95_max_directed_mm": 0.791,
+     "hd100_mm": 1.369,
+     "centroid_mm": 0.488,
+     "centroid_offset_mm_signed": {
+      "x": -0.23,
+      "y": -0.407,
+      "z": 0.139
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.23,
+      "y": 0.407,
+      "z": 0.139
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.92,
+      "y": 1.63,
+      "z": 0.56
+     },
+     "vox_a": 2414,
+     "vox_b": 2023
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR243",
+     "b": "MR256",
+     "dice": 0.7719,
+     "assd_mm": 0.256,
+     "hd95_mm": 0.866,
+     "hd95_max_directed_mm": 1.031,
+     "hd100_mm": 1.768,
+     "centroid_mm": 0.694,
+     "centroid_offset_mm_signed": {
+      "x": -0.223,
+      "y": -0.544,
+      "z": 0.369
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.223,
+      "y": 0.544,
+      "z": 0.369
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.89,
+      "y": 2.18,
+      "z": 1.47
+     },
+     "vox_a": 2414,
+     "vox_b": 1882
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR243",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7471,
+     "assd_mm": 0.254,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.744,
+     "hd100_mm": 1.541,
+     "centroid_mm": 0.622,
+     "centroid_offset_mm_signed": {
+      "x": -0.06,
+      "y": -0.361,
+      "z": 0.503
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.06,
+      "y": 0.361,
+      "z": 0.503
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.24,
+      "y": 1.44,
+      "z": 2.01
+     },
+     "vox_a": 2414,
+     "vox_b": 2429
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR252",
+     "b": "MR256",
+     "dice": 0.8292,
+     "assd_mm": 0.183,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.75,
+     "hd100_mm": 1.369,
+     "centroid_mm": 0.267,
+     "centroid_offset_mm_signed": {
+      "x": 0.007,
+      "y": -0.137,
+      "z": 0.229
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.007,
+      "y": 0.137,
+      "z": 0.229
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.03,
+      "y": 0.55,
+      "z": 0.92
+     },
+     "vox_a": 2023,
+     "vox_b": 1882
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR252",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7376,
+     "assd_mm": 0.253,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.612,
+     "hd100_mm": 1.031,
+     "centroid_mm": 0.404,
+     "centroid_offset_mm_signed": {
+      "x": 0.17,
+      "y": 0.046,
+      "z": 0.363
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.17,
+      "y": 0.046,
+      "z": 0.363
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.68,
+      "y": 0.18,
+      "z": 1.45
+     },
+     "vox_a": 2023,
+     "vox_b": 2429
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR256",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7525,
+     "assd_mm": 0.25,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.75,
+     "hd100_mm": 1.25,
+     "centroid_mm": 0.28,
+     "centroid_offset_mm_signed": {
+      "x": 0.163,
+      "y": 0.183,
+      "z": 0.134
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.163,
+      "y": 0.183,
+      "z": 0.134
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.65,
+      "y": 0.73,
+      "z": 0.54
+     },
+     "vox_a": 1882,
+     "vox_b": 2429
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR243",
+     "b": "MR252",
+     "dice": 0.646,
+     "assd_mm": 0.193,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.612,
+     "hd100_mm": 0.901,
+     "centroid_mm": 0.33,
+     "centroid_offset_mm_signed": {
+      "x": 0.086,
+      "y": 0.309,
+      "z": -0.078
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.086,
+      "y": 0.309,
+      "z": 0.078
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.34,
+      "y": 1.24,
+      "z": 0.31
+     },
+     "vox_a": 348,
+     "vox_b": 460
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR243",
+     "b": "MR256",
+     "dice": 0.688,
+     "assd_mm": 0.182,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.559,
+     "hd100_mm": 0.901,
+     "centroid_mm": 0.609,
+     "centroid_offset_mm_signed": {
+      "x": -0.5,
+      "y": -0.08,
+      "z": 0.338
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.5,
+      "y": 0.08,
+      "z": 0.338
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 2.0,
+      "y": 0.32,
+      "z": 1.35
+     },
+     "vox_a": 348,
+     "vox_b": 309
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR243",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6411,
+     "assd_mm": 0.196,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.559,
+     "hd100_mm": 0.829,
+     "centroid_mm": 0.73,
+     "centroid_offset_mm_signed": {
+      "x": -0.613,
+      "y": -0.143,
+      "z": 0.371
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.613,
+      "y": 0.143,
+      "z": 0.371
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 2.45,
+      "y": 0.57,
+      "z": 1.48
+     },
+     "vox_a": 348,
+     "vox_b": 382
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR252",
+     "b": "MR256",
+     "dice": 0.6138,
+     "assd_mm": 0.243,
+     "hd95_mm": 0.791,
+     "hd95_max_directed_mm": 0.935,
+     "hd100_mm": 1.436,
+     "centroid_mm": 0.817,
+     "centroid_offset_mm_signed": {
+      "x": -0.586,
+      "y": -0.389,
+      "z": 0.416
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.586,
+      "y": 0.389,
+      "z": 0.416
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 2.34,
+      "y": 1.56,
+      "z": 1.66
+     },
+     "vox_a": 460,
+     "vox_b": 309
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR252",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6413,
+     "assd_mm": 0.221,
+     "hd95_mm": 0.75,
+     "hd95_max_directed_mm": 0.901,
+     "hd100_mm": 1.369,
+     "centroid_mm": 0.945,
+     "centroid_offset_mm_signed": {
+      "x": -0.699,
+      "y": -0.452,
+      "z": 0.449
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.699,
+      "y": 0.452,
+      "z": 0.449
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 2.79,
+      "y": 1.81,
+      "z": 1.79
+     },
+     "vox_a": 460,
+     "vox_b": 382
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR256",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.712,
+     "assd_mm": 0.155,
+     "hd95_mm": 0.354,
+     "hd95_max_directed_mm": 0.49,
+     "hd100_mm": 0.75,
+     "centroid_mm": 0.133,
+     "centroid_offset_mm_signed": {
+      "x": -0.113,
+      "y": -0.063,
+      "z": 0.033
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.113,
+      "y": 0.063,
+      "z": 0.033
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.45,
+      "y": 0.25,
+      "z": 0.13
+     },
+     "vox_a": 309,
+     "vox_b": 382
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR243",
+     "b": "MR252",
+     "dice": 0.8558,
+     "assd_mm": 0.156,
+     "hd95_mm": 0.433,
+     "hd95_max_directed_mm": 0.433,
+     "hd100_mm": 0.75,
+     "centroid_mm": 0.207,
+     "centroid_offset_mm_signed": {
+      "x": 0.135,
+      "y": 0.151,
+      "z": 0.042
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.135,
+      "y": 0.151,
+      "z": 0.042
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.54,
+      "y": 0.61,
+      "z": 0.17
+     },
+     "vox_a": 2242,
+     "vox_b": 2175
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR243",
+     "b": "MR256",
+     "dice": 0.8732,
+     "assd_mm": 0.148,
+     "hd95_mm": 0.354,
+     "hd95_max_directed_mm": 0.354,
+     "hd100_mm": 0.75,
+     "centroid_mm": 0.112,
+     "centroid_offset_mm_signed": {
+      "x": 0.011,
+      "y": 0.09,
+      "z": 0.066
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.011,
+      "y": 0.09,
+      "z": 0.066
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.04,
+      "y": 0.36,
+      "z": 0.27
+     },
+     "vox_a": 2242,
+     "vox_b": 2300
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR243",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7879,
+     "assd_mm": 0.219,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.559,
+     "hd100_mm": 1.061,
+     "centroid_mm": 0.298,
+     "centroid_offset_mm_signed": {
+      "x": -0.199,
+      "y": 0.104,
+      "z": 0.196
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.199,
+      "y": 0.104,
+      "z": 0.196
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.8,
+      "y": 0.41,
+      "z": 0.78
+     },
+     "vox_a": 2242,
+     "vox_b": 2289
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR252",
+     "b": "MR256",
+     "dice": 0.8827,
+     "assd_mm": 0.137,
+     "hd95_mm": 0.354,
+     "hd95_max_directed_mm": 0.354,
+     "hd100_mm": 0.707,
+     "centroid_mm": 0.14,
+     "centroid_offset_mm_signed": {
+      "x": -0.124,
+      "y": -0.061,
+      "z": 0.024
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.124,
+      "y": 0.061,
+      "z": 0.024
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.5,
+      "y": 0.25,
+      "z": 0.1
+     },
+     "vox_a": 2175,
+     "vox_b": 2300
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR252",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.8047,
+     "assd_mm": 0.203,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.559,
+     "hd100_mm": 1.09,
+     "centroid_mm": 0.371,
+     "centroid_offset_mm_signed": {
+      "x": -0.334,
+      "y": -0.048,
+      "z": 0.154
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.334,
+      "y": 0.048,
+      "z": 0.154
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.34,
+      "y": 0.19,
+      "z": 0.61
+     },
+     "vox_a": 2175,
+     "vox_b": 2289
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR256",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.8285,
+     "assd_mm": 0.184,
+     "hd95_mm": 0.5,
+     "hd95_max_directed_mm": 0.559,
+     "hd100_mm": 1.031,
+     "centroid_mm": 0.247,
+     "centroid_offset_mm_signed": {
+      "x": -0.21,
+      "y": 0.014,
+      "z": 0.129
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.21,
+      "y": 0.014,
+      "z": 0.129
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.84,
+      "y": 0.05,
+      "z": 0.52
+     },
+     "vox_a": 2300,
+     "vox_b": 2289
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR243",
+     "b": "MR252",
+     "dice": 0.6255,
+     "assd_mm": 0.236,
+     "hd95_mm": 0.707,
+     "hd95_max_directed_mm": 0.784,
+     "hd100_mm": 1.146,
+     "centroid_mm": 0.717,
+     "centroid_offset_mm_signed": {
+      "x": -0.452,
+      "y": 0.49,
+      "z": -0.263
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.452,
+      "y": 0.49,
+      "z": 0.263
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.81,
+      "y": 1.96,
+      "z": 1.05
+     },
+     "vox_a": 413,
+     "vox_b": 511
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR243",
+     "b": "MR256",
+     "dice": 0.7268,
+     "assd_mm": 0.18,
+     "hd95_mm": 0.5,
+     "hd95_max_directed_mm": 0.716,
+     "hd100_mm": 1.146,
+     "centroid_mm": 0.287,
+     "centroid_offset_mm_signed": {
+      "x": -0.11,
+      "y": 0.265,
+      "z": 0.021
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.11,
+      "y": 0.265,
+      "z": 0.021
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.44,
+      "y": 1.06,
+      "z": 0.08
+     },
+     "vox_a": 413,
+     "vox_b": 374
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR243",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7224,
+     "assd_mm": 0.166,
+     "hd95_mm": 0.354,
+     "hd95_max_directed_mm": 0.433,
+     "hd100_mm": 0.75,
+     "centroid_mm": 0.253,
+     "centroid_offset_mm_signed": {
+      "x": 0.028,
+      "y": 0.251,
+      "z": 0.015
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.028,
+      "y": 0.251,
+      "z": 0.015
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.11,
+      "y": 1.0,
+      "z": 0.06
+     },
+     "vox_a": 413,
+     "vox_b": 401
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR252",
+     "b": "MR256",
+     "dice": 0.7051,
+     "assd_mm": 0.215,
+     "hd95_mm": 0.707,
+     "hd95_max_directed_mm": 0.93,
+     "hd100_mm": 1.458,
+     "centroid_mm": 0.499,
+     "centroid_offset_mm_signed": {
+      "x": 0.342,
+      "y": -0.225,
+      "z": 0.284
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.342,
+      "y": 0.225,
+      "z": 0.284
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.37,
+      "y": 0.9,
+      "z": 1.14
+     },
+     "vox_a": 511,
+     "vox_b": 374
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR252",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6798,
+     "assd_mm": 0.201,
+     "hd95_mm": 0.612,
+     "hd95_max_directed_mm": 0.791,
+     "hd100_mm": 1.173,
+     "centroid_mm": 0.604,
+     "centroid_offset_mm_signed": {
+      "x": 0.48,
+      "y": -0.239,
+      "z": 0.279
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.48,
+      "y": 0.239,
+      "z": 0.279
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.92,
+      "y": 0.95,
+      "z": 1.11
+     },
+     "vox_a": 511,
+     "vox_b": 401
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR256",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7355,
+     "assd_mm": 0.161,
+     "hd95_mm": 0.354,
+     "hd95_max_directed_mm": 0.365,
+     "hd100_mm": 0.612,
+     "centroid_mm": 0.139,
+     "centroid_offset_mm_signed": {
+      "x": 0.138,
+      "y": -0.013,
+      "z": -0.005
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.138,
+      "y": 0.013,
+      "z": 0.005
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.55,
+      "y": 0.05,
+      "z": 0.02
+     },
+     "vox_a": 374,
+     "vox_b": 401
+    }
+   ],
+   "R9 composites": [
+    {
+     "struct": "lhLGN",
+     "a": "MR243",
+     "b": "MR252",
+     "dice": 0.816,
+     "assd_mm": 0.205,
+     "hd95_mm": 0.729,
+     "hd95_max_directed_mm": 0.935,
+     "hd100_mm": 1.871,
+     "centroid_mm": 0.47,
+     "centroid_offset_mm_signed": {
+      "x": -0.281,
+      "y": -0.352,
+      "z": 0.137
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.281,
+      "y": 0.352,
+      "z": 0.137
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.12,
+      "y": 1.41,
+      "z": 0.55
+     },
+     "vox_a": 2414,
+     "vox_b": 1956
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR243",
+     "b": "MR256",
+     "dice": 0.7719,
+     "assd_mm": 0.256,
+     "hd95_mm": 0.866,
+     "hd95_max_directed_mm": 1.031,
+     "hd100_mm": 1.768,
+     "centroid_mm": 0.694,
+     "centroid_offset_mm_signed": {
+      "x": -0.223,
+      "y": -0.544,
+      "z": 0.369
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.223,
+      "y": 0.544,
+      "z": 0.369
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.89,
+      "y": 2.18,
+      "z": 1.47
+     },
+     "vox_a": 2414,
+     "vox_b": 1882
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR243",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7471,
+     "assd_mm": 0.254,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.744,
+     "hd100_mm": 1.541,
+     "centroid_mm": 0.622,
+     "centroid_offset_mm_signed": {
+      "x": -0.06,
+      "y": -0.361,
+      "z": 0.503
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.06,
+      "y": 0.361,
+      "z": 0.503
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.24,
+      "y": 1.44,
+      "z": 2.01
+     },
+     "vox_a": 2414,
+     "vox_b": 2429
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR252",
+     "b": "MR256",
+     "dice": 0.8484,
+     "assd_mm": 0.159,
+     "hd95_mm": 0.433,
+     "hd95_max_directed_mm": 0.559,
+     "hd100_mm": 1.118,
+     "centroid_mm": 0.307,
+     "centroid_offset_mm_signed": {
+      "x": 0.058,
+      "y": -0.193,
+      "z": 0.232
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.058,
+      "y": 0.193,
+      "z": 0.232
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.23,
+      "y": 0.77,
+      "z": 0.93
+     },
+     "vox_a": 1956,
+     "vox_b": 1882
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR252",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7389,
+     "assd_mm": 0.254,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.559,
+     "hd100_mm": 1.031,
+     "centroid_mm": 0.427,
+     "centroid_offset_mm_signed": {
+      "x": 0.221,
+      "y": -0.009,
+      "z": 0.366
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.221,
+      "y": 0.009,
+      "z": 0.366
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.88,
+      "y": 0.04,
+      "z": 1.46
+     },
+     "vox_a": 1956,
+     "vox_b": 2429
+    },
+    {
+     "struct": "lhLGN",
+     "a": "MR256",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7525,
+     "assd_mm": 0.25,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.75,
+     "hd100_mm": 1.25,
+     "centroid_mm": 0.28,
+     "centroid_offset_mm_signed": {
+      "x": 0.163,
+      "y": 0.183,
+      "z": 0.134
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.163,
+      "y": 0.183,
+      "z": 0.134
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.65,
+      "y": 0.73,
+      "z": 0.54
+     },
+     "vox_a": 1882,
+     "vox_b": 2429
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR243",
+     "b": "MR252",
+     "dice": 0.6562,
+     "assd_mm": 0.19,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.612,
+     "hd100_mm": 0.901,
+     "centroid_mm": 0.23,
+     "centroid_offset_mm_signed": {
+      "x": -0.019,
+      "y": 0.226,
+      "z": -0.034
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.019,
+      "y": 0.226,
+      "z": 0.034
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.08,
+      "y": 0.91,
+      "z": 0.14
+     },
+     "vox_a": 348,
+     "vox_b": 484
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR243",
+     "b": "MR256",
+     "dice": 0.688,
+     "assd_mm": 0.182,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.559,
+     "hd100_mm": 0.901,
+     "centroid_mm": 0.609,
+     "centroid_offset_mm_signed": {
+      "x": -0.5,
+      "y": -0.08,
+      "z": 0.338
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.5,
+      "y": 0.08,
+      "z": 0.338
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 2.0,
+      "y": 0.32,
+      "z": 1.35
+     },
+     "vox_a": 348,
+     "vox_b": 309
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR243",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6411,
+     "assd_mm": 0.196,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.559,
+     "hd100_mm": 0.829,
+     "centroid_mm": 0.73,
+     "centroid_offset_mm_signed": {
+      "x": -0.613,
+      "y": -0.143,
+      "z": 0.371
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.613,
+      "y": 0.143,
+      "z": 0.371
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 2.45,
+      "y": 0.57,
+      "z": 1.48
+     },
+     "vox_a": 348,
+     "vox_b": 382
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR252",
+     "b": "MR256",
+     "dice": 0.6154,
+     "assd_mm": 0.244,
+     "hd95_mm": 0.791,
+     "hd95_max_directed_mm": 0.935,
+     "hd100_mm": 1.436,
+     "centroid_mm": 0.681,
+     "centroid_offset_mm_signed": {
+      "x": -0.481,
+      "y": -0.306,
+      "z": 0.372
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.481,
+      "y": 0.306,
+      "z": 0.372
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.92,
+      "y": 1.22,
+      "z": 1.49
+     },
+     "vox_a": 484,
+     "vox_b": 309
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR252",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6767,
+     "assd_mm": 0.2,
+     "hd95_mm": 0.75,
+     "hd95_max_directed_mm": 0.901,
+     "hd100_mm": 1.369,
+     "centroid_mm": 0.808,
+     "centroid_offset_mm_signed": {
+      "x": -0.594,
+      "y": -0.369,
+      "z": 0.405
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.594,
+      "y": 0.369,
+      "z": 0.405
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 2.37,
+      "y": 1.48,
+      "z": 1.62
+     },
+     "vox_a": 484,
+     "vox_b": 382
+    },
+    {
+     "struct": "lhSTN",
+     "a": "MR256",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.712,
+     "assd_mm": 0.155,
+     "hd95_mm": 0.354,
+     "hd95_max_directed_mm": 0.49,
+     "hd100_mm": 0.75,
+     "centroid_mm": 0.133,
+     "centroid_offset_mm_signed": {
+      "x": -0.113,
+      "y": -0.063,
+      "z": 0.033
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.113,
+      "y": 0.063,
+      "z": 0.033
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.45,
+      "y": 0.25,
+      "z": 0.13
+     },
+     "vox_a": 309,
+     "vox_b": 382
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR243",
+     "b": "MR252",
+     "dice": 0.8399,
+     "assd_mm": 0.167,
+     "hd95_mm": 0.433,
+     "hd95_max_directed_mm": 0.433,
+     "hd100_mm": 0.791,
+     "centroid_mm": 0.242,
+     "centroid_offset_mm_signed": {
+      "x": 0.061,
+      "y": 0.231,
+      "z": -0.036
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.061,
+      "y": 0.231,
+      "z": 0.036
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.24,
+      "y": 0.92,
+      "z": 0.14
+     },
+     "vox_a": 2242,
+     "vox_b": 2080
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR243",
+     "b": "MR256",
+     "dice": 0.8732,
+     "assd_mm": 0.148,
+     "hd95_mm": 0.354,
+     "hd95_max_directed_mm": 0.354,
+     "hd100_mm": 0.75,
+     "centroid_mm": 0.112,
+     "centroid_offset_mm_signed": {
+      "x": 0.011,
+      "y": 0.09,
+      "z": 0.066
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.011,
+      "y": 0.09,
+      "z": 0.066
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.04,
+      "y": 0.36,
+      "z": 0.27
+     },
+     "vox_a": 2242,
+     "vox_b": 2300
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR243",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7879,
+     "assd_mm": 0.219,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.559,
+     "hd100_mm": 1.061,
+     "centroid_mm": 0.298,
+     "centroid_offset_mm_signed": {
+      "x": -0.199,
+      "y": 0.104,
+      "z": 0.196
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.199,
+      "y": 0.104,
+      "z": 0.196
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.8,
+      "y": 0.41,
+      "z": 0.78
+     },
+     "vox_a": 2242,
+     "vox_b": 2289
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR252",
+     "b": "MR256",
+     "dice": 0.8621,
+     "assd_mm": 0.153,
+     "hd95_mm": 0.354,
+     "hd95_max_directed_mm": 0.433,
+     "hd100_mm": 0.791,
+     "centroid_mm": 0.181,
+     "centroid_offset_mm_signed": {
+      "x": -0.05,
+      "y": -0.141,
+      "z": 0.102
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.05,
+      "y": 0.141,
+      "z": 0.102
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.2,
+      "y": 0.56,
+      "z": 0.41
+     },
+     "vox_a": 2080,
+     "vox_b": 2300
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR252",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7782,
+     "assd_mm": 0.222,
+     "hd95_mm": 0.559,
+     "hd95_max_directed_mm": 0.559,
+     "hd100_mm": 1.09,
+     "centroid_mm": 0.371,
+     "centroid_offset_mm_signed": {
+      "x": -0.26,
+      "y": -0.127,
+      "z": 0.231
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.26,
+      "y": 0.127,
+      "z": 0.231
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.04,
+      "y": 0.51,
+      "z": 0.93
+     },
+     "vox_a": 2080,
+     "vox_b": 2289
+    },
+    {
+     "struct": "rhLGN",
+     "a": "MR256",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.8285,
+     "assd_mm": 0.184,
+     "hd95_mm": 0.5,
+     "hd95_max_directed_mm": 0.559,
+     "hd100_mm": 1.031,
+     "centroid_mm": 0.247,
+     "centroid_offset_mm_signed": {
+      "x": -0.21,
+      "y": 0.014,
+      "z": 0.129
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.21,
+      "y": 0.014,
+      "z": 0.129
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.84,
+      "y": 0.05,
+      "z": 0.52
+     },
+     "vox_a": 2300,
+     "vox_b": 2289
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR243",
+     "b": "MR252",
+     "dice": 0.6367,
+     "assd_mm": 0.229,
+     "hd95_mm": 0.683,
+     "hd95_max_directed_mm": 0.774,
+     "hd100_mm": 1.146,
+     "centroid_mm": 0.678,
+     "centroid_offset_mm_signed": {
+      "x": -0.42,
+      "y": 0.467,
+      "z": -0.255
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.42,
+      "y": 0.467,
+      "z": 0.255
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.68,
+      "y": 1.87,
+      "z": 1.02
+     },
+     "vox_a": 413,
+     "vox_b": 520
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR243",
+     "b": "MR256",
+     "dice": 0.7268,
+     "assd_mm": 0.18,
+     "hd95_mm": 0.5,
+     "hd95_max_directed_mm": 0.716,
+     "hd100_mm": 1.146,
+     "centroid_mm": 0.287,
+     "centroid_offset_mm_signed": {
+      "x": -0.11,
+      "y": 0.265,
+      "z": 0.021
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.11,
+      "y": 0.265,
+      "z": 0.021
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.44,
+      "y": 1.06,
+      "z": 0.08
+     },
+     "vox_a": 413,
+     "vox_b": 374
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR243",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7224,
+     "assd_mm": 0.166,
+     "hd95_mm": 0.354,
+     "hd95_max_directed_mm": 0.433,
+     "hd100_mm": 0.75,
+     "centroid_mm": 0.253,
+     "centroid_offset_mm_signed": {
+      "x": 0.028,
+      "y": 0.251,
+      "z": 0.015
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.028,
+      "y": 0.251,
+      "z": 0.015
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.11,
+      "y": 1.0,
+      "z": 0.06
+     },
+     "vox_a": 413,
+     "vox_b": 401
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR252",
+     "b": "MR256",
+     "dice": 0.698,
+     "assd_mm": 0.219,
+     "hd95_mm": 0.707,
+     "hd95_max_directed_mm": 0.922,
+     "hd100_mm": 1.458,
+     "centroid_mm": 0.462,
+     "centroid_offset_mm_signed": {
+      "x": 0.31,
+      "y": -0.203,
+      "z": 0.275
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.31,
+      "y": 0.203,
+      "z": 0.275
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.24,
+      "y": 0.81,
+      "z": 1.1
+     },
+     "vox_a": 520,
+     "vox_b": 374
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR252",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.6862,
+     "assd_mm": 0.198,
+     "hd95_mm": 0.612,
+     "hd95_max_directed_mm": 0.791,
+     "hd100_mm": 1.173,
+     "centroid_mm": 0.566,
+     "centroid_offset_mm_signed": {
+      "x": 0.448,
+      "y": -0.216,
+      "z": 0.27
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.448,
+      "y": 0.216,
+      "z": 0.27
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 1.79,
+      "y": 0.86,
+      "z": 1.08
+     },
+     "vox_a": 520,
+     "vox_b": 401
+    },
+    {
+     "struct": "rhSTN",
+     "a": "MR256",
+     "b": "GT",
+     "kind": "subject_vs_GT",
+     "dice": 0.7355,
+     "assd_mm": 0.161,
+     "hd95_mm": 0.354,
+     "hd95_max_directed_mm": 0.365,
+     "hd100_mm": 0.612,
+     "centroid_mm": 0.139,
+     "centroid_offset_mm_signed": {
+      "x": 0.138,
+      "y": -0.013,
+      "z": -0.005
+     },
+     "centroid_offset_mm_abs": {
+      "x": 0.138,
+      "y": 0.013,
+      "z": 0.005
+     },
+     "centroid_offset_voxels_abs": {
+      "x": 0.55,
+      "y": 0.05,
+      "z": 0.02
+     },
+     "vox_a": 374,
+     "vox_b": 401
+    }
+   ]
+  },
+  "fields": {
+   "MR252": "<analysis project>/bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_03/fields/MR252_u.npy",
+   "MR256": "<analysis project>/bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_03/fields/MR256_u.npy",
+   "MR243": "<analysis project>/bftemplate/hr_2026-11-12/step9/out_015_s11/outside10/fields/MR243.npy"
+  },
+  "rules": "LGN/STN OF MM1-MM3 THROUGH THE BLOCKFACE ROUTE (SUN 15 NOV 2026)\nRules written 14:36 (by `date`), before any number of this test. The question is the author's: does the sharper\nblockface template give better registrations along the chain? CPU only. New names only. Nothing of record is touched.\n\nWhat is compared\n  Today the paper's LGN/STN (and tracers) go through the MRI route, which never touches the blockface template:\n    bf-native -> b0-native (R1) -> MRI template (R5)\n  (record: paper/numbers/lgnstn_geometry_current_h9.json; between-brain median centroid distance LGN 0.494, STN 0.4845 mm).\n  This test carries the same labels through the BLOCKFACE route instead, to the same MRI template grid, and computes the same\n  measures:\n    R9 (with step 9):  MRI-template point y -> d2bs8_s5sym pull map bftemplate__to__mri-template -> blockface-template point x\n                       -> x + U(x) (step-9 field, 0.15 mm grid, trilinear, border values) -> step-8 member warp (d2bs8_bfview\n                       nln_step_08/iteration_03 <S>_scalar_mod_01_to_template_warp_resampled_unbiased_full, fsl_rel, src grid canon\n                       t1_grey) -> hr.native_map(S) (run-113 -> native blockface world, the brain's registration of record)\n                       -> the label in native blockface space.\n                       This is hr.member_job's chain, the one every step-9 input was carried through.\n    R8 (step 8 only):  the same chain with U = 0. It shows what the step-9 template adds on its own.\n  U per brain:\n    MM2 = MR252 and MM3 = MR256 are in S12. Their photographs BUILT the template's image, and U is their u_3, the composed\n      iteration-3 field of the template's construction (out_015 iteration_03/fields/<S>_u.npy, 0.15 mm).\n    MM1 = MR243 is NOT in S12. It did not build the image. U is today's outside registration to the finished template\n      (out_015/outside9/fields/MR243.npy, TESTS.md addendum 14).\n  All three were in the 21-brain step-8 (MMORF) build, as were all 21 brains. Every route therefore shares their step-8 alignment.\n\nLabels\n  Primary: the paper's inputs, labels/push_current_h9/<S>/<S>_<struct>_bfnative_L2_demons.nii.gz (H9, no MR252 frame-36 refit).\n  These are the same files the MRI route of record started from, so the comparison differs only in the route.\n  Secondary: the data tree's composites, labels/h9_2026-11-12/lgnstn_composites_h9/sub-<S>/<S>_lgn_stn_blockface.nii.gz.\n    - Key 1 lhLGN, 2 rhLGN, 3 lhSTN, 4 rhSTN. MR252 carries the 9 Nov frame-36 refit.\n    - Compared with the composites' own MRI-route files (<S>_lgn_stn_template.nii.gz; the \"H9 + refit\" row: LGN 0.49, STN 0.50).\n\nCarry rule: labels_to_template.py --dense, unchanged\n  - Crop to the label's bounding box + 2 mm (at least 1 mm along the section axis).\n  - Gaussian anti-aliasing per source axis with FWHM = max(source spacing, 0.25 mm) (label_refs.aa_sigma).\n  - ONE linear resample through the route onto template/mri/linc_mri_b0.nii.gz (0.25 mm), then > 0.5.\n  - Evaluated in a box on the MRI template grid: the MRI-route label of record united with the GT label of that structure,\n    dilated by 6 mm.\n\nMeasures: labels/lgnstn_geometry.py's row_metrics and stats, imported unchanged\n  - Per hemisphere-structure, the 3 pairs of brains (pairwise_subjects). LGN = lhLGN + rhLGN (6 rows), STN likewise.\n  - Medians of centroid distance (primary), ASSD, HD95 and Dice. subject_vs_GT is secondary.\n  - Reported for R8, R9 and the MRI route side by side. No pass or fail: the comparison is reported as it comes.\n\nChecks (stop and report if one fails)\n  C1 Reproduction: the MRI route's medians, recomputed with the same functions from push_current_h9's\n     *_mri-template_mask_demons, equal the record's summary medians (lgnstn_geometry_current_h9) within 6e-4.\n  C2 World and chain: each brain's native L2 photograph (hr.Native: n01 / valid, valid >= 0.5), carried through R9 onto the MRI\n     template grid, is correlated with T3s12_015_in_mri_grey in the template's brainmask. Pearson r is reported. r < 0.5 means\n     a convention error (a wrong world gives about 0): stop.\n  C3 Every carried label is non-empty and has no voxel on its box's border (no truncation).\n  C4 The composites of MR243 and MR256 equal push_current_h9's bfnative_L2_demons labels voxel for voxel (composites README).\n     If not, report it.\n\nGuards (h9run-style)\n  - Every write goes through one helper that refuses any path outside labels/bfroute_s9_2026-11-15/.\n  - Records are read only. No paper/numbers record is written unless asked.\n\nIf the author picks option C (TESTS.md addendum 16), this reruns on S11: MR252 and MR256 are in S11 too (their S11 u_3);\nMR243 uses its S11 outside field.\n",
+  "definition": "The LGN/STN route comparison (RULES.txt in this folder) as a paper record, from the saved results only:\n    python labels/bfroute_s9_2026-11-15/bfroute_numbers.py s11      -> paper/numbers/lgnstn_bfroute_s11.json\n    python labels/bfroute_s9_2026-11-15/bfroute_numbers.py s12 --dry  (prints; writes nothing)\nSchema: out_<tag>/results.json's (checks, summary, rows, table, table_composites, fields), plus\n  routes: MRI = the MRI route of record (bf-native -> b0 (R1) -> MRI template (R5)); R8 = the blockface route with step 8 only;\n          R9 = the blockface route with the step-9 template (d2bs8_s5sym link, step-9 field, step-8 member warp, native map);\n  members: which of MM1-MM3 built the template's image (in S11/S12) and which are outside it;\n  definition: this docstring and RULES.txt's text."
+ }
+}

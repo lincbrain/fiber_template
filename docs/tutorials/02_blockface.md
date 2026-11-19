@@ -8,7 +8,8 @@ Run every command from the top of the repository, in a shell set up as in [00_st
 
 The photographs are stacked in cutting order into a 3D volume, with camera jumps corrected, missing sections filled in and the illumination evened out; networks find the brain and the fiducial markers (the round holes in the block face).
 A brain with MRI then registers its volume to its own b0 and follows the b0 into the template (the MRI-based alignment); a brain without MRI registers it to the blockface template and follows the template link (the blockface-based alignment).
-A brain with histology takes the blockface-based alignment too, MRI or not: its labels reach the template that way ([03](03_histology.md)).
+A new brain with histology takes the blockface-based alignment too, MRI or not: its labels reach the template that way ([03](03_histology.md)).
+The paper's own brains are already in the blockface template, so their labels follow the transforms that built it (`code/labels/route.py`).
 No brain was photographed to its caudal end, so a network synthesizes the missing tissue from the b0 and marks it ([overview](../overview.md#the-templates)).
 
 ![From photographs to the template: reconstruction, registration to the own b0 or to the blockface template, and the synthesized tissue](figures/blockface_01_flow.png)
@@ -83,7 +84,7 @@ Axial views have anterior up; (c) ends flat at the back, where the photographed 
 
 Save a corrected mask under the name the code looks for, then run the steps after it again.
 For that, run the reconstruction one step at a time, with `--keep-work` on `volume` and `tubes`.
-The `curated/` folder is in `$LINC_DATA/sub-<ID>/blockface/`, on the manual-edit grid: the photographs' resolution in plane and 0.40 mm between slices.
+The `curated/` folder is in `$LINC_DATA/sub-<ID>/blockface/`, on the manual-edit grid: the reconstruction's level L4 in plane (16 times the photographs' pixel, 0.32 mm for most brains) and one slice every `curation_f` sections (the brain's settings file; about 0.4 mm apart where every section was photographed).
 
 | Mask | When | Save the corrected one as | Then run again |
 |---|---|---|---|
@@ -114,6 +115,7 @@ On a paper brain the result is identical to the original; on a brain treated as 
 Each takes about 15 minutes on a GPU, one at a time on a card; `mri` needs 15 to 25 GB free (it varies by brain).
 The transforms go to `$LINC_DATA/sub-<ID>/xfm/bf-native__to__b0-native/` and `b0-native__to__mri-template/`, each with its warp, its linear parts and `meta.json`, and the working files to `$LINC_WORK/register/<ID>/`.
 An existing transform folder stops the run unless you add `--overwrite`, which backs up the old one.
+If a principal scale of the 9-dof stage leaves the QC gate's range (0.9 to 1.1, `settings/registration.yaml`), `mri` prints a WARNING line and still writes the registration: a stack that ends well short of the brain can come out stretched along the cutting axis, so look at it and run `linc-register qc --preset bf2b0` (section 4) before using it.
 
 ![MR252's blockface volume registered onto its own b0](figures/blockface_05_on_b0.png)
 
@@ -216,7 +218,7 @@ $PY code/template/build_link.py --plan                                          
 ```
 
 The build prepares the members ([overview](../overview.md#the-templates)), runs the groupwise registration (seven nonlinear steps at 0.5 mm, an eighth at 0.25 mm), and averages every member moved once through its final warp.
-For a brain without MRI, only the photographed sections count fully, with a smooth ramp at their end, and at the eighth step its stand-in b0 also counts less where the tissue was not photographed.
+For a brain without MRI, only the photographed sections count, with a smooth ramp at their end, and at the eighth step its stand-in b0 counts only there too, with the same ramp.
 `build_link.py` registers the blockface template's b0 to the MRI template's b0, checks it against the registrations composed through each brain, and registers the template to NMT v2, INIA19 and CIVM-R.
 
 The members take about 5 minutes on the CPU.
@@ -225,7 +227,7 @@ The link takes about 13 minutes on a GPU.
 Everything is written under `$LINC_WORK/build_blockface_template/` and `$LINC_WORK/build_link/`; the finished blockface channel is the data folder's `template/outputs/template_blockface_*`.
 
 The published template goes one step further than MMORF's eighth.
-Eleven brains, the ones photographed at every section with few sections filled in and even lighting, are each registered to the average once more, whole brain, with the feature-based engine of Step 3; this is done three times, and after each round the brains are averaged again from their own photographs.
+Eleven brains, the ones photographed at every section with few sections filled in and even lighting, are each registered to the average once more, whole brain, with the feature-based engine of Step 3 and a shorter schedule (`step9.registration.args` in `settings/blockface_template.yaml`); this is done three times, and after each round the brains are averaged again from their own photographs.
 The last average is written on a 0.15 mm grid.
 It keeps step 8's frame, so the template link and every brain's registration to step 8's template apply to it unchanged.
 

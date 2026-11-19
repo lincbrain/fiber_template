@@ -11,8 +11,11 @@ What it does
     Makes <folder of links>/<old_path>, a link to <data tree>/<new_path>, with real folders above it; a Zarr store is one link. A file the
     tree does not hold (a row with upload = local, in a tree downloaded from the archive) gets no link and is counted. A folder that holds
     none of the table's files is not a data tree: it stops there, says which folder looks like one, and changes nothing. Run again with the
-    same table and tree it does nothing; with another table or tree it starts over. It deletes only that folder's links, never the data.
-    --refresh makes the links again although the table and the tree are the same: use it after files were added to the tree, which it
+    same table and tree it does nothing; with another table (a `git pull`) or --refresh on the same tree it updates the folder in place:
+    a link that does not change is left as it is, a changed one is replaced in one step (a new link renamed over the old), a new one
+    is added and one whose row went away is removed, so a step that is running meanwhile keeps reading its files. With another tree it
+    starts over. It deletes only that folder's links, never the data.
+    --refresh looks at the tree again although the table and the tree are the same: use it after files were added to the tree, which it
     cannot see by itself (`source settings/roots.sh refresh` does).
     --built names the folders made from these links (the working folders of settings/roots.sh): when one exists and the links were made
     from another tree, it stops instead of starting over, because those folders hold that tree's files and the results made from them.
@@ -74,27 +77,58 @@ def main():
     if was and was[0] != str(tree) and os.path.isdir(was[0]) and built:
         sys.exit(f"{a.links.parent} was built from another data folder, {was[0]}: {', '.join(built)} hold its files and your results "
                  f"from it. Move {a.links.parent.name}/ aside or delete it, then source settings/roots.sh again.")
-    if a.links.exists():
-        shutil.rmtree(a.links)                  # never follows a link: only this folder's own entries go
-    a.links.mkdir(parents=True)
-    made_dirs, n = set(), 0
-    if linc:
-        (a.links / "raw").mkdir()
-        os.symlink(linc, a.links / "raw" / "linc_000003")
+    want = {"raw/linc_000003": linc} if linc else {}                # old_path -> target
     for new, old in here:
-        target, link = f"{tree}/{new}", f"{a.links}/{old}"
+        target = f"{tree}/{new}"
+        if want.setdefault(old, target) != target:
+            sys.exit(f"{old}: two rows give it different files ({want[old]}, {target})")
+    in_place = a.links.is_dir() and was == [str(tree)]
+    if in_place:                                # the same tree: update in place, so a running step keeps its files
+        stamp.write_text("\n".join(["updating"] + state[1:]) + "\n")     # an interrupted update is redone, in place, next time
+    else:
+        if a.links.exists():
+            shutil.rmtree(a.links)              # never follows a link: only this folder's own entries go
+        a.links.mkdir(parents=True)
+    count = dict(made=0, changed=0, removed=0, kept=0)
+    if in_place:
+        for d, dirs, files in os.walk(a.links, topdown=True):      # does not descend into linked folders (a Zarr store is one link)
+            for name in dirs + files:
+                p = os.path.join(d, name)
+                if not os.path.islink(p):
+                    continue
+                rel = os.path.relpath(p, a.links)
+                if rel not in want:
+                    os.unlink(p); count["removed"] += 1
+            dirs[:] = [x for x in dirs if not os.path.islink(os.path.join(d, x))]
+    made_dirs = set()
+    for old, target in want.items():
+        link = f"{a.links}/{old}"
         d = os.path.dirname(link)
         if d not in made_dirs:
             os.makedirs(d, exist_ok=True)
             made_dirs.add(d)
-        if os.path.lexists(link):
-            if os.readlink(link) != target:
-                sys.exit(f"{old}: two rows give it different files ({os.readlink(link)}, {target})")
+        if os.path.islink(link):
+            if os.readlink(link) == target:
+                count["kept"] += 1
+                continue
+            tmp = f"{link}.relink{os.getpid()}"
+            os.symlink(target, tmp)
+            os.replace(tmp, link)                # one step: the name never disappears
+            count["changed"] += 1
             continue
+        if os.path.lexists(link):
+            sys.exit(f"{link} is not a link: {a.links} holds a file of its own; move it aside")
         os.symlink(target, link)
-        n += 1
+        count["made"] += 1
+    if in_place:                                 # folders a removed row left empty (never the links' root)
+        for d, dirs, files in os.walk(a.links, topdown=False):
+            if d != str(a.links) and not os.listdir(d):
+                os.rmdir(d)
     stamp.write_text("\n".join(state) + "\n")
-    print(f"{a.links}: {n} links to {tree}; {len(rows) - len(here)} files of the table are not in this tree")
+    n = len(want) - (1 if linc else 0)
+    how = (f" (updated in place: {count['made']} made, {count['changed']} changed, {count['removed']} removed, {count['kept']} unchanged)"
+           if in_place else "")
+    print(f"{a.links}: {n} links to {tree}{how}; {len(rows) - len(here)} files of the table are not in this tree")
 
 
 if __name__ == "__main__":

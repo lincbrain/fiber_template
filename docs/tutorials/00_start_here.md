@@ -8,7 +8,7 @@ The [overview](../overview.md) explains the parts they use.
 - [03_histology.md](03_histology.md) registers histology sections to their blockface photographs and carries the labels drawn on them into the template.
 
 Each one builds on the one before.
-A brain with MRI reaches the template through the b0 registration in 01, and 02 starts from there; 03 starts from the blockface volume and its registration to the blockface template made in 02, the route every brain's histology takes, MRI or not.
+A brain with MRI reaches the template through the b0 registration in 01, and 02 starts from there; 03 starts from the blockface volume and its registration to the blockface template made in 02, the route a new brain's histology takes, MRI or not (the paper's own brains follow the transforms that built the blockface template).
 
 ## Before you start
 
@@ -57,7 +57,8 @@ nohup $PY run.py --run > outputs/build_everything.log 2>&1 &
 $PY run.py --status
 ```
 
-The optional steps, building the MRI template and training the networks, run only when you name them with `--only`.
+The optional steps (the long template builds and the network training) run only when you name them with `--only`.
+Nothing waits for them: the steps after them use the paper's finished runs and networks, which are in the data folder.
 
 **On a new brain, one command at a time.**
 `run.py` covers only the paper's brains, so for a new brain you run the commands the tutorials give, which are the same programs `run.py` calls.

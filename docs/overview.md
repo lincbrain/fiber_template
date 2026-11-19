@@ -16,7 +16,7 @@ Each tile shows an image with its space in gray, and each arrow names the comman
 A histology section is registered to the blockface photograph of its own section ([03](tutorials/03_histology.md)).
 On the MRI route, the blockface volume is registered to the brain's own b0 ([02](tutorials/02_blockface.md)), and the b0 to the MRI template ([01](tutorials/01_mri.md)).
 On the blockface route, it is registered to the blockface template instead, and the template link carries it into the MRI template (02); a brain without MRI has only this route.
-The tracer labels and the LGN and STN take the blockface route in every brain; the paper also reports them on the MRI route.*
+The tracer labels and the LGN and STN take the blockface route in every brain; these brains helped build the blockface template, so for them that route is the transforms that built it, which for a brain with MRI start from its registration to its own b0. The paper also reports them on the MRI route.*
 
 ## The data
 
@@ -26,6 +26,8 @@ Each brain's inputs are in the data folder's `brains/sub-<ID>/inputs/`:
 - `photographs/`, one per section;
 - `histology/`, the scanned sections and the tracer labels drawn from their charts;
 - `manual_annotations/`, whatever a person drew or corrected, such as brain masks, fiducial markers (the round holes in the block face), match tables and the LGN and STN.
+  For the paper's brains it also holds the photograph masks made by an earlier network whose weights stay with the laboratory, most of them unchanged, and `settings/manual_inputs.tsv` lists every file with its md5.
+  Two match tables of record were edited by hand after a check of the tracer labels and are in `intermediate/histology/`: MR243's (`num_MR243_r058c.txt`, one row added for section 3's left half) and MF191's (`num_MF191_r058.txt`, section 4 split into its two lobes).
 
 Four brains with MRI only, MF283 to MF286, built the MRI template ([01](tutorials/01_mri.md)).
 The 21 photographed brains built the blockface template ([02](tutorials/02_blockface.md)); 13 of them have a b0, such as MR243, and 8 have no MRI, such as MF191.
@@ -166,7 +168,7 @@ TIRL is not public yet: without its sources, `install.sh` builds the TIRL enviro
 - **Reruns.** `run.py` reruns only the paper's brains; a new brain is run one command at a time.
 - **Templates.** Aligning a brain leaves the template unchanged.
   Adding one is a rebuild, after which everything aligned to or carried into the old template must be derived again ([00](tutorials/00_start_here.md#adding-a-new-brain-two-different-things)).
-- **Sharing.** The photographs, the blockface volumes and everything computed from them stay local.
+- **Sharing.** The photographs, the blockface volumes and everything computed from them stay with the laboratory; the per-brain data the paper reports are available on request ([contact](../README.md#contact)).
 
 What has been tested on a brain treated as new is in the [FAQ](faq.md#what-has-been-tested-on-a-brain-that-is-not-one-of-the-papers).
 
@@ -177,7 +179,7 @@ What has been tested on a brain treated as new is in the [FAQ](faq.md#what-has-b
 | b0 | the diffusion MRI volume without diffusion weighting; the one MRI contrast all sectioned brains share |
 | blockface photograph | a photograph of the frozen block from a fixed camera, taken as each section is cut |
 | blockface volume | a brain's photographs stacked into 3D (`bf-native`) |
-| blockface-based alignment | blockface volume to the blockface template, then the template link |
+| blockface-based alignment | blockface volume to the blockface template, then the template link; for the 21 brains that built the blockface template, the transforms that built it |
 | camera jump | a shift of the camera between two sections, corrected in the reconstruction |
 | completion | joining the synthesized tissue to the photographs (`linc-complete`), which makes the completed volume |
 | component | the part of a histology section registered on its own: a hemisphere, or the cerebellum with the brainstem; the code calls it a piece |

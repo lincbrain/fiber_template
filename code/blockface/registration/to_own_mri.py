@@ -182,8 +182,28 @@ def linear(subject, bf, mri, start_pose, outdir, cfg):
     keep, width = slab_keep(T9g, bf["iso_mask"], b.affine, b.shape[:3])
     fixed = f"{O}/{S}_mri_fixed.nii.gz"                                   # the masked fixed inside the 9-dof photographed slab
     nib.save(nib.Nifti1Image((np.asanyarray(b.dataobj) * ((np.asanyarray(bm.dataobj) > 0.5) & keep)).astype(np.float32), b.affine, b.header), fixed)
+    warning = scale_warning(subject, T9g)
     return dict(mats=dict(dof7=m7, dof9=m9, dof9_maskgrid=m9m), bfmask_in_mri=bfm, fixed=fixed, slab_width_mm=round(width, 2),
-                slab_fit_dof7=hist7, slab_fit_dof9=hist9, T9_world=T9g.tolist())
+                slab_fit_dof7=hist7, slab_fit_dof9=hist9, T9_world=T9g.tolist(), scale_warning=warning)
+
+
+def scale_warning(subject, T):
+    """A warning line when a principal scale of the 9-dof stage leaves the QC gate's range (settings/registration.yaml qc: scale_lo,
+    scale_hi; the gate `linc-register qc --preset bf2b0` applies), else None. Nothing stops: a stack's scale can lie outside the range
+    and be right (the blockface pixel size is uncertain by about 11 %; one paper brain's registration of record has a scale of 0.853),
+    but a stack that ends short of the brain can come out stretched along the cutting axis (by 12 to 19 % in a test of 19 Nov 2026),
+    and the user should look before using it."""
+    import yaml
+    g = yaml.safe_load((Path(__file__).resolve().parents[3] / "settings" / "registration.yaml").read_text())["qc"]
+    sc = fsl.decompose(T)["scales"]
+    out = [x for x in sc if not g["scale_lo"] <= x <= g["scale_hi"]]
+    if not out:
+        return None
+    msg = (f"{subject}: WARNING: the 9-dof stage's principal scales {[round(x, 3) for x in sc]} leave [{g['scale_lo']}, {g['scale_hi']}] "
+           f"(settings/registration.yaml qc): the stack may be stretched or compressed, as one that ends short of the brain can be; "
+           f"look at it, and run `linc-register qc --preset bf2b0` on the result before using it")
+    print(msg, flush=True)
+    return msg
 
 
 # ------------------------------------------------------------------------------------------------ the working grid

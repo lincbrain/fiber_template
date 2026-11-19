@@ -17,9 +17,11 @@ What it does
                       template's b0; its last stage (CPU) writes what `linc-complete prepare` reads, into mri/stand_in/. On a
                       brain with its own b0 (after `mri`): the same, for training the stand-in network, with the stand-in b0 on
                       that b0's grid
-  blockface-template  the blockface-based alignment, the paper's route for every brain's histology (the only one for a brain without
+  blockface-template  the blockface-based alignment of a new brain, the route of its histology (the only one for a brain without
                       MRI): the blockface volume registered to the blockface template; `python -m shared.xfm chain` then goes through
-                      the template's registration to the MRI template, in preference to the cross-modal alignment
+                      the template's registration to the MRI template, in preference to the cross-modal alignment. The paper's own
+                      brains are in the blockface template, so their histology took the transforms that built it instead
+                      (code/labels/route.py)
   qc                  the paper's acceptance checks of one registration, on the fixed grid: the linear part (scales, rotations, no
                       reflection); the normalized cross-correlation (NCC) between the fixed and moved images inside both brain
                       masks; folds of the warp (negative Jacobian determinants) and its 95th-percentile displacement; the Dice

@@ -1,0 +1,141 @@
+{
+ "data": {
+  "rule": "16 Nov 2026: what the post-average renormalization of the soma/neurite fractions changes in the MRI template.\nmri/code/ship_template.py (the build of record, template/mri/provenance.json; profile \"rebuild\"): each input's warped fractions are\nrenormalized per input (f / (f1 + f2) inside its micro mask & model mask), then averaged over the inputs whose warped model mask >= 0.5\n(plain mean), clipped to [0, 1], renormalized again (f / (f1 + f2) where the sum > 0), symmetrized (A + M(A)) / 2 and cut to the union\nof the model masks. This script recomputes the average from template/mri/_work (the build's own per-input files; sizes match the\nprovenance's 40 _work inputs), checks that renormalize + symmetrize + cut reproduces linc_mri_frac1/2, and measures, BEFORE the\nrenormalization, |f1 + f2 - 1| in the template brain mask, by where it occurs:\n  covered_interior : all 8 inputs' model and micro masks cover the voxel, and it is > 1 mm inside the brain outline\n  partial_coverage : at least one input's model or micro mask does not cover it (and > 1 mm inside the outline)\n  border           : within 1 mm of the brain outline\nand the change of each fraction (|f_after - f_before|). Read-only; writes paper/numbers/mri_template_frac_renormalization.json.\n    (run by the analysis's saved script in the MRI registration environment)",
+  "inputs": [
+   "MF283",
+   "MF283f",
+   "MF284",
+   "MF284f",
+   "MF285",
+   "MF285f",
+   "MF286",
+   "MF286f"
+  ],
+  "n_inputs": 8,
+  "reproduction_max_abs_diff": {
+   "frac1": 0.0,
+   "frac2": 0.0
+  },
+  "brain_voxels": 3305782,
+  "brain_voxels_with_sum_zero_before": 34,
+  "deviation_before_renormalization": {
+   "brain": {
+    "n": 3305748,
+    "max": 0.875,
+    "p99": 0.1428571385996682,
+    "median": 4.6566128730773926e-09
+   },
+   "covered_interior": {
+    "n": 2543291,
+    "max": 2.9802322387695312e-08,
+    "p99": 1.862645149230957e-08,
+    "median": 4.6566128730773926e-09
+   },
+   "partial_coverage": {
+    "n": 4487,
+    "max": 0.7500000018626451,
+    "p99": 0.37499999719671906,
+    "median": 6.38621200366174e-09
+   },
+   "border": {
+    "n": 757970,
+    "max": 0.875,
+    "p99": 0.333333338300387,
+    "median": 5.587935447692871e-09
+   }
+  },
+  "voxels_off_by_more_than": {
+   "1e-06": 49099,
+   "0.001": 49099,
+   "0.01": 49099,
+   "0.1": 49099
+  },
+  "where_off_by_more_than_1e3": {
+   "covered_interior": 0,
+   "partial_coverage": 527,
+   "border": 48572
+  },
+  "change_of_each_fraction": {
+   "frac1": {
+    "brain": {
+     "n": 3305748,
+     "max": 0.7303094432480981,
+     "p99": 0.058609219072098546,
+     "median": 1.3845529167610948e-09
+    },
+    "covered_interior": {
+     "n": 2543291,
+     "max": 1.5000039432777612e-08,
+     "p99": 6.3906707814531714e-09,
+     "median": 1.2734488463728155e-09
+    },
+    "partial_coverage": {
+     "n": 4487,
+     "max": 0.24420654773712158,
+     "p99": 0.08344938730373112,
+     "median": 2.023883227675327e-09
+    },
+    "border": {
+     "n": 757970,
+     "max": 0.7303094432480981,
+     "p99": 0.14216055348334522,
+     "median": 1.898461998717238e-09
+    }
+   },
+   "frac2": {
+    "brain": {
+     "n": 3305748,
+     "max": 0.7859614169910111,
+     "p99": 0.08001286348070145,
+     "median": 3.539939008589954e-09
+    },
+    "covered_interior": {
+     "n": 2543291,
+     "max": 2.2429993529193837e-08,
+     "p99": 1.3092008843695879e-08,
+     "median": 3.6049551122019352e-09
+    },
+    "partial_coverage": {
+     "n": 4487,
+     "max": 0.6041103094407885,
+     "p99": 0.2646257915896529,
+     "median": 4.20156442970665e-09
+    },
+    "border": {
+     "n": 757970,
+     "max": 0.7859614169910111,
+     "p99": 0.19464407964851455,
+     "median": 3.399896031375249e-09
+    }
+   }
+  },
+  "region_voxels": {
+   "covered_interior": 2543291,
+   "partial_coverage": 4487,
+   "border": 758004
+  },
+  "after_renormalization_shipped_max_abs_sum_minus_1_in_brain": 0.5000000149011612,
+  "shipped_brain_voxels_with_sum_zero": 10,
+  "shipped_after_symmetrization": {
+   "voxels_sum_off_1e3": 48,
+   "where": {
+    "covered_interior": 0,
+    "partial_coverage": 0,
+    "border": 48
+   },
+   "abs_sum_minus_1": {
+    "n": 48,
+    "max": 0.5000000149011612,
+    "p99": 0.5000000149011612,
+    "median": 0.5
+   },
+   "cause": "the symmetrization (A + M(A)) / 2 runs AFTER the renormalization: where a voxel's mirror had no fraction data (sum 0 before the renormalization), the shipped sum is 0.5 x (1 + 0) or similar"
+  },
+  "cause_before": {
+   "off_voxels": 49099,
+   "off_voxels_with_an_input_model_but_not_micro": 49080,
+   "explanation": "each input's fractions are 0 where its micro mask does not cover the voxel but its model mask does; averaging over the model masks then lowers the sum below 1 there (not exactly k/8: the masks and fractions are interpolated at their edges)"
+  },
+  "note": "frac2 = 1 - frac1 wherever the sum is > 0 after the renormalization, so the two shipped fractions carry one degree of freedom; the per-input renormalization (before averaging) is the same rule applied to each input"
+ }
+}

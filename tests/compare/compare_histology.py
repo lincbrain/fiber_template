@@ -37,6 +37,9 @@ def main():
     ap.add_argument("--max-mm", type=float, help="accept a differing component whose final transform is within this distance (TIRL's mm, 0.034 per pixel)")
     a = ap.parse_args()
     refs = sorted(p for p in Path(a.paper).glob(f"*/{a.file}"))
+    if not refs:
+        print(f"nothing to compare with: the data folder holds no registration of the paper's ({a.paper}/*/{a.file})")
+        sys.exit(3)
     bad = close = 0
     worst = 0.0
     for ref in refs:

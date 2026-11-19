@@ -10,6 +10,12 @@ reduce: mean
 rotate180: true
 vx: 43.0
 vz: 810.0
+# jumps: candidates from an automatic detector (a shift between consecutive
+#   photographs above 20 full-resolution pixels), each checked on the photographs. A whole-photo shift then measured every
+#   pair; the pairs above 0.45 mm of camera motion were added (the detector had missed shifts of 12-21 pixels), and (44, 45)
+#   is a zoom step. Rejected on the photographs: (1, 2), called by the tissue-based estimate alone while the two frames are
+#   framed identically. (2, 3) was rejected at first for the same reason and added back after the rebuilt stack showed a
+#   0.52 mm jump there.
 jumps:
 - [2, 3]
 - [7, 8]

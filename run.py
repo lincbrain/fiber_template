@@ -27,6 +27,8 @@ You get
   outputs/build_everything/status.json    every step with its command, state, machine, times and the last line of its check
   outputs/build_everything/steps/<step>/  the script that ran, run.log and check.log
   A step ends as passed (it ran and its check holds), differs (it ran and its check does not hold) or failed (its command failed).
+  A check that finds none of the paper's files to compare with (a data folder of inputs only) exits 3: the step is passed, with
+  "ran to its end; nothing to compare with" as its evidence.
 
   $PY run.py --plan
   nohup $PY run.py --run > outputs/build_everything.log 2>&1 &
@@ -277,6 +279,8 @@ def snapshot(steps):
                 r.update(state="passed", evidence="ran to its end (no file of record to compare with)")
             elif ck == "0":
                 r.update(state="passed", evidence=_tail(d / "check.log"))
+            elif ck == "3":                       # the check found none of the paper's files (a data folder of inputs only)
+                r.update(state="passed", evidence="ran to its end; " + _tail(d / "check.log"))
             else:
                 r.update(state="differs", evidence=_tail(d / "check.log", 2))
             if r["state"] in OVER and not r["end"]:

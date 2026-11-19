@@ -16,7 +16,8 @@ $PY tests/verify_weights.py     checks the networks' weights ([settings/models](
 
 **GPU model and session.**
 The deformable registration is exact within one GPU session.
-Across sessions or GPU models the warps can differ by floating point: a median of 0.002 to 0.025 mm, and at most 1.9 mm at single voxels.
+Across sessions or GPU models the warps can differ by floating point.
+In the lab's rerun of the 13 b0-to-template registrations (6 Nov 2026, on the paper's GPU model), they differed by medians of 0.002 to 0.060 mm and 99th percentiles of 0.04 to 0.47 mm, and by at most 1.9 mm at single voxels.
 
 **TIRL threads.**
 The histology registration depends on the thread count; use 12 per component, the default.

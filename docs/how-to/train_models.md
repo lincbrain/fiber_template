@@ -11,7 +11,7 @@ anatomix, the network whose image features the registrations compare, is used as
 
 | Network | What it does | Where it is used | Trained on | Weights |
 |---|---|---|---|---|
-| `mri_brainmask` | brain mask of an ex vivo b0 or T2-weighted image | the MRI images ([01](../tutorials/01_mri.md)) | 47 images of 23 brains and their masks of record | `models/segment/mri_brainmask/` |
+| `mri_brainmask` | brain mask of an ex vivo b0 or T2-weighted image | the MRI images ([01](../tutorials/01_mri.md)) | 38 b0 and T2-weighted images of 23 brains, plus bias-corrected copies of 9 of the T2-weighted images, and their masks of record | `models/segment/mri_brainmask/` |
 | `bf_mask2d` | brain mask of each blockface photograph | the reconstruction ([02, Step 1](../tutorials/02_blockface.md#step-1-reconstruct-the-volume)) | 16,078 photographs of 19 brains, at a quarter of their size, labeled from the brains' 3D masks of record | `models/segment/bf_mask2d/` |
 | `bf_mask3d` | brain mask of a blockface volume | the reconstruction | the 21 photographed brains' volumes and their manually edited masks | `models/segment/bf_mask3d/` |
 | `bf_holes` | the fiducial markers (the round holes in the block face) in a blockface volume | the reconstruction, which fills them, and the check of the histology registration ([03](../tutorials/03_histology.md)) | the 21 volumes and their manually corrected markers | `models/segment/bf_holes/` |

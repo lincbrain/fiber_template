@@ -34,6 +34,11 @@ ap.add_argument("--min-r", type=float); ap.add_argument("--min-dice", type=float
 ap.add_argument("--stack-min-r", type=float); ap.add_argument("--stack-min-dice", type=float)
 a = ap.parse_args()
 S, new, rec = a.S, a.new, a.rec
+ITEMS = (f"{S}_blockface.ome.zarr", "02_blockface.ome.zarr", "02_blockface_mask.ome.zarr", f"steps/{S}_03_color.ome.zarr",
+         f"{S}_mask.nii.gz", f"{S}_holes.nii.gz", f"{S}_blockface_L2.nii.gz", f"{S}.info")
+if not any(os.path.exists(os.path.join(rec, x)) for x in ITEMS):   # a data folder of inputs only: no reconstruction of the paper's
+    print(f"{S}: nothing to compare with: the data folder holds no reconstruction of the paper's for {S} ({rec})")
+    sys.exit(3)
 tol = (a.min_r, a.min_dice, a.max_shift_mm)
 if any(t is not None for t in tol) and not all(t is not None for t in tol):
     sys.exit("give all three of --min-r, --min-dice and --max-shift-mm, or none")

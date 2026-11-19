@@ -12,6 +12,9 @@ reduce: mean
 rotate180: false
 vx: 20
 vz: 45
+# jumps: candidates from an automatic detector, each checked on the photographs.
+#   Rejected: (0, 1), (18, 19) and (21, 22), called only by the tissue-based estimates while a whole-photo correlation saw
+#   no motion; on the photographs the tissue does not move (the signal came from wax blobs on the caudal masks).
 jumps:
 - [481, 482]
 - [886, 887]

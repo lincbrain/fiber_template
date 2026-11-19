@@ -1,0 +1,299 @@
+{
+ "data": {
+  "masks": {
+   "brains": 21,
+   "tracks": 307,
+   "tracks_per_brain": {
+    "n": 21,
+    "median": 15.0,
+    "q25": 13.0,
+    "q75": 17.0,
+    "min": 8.0,
+    "max": 21.0
+   },
+   "length_mm": {
+    "n": 307,
+    "median": 6.84,
+    "q25": 4.03,
+    "q75": 10.53,
+    "min": 0.36,
+    "max": 63.69
+   },
+   "length_sections": {
+    "n": 307,
+    "median": 80.0,
+    "q25": 16.0,
+    "q75": 176.0,
+    "min": 1.0,
+    "max": 1355.0
+   },
+   "begin_inside_tissue": 273,
+   "begin_and_end_inside_tissue": 183,
+   "begin_at_rostral_tissue_edge": 29,
+   "end_at_caudal_tissue_edge": 82,
+   "tissue_before_start_mm": {
+    "n": 307,
+    "median": 7.56,
+    "q25": 3.43,
+    "q75": 21.67,
+    "min": 0.0,
+    "max": 52.56
+   },
+   "start_position_in_stack_tenths": [
+    51,
+    33,
+    20,
+    30,
+    14,
+    9,
+    13,
+    45,
+    50,
+    42
+   ],
+   "continuations_within_2mm": 2,
+   "line_rms_mm": {
+    "n": 301,
+    "median": 0.13,
+    "q25": 0.08,
+    "q75": 0.25,
+    "min": 0.0,
+    "max": 1.57
+   },
+   "tilt_deg": {
+    "n": 291,
+    "median": 5.0,
+    "q25": 3.4,
+    "q75": 7.9,
+    "min": 0.0,
+    "max": 31.8
+   },
+   "gap_fraction": {
+    "n": 307,
+    "median": 0.0,
+    "q25": 0.0,
+    "q75": 0.0,
+    "min": 0.0,
+    "max": 0.94
+   },
+   "rule": "tracks: the step-group grouping (join 1.5 mm); inside tissue = the brain mask covers the track's first (last) center in at least 3 sections before (after) it"
+  },
+  "photographs": {
+   "brains": 13,
+   "markers": 154,
+   "length_mm": {
+    "n": 154,
+    "median": 5.13,
+    "q25": 3.29,
+    "q75": 7.19,
+    "min": 0.99,
+    "max": 21.69
+   },
+   "diameter_widest_mm": {
+    "n": 154,
+    "median": 0.7,
+    "q25": 0.52,
+    "q75": 0.82,
+    "min": 0.18,
+    "max": 1.1
+   },
+   "diameter_first10_mm": {
+    "n": 154,
+    "median": 0.56,
+    "q25": 0.34,
+    "q75": 0.66,
+    "min": 0.11,
+    "max": 1.02
+   },
+   "diameter_last10_mm": {
+    "n": 154,
+    "median": 0.22,
+    "q25": 0.15,
+    "q75": 0.32,
+    "min": 0.09,
+    "max": 0.74
+   },
+   "first10_over_widest": {
+    "n": 154,
+    "median": 0.78,
+    "q25": 0.64,
+    "q75": 0.9,
+    "min": 0.24,
+    "max": 0.98
+   },
+   "last10_over_widest": {
+    "n": 154,
+    "median": 0.33,
+    "q25": 0.24,
+    "q75": 0.5,
+    "min": 0.12,
+    "max": 0.91
+   },
+   "narrower_at_end_than_start": 133,
+   "taper_at_far_end_mm": {
+    "n": 154,
+    "median": 1.68,
+    "q25": 0.67,
+    "q75": 2.65,
+    "min": 0.0,
+    "max": 6.43
+   },
+   "rule": "fine stacks (45-47 um between photographs), markers followed over >= 20 photographs; diameter = equivalent diameter of the dark part (luminance < 0.70 x tissue median), nominal pixel"
+  },
+  "histology": {
+   "readings": 638,
+   "status": {
+    "no_tube": 167,
+    "extra": 29,
+    "hole": 330,
+    "uncertain": 56,
+    "none": 13,
+    "absent": 43
+   },
+   "void_look": {
+    "sharp": 61,
+    "torn": 261,
+    "other": 2,
+    "soft": 6
+   },
+   "void_diameter_mm": {
+    "n": 330,
+    "median": 0.3,
+    "q25": 0.24,
+    "q75": 0.44,
+    "min": 0.1,
+    "max": 1.0
+   },
+   "rule": "the 5 Nov reading of every histology component at a marker (latest line per piece and marker); look of the voids"
+  },
+  "per_brain": {
+   "MF278": {
+    "name": "MF5",
+    "tracks": 13,
+    "section_um": 47.0,
+    "photographed_sections": 1132
+   },
+   "MF275": {
+    "name": "MF6",
+    "tracks": 8,
+    "section_um": 47.0,
+    "photographed_sections": 997
+   },
+   "MF282": {
+    "name": "MF7",
+    "tracks": 12,
+    "section_um": 47.0,
+    "photographed_sections": 1286
+   },
+   "MF191": {
+    "name": "MF8",
+    "tracks": 20,
+    "section_um": 750.0,
+    "photographed_sections": 77
+   },
+   "MF196": {
+    "name": "MF9",
+    "tracks": 14,
+    "section_um": 870.0,
+    "photographed_sections": 79
+   },
+   "MF204": {
+    "name": "MF10",
+    "tracks": 8,
+    "section_um": 810.0,
+    "photographed_sections": 71
+   },
+   "MR243": {
+    "name": "MM1",
+    "tracks": 17,
+    "section_um": 366.0,
+    "photographed_sections": 162
+   },
+   "MR252": {
+    "name": "MM2",
+    "tracks": 17,
+    "section_um": 45.0,
+    "photographed_sections": 1429
+   },
+   "MR256": {
+    "name": "MM3",
+    "tracks": 15,
+    "section_um": 45.0,
+    "photographed_sections": 1264
+   },
+   "MR249": {
+    "name": "MM4",
+    "tracks": 18,
+    "section_um": 366.0,
+    "photographed_sections": 172
+   },
+   "MR250": {
+    "name": "MM5",
+    "tracks": 21,
+    "section_um": 45.0,
+    "photographed_sections": 1376
+   },
+   "MR251": {
+    "name": "MM6",
+    "tracks": 15,
+    "section_um": 45.0,
+    "photographed_sections": 1284
+   },
+   "MR253": {
+    "name": "MM7",
+    "tracks": 16,
+    "section_um": 45.0,
+    "photographed_sections": 1312
+   },
+   "MR254": {
+    "name": "MM8",
+    "tracks": 13,
+    "section_um": 45.0,
+    "photographed_sections": 1368
+   },
+   "MR257": {
+    "name": "MM9",
+    "tracks": 14,
+    "section_um": 45.0,
+    "photographed_sections": 1296
+   },
+   "MR261": {
+    "name": "MM10",
+    "tracks": 11,
+    "section_um": 45.0,
+    "photographed_sections": 1383
+   },
+   "MR244": {
+    "name": "MM11",
+    "tracks": 17,
+    "section_um": 366.0,
+    "photographed_sections": 150
+   },
+   "MR247": {
+    "name": "MM12",
+    "tracks": 16,
+    "section_um": 366.0,
+    "photographed_sections": 161
+   },
+   "MR248": {
+    "name": "MM13",
+    "tracks": 14,
+    "section_um": 366.0,
+    "photographed_sections": 148
+   },
+   "MR263": {
+    "name": "MM14",
+    "tracks": 15,
+    "section_um": 45.0,
+    "photographed_sections": 1393
+   },
+   "MR273": {
+    "name": "MM15",
+    "tracks": 13,
+    "section_um": 47.0,
+    "photographed_sections": 1403
+   }
+  },
+  "note": "read only. Lengths along the cutting axis and in-plane diameters each carry the blockface pixel-size ambiguity (about 11 %)."
+ }
+}

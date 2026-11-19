@@ -18,7 +18,8 @@
 #
 #     source settings/roots.sh refresh
 #
-# This makes the links again and adds to the working folders what they lack. It deletes and overwrites nothing of yours.
+# This updates the links in place (a step that is running meanwhile keeps its files) and adds to the working folders what they
+# lack. It deletes and overwrites nothing of yours.
 #
 # It stops and says why when LINC_DATA is not the data tree (a folder inside it, such as brains/, is not one), and when outputs/ was
 # built from another data tree: outputs/ holds one tree's working folders and your results from it, so another tree needs a new

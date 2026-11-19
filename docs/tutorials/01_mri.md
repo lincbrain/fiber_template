@@ -72,16 +72,19 @@ LINC_DATA=$LINC_MRI_DATA $PY code/template/build_mri_channels.py --step stage-MF
 | A3 | `nmt-<ID>` | registers NMT v2 to the b0 and carries NMT's SARM labels onto it | GPU, 3.5 to 8 min | `$LINC_MRI_DATA/sub-<ID>/mri/landmarks/` |
 | A4 | `t2reg-<ID> --force` | registers the T2-weighted image to the b0 deformably, since the b0 is an echo-planar image with its own distortion and the two are never in the same space | GPU, 3.5 to 7 min | `$LINC_MRI_DATA/sub-<ID>/xfm/t2-native__to__b0-native/` |
 | A5 | `microreg-<ID> --force` | registers the multi-shell session's b0 to the high-resolution b0 deformably, carrying the SANDI fractions | GPU, a 48 GB card (it uses 22 GB); about 6 min | `$LINC_MRI_DATA/sub-<ID>/xfm/micro-native__to__b0-native/` |
-| A6 | `--from landmarks-<ID> --to frames-<ID>` | finds the anterior and posterior commissures from the SARM labels, then the canonical frame: the midsagittal plane and the AC-PC line | CPU, about 2 min | `$LINC_MRI_DATA/sub-<ID>/mri/landmarks/landmarks.json`, `canonical.json` |
+| A6 | `--from landmarks-<ID> --to frames-<ID>` | finds the anterior and posterior commissures from the SARM labels, then the canonical frame: the midsagittal plane, the anterior-posterior axis from the rotation of A3's registration of NMT v2, and the anterior commissure moved onto NMT v2's | CPU, about 2 min | `$LINC_MRI_DATA/sub-<ID>/mri/landmarks/landmarks.json`, `canonical.json` |
 | A7 | `prepare-<ID>` | resamples every channel once onto the canonical grid (the tensor with its rotation), cuts it to the final brain mask and makes its mirror image | CPU, about 3 min | `$LINC_WORK/build_mri_channels/prep/<ID>/` |
 
-Steps A8 to A11 run through `run.py`:
+Steps A8 to A11 run through `run.py`.
+The template itself comes out of two of them: the full run of A9 (the registration, 3.5 days) and A10 (the averaging, about 15 minutes).
+You do not have to run the 3.5 days: the data folder holds the paper's finished run, and A10 and A11 use that one, never yours.
+A9's first step (about 2 h) shows that the construction starts as the paper's did.
 
 | Step | Command | What it does | Runs on | Writes |
 |---|---|---|---|---|
 | A8 | `$PY run.py --run --only mri-assemble` | writes the MMORF run folder: its parameter files, the list of the eight inputs and the standard space | CPU; seconds | `$LINC_WORK/mri_construction/runs/rb_final/` |
-| A9 | `$PY run.py --run --only mri-construction-step1`, or `mri-construction-full` (optional) | the symmetric groupwise registration with MMORF 1.0.1, through the driver of Arthofer et al. with [our edits](../../code/template/patches/README.md); `step1` stops after the first of eight nonlinear steps | GPU: about 2 h for step 1, and 3.5 days for all eight on a 48 GB card to itself | `.../rb_final/out/`; the full run in `$LINC_WORK/mri_construction_full/runs/rb_final/out/`, whose `nln_step_08/iteration_03` holds the final warps |
-| A10 | `$PY run.py --run --only mri-channels` | moves each brain's images into the template in one resampling (the tensor rotated with its warp) and averages them: T2-weighted, b0, the tensor and its maps, the soma and neurite fractions, the masks | CPU, about 15 min | `$LINC_WORK/mri_paper_run/channels/linc_mri_*.nii.gz`, which are `template/outputs/template_*.nii.gz` in the data folder |
+| A9 | `$PY run.py --run --only mri-construction-step1`, or `mri-construction-full` (optional; no step reads its result) | the symmetric groupwise registration with MMORF 1.0.1, through the driver of Arthofer et al. with [our edits](../../code/template/patches/README.md); `step1` stops after the first of eight nonlinear steps | GPU: about 2 h for step 1, and 3.5 days for all eight on a 48 GB card to itself | `.../rb_final/out/`; the full run in `$LINC_WORK/mri_construction_full/runs/rb_final/out/`, whose `nln_step_08/iteration_03` holds the final warps |
+| A10 | `$PY run.py --run --only mri-channels` | moves each brain's images into the template in one resampling from their native grid (the tensor in a second resampling, from its canonical input of A7, rotated with its warp) and averages them: T2-weighted, b0, the tensor and its maps, the soma and neurite fractions, the masks | CPU, about 15 min | `$LINC_WORK/mri_paper_run/channels/linc_mri_*.nii.gz`, which are `template/outputs/template_*.nii.gz` in the data folder |
 | A11 | `$PY run.py --run --only mri-links-MF283` | writes the brain's two transforms: from its b0 to its canonical frame, and from that frame to the template | CPU; under half a minute | `$LINC_WORK/mri_links/<ID>/xfm/` |
 
 A8 and A9 start from the paper's own construction inputs, so that the result can be compared with the paper's file by file.
@@ -186,7 +189,7 @@ Open the moved b0 (`$LINC_WORK/b0_to_template/<ID>/`) over the template's b0 on 
 A FAIL means the registration should not be used as it is (section 5).
 
 **`run.py`'s checks** compare a rerun with the original files.
-For B2, the start affine must be identical and the warp within a median of 0.1 mm and a 99th percentile of 0.5 mm inside the brain; the lab's rerun of all 13 brains gave medians of 0.002 to 0.060 mm and 99th percentiles of 0.04 to 0.47 mm.
+For B2, the start affine must be identical and the warp within a median of 0.1 mm and a 99th percentile of 0.5 mm over its grid; the lab's rerun of all 13 brains (6 Nov 2026) gave medians of 0.002 to 0.060 mm and 99th percentiles of 0.04 to 0.47 mm.
 For part A, the staging, the tensor, the assembly, the construction's first step and the channels must be identical.
 A3 to A5 must be within tolerances: at least 93 % of the SARM labels, the T2 field within 0.05 mm median and 0.3 mm 99th percentile, and the microstructure field within 0.05 and 0.5 mm.
 The canonical frame must be within 1 degree and a mean move of 0.5 mm.

@@ -1,6 +1,6 @@
 # Caudal completion: the network that predicts the blockface tissue a brain's photographs lack, from its b0 image, and the join
-# with the photographs (paper Methods, "Registration to the brain's own MRI and caudal completion"; the network:
-# Gonzales et al. 2026, ISBI, "Completing unphotographed blockface ...").
+# with the photographs (paper Methods, "Synthesis of missing sections"; the network and its evaluation: the paper's Supplementary
+# Section S5).
 # The values are those of the networks and the completed volumes of record. Read by code/blockface/synthesis and code/figures/paper_numbers/d3_*.py.
 
 # --- grids ---
@@ -22,16 +22,16 @@ overlap: 0.5
 blend: gaussian
 window_batch: 1
 
-# --- join with the photographs (Methods: "Before joining, the prediction's intensity was matched to the photographs, and the two
-#     were cross-faded over 2 mm") ---
+# --- join with the photographs (Supplementary, "Junction plane, brightness matching and blending"): the prediction's brightness is
+#     matched to the photographs, and the two are blended over 2 mm ---
 recal_mm: 8.0                    # one isotonic (PAVA) map prediction -> photographs, fitted on the first 8 mm of retained tissue
                                  #   rostral of the cut, fully photographed voxels only
 fully_photographed: 0.999        # "fully photographed" = photo fraction >= 0.999 (the map's band and the scored slab voxels)
 pava_bins: 64                    #   on 64 quantile bins of the prediction
 fade_mm: 2.0                     # cosine cross-fade: w = 0.5 - 0.5 cos(pi * clip(d / 2 mm, 0, 1)), d = mm rostral of the cut
 
-# --- the join plane: the clean cut face, one plane per brain, parallel to the photographed sections (Methods: "from which the
-#     photographs were complete over the next 40 mm") ---
+# --- the join plane: the clean cut face, one plane per brain, parallel to the photographed sections (Supplementary, "Junction plane,
+#     brightness matching and blending": the photographs complete over the 40 mm rostral of it) ---
 clean_face:
   tau: 0.95                      # a plane is complete when the photographs cover >= 95 % of the brain mask eroded by erode_mm
   erode_mm: 1.0
@@ -128,8 +128,8 @@ prepare:
         brain_mask: "{mri}/{ID}_pseudo_brain_n1_0p5_prod.nii.gz"
         stand_in_b0: "{nonlin}/{ID}_mri_full.nii.gz"
 
-# --- withheld-slab evaluation (Methods: "a slab of photographed tissue as large as the brain's missing tissue was withheld and
-#     predicted by a network trained without it") ---
+# --- withheld-slab evaluation (Methods, "Synthesis of missing sections", and Supplementary Section S5): a slab of each scored
+#     brain's photographed tissue, as large as its missing tissue, withheld from training and synthesized ---
 evaluation:
   extrapolation_min_brains: 3    # sigma2.py: depths reached by fewer brains end the measured curve
   extrapolation_edge_mm: 3.0     #   its "edge3" voxels are at least this far inside their column's photographed tissue

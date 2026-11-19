@@ -1,8 +1,8 @@
 # MRI template construction recipe (paper Methods, "Symmetric groupwise construction").
 # MMORF 1.0.1 run through the multimodal groupwise template driver: four brains plus their exact left-right mirrors (8 inputs), so the
-# template is symmetric by construction. The schedule is the UK Biobank / Oxford-MM 1 mm recipe rescaled to 0.25 mm data: in voxel units
-# the coarsest knot spacing, the finest knot spacing (1 voxel) and the lambda_reg series match the upstream recipe, with two extra steps
-# for the two extra octaves of resolution.
+# template is symmetric by construction. The schedule is the UK Biobank / Oxford-MM 1 mm recipe extended to 0.25 mm data: the finest
+# knot spacing is 1 voxel, as upstream; the coarsest is 16 mm (64 voxels), where upstream's is 32 mm (32 voxels); the lambda_reg series
+# is upstream's with two more levels; and two extra steps cover the two extra octaves of resolution.
 # Read by code/figures/paper_numbers/mri_recipe.py, which checks every value below against the configs the template was built with.
 
 run: mmsym_model_dti_v                     # construction run of record (folder under the products key mri_runs)
@@ -13,7 +13,7 @@ n_steps: 8                                 # nonlinear steps; step s runs s + 1 
 iterations_per_step: 3                     # template-update iterations per step
 warp_res_init_mm: 16                       # knot spacing of the coarsest level (64 voxels at 0.25 mm)
 warp_scaling: [1, 1, 1, 2, 2, 2, 2, 2, 2]  # knot-spacing divisor per level: 16 mm three times, then halved to 0.25 mm (1 voxel)
-lambda_reg: [4.0e+5, 3.7e-1, 3.1e-1, 2.6e-1, 2.2e-1, 1.8e-1, 1.5e-1, 1.2e-1, 1.0e-1]   # bending-energy weight per level, before scaling
+lambda_reg: [4.0e+5, 3.7e-1, 3.1e-1, 2.6e-1, 2.2e-1, 1.8e-1, 1.5e-1, 1.2e-1, 1.0e-1]   # regularization weight per level, before scaling: bending energy at the first level, MMORF's log-Jacobian (SPRED) penalty after it
 lambda_scale: 10.0                         # multiplies every lambda_reg term except the first (near-rigid) one: a single stiffening factor
 fwhm_mm: [4.0, 2.0, 1.0, 0.5, 0.25, 0.125, 0.0625, 0.05, 0.05]   # Gaussian smoothing per level, every modality
 hires_mm: 1.9                              # levels with knot spacing below this use the high-resolution optimizer budget

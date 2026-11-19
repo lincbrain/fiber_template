@@ -9,7 +9,9 @@ What it does
   files is refused, with the folder that looks right named and nothing changed; that a second data folder is refused while a working
   folder built from the first exists; that files added to the data folder are linked on a refresh, and only then; and that
   settings/roots.sh stops on a wrong LINC_DATA before it makes anything, and with the word refresh makes the links again and fills
-  the working folders again.
+  the working folders again; that a changed table or a refresh updates the links in place (the folder and every unchanged link keep
+  their inode, a changed row is replaced, a removed row's link goes), that an interrupted update is redone in place, and that a file
+  read through the links all the while a refresh runs is never missing.
 You get
   pytest's pass / fail per test.
 """
@@ -189,3 +191,66 @@ def test_roots_refresh_links_again_and_fills_the_working_folders_again(tmp_path)
 
     stdout, err = source_roots(repo, LINC_DATA=tree)               # and afterwards it is quiet again
     assert "adding" not in err and len(calls.read_text().split()) == 6
+
+
+def test_a_changed_table_updates_the_links_in_place(tmp_path):
+    """after a `git pull` that changes the table, the links folder and every unchanged link stay as they are (same inode), a changed
+    row is replaced, a removed row's link goes, a new row's link comes"""
+    table, tree = toy(tmp_path, "tree", keep=(0, 1, 2, 3))
+    links = tmp_path / "out" / "in"
+    assert "4 links" in link(tree, links, table).stdout
+    keep_ino = os.lstat(str(links / ROWS[0][1])).st_ino; dir_ino = os.stat(str(links)).st_ino
+    (tree / "template/outputs/template_T2w_v2.nii.gz").write_text("v2")
+    (tree / "brains/sub-A/inputs/mri/A_t2.nii.gz").write_text("t2")
+    rows = [ROWS[0], ROWS[1], ("template/outputs/template_T2w_v2.nii.gz", ROWS[2][1]),          # row 2 now gives another file
+            ("brains/sub-A/inputs/mri/A_t2.nii.gz", "data/sub-A/mri/t2.nii.gz")]               # row 3 went, a new row came
+    table.write_text("new_path\told_path\tkind\n" + "".join(f"{n}\t{o}\tx\n" for n, o in rows))
+    r = link(tree, links, table)
+    assert r.returncode == 0 and "updated in place: 1 made, 1 changed, 1 removed, 2 unchanged" in r.stdout, r.stdout + r.stderr
+    assert os.stat(str(links)).st_ino == dir_ino and os.lstat(str(links / ROWS[0][1])).st_ino == keep_ino
+    assert os.readlink(str(links / ROWS[2][1])) == f"{tree}/template/outputs/template_T2w_v2.nii.gz"
+    assert not os.path.lexists(str(links / ROWS[3][1])) and not os.path.exists(str(links / "paper"))   # its empty folders go too
+    assert os.readlink(str(links / "data/sub-A/mri/t2.nii.gz")) == f"{tree}/brains/sub-A/inputs/mri/A_t2.nii.gz"
+    assert "up to date" in link(tree, links, table).stdout
+
+
+def test_an_interrupted_update_is_redone_in_place(tmp_path):
+    table, tree = toy(tmp_path, "tree")
+    links = tmp_path / "out" / "in"
+    link(tree, links, table)
+    dir_ino = os.stat(str(links)).st_ino
+    stamp = links / ".complete"
+    lines = stamp.read_text().split("\n")
+    stamp.write_text("\n".join(["updating"] + lines[1:]))           # what an update leaves when it is stopped halfway
+    r = link(tree, links, table)
+    assert r.returncode == 0 and "updated in place" in r.stdout and os.stat(str(links)).st_ino == dir_ino
+    assert stamp.read_text().split("\n")[0] != "updating"
+
+
+def test_a_running_step_keeps_its_files_during_a_refresh(tmp_path):
+    """a reader opening a file through the links all the while `--refresh` runs (several times, on a table of 3,000 rows) never
+    finds it missing; the code before 19 Nov 2026 removed the whole folder and made every link again"""
+    import threading
+    table = tmp_path / "files.tsv"; tree = (tmp_path / "tree").resolve()
+    rows = [(f"brains/sub-A/inputs/f{i:04d}.txt", f"data/sub-A/f{i:04d}.txt") for i in range(3000)]
+    for new, _ in rows:
+        f = tree / new; f.parent.mkdir(parents=True, exist_ok=True); f.write_text("x")
+    table.write_text("new_path\told_path\tkind\n" + "".join(f"{n}\t{o}\tx\n" for n, o in rows))
+    links = tmp_path / "out" / "in"
+    link(tree, links, table)
+    missing, stop = [], threading.Event()
+
+    def read():
+        p = str(links / rows[1500][1])
+        while not stop.is_set():
+            try:
+                open(p).read()
+            except FileNotFoundError:
+                missing.append(1)
+    t = threading.Thread(target=read); t.start()
+    try:
+        for _ in range(4):
+            assert link(tree, links, table, "--refresh").returncode == 0
+    finally:
+        stop.set(); t.join()
+    assert not missing, f"the file was missing {len(missing)} times during the refreshes"

@@ -1354,7 +1354,7 @@ def overview_01_chain(tr):
     """The chain of spaces, with the command between each pair: a section as scanned (histo-piece), its photograph (bf-native), the
     brain's b0 (b0-native), the MRI template (mri-template, T2-weighted); below, the blockface template's channel (bf-template, shown on
     the MRI template's grid) and the link between the two templates. Two routes: the MRI route through the brain's own b0 (top), and the
-    blockface route through the blockface template, which bypasses the b0 (the route of every brain's histology labels, and the only
+    blockface route through the blockface template, which bypasses the b0 (a new brain's route for its histology labels, and the only
     one for a brain without MRI). Each command on one line: each top gutter is as wide as its command needs (at least GA); on the
     blockface route the gray names sit above the arrows and the commands below them."""
     sec, spx = section_thumb(tr)

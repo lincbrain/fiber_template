@@ -169,6 +169,7 @@ Into the template they go on the brain's route in `settings/labels.yaml` (`templ
 It writes to `$LINC_DATA/sub-<ID>/labels/template/structures/` in 1 to 3 minutes per brain on the CPU.
 
 It reads, from `$H/structures/`: the stack (`histo_L6.nii.gz`), one drawing per nucleus (`histo_L6_<nucleus>.nii.gz`), `frame_map.json` (each frame's section), and each frame's transform onto its component (`transforms/f<frame>_<piece>.tfm`, with the moving image it was fitted on in `fitted_moving/`).
+For the paper's three brains, the data folder keeps the drawings (`inputs/manual_annotations/sub-<ID>_histo_L6*.nii.gz`) but not the frame map and the frame transforms, which were computed in the analysis project, so this step cannot be rerun from it; the labels it made are in the data folder (`paper/analysis/labels/push_current_h9*/`).
 
 The data folder has MR243's LGN and STN in four spaces, `outputs/MR243_lgn_stn_histology`, `_blockface`, `_b0` and `_template`, each with a `.tsv` key (1 left LGN, 2 right LGN, 3 left STN, 4 right STN); `run.py` does not rerun them.
 

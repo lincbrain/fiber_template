@@ -6,7 +6,7 @@
 You need two folders that hold files of the same names.
 What it does: loads each pair and compares their voxel values and their affines.
 You get one line per file, "identical" or how the two differ, then a last line "<n> of <N> identical"; the exit status is 0 when all
-are identical.
+are identical, 3 ("nothing to compare with") when the other folder holds none of the files.
 """
 import sys
 from pathlib import Path
@@ -19,6 +19,9 @@ def main():
     if len(sys.argv) < 4:
         sys.exit(__doc__)
     mine, other, names = Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3:]
+    if not any((other / name).exists() for name in names):          # none of the paper's files: nothing to compare with
+        print(f"nothing to compare with: {other} holds none of the {len(names)} files")
+        sys.exit(3)
     bad = 0
     for name in names:
         a, b = mine / name, other / name

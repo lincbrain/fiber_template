@@ -16,8 +16,9 @@ What it does
   warp   the distance between the two displacements at each voxel of the grid, in mm: its median and 99th percentile must be at
          most --median-mm and --p99-mm (the largest is reported, not tested: single voxels can differ by more).
   image  identical voxels, or Pearson r inside the mask (else where either image is nonzero) of at least --min-r.
-  The default tolerance is above what reruns of the paper's registrations gave on RTX 6000 Ada and RTX 4000 Ada cards (medians
-  under 0.03 mm, 99th percentiles under 0.5 mm: tests/README.md), and far below a failed registration.
+  The default tolerance is above what reruns of most of the paper's registrations gave on RTX 6000 Ada and RTX 4000 Ada cards, and
+  far below a failed registration; the b0-to-template reruns reached a median of 0.060 mm (tests/README.md), so steps.yaml checks
+  them with --median-mm 0.1.
 You get
   one line per file, then a last line with the evidence; exit status 0 only when every file is identical or within the tolerance.
 """
@@ -77,6 +78,9 @@ def finish(ok, line):
 
 def entry(a):
     mine, paper = Path(a.mine), Path(a.paper)
+    if not (paper / "meta.json").exists():
+        print(f"{mine.name}: nothing to compare with: the data folder holds no registration of the paper's here ({paper})")
+        sys.exit(3)
     files = json.loads((paper / "meta.json").read_text())["files"]
     count = {"identical": 0, "within": 0, "differs": 0, "missing": 0}
     for name in sorted(files):

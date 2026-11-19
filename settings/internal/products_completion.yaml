@@ -30,9 +30,10 @@ completed_masks: synthesis/cache_d3              # <ID>/deploy/{brain, real_mask
 brain_data: data                                 # sub-<ID>/mri/nonlinear_s2val/<ID>_mri_full.nii.gz, and nonlinear_s2val_prod/ (the final
                                                  # stand-in b0: d3_domain_shift.py --final)
 
-# --- Supplementary S1 (r057_s1_synthesis; figures s_synthesis_depth, s_synthesis_gallery): the network's own validation, tau^2 ---
+# --- Supplementary S1 and S5 (r057_s1_synthesis; figures s_synthesis_depth, s_synthesis_gallery): the network's validation, tau^2 ---
 isbi_numbers: isbi2027_repo/isbi2027/numbers     # {table1,extra,results,data,compute}_v3.json, brain_labels_v4.json: the number records of
-                                                 # the network's own paper (dated snapshots; their evaluations are not part of this release)
+                                                 # the synthesis evaluation reported in the paper's Supplementary Section S5 (dated snapshots;
+                                                 # not recomputed here)
 precision_tau2: bftemplate/d2b/s8/precision_d2bs8/tau2.json   # how the between-brain variance tau^2 was measured (the precision rule)
 
 # --- Supplementary S3 (lgnstn_budget_r059; figure s_lgnstn): the LGN/STN labels in the MRI template, the SARM reference ---

@@ -1,0 +1,563 @@
+{
+ "data": {
+  "method": [
+   "fractions + the tensor with the fold's own step-8 MMORF schedule (mri/code/lobo_all.py, tc/<fold>/out/heldout_all_0703/), against the template",
+   "the fold's own step-8 iteration-01 warps were solved against (nln_step_07/iteration_03); the 6 included inputs are those warps",
+   "(out/nln_step_08/iteration_01/<sid>_to_template_warp.nii.gz), solved the same way against the same target. Scoring as mri/code/eval_lobo_t2.py",
+   "(eval_heldout's metrics inside the target T2 template's brain mask: r, nmad, dice, jac_p1/p99, jac_outside; every map composed as premat + raw",
+   "MMORF warp, without the unbiasing average_invwarp, identically for held-out and included). Per fold: held-out mean minus included mean.",
+   "The held-out registrations ran on more than one card model (RTX 6000 Ada and RTX 3090): each row names its card",
+   "(<warp>.run.json, written by _nightlogs/L2_lobo_all_stream.sh); the included warps come from the folds' own run on RTX 6000 Ada cards.",
+   "-> paper/numbers/lobo_allchannels_rebuild.json (lobo_t2_rebuild.json stays; its fold differences are quoted beside these as context)",
+   "    mri/env/mmorf/bin/python mri/code/eval_lobo_all.py [compose|score|all]"
+  ],
+  "target": "nln_step_07/iteration_03",
+  "folds": [
+   {
+    "fold": "rb_lobo_MF283",
+    "rows": [
+     {
+      "r": 0.9486379586048249,
+      "nmad": 0.13289758563041687,
+      "dice": 0.992129469331929,
+      "jac_p1": 0.6123618483543396,
+      "jac_p99": 1.7801742553710938,
+      "jac_outside": 0.7392229616617668,
+      "subject": "MF283",
+      "group": "held-out",
+      "card": "NVIDIA RTX 6000 Ada Generation",
+      "host": "RTX 6000 Ada",
+      "wall": [
+       "2026-11-06 23:03:05",
+       "2026-11-07 03:26:31"
+      ]
+     },
+     {
+      "r": 0.9483911556556015,
+      "nmad": 0.1328326165676117,
+      "dice": 0.9921735869941872,
+      "jac_p1": 0.6092256307601929,
+      "jac_p99": 1.775991678237915,
+      "jac_outside": 0.7310533267899814,
+      "subject": "MF283f",
+      "group": "held-out",
+      "card": "NVIDIA GeForce RTX 3090",
+      "host": "RTX 3090",
+      "wall": [
+       "2026-11-06 23:03:35",
+       "2026-11-07 07:58:51"
+      ]
+     },
+     {
+      "r": 0.9695672505449696,
+      "nmad": 0.1410905122756958,
+      "dice": 0.9936560150038342,
+      "jac_p1": 0.6092594861984253,
+      "jac_p99": 1.7616046667099,
+      "jac_outside": 0.7535269890337701,
+      "subject": "MF284",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9696440471604406,
+      "nmad": 0.14102281630039215,
+      "dice": 0.9936747154570252,
+      "jac_p1": 0.6117388606071472,
+      "jac_p99": 1.7630680799484253,
+      "jac_outside": 0.7435227694890223,
+      "subject": "MF284f",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9756699888642661,
+      "nmad": 0.11617948114871979,
+      "dice": 0.9941979637270496,
+      "jac_p1": 0.6063420176506042,
+      "jac_p99": 1.7578649520874023,
+      "jac_outside": 0.8172788064192117,
+      "subject": "MF285",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9757395100875459,
+      "nmad": 0.1161867082118988,
+      "dice": 0.9942194541260373,
+      "jac_p1": 0.6086772680282593,
+      "jac_p99": 1.7649167776107788,
+      "jac_outside": 0.8183394256832682,
+      "subject": "MF285f",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9805831666792306,
+      "nmad": 0.1122150719165802,
+      "dice": 0.9944841393513845,
+      "jac_p1": 0.6016339659690857,
+      "jac_p99": 1.939254879951477,
+      "jac_outside": 1.1135928964881463,
+      "subject": "MF286",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9804814730729475,
+      "nmad": 0.11267845332622528,
+      "dice": 0.9945164588101032,
+      "jac_p1": 0.6020243763923645,
+      "jac_p99": 1.9363081455230713,
+      "jac_outside": 1.111987634899304,
+      "subject": "MF286f",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     }
+    ],
+    "held_out_minus_included": {
+     "r": -0.02677,
+     "nmad": 0.00964,
+     "dice": -0.00197,
+     "jac_p1": 0.00418,
+     "jac_p99": -0.04242,
+     "jac_outside": -0.1579
+    },
+    "held_out_mean": {
+     "r": 0.94851,
+     "nmad": 0.13287,
+     "dice": 0.99215
+    },
+    "included_mean": {
+     "r": 0.97528,
+     "nmad": 0.12323,
+     "dice": 0.99412
+    }
+   },
+   {
+    "fold": "rb_lobo_MF284",
+    "rows": [
+     {
+      "r": 0.9377412166886491,
+      "nmad": 0.10132931917905807,
+      "dice": 0.9919816209362389,
+      "jac_p1": 0.6028357744216919,
+      "jac_p99": 1.8274884223937988,
+      "jac_outside": 0.862113848125718,
+      "subject": "MF284",
+      "group": "held-out",
+      "card": "NVIDIA GeForce RTX 3090",
+      "host": "RTX 3090",
+      "wall": [
+       "2026-11-06 23:04:05",
+       "2026-11-07 08:23:51"
+      ]
+     },
+     {
+      "r": 0.9372887426110595,
+      "nmad": 0.10142074525356293,
+      "dice": 0.9919768497449553,
+      "jac_p1": 0.6038775444030762,
+      "jac_p99": 1.831080675125122,
+      "jac_outside": 0.8638177551529778,
+      "subject": "MF284f",
+      "group": "held-out",
+      "card": "NVIDIA RTX 6000 Ada Generation",
+      "host": "RTX 6000 Ada",
+      "wall": [
+       "2026-11-06 23:08:12",
+       "2026-11-07 03:24:42"
+      ]
+     },
+     {
+      "r": 0.9801428140724585,
+      "nmad": 0.06355925649404526,
+      "dice": 0.9936098007828393,
+      "jac_p1": 0.5893765687942505,
+      "jac_p99": 1.8086585998535156,
+      "jac_outside": 0.9372750803281725,
+      "subject": "MF283",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9801813383693158,
+      "nmad": 0.06357018649578094,
+      "dice": 0.9935438002581974,
+      "jac_p1": 0.5885776877403259,
+      "jac_p99": 1.8104543685913086,
+      "jac_outside": 0.940272694542796,
+      "subject": "MF283f",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9783312390221679,
+      "nmad": 0.06059291958808899,
+      "dice": 0.9943768616426768,
+      "jac_p1": 0.5911203026771545,
+      "jac_p99": 1.7888673543930054,
+      "jac_outside": 0.9733095585713308,
+      "subject": "MF285",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9783749613169324,
+      "nmad": 0.06055218726396561,
+      "dice": 0.9943786205906184,
+      "jac_p1": 0.589214026927948,
+      "jac_p99": 1.7914341688156128,
+      "jac_outside": 0.982681047221259,
+      "subject": "MF285f",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9798619927793393,
+      "nmad": 0.061470359563827515,
+      "dice": 0.9945195745630214,
+      "jac_p1": 0.5891755819320679,
+      "jac_p99": 1.9732577800750732,
+      "jac_outside": 1.2168736019679496,
+      "subject": "MF286",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9795421076289399,
+      "nmad": 0.06191245838999748,
+      "dice": 0.9944578155520791,
+      "jac_p1": 0.5900502800941467,
+      "jac_p99": 1.9638936519622803,
+      "jac_outside": 1.1860770601419228,
+      "subject": "MF286f",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     }
+    ],
+    "held_out_minus_included": {
+     "r": -0.04189,
+     "nmad": 0.03943,
+     "dice": -0.00217,
+     "jac_p1": 0.01377,
+     "jac_p99": -0.02681,
+     "jac_outside": -0.17645
+    },
+    "held_out_mean": {
+     "r": 0.93751,
+     "nmad": 0.10138,
+     "dice": 0.99198
+    },
+    "included_mean": {
+     "r": 0.97941,
+     "nmad": 0.06194,
+     "dice": 0.99415
+    }
+   },
+   {
+    "fold": "rb_lobo_MF285",
+    "rows": [
+     {
+      "r": 0.9499862757314982,
+      "nmad": 0.10797113180160522,
+      "dice": 0.9929415576274081,
+      "jac_p1": 0.6093127131462097,
+      "jac_p99": 1.7938504219055176,
+      "jac_outside": 0.8984214837556974,
+      "subject": "MF285",
+      "group": "held-out",
+      "card": "NVIDIA RTX 6000 Ada Generation",
+      "host": "RTX 6000 Ada",
+      "wall": [
+       "2026-11-06 23:08:32",
+       "2026-11-07 03:41:58"
+      ]
+     },
+     {
+      "r": 0.9504537129498416,
+      "nmad": 0.1078406497836113,
+      "dice": 0.9929148977820017,
+      "jac_p1": 0.610100507736206,
+      "jac_p99": 1.7954483032226562,
+      "jac_outside": 0.8962713642000913,
+      "subject": "MF285f",
+      "group": "held-out",
+      "card": "NVIDIA RTX 6000 Ada Generation",
+      "host": "RTX 6000 Ada",
+      "wall": [
+       "2026-11-06 23:08:51",
+       "2026-11-07 03:19:41"
+      ]
+     },
+     {
+      "r": 0.976581033210467,
+      "nmad": 0.09907050430774689,
+      "dice": 0.9934935155793182,
+      "jac_p1": 0.5962531566619873,
+      "jac_p99": 1.7879472970962524,
+      "jac_outside": 0.8562253874769273,
+      "subject": "MF283",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9765615246717804,
+      "nmad": 0.0989617109298706,
+      "dice": 0.9934991270341779,
+      "jac_p1": 0.596967875957489,
+      "jac_p99": 1.7893476486206055,
+      "jac_outside": 0.8546725233534339,
+      "subject": "MF283f",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9695394257450354,
+      "nmad": 0.11748530715703964,
+      "dice": 0.993931646545573,
+      "jac_p1": 0.5963363647460938,
+      "jac_p99": 1.769565224647522,
+      "jac_outside": 0.8383973128283598,
+      "subject": "MF284",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9696026635777754,
+      "nmad": 0.11763954162597656,
+      "dice": 0.9939139136562595,
+      "jac_p1": 0.5977261066436768,
+      "jac_p99": 1.7704918384552002,
+      "jac_outside": 0.8406071579271772,
+      "subject": "MF284f",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9803728843084301,
+      "nmad": 0.09008175879716873,
+      "dice": 0.9944649018714146,
+      "jac_p1": 0.5972633361816406,
+      "jac_p99": 1.9400794506072998,
+      "jac_outside": 1.1236763699770445,
+      "subject": "MF286",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9802830816963242,
+      "nmad": 0.09014763683080673,
+      "dice": 0.9944918057701487,
+      "jac_p1": 0.596103310585022,
+      "jac_p99": 1.9328383207321167,
+      "jac_outside": 1.1250201946992984,
+      "subject": "MF286f",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     }
+    ],
+    "held_out_minus_included": {
+     "r": -0.02527,
+     "nmad": 0.00567,
+     "dice": -0.00104,
+     "jac_p1": 0.01293,
+     "jac_p99": -0.03706,
+     "jac_outside": -0.04242
+    },
+    "held_out_mean": {
+     "r": 0.95022,
+     "nmad": 0.10791,
+     "dice": 0.99293
+    },
+    "included_mean": {
+     "r": 0.97549,
+     "nmad": 0.10223,
+     "dice": 0.99397
+    }
+   },
+   {
+    "fold": "rb_lobo_MF286",
+    "rows": [
+     {
+      "r": 0.9514142904581566,
+      "nmad": 0.11249996721744537,
+      "dice": 0.9932492168589773,
+      "jac_p1": 0.5974308252334595,
+      "jac_p99": 2.005319595336914,
+      "jac_outside": 1.2326972345379352,
+      "subject": "MF286",
+      "group": "held-out",
+      "card": "NVIDIA RTX 6000 Ada Generation",
+      "host": "RTX 6000 Ada",
+      "wall": [
+       "2026-11-06 23:09:12",
+       "2026-11-07 03:44:11"
+      ]
+     },
+     {
+      "r": 0.9521641705669728,
+      "nmad": 0.11232203245162964,
+      "dice": 0.9932215939476565,
+      "jac_p1": 0.59427809715271,
+      "jac_p99": 2.0023202896118164,
+      "jac_outside": 1.2412510088685056,
+      "subject": "MF286f",
+      "group": "held-out",
+      "card": "NVIDIA RTX 6000 Ada Generation",
+      "host": "RTX 6000 Ada",
+      "wall": [
+       "2026-11-06 23:09:34",
+       "2026-11-07 03:42:59"
+      ]
+     },
+     {
+      "r": 0.9801337827740412,
+      "nmad": 0.10259537398815155,
+      "dice": 0.9938728608167687,
+      "jac_p1": 0.607285737991333,
+      "jac_p99": 1.82596755027771,
+      "jac_outside": 0.8820520951680415,
+      "subject": "MF283",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9801115089682426,
+      "nmad": 0.1025438979268074,
+      "dice": 0.993856000344021,
+      "jac_p1": 0.6074738502502441,
+      "jac_p99": 1.8216345310211182,
+      "jac_outside": 0.8748395049659577,
+      "subject": "MF283f",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9695592235110643,
+      "nmad": 0.12339238822460175,
+      "dice": 0.9940198976243758,
+      "jac_p1": 0.609425961971283,
+      "jac_p99": 1.8100800514221191,
+      "jac_outside": 0.8084359885599974,
+      "subject": "MF284",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9695034198298446,
+      "nmad": 0.12349548190832138,
+      "dice": 0.9940052100940007,
+      "jac_p1": 0.611803412437439,
+      "jac_p99": 1.8134392499923706,
+      "jac_outside": 0.8098367808719723,
+      "subject": "MF284f",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9788808745282234,
+      "nmad": 0.09725654870271683,
+      "dice": 0.994546288075993,
+      "jac_p1": 0.609749436378479,
+      "jac_p99": 1.797088623046875,
+      "jac_outside": 0.8657492569839929,
+      "subject": "MF285",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     },
+     {
+      "r": 0.9790261367033054,
+      "nmad": 0.09733133763074875,
+      "dice": 0.9945488432683905,
+      "jac_p1": 0.6093873381614685,
+      "jac_p99": 1.7977795600891113,
+      "jac_outside": 0.8692959439015463,
+      "subject": "MF285f",
+      "group": "included",
+      "card": "RTX 6000 Ada (the fold's own run)",
+      "host": null,
+      "wall": null
+     }
+    ],
+    "held_out_minus_included": {
+     "r": -0.02441,
+     "nmad": 0.00464,
+     "dice": -0.00091,
+     "jac_p1": -0.01333,
+     "jac_p99": 0.19282,
+     "jac_outside": 0.38527
+    },
+    "held_out_mean": {
+     "r": 0.95179,
+     "nmad": 0.11241,
+     "dice": 0.99324
+    },
+    "included_mean": {
+     "r": 0.9762,
+     "nmad": 0.10777,
+     "dice": 0.99414
+    }
+   }
+  ],
+  "pooled_mean_of_fold_diffs_r": -0.02959,
+  "pooled_mean_of_fold_diffs_nmad": 0.01485,
+  "pooled_mean_of_fold_diffs_dice": -0.00152,
+  "held_out_cards": [
+   "NVIDIA GeForce RTX 3090",
+   "NVIDIA RTX 6000 Ada Generation"
+  ],
+  "context_t2_only": {
+   "source": "paper/numbers/lobo_t2_rebuild.json (target nln_step_08/iteration_01, T2 only)",
+   "pooled_mean_of_fold_diffs_r": -0.03586,
+   "pooled_mean_of_fold_diffs_nmad": 0.01836,
+   "pooled_mean_of_fold_diffs_dice": -0.00323
+  }
+ }
+}
