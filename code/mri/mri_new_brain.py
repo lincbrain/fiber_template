@@ -16,7 +16,12 @@ mask       the given mask (same grid as the image, values {0, 1}), or the MRI br
 N4         ANTs N4BiasFieldCorrection with the recipe's parameters (`prep.n4`: fitting grid 0.5 mm, B-spline [60,3], convergence
            [80x60x40,1e-7]); skipped with a message when ANTs is not found (the uncorrected image is normalized instead)
 Every step and its tool (path, version, or "not found: skipped") is written to <output>.provenance.json beside the main output.
-Then: `linc-register mri --subject <ID> --place-b0 <main output> <mask> --new-brain` (the b0 placed on the template's 0.5 mm frame).
+Then (printed at the end, and kept as `next` in the provenance file), one of two routes, by what the brain has:
+  the b0 into the MRI template (docs/tutorials/01_mri.md, Step B2): `linc-register mri-template --subject <ID> --b0 <main output>
+      --mask <mask> --frame <the template's 0.5 mm frame> --template-b0 ... --template-mask ...`;
+  a brain with blockface photographs (docs/tutorials/02_blockface.md, Step 3): `linc-register mri --subject <ID> --new-brain
+      --place-b0 <main output> <mask>` (the blockface volume to this b0), then `linc-register mri-template` with --b0 and --mask,
+      which reads the placement that `mri` made.
 Validated 3 Nov 2026 on MF283 (MF1), ANTs 2.5.4: with the brain masks of record, the b0 path reproduces dwi/b0_brain.nii.gz,
 dwi/b0_brain_n4.nii.gz and its bias field, and the T2 path (echo 5 of the MSME, --volume 4) t2/echo.nii.gz, t2/echo_n4.nii.gz, its bias
 and t2/echo_n4_brain.nii.gz, voxel for voxel (0 voxels differ, same headers; N4 is deterministic here). Without a mask, the network's
@@ -75,6 +80,38 @@ def check_mask(mask, image):
     v = np.unique(np.asanyarray(m.dataobj))
     if not set(v.tolist()) <= {0, 1}:
         raise ValueError(f"{mask}: values {v[:6]}..., expected 0 and 1 only")
+
+
+REG = "$PY code/blockface/registration/linc-register"
+TEMPLATE_FILES = ("--template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz "
+                  "--template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz")
+FRAME = "$LINC_TEMPLATE/frames/mri_template_0p5.nii.gz"
+
+
+def next_steps(subject, b0, mask, modality="b0"):
+    """What comes after prep: one entry per route (what it is for, the tutorial step that describes it, its commands), with the brain's
+    files as prep wrote them and the template's as the tutorials write them."""
+    if modality != "b0":
+        return [dict(route="none", what="nothing registers a T2-weighted image yet; the routes start from the brain's b0, "
+                     "prepared with --modality b0 (docs/overview.md)", tutorial=None, commands=[])]
+    to_template = f"{REG} mri-template --subject {subject} --b0 {b0} --mask {mask}"
+    return [dict(route="mri-template", what="the b0 into the MRI template", tutorial="docs/tutorials/01_mri.md, Step B2",
+                 commands=[f"{to_template} --frame {FRAME} {TEMPLATE_FILES}"]),
+            dict(route="blockface", tutorial="docs/tutorials/02_blockface.md, Step 3",
+                 what="a brain with blockface photographs: its blockface volume to this b0, then the b0 into the MRI template "
+                      "from the placement that mri made",
+                 commands=[f"{REG} mri --subject {subject} --new-brain --place-b0 {b0} {mask}", f"{to_template} {TEMPLATE_FILES}"])]
+
+
+def next_text(nxt):
+    """The lines prep prints at the end: each route, what it is for and its tutorial step, then its commands."""
+    if not nxt[0]["commands"]:
+        return f"  next: {nxt[0]['what']}"
+    out = ["  next: one of these routes, by what the brain has:"]
+    for r in nxt:
+        out.append(f"    {r['what']} ({r['tutorial']}):")
+        out += [f"      {c}" for c in r["commands"]]
+    return "\n".join(out)
 
 
 def prep(subject, image, modality="b0", mask=None, volume=0, denoise=False, n4=True, mri_root=None, device="cuda", log=print):
@@ -136,9 +173,9 @@ def prep(subject, image, modality="b0", mask=None, volume=0, denoise=False, n4=T
     steps.append(dict(step="mask_normalize", input=str(f(M["n4"])), output=str(f(M["out"])), rule=f"x mask; 1-99 percentile inside the mask -> ({c['norm_eps']}, {c['norm_max']}]"))
     log(f"  masked + normalized: {f(M['out'])}")
 
-    nxt = f"code/blockface/registration/linc-register mri --subject {subject} --place-b0 {f(M['out'])} {f(M['mask'])} --new-brain"
+    nxt = next_steps(subject, f(M["out"]), f(M["mask"]), modality)
     rec = dict(subject=subject, modality=modality, steps=steps, next=nxt, wall_s=round(time.time() - t0, 1))
     provenance.write_provenance(f(M["out"]), inputs=inputs, outputs=outputs, cmd=f"linc-mri prep --subject {subject} --image {image} --modality {modality}" +
                                 (f" --mask {mask}" if mask else "") + (" --denoise" if denoise else "") + ("" if n4 else " --no-n4"), wall_s=rec["wall_s"], extra=rec)
-    log(f"  provenance: {provenance.provenance_path(f(M['out']))}\n  next: {nxt}")
+    log(f"  provenance: {provenance.provenance_path(f(M['out']))}\n" + next_text(nxt))
     return rec

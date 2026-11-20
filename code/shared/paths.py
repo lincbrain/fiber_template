@@ -2,7 +2,8 @@
 
 Set once per shell (or pass the same values on the command line of each entry point):
 
-    LINC_DATA      per-brain data, one folder per brain: $LINC_DATA/sub-<ID>/...            (see README.md)
+    LINC_DATA      the working folder, one folder per brain: $LINC_DATA/sub-<ID>/... (settings/roots.sh makes it under outputs/ from the
+                   data folder, which it keeps in LINC_DATA_TREE; LINC_DATA is never the data folder itself: data_root() refuses it)
     LINC_TEMPLATE  the released template (channels, masks, transforms): $LINC_TEMPLATE/...
     LINC_NUMBERS   where code/figures/paper_numbers writes its JSON records (default: ./numbers)
     LINC_WORK      scratch for intermediate files (default: ./work)
@@ -24,15 +25,42 @@ def _env(name, default=None):
     return Path(default)
 
 
+_HELD = None
+
+
+def is_data_folder(folder):
+    """True when `folder` is a data folder (it holds a file that settings/files.tsv lists): the test code/shared/link_data.py makes before
+    it links one. A working folder (sub-<ID>/ per brain) holds none of them."""
+    global _HELD
+    if _HELD is None:
+        import importlib.util
+        here = Path(__file__).resolve().parent; table = here.parents[1] / "settings" / "files.tsv"
+        if not table.exists():
+            return False
+        spec = importlib.util.spec_from_file_location("_link_data", here / "link_data.py"); ld = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(ld)
+        with open(table) as f:
+            head = f.readline().rstrip("\n").split("\t"); i, j = head.index("new_path"), head.index("old_path")
+            rows = [(r[i], r[j]) for r in (line.rstrip("\n").split("\t") for line in f)]
+        _HELD = lambda d: bool(ld.held(str(d), rows, first=True))          # noqa: E731
+    return _HELD(folder)
+
+
 def data_root():
-    return _env("LINC_DATA")
+    """The working folder ($LINC_DATA). Stops, before any work, when LINC_DATA is the data folder: the tools never write into it."""
+    root = _env("LINC_DATA")
+    if root.is_dir() and is_data_folder(root):
+        raise SystemExit(f"LINC_DATA is the data folder ({root}); the tools read and write the working folder made from it, never the data "
+                         "folder itself. Run `source settings/roots.sh` in this shell: it keeps the data folder in LINC_DATA_TREE and sets "
+                         "LINC_DATA to the working folder.")
+    return root
 
 
 def refuse_records(*folders):
     """Stop before writing into `folders` when that could write into the products of record: with LINC_RECORDS set (a tree made by
     code/shared/make_local_data.sh, whose files link to the records), a folder that is, or holds an entry that is, a link resolving under
     $LINC_RECORDS. Opening an existing linked file for writing would change the record itself. No effect without LINC_RECORDS."""
-    rec = os.environ.get("LINC_DATA_TREE") or os.environ.get("LINC_RECORDS")      # the data tree, when settings/roots.sh has set it
+    rec = os.environ.get("LINC_DATA_TREE") or os.environ.get("LINC_RECORDS")      # the data folder, when settings/roots.sh has set it
     if not rec:
         return
     R = os.path.realpath(rec).rstrip(os.sep) + os.sep
@@ -43,7 +71,7 @@ def refuse_records(*folders):
             continue
         hits = [f] if inside(f) else [os.path.join(f, e) for e in os.listdir(f) if inside(os.path.join(f, e))] if os.path.isdir(f) else []
         if hits:
-            raise SystemExit(f"{f}: {len(hits)} entr{'y' if len(hits) == 1 else 'ies'} link to the records under {rec} (e.g. {hits[0]}); "
+            raise SystemExit(f"{f}: {len(hits)} entr{'y' if len(hits) == 1 else 'ies'} link to the data folder's files under {rec} (e.g. {hits[0]}); "
                              "writing here could change them. Write to a new folder (--out), or make a rebuild folder for this brain: "
                              "code/shared/make_local_data.sh <dest> --rebuild <ID>")
 

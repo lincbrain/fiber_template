@@ -506,7 +506,7 @@ def clean_face(Fl, trim, tau=CLEAN["tau"], erode_mm=CLEAN["erode_mm"], window_mm
 # --------------------------------------------------------------------------- the folder
 
 def _placeholder(p, root):
-    """a path under the data root as $LINC_DATA/... (shared.paths.rerooted resolves it), else the path itself"""
+    """a path under the working folder as $LINC_DATA/... (shared.paths.rerooted resolves it), else the path itself"""
     p = Path(p).absolute()
     try:
         return "$LINC_DATA/" + str(p.relative_to(Path(root).absolute()))

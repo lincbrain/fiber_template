@@ -47,7 +47,7 @@ After you add any of these to your data folder, run `source settings/roots.sh re
 
 ![Coronal planes of MF283's T2-weighted image, FA and soma fraction, and of MR243's b0](figures/mri_02_input.png)
 
-*Figure 2. (a-c) MF283's T2-weighted image (the echo the build uses), FA and soma fraction (`outputs/MF283_t2_T2w.nii.gz`, `_tensor_dti`, `_micro_soma_fraction`), each in its own space; (d) MR243's b0.*
+*Figure 2. (a-c) MF283's T2-weighted image (the echo the build uses), FA and soma fraction (the data folder's `brains/sub-MF283/outputs/MF283_t2_T2w.nii.gz`, `_tensor_dti`, `_micro_soma_fraction`), each in its own space; (d) MR243's b0.*
 
 ## 3. Steps
 
@@ -106,11 +106,13 @@ These steps bring any brain with a b0 into the template, without changing the te
 #### Step B1. Prepare the b0
 
 ```bash
-$PY code/mri/linc-mri prep --subject <ID> --image <b0.nii.gz>
+$PY code/mri/linc-mri prep --subject MF278 --image $LINC_DATA_TREE/brains/sub-MF278/inputs/mri/MF278_b0.nii.gz \
+    --mask $LINC_DATA_TREE/brains/sub-MF278/inputs/manual_annotations/MF278_b0_brain_mask.nii.gz
 ```
 
-This takes one 3D volume (volume 0 of a 4D series, or `--volume N`), makes its brain mask with the MRI brain-mask network (or uses yours, given with `--mask <file>`), corrects the bias with N4 inside the mask, and rescales the masked image.
-When it finishes, it prints the next command.
+This is MF278, a paper brain, from the data folder; for your own brain, give `--subject <ID> --image <its b0>`.
+It takes one 3D volume (volume 0 of a 4D series, or `--volume N`), makes its brain mask with the MRI brain-mask network (or uses yours, given with `--mask <its brain mask>`, a NIfTI mask on the b0's grid), corrects the bias with N4 inside the mask, and rescales the masked image.
+When it finishes, it prints the next commands, with the brain's paths filled in: Step B2 for the b0 alone, and [02](02_blockface.md), Step 3, for a brain with blockface photographs; its provenance file keeps them too.
 It takes under a minute on the CPU; the mask network runs on a GPU with 5 GB free, or on the CPU with `--device cpu`.
 
 It writes `b0.nii.gz`, `b0_brain.nii.gz`, `b0_brain_n4.nii.gz` and its bias field to `$LINC_DATA/sub-<ID>/mri/dwi/`, the mask to `$LINC_DATA/sub-<ID>/mri/masks/dwi_brain_mask.nii.gz`, and a provenance file listing every step with its tool and version.
@@ -127,12 +129,12 @@ On MF283, given the paper's mask, this step reproduces the paper's three files v
 M=$LINC_DATA/sub-<ID>/mri
 $PY code/blockface/registration/linc-register mri-template --subject <ID> \
     --b0 $M/dwi/b0_brain_n4.nii.gz --mask $M/masks/dwi_brain_mask.nii.gz \
-    --place-b0 $LINC_TEMPLATE/frames/mri_template_0p5.nii.gz \
+    --frame $LINC_TEMPLATE/frames/mri_template_0p5.nii.gz \
     --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz \
     --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
 ```
 
-This places the b0 rigidly on the template's 0.5 mm frame, fits a similarity and then an affine transform to the template's b0, and finishes with a deformable registration of image features (anatomix and MIND-SSC) on a 0.35 mm grid.
+This places the b0 rigidly on the template's 0.5 mm frame (`--frame`; its older name, `--place-b0`, is still accepted here), fits a similarity and then an affine transform to the template's b0, and finishes with a deformable registration of image features (anatomix and MIND-SSC) on a 0.35 mm grid.
 Every input is masked to the brain.
 The step ends with the outline check (section 4) and records its verdict.
 It takes about 12 minutes on a GPU.
@@ -151,19 +153,28 @@ The white line is the template brain's outline, the same on both rows; the sagit
 #### Step B3. Bring images into the template
 
 ```bash
-$PY -m shared.xfm apply --from b0-native --to mri-template --subject <ID> \
-    --ref $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz <image on the b0> <output>      # add --nearest for a label image
+$PY -m shared.xfm apply --from b0-native --to mri-template --subject MF278 \
+    --ref $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz \
+    $LINC_DATA/sub-MF278/mri/dwi/b0_brain_n4.nii.gz $LINC_DATA/sub-MF278/mri/b0_in_template.nii.gz   # add --nearest for a label image
 ```
 
-This moves any image on the brain's b0 into the template in one resampling, on the CPU in seconds.
+This moves MF278's b0, as Step B1 prepared it, into the template in one resampling, on the CPU in seconds.
+The first file is the image to move: any NIfTI image on the grid of the brain's b0 as Step B1 prepared it, such as a FA map computed from the same scan or a label image drawn on that b0.
+The second is the file it writes, the same image on the template's grid (`--ref`).
+For another brain, give its ID, after Steps B1 and B2 for it, and its image.
+
 The same command moves images between the template and a published template (give your own copy of it as `--ref`) or the blockface template (`bf-template`):
 
 ```bash
 $PY -m shared.xfm apply --from mri-template --to atlas:NMT_v2.0_sym --ref <NMT image> \
-    <image in the template> <output>
+    $LINC_DATA/sub-MF278/mri/b0_in_template.nii.gz $LINC_DATA/sub-MF278/mri/b0_in_nmt.nii.gz
 $PY -m shared.xfm apply --from atlas:NMT_v2.0_sym --to mri-template \
     --ref $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz <image in NMT> <output>
 ```
+
+`<NMT image>` is any image from your own copy of NMT v2's symmetric template, such as its T1-weighted image; it sets the grid of what is written, and the package does not include NMT.
+The first command moves MF278's b0 from the template into NMT v2.
+In the second, `<image in NMT>` is any image on NMT v2's grid, such as one of its label images, and `<output>` is the file to write, that image on the template's grid.
 
 The published templates are `atlas:NMT_v2.0_sym`, `atlas:INIA19` and `atlas:CIVM-R`.
 

@@ -1,40 +1,50 @@
-# The one root: point LINC_DATA at the data tree and source this file, from any folder, after install.sh:
+# The data folder: point LINC_DATA_TREE at it and source this file, from any folder, after install.sh:
 #
-#     export LINC_DATA=<the data tree>          # the folder that holds brains/, template/, models/ and paper/
+#     export LINC_DATA_TREE=<the data folder>     # the folder that holds brains/, template/, models/ and paper/
 #     source settings/roots.sh
 #
-# The histology steps also read LINC dataset 000003: the data tree holds the files they read (brains/sub-<ID>/inputs/histology).
+# Setting LINC_DATA to the data folder instead, as before, works too; when you set it so, it is the folder used, also in a shell
+# where LINC_DATA_TREE is left from an earlier sourcing.
+#
+# Two folders, two names:
+#   - LINC_DATA_TREE is the data folder, as you give it. Nothing is ever written into it.
+#   - LINC_DATA is the working folder this file makes from it, outputs/local_data/data. A command prefixed with
+#     LINC_DATA=$LINC_REBUILD_DATA (outputs/local_rebuild/data) or LINC_DATA=$LINC_MRI_DATA (outputs/local_mri/data) uses another one.
+#     The tools stop when LINC_DATA is the data folder (code/shared/paths.py) and say to source this file.
+# In an interactive shell, each sourcing ends with one line that names both folders.
+#
+# The histology steps also read LINC dataset 000003: the data folder holds the files they read (brains/sub-<ID>/inputs/histology).
 # To read a full copy of the dataset instead, set LINC_000003 to it.
 #
 # It sets
 #   - the environments' interpreters ($PY, $PY_DEEP, $PY_TIRL), from envs/linc_envs.sh, which install.sh writes;
-#   - outputs/in/: the code's working names for the data tree's files, one link per row of settings/files.tsv (code/shared/link_data.py);
-#   - the folders the pipeline works in, under outputs/, whose files link to outputs/in. Nothing is written into the data tree;
-#   - every internal root the code reads ($LINC_PRODUCTS, $LINC_TEMPLATE, $LINC_RAW, $LINC_MODELS, $LINC_WORK, $LINC_NUMBERS, ...).
-#     Afterwards LINC_DATA itself is the internal per-brain folder, outputs/local_data/data, and the data tree is in $LINC_DATA_TREE.
-#     Sourcing it again changes nothing.
+#   - outputs/in/: the code's working names for the data folder's files, one link per row of settings/files.tsv (code/shared/link_data.py);
+#   - the working folders under outputs/, whose files link to outputs/in, and outputs/README.txt, which says what each folder there is;
+#   - every internal root the code reads ($LINC_DATA, $LINC_PRODUCTS, $LINC_TEMPLATE, $LINC_RAW, $LINC_MODELS, $LINC_WORK, $LINC_NUMBERS, ...),
+#     and LINC_DATA_TREE, the data folder. Sourcing it again changes nothing.
 #
-# After you add files to the data tree, or after a `git pull`, source it once with the word refresh:
+# After you add files to the data folder, or after a `git pull`, source it once with the word refresh:
 #
 #     source settings/roots.sh refresh
 #
 # This updates the links in place (a step that is running meanwhile keeps its files) and adds to the working folders what they
 # lack. It deletes and overwrites nothing of yours.
 #
-# It stops and says why when LINC_DATA is not the data tree (a folder inside it, such as brains/, is not one), and when outputs/ was
-# built from another data tree: outputs/ holds one tree's working folders and your results from it, so another tree needs a new
-# clone, or outputs/ moved aside.
+# It stops and says why when the folder you give is not the data folder (a folder inside it, such as brains/, is not one), and when
+# outputs/ was built from another data folder: outputs/ holds one data folder's working folders and your results from it, so another
+# data folder needs a new clone, or outputs/ moved aside.
 
 _FT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 _O=$_FT/outputs; _IN=$_O/in; _L=$_O/local_data; _LOG=$_O/local_data.log
-# the data tree is LINC_DATA as you set it. In a shell that has sourced this file before, in this clone or another, LINC_DATA is one
-# of the folders under outputs/ that this file and the steps point it to, and the data tree is the one kept in LINC_DATA_TREE
-_T=${LINC_DATA:-}; _T=${_T%/}
+# the data folder: LINC_DATA_TREE; or LINC_DATA as you set it, when it is not one of the working folders under outputs/ that this file
+# and the steps point it to (in a shell that has sourced this file before, in this clone or another, it is one of them)
+_T=${LINC_DATA:-}; _T=${_T%/}; _DT=${LINC_DATA_TREE:-}; _DT=${_DT%/}
 _R=""; [ "${1:-}" = refresh ] && _R=--refresh
-case "$_T" in ""|*/outputs/in/data|*/outputs/local_data/data|*/outputs/local_rebuild/data|*/outputs/local_mri/data) _T=${LINC_DATA_TREE:-} ;; esac
+case "$_T" in ""|*/outputs/in/data|*/outputs/local_data/data|*/outputs/local_rebuild/data|*/outputs/local_mri/data) _T="" ;; esac
+_T=${_T:-$_DT}                       # LINC_DATA set to a folder of your own is the one used and checked, as before
 if [ -z "$_T" ]; then
-  echo "settings/roots.sh: set LINC_DATA to the data folder first, the one that holds brains/, template/, models/ and paper/" >&2
-  unset _FT _O _IN _L _LOG _T _R; return 1
+  echo "settings/roots.sh: set LINC_DATA_TREE to the data folder first, the one that holds brains/, template/, models/ and paper/" >&2
+  unset _FT _O _IN _L _LOG _T _DT _R; return 1
 fi
 [ -d "$_T" ] && _T=$(cd "$_T" && pwd)
 if [ -f "$_FT/envs/linc_envs.sh" ]; then
@@ -44,12 +54,14 @@ else
 fi
 export PYTHONNOUSERSITE=1
 
-# outputs/in: the links. link_data.py refuses a folder that is not the data tree, and a tree other than the one outputs/ was built from
+# outputs/in: the links. link_data.py refuses a folder that is not the data folder, and a data folder other than the one outputs/ was built from
 mkdir -p "$_O"
 "${PY:-python3}" "$_FT/code/shared/link_data.py" "$_T" "$_IN" $_R --built "$_L" "$_O/local_rebuild" "$_O/local_mri" >> "$_LOG" 2>&1 || {
   echo "settings/roots.sh: $(tail -n 1 "$_LOG")" >&2
-  unset _FT _O _IN _L _LOG _T _R; return 1
+  unset _FT _O _IN _L _LOG _T _DT _R; return 1
 }
+# outputs/README.txt: what each folder here is (settings/outputs_README.txt); written when outputs/ is built and on refresh, nothing else
+{ [ -n "$_R" ] || [ ! -e "$_O/README.txt" ]; } && [ -f "$_FT/settings/outputs_README.txt" ] && cp -f "$_FT/settings/outputs_README.txt" "$_O/README.txt"
 # refresh: the working folders are filled again from the new links (code/shared/make_local_data.sh leaves alone what exists), for the
 # brains they start with and for every brain added to them since (the data-folders step, or code/shared/make_local_data.sh by hand)
 _W="building"; _ONCE="once; "; _XL=""; _XR=""
@@ -95,14 +107,27 @@ if [ ! -e "$_O/local_rebuild/.complete" ]; then
   "$_FT/code/shared/make_local_data.sh" "$_O/local_rebuild" --rebuild MR252 --rebuild MF191 --rebuild MR263 $_XR $_RAW >> "$_LOG" 2>&1 || echo "settings/roots.sh: FAILED: $(tail -n 1 "$_LOG") (log: $_LOG)" >&2
 fi
 if [ ! -e "$_O/local_mri/.complete" ]; then
-  _M=""
+  _M=""; _MISS=""
   for _S in MF283 MF284 MF285 MF286; do
-    for _K in dwi t2 micro; do _M="$_M --copy $_S:mri/masks/${_K}_brain_mask.nii.gz=$_IN/mri/data/sub-$_S/masks/${_K}_brain_mask.nii.gz"; done
+    _F=""
+    for _K in dwi t2 micro; do _M="$_M --copy $_S:mri/masks/${_K}_brain_mask.nii.gz=$_IN/mri/data/sub-$_S/masks/${_K}_brain_mask.nii.gz"
+      [ -e "$_IN/mri/data/sub-$_S/masks/${_K}_brain_mask.nii.gz" ] || _F=1; done
     _M="$_M --copy $_S:mri/masks/final_brain_mask.nii.gz=$_IN/mri/data/sub-$_S/canonical_rebuild_manual_annotations_frac/model_mask_source_uint8.nii.gz"
+    [ -e "$_IN/mri/data/sub-$_S/canonical_rebuild_manual_annotations_frac/model_mask_source_uint8.nii.gz" ] || _F=1
+    [ -n "$_F" ] && _MISS="$_MISS $_S"
   done
-  echo "settings/roots.sh: $_W $_O/local_mri (${_ONCE}log: $_LOG)" >&2
-  "$_FT/code/shared/make_local_data.sh" "$_O/local_mri" MF283 MF284 MF285 MF286 $_M >> "$_LOG" 2>&1 || echo "settings/roots.sh: FAILED: $(tail -n 1 "$_LOG") (log: $_LOG)" >&2
-  unset _M _S _K
+  _MISS=${_MISS# }
+  if [ -n "$_MISS" ]; then          # a data folder without the four template brains (one brain's inputs, for example): said once, not a failure
+    if [ "$(cat "$_O/local_mri.missing" 2>/dev/null)" != "$_MISS" ]; then
+      echo "settings/roots.sh: outputs/local_mri is not made: the data folder does not hold the brain masks of $_MISS. Only the MRI template's build (four template brains, MF283 to MF286) needs it; nothing else does." >&2
+      echo "$_MISS" > "$_O/local_mri.missing"
+    fi
+  else
+    rm -f "$_O/local_mri.missing"
+    echo "settings/roots.sh: $_W $_O/local_mri (${_ONCE}log: $_LOG)" >&2
+    "$_FT/code/shared/make_local_data.sh" "$_O/local_mri" MF283 MF284 MF285 MF286 $_M >> "$_LOG" 2>&1 || echo "settings/roots.sh: FAILED: $(tail -n 1 "$_LOG") (log: $_LOG)" >&2
+  fi
+  unset _M _S _K _F _MISS
 fi
 [ -e "$_L/raw/match_tables_manual_annotations" ] || [ -L "$_L/raw/match_tables_manual_annotations" ] || ln -s "$_IN/raw/match_tables_manual_annotations" "$_L/raw/match_tables_manual_annotations"   # the manual match tables (num_<ID>.txt) of MM1 and MM3
 export LINC_DATA=$_L/data LINC_TEMPLATE=$_L/template LINC_RAW=$_L/raw
@@ -120,4 +145,5 @@ unset _S _P
 export LINC_WORK=$_O/work LINC_NUMBERS=$_O/numbers
 export HISTOLOGY_ARGS="--jp2-root $LINC_RAW/linc_000003/sourcedata"                  # the histology figure reads the JPEG 2000 sections
 export MM_MRI_ARGS="--raw-bruker-root $_L/raw/mri_mm --unpacked-root $_L/raw/macaque_mri"   # the numbers record mm_mri_check_r054 reads the raw MRI
-unset _FT _O _IN _L _LOG _RAW _LINKS _T _R _W _ONCE _XL _XR
+case $- in *i*) echo "settings/roots.sh: data folder $LINC_DATA_TREE; working folder $LINC_DATA" >&2 ;; esac   # interactive shells only
+unset _FT _O _IN _L _LOG _RAW _LINKS _T _DT _R _W _ONCE _XL _XR

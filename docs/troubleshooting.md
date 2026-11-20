@@ -8,12 +8,28 @@ To judge whether a registration is good, see each tutorial's checks: [01](tutori
 The steps are in the README's [quick start](../README.md#quick-start) and in [00](tutorials/00_start_here.md#before-you-start).
 
 **`source settings/roots.sh` says a folder is not the data folder.**
-`LINC_DATA` must be the data folder itself, the one that holds `brains/`, `template/`, `models/` and `paper/`, not a folder inside it such as `brains/`.
-Set `LINC_DATA` again and source the file again; the message names the folder that looks right when it is one or two levels up.
+`LINC_DATA_TREE` must be the data folder itself, the one that holds `brains/`, `template/`, `models/` and `paper/`, not a folder inside it such as `brains/`.
+Set `LINC_DATA_TREE` again and source the file again; the message names the folder that looks right when it is one or two levels up.
+
+**A command stops and says that `LINC_DATA` is the data folder.**
+The message reads: "LINC_DATA is the data folder (<path>); the tools read and write the working folder made from it, never the data folder itself. Run `source settings/roots.sh` in this shell: it keeps the data folder in LINC_DATA_TREE and sets LINC_DATA to the working folder." (`run.py --run` says "the steps" in place of "the tools".)
+`LINC_DATA` names the working folder, not the data folder ([00](tutorials/00_start_here.md#before-you-start)): in this shell it was set to the data folder and `roots.sh` was not sourced afterwards.
+Run `source settings/roots.sh` and the command again; to set the data folder in a new shell, use `export LINC_DATA_TREE=<the data folder>`.
+
+**A folder `sub-<ID>/` appeared at the top of your data folder.**
+A command ran with `LINC_DATA` set to the data folder, with a version of the tools that did not stop on it, and wrote that brain's working files there.
+The folder holds only what the command wrote; the brain's own files are in `brains/sub-<ID>/`.
+Move it out of the data folder (into `$LINC_DATA/` if you want to keep the results), source `settings/roots.sh`, and run the command again.
 
 **`source settings/roots.sh` says `outputs/` was built from another data folder.**
-The working folders in `outputs/` hold copies of one data folder's manual inputs, and your results from it, so they are not reused for another.
-Move `outputs/` aside or delete it, then source the file again; or go back to the first folder.
+The working folders in the repository's `outputs/` hold copies of one data folder's manual inputs, and your results from it, so they are not reused for another.
+Move the repository's `outputs/` aside or delete it, then source the file again; or go back to the first folder.
+
+**`source settings/roots.sh` says that `outputs/local_mri` is not made.**
+The line reads: "settings/roots.sh: outputs/local_mri is not made: the data folder does not hold the brain masks of <brains>. Only the MRI template's build (four template brains, MF283 to MF286) needs it; nothing else does."
+Your data folder holds less than the whole, for example one brain's inputs, and lacks those brains' masks.
+Only the MRI template's build ([01](tutorials/01_mri.md), part A, `$LINC_MRI_DATA`) uses that working folder, so everything else runs; `roots.sh` says it once, and again only when the list of brains changes.
+To build the MRI template, add `brains/sub-MF283` to `sub-MF286` to the data folder and run `source settings/roots.sh refresh`.
 
 **An error names a file under `outputs/in/`.**
 `outputs/in/` holds one link per file of the data folder, under the name the code knows it by, so the data folder does not have that file.
@@ -43,7 +59,7 @@ The network was trained on this collection's ex vivo b0 and T2-weighted images.
 Correct the mask manually, save it in `brains/sub-<ID>/inputs/manual_annotations/`, and rerun with `--mask`.
 
 **Step B2 stops because the transform exists.**
-This brain already has a registration; add `--overwrite`, which backs up the old one, or use `--registry <folder>`.
+This brain already has a registration; add `--overwrite`, which backs up the old one, or use `--registry <folder>` to write the new registration into a folder of your own.
 
 **The outline check fails anteriorly, with the frontal pole pushed forward.**
 The b0's mask took in the olfactory bulbs or tracts, which the template's mask does not have; this happened on two of the paper's brains during development.
@@ -192,7 +208,7 @@ Run `linc-histology rgb` with the same options to make the color images of the c
 
 **One section's labels sit about a millimeter off on one side, although its registration looks right.**
 The drawn frame's fitted transform onto its component is wrong ([03, Step E](tutorials/03_histology.md#step-e-lgn-and-stn)); on MR252's frame 36, this put the left LGN and STN 1.1 mm off.
-Fit that frame's transform again (`$H/structures/transforms/f<frame>_<piece>.tfm`, a SimpleITK transform) and push the labels again; the data folder's MR252 files carry the refit frame.
+Fit that frame's transform again (`$LINC_DATA/sub-<ID>/histology/structures/transforms/f<frame>_<piece>.tfm`, a SimpleITK transform) and push the labels again; the data folder's MR252 files carry the refit frame.
 
 **A section's tissue mask takes in another object, or misses tissue.**
 The section has an unusual contrast; on one of MF191's sections, with the contrast saturated, the mask took in another object.

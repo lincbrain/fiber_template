@@ -92,4 +92,6 @@ $PY tests/compare/compare_registration.py image $LINC_WORK/complete_retrained/MF
     $LINC_WORK/complete/MF278/MF278_bf_completed.nii.gz --min-r 0.9
 ```
 
+`<your run>` is the folder your training run wrote, `$LINC_WORK/completion/runs/<prepared folder>_<protocol>_s<seed>/`, named by the prepared folder it trained on, the protocol (`--protocol`) and the seed.
+
 A retraining of `d3_full_A_s0` on the same GPU model ended within 0.06 % of the paper's training loss, and its synthesized tissue on MF278 correlated with the shipped network's at r = 0.95.

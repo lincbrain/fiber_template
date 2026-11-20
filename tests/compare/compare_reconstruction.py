@@ -3,7 +3,8 @@
 
     $PY tests/compare/compare_reconstruction.py <ID> <your sub-<ID>/blockface> <the other sub-<ID>/blockface>
                                         [--min-r R --min-dice D --max-shift-mm M [--stack-min-r R2 --stack-min-dice D2]]
-    e.g. $PY tests/compare/compare_reconstruction.py MR252 $LINC_REBUILD_DATA/sub-MR252/blockface $LINC_RECORDS/data/sub-MR252/blockface
+    e.g. $PY tests/compare/compare_reconstruction.py MR252 $LINC_REBUILD_DATA/sub-MR252/blockface $LINC_DATA/sub-MR252/blockface
+    (the second: the paper's reconstruction, which the working folder links from the data folder)
 
 You need
   the two blockface folders.

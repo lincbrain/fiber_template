@@ -37,6 +37,7 @@ The match table gives the slice: sections 16 to 40 go with photograph 3 × secti
 ## 3. Steps
 
 The brain must already have its blockface volume and its registration to the blockface template, refined at 0.15 mm ([02](02_blockface.md), Steps 1 and 4).
+For MR243, or any other paper brain that `$LINC_DATA` does not hold yet, `$PY run.py --run --only data-folders` adds the paper's 21 brains to the working folders, as links to the data folder's files.
 A brain with MRI needs that registration too: the labels reach the template through it.
 The paper also reports them through the brain's own b0 ([01](01_mri.md)), the other route.
 None of the histology steps uses a GPU.
@@ -52,7 +53,7 @@ $PY -m shared.xfm apply --from mri-template --to bf-native --subject <ID> --near
 
 This carries the template's left, right and cerebellum regions onto the blockface volume in seconds on the CPU, and the later steps use it to divide each photograph into the section's components.
 Then set the voxels of the left hemisphere's fiducial markers in `regions.nii.gz` to 4.
-The markers are in `$LINC_DATA/sub-<ID>/blockface/<ID>_holes.nii.gz` from 02, or, for a paper brain, in the data folder's `outputs/<ID>_tubes.nii.gz`.
+The markers are in `$LINC_DATA/sub-<ID>/blockface/<ID>_holes.nii.gz` from 02, or, for a paper brain, in the data folder's `brains/sub-<ID>/outputs/<ID>_tubes.nii.gz`.
 
 ![MR243's regions volume on one blockface slice, and the regions' outlines on its photograph](figures/histology_03_regions.png)
 
@@ -62,21 +63,24 @@ MR243's regions were made before its section step was calibrated (400 µm instea
 ### Step B. The match table
 
 ```bash
+H=$LINC_DATA/sub-<ID>/histology
 STORE=$LINC_DATA/sub-<ID>/blockface/<ID>_blockface.ome.zarr
 $PY_TIRL code/histology/linc-histology propose --subject <ID> --store $STORE \
     --histology <sections folder> --regions $H/regions.nii.gz --out $H/registration
 ```
 
+For MR243, the sections folder is `$LINC_DATA_TREE/brains/sub-MR243/inputs/histology/sections`.
 `propose` suggests a photograph for each section's components.
 It compares each component's outline with every photograph's, registers the component to the photographs near its place, and fits a line of fixed spacing through the sections of each cutting run, so that a component follows its run rather than its own best-looking photograph.
 A component that scores too low on its run's line is left unmatched rather than guessed.
 For MR243 it took about 10 to 20 minutes on the CPU (the longer time on a busy host) and 14 GB of RAM in the release's tests of this step.
 
-It writes three things to `$H/`, beside the `--out` folder: `match_table_proposed.txt` (one row per section), `match_review.csv` (one row per component, with its photograph, its score, a flag and the next-best photographs) and `match_review/` (an image of each flagged component beside its proposed photograph).
+It writes three things to `$LINC_DATA/sub-<ID>/histology/`, beside the `--out` folder: `match_table_proposed.txt` (one row per section), `match_review.csv` (one row per component, with its photograph, its score, a flag and the next-best photographs) and `match_review/` (an image of each flagged component beside its proposed photograph).
 
 Then check the proposal row by row, flagged rows first, in your own copy:
 
 ```bash
+H=$LINC_DATA/sub-<ID>/histology
 cp $H/match_table_proposed.txt $H/match_table_edited.txt      # correct the numbers here; nothing overwrites this file
 ```
 
@@ -88,17 +92,20 @@ On the five brains with manual tables, the proposal put 28 of 319 kept component
 ### Step C. The registration
 
 ```bash
+H=$LINC_DATA/sub-<ID>/histology
+STORE=$LINC_DATA/sub-<ID>/blockface/<ID>_blockface.ome.zarr
 $PY_TIRL code/histology/linc-histology all --subject <ID> --store $STORE --threads 12 --jobs 2 \
     --histology <sections folder> --regions $H/regions.nii.gz --out $H/registration
 ```
 
+The sections folder is the one of Step B.
 For MR243 on the paper's data, `$PY run.py --run --only histology-MR243` uses MR243's manual match table and checks every section against the paper's registration.
 
 For each section, `all` runs `match` (each component's photograph), `pieces` (each photograph divided into the components by the regions volume), `masks` (each component's tissue mask), `prepare` (TIRL's images, with a pixel half the blockface slice's, 0.040 mm for MR243), `register` (TIRL) and `rgb` (the registered sections in color).
 A component whose tissue Dice coefficient after the affine stage is at least 0.85 gets a stiffer nonlinear stage, with a regularization weight of 0.45 instead of 0.30.
 
 MR243's 97 components took about 3 hours on the CPU.
-The results go to `$H/registration/`: `matched/`, `pieces/`, `tissue_masks/`, `moving/`, `fixed/` (PNG) and `tirl/<component>/` (TIRL's transforms and the registered image), each step with a `provenance.json`.
+The results go to `$LINC_DATA/sub-<ID>/histology/registration/`: `matched/`, `pieces/`, `tissue_masks/`, `moving/`, `fixed/` (PNG) and `tirl/<component>/` (TIRL's transforms and the registered image), each step with a `provenance.json`.
 
 A stopped run resumes, and a component whose `tirl/<component>/fixed4_nonlinear.timg` exists counts as done.
 Keep 12 threads per component: TIRL's result depends on the thread count, and 12 reproduce the original results.
@@ -110,7 +117,7 @@ The registered sections, placed at their slices and interpolated in between, mak
 
 ![Section 36 after registration: the photograph, the registered section, and the section's outline on the photograph](figures/histology_05_registered.png)
 
-*Figure 5. Section 36's left half: (a) the photograph, slice 107, (b) the registered section (`outputs/MR243_histology_blockface.nii.gz`), and (c) its tissue outline on the photograph, the check by eye: the outline should follow the photograph's edges and sulci.*
+*Figure 5. Section 36's left half: (a) the photograph, slice 107, (b) the registered section (the data folder's `brains/sub-MR243/outputs/MR243_histology_blockface.nii.gz`), and (c) its tissue outline on the photograph, the check by eye: the outline should follow the photograph's edges and sulci.*
 
 ![A sagittal plane of the photographs, of the registered histology, and of which slices are registered or interpolated](figures/histology_06_volume.png)
 
@@ -126,7 +133,7 @@ $PY      code/labels/linc-labels carry       --subject <ID>
 $PY      code/labels/linc-labels connect     --subject <ID>
 ```
 
-These read, from the brain's histology folder: the labels, one OME-Zarr per class, in `$H/annotations/<class>.ome.zarr`; the section map, `$H/section_map.tsv`; the match table; the regions volume; and the registration from step C.
+These read, from the brain's histology folder: the labels, one OME-Zarr per class, in `$LINC_DATA/sub-<ID>/histology/annotations/<class>.ome.zarr`; the section map, `$LINC_DATA/sub-<ID>/histology/section_map.tsv`; the match table; the regions volume; and the registration from step C.
 
 - `push` moves each label class through each component's registration onto its blockface slice (about 3 minutes).
 - `interpolate` fills the slices between charted sections by demons registration between neighboring sections, treating the bundle classes as one group and the terminal classes as another (20 to 35 minutes).
@@ -168,10 +175,10 @@ These take them into the template and, for a brain with MRI, into its b0, one re
 Into the template they go on the brain's route in `settings/labels.yaml` (`template_routes`): through the blockface template for MR243, MR252 and MR256, as in the paper; `--route mri` takes the brain's own b0 instead, the paper's other route.
 It writes to `$LINC_DATA/sub-<ID>/labels/template/structures/` in 1 to 3 minutes per brain on the CPU.
 
-It reads, from `$H/structures/`: the stack (`histo_L6.nii.gz`), one drawing per nucleus (`histo_L6_<nucleus>.nii.gz`), `frame_map.json` (each frame's section), and each frame's transform onto its component (`transforms/f<frame>_<piece>.tfm`, with the moving image it was fitted on in `fitted_moving/`).
+It reads, from `$LINC_DATA/sub-<ID>/histology/structures/`: the stack (`histo_L6.nii.gz`), one drawing per nucleus (`histo_L6_<nucleus>.nii.gz`), `frame_map.json` (each frame's section), and each frame's transform onto its component (`transforms/f<frame>_<piece>.tfm`, with the moving image it was fitted on in `fitted_moving/`).
 For the paper's three brains, the data folder keeps the drawings (`inputs/manual_annotations/sub-<ID>_histo_L6*.nii.gz`) but not the frame map and the frame transforms, which were computed in the analysis project, so this step cannot be rerun from it; the labels it made are in the data folder (`paper/analysis/labels/push_current_h9*/`).
 
-The data folder has MR243's LGN and STN in four spaces, `outputs/MR243_lgn_stn_histology`, `_blockface`, `_b0` and `_template`, each with a `.tsv` key (1 left LGN, 2 right LGN, 3 left STN, 4 right STN); `run.py` does not rerun them.
+The data folder has MR243's LGN and STN in four spaces, `brains/sub-MR243/outputs/MR243_lgn_stn_histology`, `_blockface`, `_b0` and `_template`, each with a `.tsv` key (1 left LGN, 2 right LGN, 3 left STN, 4 right STN); `run.py` does not rerun them.
 
 ![The LGN and STN of MR243 on the blockface and in the template](figures/histology_08_lgn_stn.png)
 
@@ -190,7 +197,7 @@ MR243's four failures are at the two ends of the series: section 3's left hemisp
 
 *Figure 9. MR243's best and worst components, registered and as their tissue outline on the photograph: (a, b) section 15's left hemisphere passes with a Dice coefficient of 0.99 (slice 44); (c, d) section 68's cerebellum fails with 0.82 (slice 155), since the registered tissue does not follow the photograph's outline at the top.*
 
-**Look** at each registered section over its photograph (Figure 5), and page through `outputs/<ID>_histology_blockface.nii.gz` together with the photographs (Figure 6).
+**Look** at each registered section over its photograph (Figure 5), and page through the registered sections stacked on the blockface, for a paper brain the data folder's `brains/sub-<ID>/outputs/<ID>_histology_blockface.nii.gz`, together with the photographs (Figure 6).
 
 **`run.py`'s check** compares every registered section with the original.
 It must be identical, or its transform within 3 pixels of the original on TIRL's grid (0.12 mm of MR243's tissue), because some components differ from the original run by round-off in TIRL's last stage.

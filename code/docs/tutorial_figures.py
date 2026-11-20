@@ -3,7 +3,7 @@
 (code/figures/figstyle.py: black background, letters, headers and scale bars outside the images, sentence case; command names, set in
 the figures as code, are the one exception to sentence case).
 
-Every figure reads only files of the data tree (and the release's settings/histology.yaml, for the sections' pixel size). It is written
+Every figure reads only files of the data folder (and the release's settings/histology.yaml, for the sections' pixel size). It is written
 to the repository's docs/tutorials/figures/<name>.png (200 dpi, 178 mm wide, no text chunks), and its provenance, which holds this
 machine's paths, to outputs/docs/figures_provenance/<name>.provenance.json (outputs/ is not tracked). The example
 brain is MR243 (MM1 in the paper); the MRI template's figures use MF283 (MF1), one of its four brains. The histology figures read the
@@ -71,7 +71,7 @@ class Tree:
     def __call__(self, rel):
         p = self.root / rel
         if not p.exists():
-            raise FileNotFoundError(f"{p}: not in the data tree")
+            raise FileNotFoundError(f"{p}: not in the data folder")
         self.read.append(str(p))
         return p
 
@@ -105,7 +105,7 @@ def crop(a, box):
 
 def pull_itk(field, field_aff, src, src_aff, plane, index, order=1):
     """One plane of `src` pulled onto the field's grid through an ITK displacement field (LPS mm, the convention antsApplyTransforms
-    reads; the data tree's <ID>_*_to_template.nii.gz): p_src = p + d(p). `field` (canonical RAS order, last axis the vector) and `src`
+    reads; the data folder's <ID>_*_to_template.nii.gz): p_src = p + d(p). `field` (canonical RAS order, last axis the vector) and `src`
     in canonical RAS order. Returns the plane in section()'s display order (linear interpolation, as antsApplyTransforms -n Linear)."""
     from scipy import ndimage as ndi
     k = FS.PLANE_AXIS[plane]
@@ -121,7 +121,7 @@ def pull_itk(field, field_aff, src, src_aff, plane, index, order=1):
 
 
 def itk_field(tr, rel):
-    """An ITK displacement field of the data tree in canonical RAS order: (field (X, Y, Z, 3) in LPS mm, affine)."""
+    """An ITK displacement field of the data folder in canonical RAS order: (field (X, Y, Z, 3) in LPS mm, affine)."""
     import nibabel as nib
     F = nib.as_closest_canonical(tr.img(rel))
     return np.asanyarray(F.dataobj)[:, :, :, 0, :].astype(np.float32), F.affine
@@ -1407,7 +1407,7 @@ def overview_01_chain(tr):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--tree", default=os.environ.get("LINC_DATA_TREE"), help="the data tree (default $LINC_DATA_TREE)")
+    ap.add_argument("--tree", default=os.environ.get("LINC_DATA_TREE"), help="the data folder (default $LINC_DATA_TREE)")
     ap.add_argument("--out", help="a trial render elsewhere, provenance beside the PNGs (default: the repository's "
                                   "docs/tutorials/figures, provenance in outputs/docs/figures_provenance)")
     ap.add_argument("--only", nargs="+", metavar="NAME", help="these figures only (--list names them)")
@@ -1418,7 +1418,7 @@ def main():
             print(f"{n:28s} {fn.__doc__.split(chr(10))[0]}")
         return
     if not a.tree:
-        sys.exit("give --tree <data tree> (or source settings/roots.sh, which sets $LINC_DATA_TREE)")
+        sys.exit("give --tree <the data folder> (or source settings/roots.sh, which sets $LINC_DATA_TREE)")
     names = a.only or list(FIGS)
     bad = [n for n in names if n not in FIGS]
     if bad:

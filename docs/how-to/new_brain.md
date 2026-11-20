@@ -17,6 +17,7 @@ Copy everything you receive into the data folder, under `brains/sub-<ID>/inputs/
 Then, from the top of the data folder, give each folder a `README.txt` saying what it is a copy of, add the brain to `brains.tsv` (columns: brain, paper_name, linc_name, species, data), and add the inputs' checksums:
 
 ```bash
+cd $LINC_DATA_TREE
 find brains/sub-<ID>/inputs -type f ! -name README.txt -exec md5sum {} + >> checksums.md5
 ```
 
@@ -53,4 +54,5 @@ A new brain's registrations are unchecked until you check them yourself.
 ## 5. Keep the results
 
 The commands write under the repository's `outputs/`, never into the data folder.
-To keep a result, copy it into the data folder under `brains/sub-<ID>/`: the finished files in `outputs/` and everything else in `intermediate/`, named like the paper's brains' files (any brain's `outputs/README.txt` lists the names), with a `README.txt` in each folder.
+To keep a result, copy it into the data folder under `brains/sub-<ID>/`: the finished files in the brain's `outputs/` and everything else in its `intermediate/`, named like the paper's brains' files (any brain's `outputs/README.txt` in the data folder lists the names), with a `README.txt` in each folder.
+For the paper's brains, `settings/files.tsv` pairs each of these files with the name the code knows it by, which shows where a file of the working folder belongs.

@@ -1,5 +1,6 @@
 """code/mri/linc-mri prep's pieces and the MRI channels build driver, without data (CPU, seconds): staging one volume of a 4-D image under its
-header, the mask checks, the modality table against settings/mri_construction.yaml, and build_mri_channels --plan (every step listed,
+header, the mask checks, the modality table against settings/mri_construction.yaml, the next steps prep prints (both routes, each with
+its tutorial step, and every option of their commands known to linc-register), and build_mri_channels --plan (every step listed,
 nothing run, nothing written).
     python -m pytest tests/test_mri_new_brain.py      or      python tests/test_mri_new_brain.py"""
 import os
@@ -65,6 +66,35 @@ def test_modality_table_matches_the_recipe_layout():
         assert M["brain"] in L or M["brain"].endswith(".nii.gz")
     for key in ("final_mask", "sarm_in_subject", "nmt_affine", "dwi_eddy", "dwi_ecclog", "dwi_bvecs", "dwi_bvals", "dwi_fit_mask"):
         assert key in L, f"the build driver's input {key} is missing from prep.layout"
+
+
+def test_next_steps_name_both_routes_and_their_tutorials():
+    import shlex
+    from template.link import b0_to_template
+    b0, mask = "/d/sub-X/mri/dwi/b0_brain_n4.nii.gz", "/d/sub-X/mri/masks/dwi_brain_mask.nii.gz"
+    nxt = NB.next_steps("X", b0, mask)
+    assert [r["route"] for r in nxt] == ["mri-template", "blockface"]
+    assert nxt[0]["tutorial"] == "docs/tutorials/01_mri.md, Step B2" and nxt[1]["tutorial"] == "docs/tutorials/02_blockface.md, Step 3"
+    for r in nxt:                                            # each tutorial step exists under that heading
+        doc, step = r["tutorial"].split(", ")
+        assert f"Step {step.split()[1]}." in (REPO / doc).read_text(), r["tutorial"]
+    (to_template,), (to_b0, then) = nxt[0]["commands"], nxt[1]["commands"]
+    mri_help = subprocess.run([sys.executable, str(REPO / "code" / "blockface" / "registration" / "linc-register"), "mri", "-h"],
+                              capture_output=True, text=True, env=dict(os.environ, PYTHONNOUSERSITE="1")).stdout
+    w = shlex.split(to_b0)
+    assert w[1:3] == ["code/blockface/registration/linc-register", "mri"] and w[w.index("--place-b0") + 1:w.index("--place-b0") + 3] == [b0, mask]
+    assert all(o in mri_help for o in w if o.startswith("--")), "an option of the mri command that linc-register mri does not know"
+    for c, frame in ((to_template, True), (then, False)):    # parsed by mri-template's own parser: the b0, its mask, the frame or none
+        w = shlex.split(c)
+        assert w[1:3] == ["code/blockface/registration/linc-register", "mri-template"]
+        a = b0_to_template.parser().parse_args(w[3:])
+        assert (a.subject, a.b0, a.mask) == ("X", b0, mask) and a.template_b0.endswith("linc_mri_b0.nii.gz")
+        assert (a.frame == "$LINC_TEMPLATE/frames/mri_template_0p5.nii.gz") if frame else a.frame is None
+        assert "--place-b0" not in w                         # mri-template's frame goes by --frame
+    text = NB.next_text(nxt)
+    assert text.count("docs/tutorials/") == 2 and text.count("linc-register") == 3 and text.startswith("  next: ")
+    t2 = NB.next_steps("X", "/d/t2.nii.gz", "/d/m.nii.gz", "t2")
+    assert t2[0]["commands"] == [] and "b0" in NB.next_text(t2)
 
 
 def test_build_mri_channels_plan_lists_every_step_and_runs_nothing():

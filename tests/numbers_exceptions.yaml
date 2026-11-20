@@ -310,7 +310,7 @@ bf_outside10_s9_015_s11w_onepass_v2:
   reason: "the ten brains outside the final step, before and after their registration to the final template, on the same voxels: it reads the working arrays of the eighth-step and final-step builds and each brain's carried images, kept with the analysis, not in the data folder; one of the ten registrations is reproduced by steps.yaml bf-template-step9-refine (MF191, field identical)"
   not_regenerated: true
 fig_tracer_v11_h9_s11wr17:
-  reason: "the numbers printed with the tracer figure (Fig. 10): written with the figure by a script of the analysis from the tracer labels carried into the template and the SARM atlas resampled to it; the figure's own script is not in this release"
+  reason: "the numbers printed with the tracer figure (Fig. 9): written with the figure by a script of the analysis from the tracer labels carried into the template and the SARM atlas resampled to it; the figure's own script is not in this release"
   not_regenerated: true
 s5_link_ncc_settings_r085:
   reason: "the settings of the local NCC that scores the link between the two templates, read from the analysis code that ran it and the link's record; no step of this release writes it"
@@ -343,4 +343,16 @@ synthesis_leakfree_ownarm_a19:
 synthesis_leakfree_fills_depth_a19:
   reason: "the never-seen networks' margin over the best simple fill and their SSIM by depth in the withheld-slab test made without the withheld tissue (Supplementary Section S5); its inputs, the networks' evaluations and the simple fills on those placements, are working files of the analysis that the data folder does not hold"
   # the paper reads: cells.{lfr1,lfr1c}.{fill_best.mean,vs_best_fill.{mean,n,n_positive,ci95_t},per_mm.{0-1mm,6-7mm}.*}
+  not_regenerated: true
+fig9_coronal_slabs3m_allclasses_s11wr17:
+  reason: "the three coronal slabs of the tracer figure (Fig. 9b-d: midway between the first and the last entry of the prefrontal cases into the internal capsule, the slab where all three have entered, and the slab of record), counted on the tracer labels of record, with the drawing's rule for pieces outside the capsule's window; the charted sections in the template that they count are working files of the analysis that the data folder does not hold, and the figure's own script is not in this release"
+  # the paper reads: levels.b.from_commissure_mm, levels.b.first_entry_from_commissure_mm, levels.c.from_commissure_mm, rule.min_voxels, window_mm, levels.b.cases.{MM1,MM3,MF8}.position.share_outside_capsule
+  not_regenerated: true
+fig9_rowa_virtual_sections_s11wr17nl:
+  reason: "row (a) of the tracer figure (Fig. 9a): each case as regular sections cut in the template along its own sectioning direction, with the thickness and spacing measured on the charted sections, on the tracer labels without the light fiber bundle class, which are working files of the analysis that the data folder does not hold"
+  # the paper reads: t_mm, p_mm, cases.{MM1,MM2,MM3,MF8}.{share_drawn_charted,share_charted_drawn}
+  not_regenerated: true
+fig9_rowa_style_r3_s11wr17nl:
+  reason: "how row (a) of the tracer figure (Fig. 9a) is drawn: the depth shade, the fills' opacity, the casing and the dimmed image under the side views; the settings of a figure script of the analysis that is not in this release"
+  # the paper reads: shade.range_mm, variants.B.{shade_factor_at_midline,fill_opacity,underlay}
   not_regenerated: true

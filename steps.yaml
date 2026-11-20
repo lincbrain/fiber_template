@@ -1,12 +1,12 @@
 # The plan run.py runs: every step of the paper, as one entry each (docs/tutorials/ describe them in words).
-# Every step reads the paper's inputs from the data folders (links to the records) and writes into the clone; its check compares
+# Every step reads the paper's inputs from the working folders (links to the data folder's files) and writes under outputs/; its check compares
 # what it wrote with the paper's file. Fields:
 #   name      the step's id; with `for`, the step is written out once per brain as <name>-<ID>, and {id} in the other fields is the brain
 #             ({chain_tag} and {lgnstn_dir}: the labels' route in the settings, settings/labels.yaml template_chain_tag and
 #             products_mri.yaml lgnstn_template_labels)
 #   group     setup | paper | mri-template | blockface | registration | synthesis | blockface-template | link | histology | labels | training
 #   for       a set of brains (`sets` below) or a list of LINC IDs
-#   title, inputs, outputs   what it does, reads and writes, in plain words
+#   title, reads, writes     what it does, what it reads and what it writes, in plain words
 #   run       the command: one shell line, from the repository root, in the shell that `source settings/roots.sh` gives
 #   check     a command that exits 0 only when `expect` holds and prints its evidence on its last line; left out when there is no
 #             file of record to compare with
@@ -33,9 +33,9 @@ steps:
   # ---- setup
   - name: data-folders
     group: setup
-    title: Data folders of all 21 brains (records linked, manual inputs copied)
-    reads: the records ($LINC_RECORDS/data/sub-<ID>, read only); settings/brains/<ID>.yaml
-    writes: $LINC_DATA/sub-<ID>/ (links to the records; xfm/ empty, xfm_record/ the entries of record); $LINC_REBUILD_DATA/sub-<ID>/blockface/ (copies
+    title: Working folders of all 21 brains (the data folder's files linked, manual inputs copied)
+    reads: the data folder (its files as the code names them, outputs/in/data/sub-<ID>, read only); settings/brains/<ID>.yaml
+    writes: $LINC_DATA/sub-<ID>/ (links to the data folder's files; xfm/ empty, xfm_record/ the entries of record); $LINC_REBUILD_DATA/sub-<ID>/blockface/ (copies
       of the manual inputs only)
     run: code/shared/make_local_data.sh $(dirname $LINC_DATA) MF278 MF275 MF282 MF191 MF196 MF204 MR243 MR252 MR256 MR249 MR250 MR251 MR253 MR254 MR257
       MR261 MR244 MR247 MR248 MR263 MR273 && code/shared/make_local_data.sh $(dirname $LINC_REBUILD_DATA) --rebuild MF278 --rebuild MF275 --rebuild MF282
@@ -46,8 +46,8 @@ steps:
       ] && [ -f $E"_holes_edited.nii.gz" ] && [ ! -L $E"_mask_edited.nii.gz" ] && n=$((n+1)); done; l=$(find $LINC_REBUILD_DATA/sub-*/blockface -type
       l | wc -l); echo "$n of 21 brains: products of record linked, manual inputs copied; $l links in the rebuild''s blockface folders"; [ $n -eq 21
       ] && [ $l -eq 0 ]'
-    expect: all 21 brains in both folders, and no link into the records in the rebuild's blockface folders (so a reconstruction cannot write into
-      the records)
+    expect: all 21 brains in both folders, and no link into the data folder in the rebuild's blockface folders (so a reconstruction cannot write into
+      the data folder)
     needs: []
     gpu_gb: 0
     gpu_model: ''
@@ -164,8 +164,8 @@ steps:
     hours: 0.02
     timed: clone
     optional: false
-    note: '6 Nov, clone 7929dc3 on a shared machine, these lines verbatim: 11 s, check 81 of 81 records match. The run line regenerates the two records
-      that hold the clone''s raw paths; single records need make -C code/figures (the root Makefile forwards only the group targets)'
+    note: '6 Nov, commit 7929dc3 on a shared machine, these lines verbatim: 11 s, check 81 of 81 records match. The run line regenerates the two records
+      that hold the raw paths of the copy they ran in; single records need make -C code/figures (the root Makefile forwards only the group targets)'
 
   # ---- mri-template
   - name: mri-stage
@@ -321,7 +321,7 @@ steps:
     hours: 0.03
     timed: clone
     optional: false
-    note: 'From the clone''s own NMT registration the plane fit can land on another optimum: on MF4 (MF286) 0.81 degrees from the paper''s plane,
+    note: 'From your own run''s NMT registration the plane fit can land on another optimum: on MF4 (MF286) 0.81 degrees from the paper''s plane,
       close to the 1 degree limit.'
   - name: mri-prepare
     group: mri-template
@@ -390,7 +390,7 @@ steps:
     hours: 2
     timed: clone
     optional: false
-    note: 'This check counts the files and does not compare them, because the paper''s files of this stage are not in the data tree. The full comparison with those files passed in the 189-step run from a clone (6 Nov: 202 of 202 identical). Stops the driver when step 2''s first task is written. 4 Nov from a clone on a shared RTX 6000 Ada: 202 of 202 identical, 3.9 GB of GPU
+    note: 'This check counts the files and does not compare them, because the paper''s files of this stage are not in the data folder. The full comparison with those files passed in the 189-step run from a clone (6 Nov: 202 of 202 identical). Stops the driver when step 2''s first task is written. 4 Nov from a clone on a shared RTX 6000 Ada: 202 of 202 identical, 3.9 GB of GPU
       memory at most, 2.9 h with one stop and resume (the paper''s run: 7 min + 1.2 h). The plan asks for the card alone; the 4 Nov run shared the
       card and was still identical. run_until.py is new (tested on 6 Nov on a small command); the 4 Nov run was stopped the same way by a script.'
   - name: mri-construction-full
@@ -1066,7 +1066,7 @@ steps:
     hours: 9
     timed: estimated
     optional: false
-    note: 'The check compares the final three files of step 7; steps 1 to 5 are not compared, because their 6,575 intermediate files are not in the data tree. Rerun with this code on 4-5 Nov on an RTX 6000 Ada (not from a clone): steps 1 to 5 identical (the comparison then in this check: 6,575 of 6,575 files, 43 min
+    note: 'The check compares the final three files of step 7; steps 1 to 5 are not compared, because their 6,575 intermediate files are not in the data folder. Rerun with this code on 4-5 Nov on an RTX 6000 Ada (not from a clone): steps 1 to 5 identical (the comparison then in this check: 6,575 of 6,575 files, 43 min
       on a loaded machine), steps 6 and 7 within its tolerance (7:3 templates r 0.9999999 and 0.9999997; average warp median 0.0014 mm, 99th percentile
       0.008 mm). 12 h 12 min on a shared card, about 8.5 h on a free one; MMORF peaked at 8.2 GB for its 8 tasks; 120 GB on disk. On the paper''s
       card model only (the identity was shown there), and alone on the card: MMORF once failed to allocate its memory beside other jobs. From a clone
@@ -1262,7 +1262,8 @@ steps:
   - name: link-consistency
     group: link
     title: The link's consistency check (the registrations composed through the brains)
-    reads: the brains' registrations of record ($LINC_RECORDS/data, read only) and the members' construction warps of record; this run's link (link/sym);
+    reads: the brains' registrations of record, from the data folder (its files as the code names them, outputs/in/data, read only) and the members'
+      construction warps of record; this run's link (link/sym);
       the one-way link of record (greedy)
     writes: $LINC_WORK/build_link/link/s5_compose_d2bs8_r05_guard/, s5_tpl_d2bs8_r05_guard/, s5_compare_d2bs8.json
     run: LINC_DATA=$LINC_RECORDS/data $PY code/template/build_link.py --from greedy-link --to compare
@@ -1284,8 +1285,8 @@ steps:
     hours: 0.15
     timed: clone
     optional: false
-    note: 'Reads the brains'' registrations of record from the records (read only): a clone''s xfm/ holds only its own runs'' entries, and without
-      them compose takes every brain for one without MRI and stops on a missing file. Its 8 workers use about 5 threads each. Tested 6 Nov: 6 min
+    note: 'Its command starts with LINC_DATA=$LINC_RECORDS/data, the data folder''s files through outputs/in, read only: it reads the brains''
+      registrations of record there, because a working folder''s xfm/ holds only your own runs'' entries; without them compose takes every brain for one without MRI and stops on a missing file. Its 8 workers use about 5 threads each. Tested 6 Nov: 6 min
       11 s; composition identical (its spread differs at a few voxels by about 1e-7 mm, as code/template/README.md says for the default member
       order); median 0.311 and 95th percentile 1.010 mm against the paper''s 0.312 and 1.005 mm.'
   - name: atlas-NMT

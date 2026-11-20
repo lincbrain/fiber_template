@@ -1,11 +1,11 @@
-# A new brain's configuration: copy this file to settings/brains/<ID>.yaml, where <ID> is the brain's identifier (its data folder is
-# $LINC_DATA/sub-<ID>/), fill in the REQUIRED fields and delete the optional ones you do not need (their defaults are given). The
+# A new brain's configuration: copy this file to settings/brains/<ID>.yaml, where <ID> is the brain's identifier (its working folder
+# is $LINC_DATA/sub-<ID>/), fill in the REQUIRED fields and delete the optional ones you do not need (their defaults are given). The
 # paper's 21 brains are worked examples (e.g. MR243.yaml: 400 um sections; MR252.yaml: 50 um sections with missing sections).
 # Read by code/blockface/linc-reconstruct (code/blockface/subject.py), code/blockface/registration/linc-register and code/histology/linc-histology. Every input a brain needs, raw and
 # manually made, is listed in docs/how-to/new_brain.md.
 
 # ---------------------------------------------------------------------------------------------------- the photographs (photos)
-subject: NEWBRAIN          # REQUIRED. The identifier, exactly as in this file's name and in the data folder sub-<ID>.
+subject: NEWBRAIN          # REQUIRED. The identifier, exactly as in this file's name and in brains/sub-<ID> of the data folder.
 raw: lab/NEWBRAIN/photos   # REQUIRED. The folder of the blockface photographs, relative to $LINC_RAW.
 raw_glob: '*.JPG'          # REQUIRED. The photographs' file pattern in that folder.
 raw_regex: 'Img(\d+)\.JPG' # REQUIRED. A regular expression whose first group is the photograph's number (its order in the cutting).

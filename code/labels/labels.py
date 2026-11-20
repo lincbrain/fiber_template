@@ -12,8 +12,8 @@ Tracer annotations (`push_tracer`). For every section with any non-empty annotat
   4. it goes through the piece's TIRL chain (moving.timg -> fixed4_nonlinear.timg, nearest neighbor), is turned back to the store's
      orientation (the blockface piece is the store slice turned 180 degrees), max-pooled `pool` x `pool` onto the target grid and
      placed at the piece's blockface slice (photograph number from the match table - the first photograph number).
-Output: one NIfTI per class, <S>_<class>_bfnative_L2.nii.gz (uint8 0/1, the target grid's affine = bf-native world), and
-push_tracer_<S>.json (per piece and class: pixels on the section, on the moving grid, in the blockface piece, on the target grid).
+Output: one NIfTI per class, <ID>_<class>_bfnative_L2.nii.gz (uint8 0/1, the target grid's affine = bf-native world), and
+push_tracer_<ID>.json (per piece and class: pixels on the section, on the moving grid, in the blockface piece, on the target grid).
 
 LGN/STN labels (`push_structures`), two stages: (A) each labeled frame of the annotators' histology stack goes onto its piece's moving
 grid through the frame -> piece transform (SimpleITK; composed with the moving-grid similarity when the transform was fitted on another
@@ -42,13 +42,13 @@ def config():
 
 
 def layout(subject, key, cfg=None):
-    """$LINC_DATA/sub-<S>/<layout[key]> (settings/labels.yaml)."""
+    """$LINC_DATA/sub-<ID>/<layout[key]> (settings/labels.yaml)."""
     cfg = cfg or config()
     return paths.subject_dir(subject) / cfg["layout"][key].format(S=subject)
 
 
 def subject_config(subject):
-    """settings/brains/<S>.yaml (the reconstruction's inputs: idx_range, vx, vz, ...)."""
+    """settings/brains/<ID>.yaml (the reconstruction's inputs: idx_range, vx, vz, ...)."""
     import yaml
     return yaml.safe_load((CONFIG.parent / "brains" / f"{subject}.yaml").read_text())
 
@@ -309,7 +309,7 @@ def structure_to_moving(frame_label, transform, moving_png, fitted_png=None):
 def push_structures(subject, items, *, match_table_path, registrations, grid, first_photo_number, out_dir, structs, cfg=None,
                     log=print):
     """Stage B: `items` = [{struct, frame, piece, moving: uint8 label on the piece's moving grid}] (stage A) -> one NIfTI per
-    structure, <S>_<struct>_bfnative_L2.nii.gz, at the whole-section blockface slice of each piece."""
+    structure, <ID>_<struct>_bfnative_L2.nii.gz, at the whole-section blockface slice of each piece."""
     import nibabel as nib
     P = (cfg or config())["push"]
     K, outside = int(P["pool"]), int(P["outside_code"])

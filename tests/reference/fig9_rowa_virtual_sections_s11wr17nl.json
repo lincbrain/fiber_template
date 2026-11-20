@@ -1,0 +1,214 @@
+{
+ "data": {
+  "rule": "Source: each case's bundle label interpolated between its charted sections, without the light fiber bundle class, before any join (the\ninterpolated, not-joined label). Direction: the case's own sectioning direction in the template, the mean normal of its charted\nsections. A voxel center r of the label is drawn when ((r . n - phase) mod p) < t: sections of thickness t every p along n.\nThickness and spacing, one pair for all four cases, measured on MM1-MM3's charted sections as they lie in the template: along lines\nparallel to each case's normal through every occupied 0.25 mm cell of the plane normal to it, sampled every 0.05 mm (nearest voxel),\na run of samples inside the charted footprint is a section's thickness there and the distance from one run's start to the next one's\nstart the period; t and p are the medians of the pooled runs of MM1, MM2 and MM3, rounded to 0.05 mm. Phase per case, in 0.02 mm steps:\nthe one whose sections hold the most of the case's charted footprint voxels.\n\nPer case: the drawn voxels; of them, the share in the charted footprint; of the charted footprint, the share inside the comb's planes and\nthe share drawn (inside the planes and in the label). Tested beside it, not drawn: the same with each case's own spacing, (i) the median\nperiod of its own runs and (ii) the median spacing of its charted sections' centers (their plane fits).",
+  "measured": {
+   "MM1": {
+    "normal": [
+     0.0138,
+     0.9651,
+     0.2614
+    ],
+    "thickness_mm": {
+     "n": 1951,
+     "median": 0.5,
+     "q25": 0.25,
+     "q75": 0.55
+    },
+    "period_mm": {
+     "n": 1042,
+     "median": 1.0,
+     "q25": 0.75,
+     "q75": 1.3
+    },
+    "center_spacing_mm": 0.935
+   },
+   "MM3": {
+    "normal": [
+     -0.0241,
+     0.9754,
+     0.2193
+    ],
+    "thickness_mm": {
+     "n": 1988,
+     "median": 0.45,
+     "q25": 0.25,
+     "q75": 0.5
+    },
+    "period_mm": {
+     "n": 858,
+     "median": 1.0,
+     "q25": 0.75,
+     "q75": 1.15
+    },
+    "center_spacing_mm": 0.959
+   },
+   "MF8": {
+    "normal": [
+     0.0023,
+     0.9434,
+     0.3315
+    ],
+    "thickness_mm": {
+     "n": 5751,
+     "median": 0.8,
+     "q25": 0.3,
+     "q75": 1.3
+    },
+    "period_mm": {
+     "n": 3167,
+     "median": 1.45,
+     "q25": 0.75,
+     "q75": 2.9
+    },
+    "center_spacing_mm": 1.385
+   },
+   "MM2": {
+    "normal": [
+     -0.0296,
+     0.9291,
+     0.3686
+    ],
+    "thickness_mm": {
+     "n": 1275,
+     "median": 0.5,
+     "q25": 0.25,
+     "q75": 0.55
+    },
+    "period_mm": {
+     "n": 647,
+     "median": 1.05,
+     "q25": 0.8,
+     "q75": 1.6
+    },
+    "center_spacing_mm": 0.95
+   }
+  },
+  "pooled_MM1_MM3": {
+   "thickness_median_mm": 0.5,
+   "period_median_mm": 1.0,
+   "rounding_mm": 0.05,
+   "runs": {
+    "thickness": 5214,
+    "period": 2547
+   }
+  },
+  "t_mm": 0.5,
+  "p_mm": 1.0,
+  "cases": {
+   "MM1": {
+    "t_mm": 0.5,
+    "p_mm": 1.0,
+    "phase_mm": 0.1,
+    "drawn_voxels": 2279,
+    "share_drawn_charted": 0.6398,
+    "share_charted_in_planes": 0.5449,
+    "share_charted_drawn": 0.4311
+   },
+   "MM3": {
+    "t_mm": 0.5,
+    "p_mm": 1.0,
+    "phase_mm": 0.38,
+    "drawn_voxels": 2954,
+    "share_drawn_charted": 0.5697,
+    "share_charted_in_planes": 0.5656,
+    "share_charted_drawn": 0.5199
+   },
+   "MF8": {
+    "t_mm": 0.5,
+    "p_mm": 1.0,
+    "phase_mm": 0.9,
+    "drawn_voxels": 10302,
+    "share_drawn_charted": 0.8072,
+    "share_charted_in_planes": 0.5088,
+    "share_charted_drawn": 0.3929
+   },
+   "MM2": {
+    "t_mm": 0.5,
+    "p_mm": 1.0,
+    "phase_mm": 0.92,
+    "drawn_voxels": 1979,
+    "share_drawn_charted": 0.5846,
+    "share_charted_in_planes": 0.5679,
+    "share_charted_drawn": 0.5117
+   }
+  },
+  "tested_not_drawn": {
+   "own_period": {
+    "MM1": {
+     "t_mm": 0.5,
+     "p_mm": 1.0,
+     "phase_mm": 0.1,
+     "drawn_voxels": 2279,
+     "share_drawn_charted": 0.6398,
+     "share_charted_in_planes": 0.5449,
+     "share_charted_drawn": 0.4311
+    },
+    "MM3": {
+     "t_mm": 0.5,
+     "p_mm": 1.0,
+     "phase_mm": 0.38,
+     "drawn_voxels": 2954,
+     "share_drawn_charted": 0.5697,
+     "share_charted_in_planes": 0.5656,
+     "share_charted_drawn": 0.5199
+    },
+    "MF8": {
+     "t_mm": 0.5,
+     "p_mm": 1.45,
+     "phase_mm": 0.18,
+     "drawn_voxels": 7192,
+     "share_drawn_charted": 0.8102,
+     "share_charted_in_planes": 0.3538,
+     "share_charted_drawn": 0.2753
+    },
+    "MM2": {
+     "t_mm": 0.5,
+     "p_mm": 1.05,
+     "phase_mm": 1.0,
+     "drawn_voxels": 1855,
+     "share_drawn_charted": 0.5935,
+     "share_charted_in_planes": 0.5453,
+     "share_charted_drawn": 0.487
+    }
+   },
+   "own_center_spacing": {
+    "MM1": {
+     "t_mm": 0.5,
+     "p_mm": 0.935,
+     "phase_mm": 0.38,
+     "drawn_voxels": 2387,
+     "share_drawn_charted": 0.6598,
+     "share_charted_in_planes": 0.5946,
+     "share_charted_drawn": 0.4657
+    },
+    "MM3": {
+     "t_mm": 0.5,
+     "p_mm": 0.959,
+     "phase_mm": 0.68,
+     "drawn_voxels": 3024,
+     "share_drawn_charted": 0.5757,
+     "share_charted_in_planes": 0.5907,
+     "share_charted_drawn": 0.5378
+    },
+    "MF8": {
+     "t_mm": 0.5,
+     "p_mm": 1.385,
+     "phase_mm": 0.12,
+     "drawn_voxels": 7562,
+     "share_drawn_charted": 0.8032,
+     "share_charted_in_planes": 0.3661,
+     "share_charted_drawn": 0.2869
+    },
+    "MM2": {
+     "t_mm": 0.5,
+     "p_mm": 0.95,
+     "phase_mm": 0.88,
+     "drawn_voxels": 2123,
+     "share_drawn_charted": 0.6067,
+     "share_charted_in_planes": 0.6373,
+     "share_charted_drawn": 0.5697
+    }
+   }
+  }
+ }
+}

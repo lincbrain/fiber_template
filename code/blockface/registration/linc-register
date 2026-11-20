@@ -37,6 +37,8 @@ You get
   $LINC_WORK/qc).
 
     $PY code/blockface/registration/linc-register mri --subject <ID> [--place-b0 B0 [MASK]] [--new-brain]
+    $PY code/blockface/registration/linc-register mri-template --subject <ID> [--b0 B0 --mask MASK [--frame FRAME_0P5]] \
+        --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
     $PY code/blockface/registration/linc-register direct-placement --subject <ID> --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz \
         --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
     $PY code/blockface/registration/linc-register blockface-template --subject <ID>
@@ -87,7 +89,8 @@ def mri_route(a):
         sys.exit(f"{S}: no reconstruction in {bd} ({S}_blockface.ome.zarr, {S}_mask.nii.gz). $LINC_DATA is {paths.data_root()}; "
                  "a paper brain you reconstructed yourself is under $LINC_REBUILD_DATA: put LINC_DATA=$LINC_REBUILD_DATA in front of "
                  "this command (docs/tutorials/02_blockface.md, Step 3).")
-    plan, why = to_own_mri.own_mri_plan(md, S, scfg, new_brain=a.new_brain, placing=bool(a.place_b0))
+    plan, why = to_own_mri.own_mri_plan(md, S, scfg, new_brain=a.new_brain, placing=bool(a.place_b0),
+                                        frame=paths.template_root() / "frames" / "mri_template_0p5.nii.gz")
     if plan == "stop":                          # before any work: one line instead of a traceback from a missing file
         sys.exit(why)
     _iso_pair(S)
@@ -182,7 +185,7 @@ def direct_placement_route(a):
     si = sub / "mri" / "stand_in"
     rec = os.environ.get("LINC_DATA_TREE") or os.environ.get("LINC_RECORDS")
     if rec and (os.path.realpath(si) + os.sep).startswith(os.path.realpath(rec).rstrip(os.sep) + os.sep):
-        sys.exit(f"{si} is inside the records ({rec}): make your own data folder (code/shared/make_local_data.sh)")
+        sys.exit(f"{si} is inside the data folder ({rec}): work in the working folder (source settings/roots.sh), or make one (code/shared/make_local_data.sh)")
     if si.exists() and not a.overwrite:
         sys.exit(f"{si} exists: pass --overwrite to replace it")
     frame, bridge = paths.template_root() / "frames" / "mri_template_0p5.nii.gz", paths.template_root() / "bridge_run113_to_canonical" / "linear.json"
@@ -252,10 +255,12 @@ def main():
     m.add_argument("--linear-only", action="store_true", help="steps 2-3 only (CPU)")
     m.add_argument("--new-brain", action="store_true", help="estimate the start pose (ignore a pose of record)")
     m.add_argument("--place-b0", nargs="+", metavar="PATH", default=None,
-                   help="B0_NATIVE [MASK_NATIVE]: place the b0 and its brain mask on the template's 0.5 mm grid first "
+                   help="B0_NATIVE [MASK_NATIVE]: the brain's b0 as acquired or prepared (linc-mri prep's dwi/b0_brain_n4.nii.gz) and, "
+                        "optionally, its brain mask on the same grid, placed rigidly on the template's 0.5 mm frame first "
                         "($LINC_TEMPLATE/frames/mri_template_0p5.nii.gz); "
                         "without MASK_NATIVE the b0 is segmented by the MRI brain-mask network (linc-segment's mri_brainmask; one "
-                        "network, no engine switch); a paper brain needs MASK_NATIVE unless --new-brain")
+                        "network, no engine switch); a paper brain needs MASK_NATIVE unless --new-brain. (mri-template's --frame, "
+                        "once also called --place-b0 there, takes the frame instead.)")
     _registry_args(m)
     sp.add_parser("mri-template", add_help=False, help="the brain's own b0 -> the MRI template's b0 (options: mri-template -h)")
     b = sp.add_parser("blockface-template", help="the blockface-based alignment: blockface -> a blockface template")

@@ -174,8 +174,13 @@ def judge_size(rows):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("subjects", nargs="+")
-    ap.add_argument("--data", default=os.environ.get("LINC_DATA"), help="per-brain data root ($LINC_DATA)")
+    ap.add_argument("--data", default=None, help="the working folder, one folder per brain (default $LINC_DATA; never the data folder)")
     a = ap.parse_args()
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+    from shared import paths                                                     # the working folder, never the data folder
+    a.data = str(paths.data_root()) if a.data is None else a.data
+    if paths.is_data_folder(a.data):
+        sys.exit(f"--data {a.data} is the data folder; give the working folder made from it ($LINC_DATA after `source settings/roots.sh`).")
     rows = [check(S, a.data) for S in a.subjects]
     lr, dv = judge_size(rows)
     json.dump(dict(rows=rows, cohort_median_LR_mm=lr, cohort_median_DV_mm=dv), sys.stdout, indent=1)

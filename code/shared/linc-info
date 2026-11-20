@@ -12,7 +12,8 @@ What it does
      settings/env/tirl.yml; ZARR2NII_BIN when set)
   4. asks each interpreter the pipeline is pointed at for its own versions (Python, torch, CUDA, MONAI, TIRL, anatomix): LINC_SEGMENT_PYTHON, ANATOMIX_PYTHON,
      PY_TIRL, PY_MRI, PY_DEEP (settings/env/README.md says which environment each one is)
-  5. lists the roots (settings/roots.sh: LINC_RAW, LINC_DATA, LINC_TEMPLATE, LINC_MODELS, LINC_PRODUCTS, LINC_NUMBERS, LINC_WORK), set or not, and every other $LINC_* setting
+  5. lists the roots (settings/roots.sh: LINC_DATA_TREE, the data folder; LINC_DATA, the working folder; LINC_RAW, LINC_TEMPLATE, LINC_MODELS, LINC_PRODUCTS,
+     LINC_NUMBERS, LINC_WORK), set or not, and every other $LINC_* setting
 
 You get
   a report on the terminal, or JSON with --json; nothing is written. A few seconds, up to about a minute when an interpreter imports torch for the first time from a
@@ -31,7 +32,8 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-ROOTS = ("LINC_RAW", "LINC_DATA", "LINC_TEMPLATE", "LINC_MODELS", "LINC_PRODUCTS", "LINC_NUMBERS", "LINC_WORK")
+ROOTS = ("LINC_DATA_TREE", "LINC_DATA", "LINC_RAW", "LINC_TEMPLATE", "LINC_MODELS", "LINC_PRODUCTS", "LINC_NUMBERS", "LINC_WORK")
+NAMED = {"LINC_DATA_TREE": "the data folder", "LINC_DATA": "the working folder"}     # the two folders the docs name
 INTERPRETERS = ("LINC_SEGMENT_PYTHON", "ANATOMIX_PYTHON", "PY_TIRL", "PY_MRI", "PY_DEEP")
 NOT_FOUND = "not found"
 PROBE = r"""
@@ -140,8 +142,12 @@ def interpreters():
 
 
 def roots():
-    """the folder roots (settings/roots.sh): set or not, and whether the folder exists"""
-    return {k: (dict(path=os.environ[k], exists=Path(os.environ[k]).is_dir()) if os.environ.get(k) else "(not set)") for k in ROOTS}
+    """the folder roots (settings/roots.sh): set or not, and whether the folder exists; the data folder and the working folder named"""
+    out = {}
+    for k in ROOTS:
+        is_ = {"is": NAMED[k]} if k in NAMED else {}
+        out[k] = dict(is_, path=os.environ[k], exists=Path(os.environ[k]).is_dir()) if os.environ.get(k) else ("(not set: " + NAMED[k] + ")" if k in NAMED else "(not set)")
+    return out
 
 
 def settings():

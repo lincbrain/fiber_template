@@ -28,8 +28,10 @@ You get
   with a provenance.json. propose writes beside --out: match_table_proposed.txt, match_review.csv and match_review/ (an image per
   flagged component).
 
-    $PY_TIRL code/histology/linc-histology all --subject <ID> --store <ID>_blockface.ome.zarr --histology <sections dir> \
-        --regions <ID>_regions.nii.gz --out $LINC_DATA/sub-<ID>/histology/registration --threads 12 --jobs 2
+    H=$LINC_DATA/sub-<ID>/histology; STORE=$LINC_DATA/sub-<ID>/blockface/<ID>_blockface.ome.zarr
+    $PY_TIRL code/histology/linc-histology all --subject <ID> --store $STORE --histology <sections folder> \
+        --regions $H/regions.nii.gz --out $H/registration --threads 12 --jobs 2
+  (a paper brain's sections folder: $LINC_DATA_TREE/brains/sub-<ID>/inputs/histology/sections)
 
 Details. Parameters: settings/histology.yaml. The regions volume is scaled into the store's calibrated frame by the brain's own
 factors (calibrated / made-at spacing per axis): the made-at spacing is settings/histology.yaml regions.made_at_spacing_um's entry for
@@ -105,11 +107,11 @@ def main():
     ap.add_argument("--table", help="the histology <-> blockface match table (default: the edited table, else the proposal)")
     ap.add_argument("--brain-mask", help="propose: the brain mask (default: <ID>_mask.nii.gz beside the store)")
     ap.add_argument("--photos-per-section", type=float, help="propose: photographs per histology section (default: from the spacing)")
-    ap.add_argument("--regions", help="atlas regions on the blockface (1 left, 2 right, 3 cerebellum + brainstem, 4 holes)")
+    ap.add_argument("--regions", help="the regions volume on the blockface (1 left, 2 right, 3 cerebellum + brainstem, 4 marker tubes)")
     ap.add_argument("--regions-spacing-um", nargs=2, type=float, metavar=("VX", "VZ"),
                     help="the spacing (um) these regions were made at, in place of settings/histology.yaml's for this brain (e.g. "
                          "MF8's hidden-arm regions of record, 23.75 600: settings/internal/products_blockface.yaml hidden_arm_regions)")
-    ap.add_argument("--out", required=True, help="output folder of this brain's histology registration")
+    ap.add_argument("--out", required=True, help="output folder of this brain's histology registration ($LINC_DATA/sub-<ID>/histology/registration, where the label steps read it)")
     ap.add_argument("--masks", help="use these tissue masks instead of <out>/tissue_masks")
     ap.add_argument("--idx0", type=int, help="raw photograph index of the store's first slice")
     ap.add_argument("--ccs", type=int, help="first histology section where the corpus callosum joins the hemispheres")

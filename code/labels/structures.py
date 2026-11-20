@@ -7,7 +7,7 @@ Per structure (settings/labels.yaml push.structures):
   section) are first rebuilt in 3D by shape-based interpolation between sections (signed distances, ends extended by half the section
   spacing), dense labels (demons-interpolated, *_bfnative_L2_demons) are used as they are; Gaussian anti-aliasing per source axis
   (FWHM = max(source spacing, target voxel), labels.carry.aa_sigma); one linear resample through the target's chain (shared.xfm.apply);
-  mask = probability > 0.5. The provenance channel of the dense labels (<S>_labels_demons_prov.nii.gz: 1 = charted section,
+  mask = probability > 0.5. The provenance channel of the dense labels (<ID>_labels_demons_prov.nii.gz: 1 = charted section,
   2 = interpolated) goes the same way with nearest neighbor.
 Targets:
   mri-template  the MRI template's b0 grid, through the brain's route (settings/labels.yaml template_routes; labels/route.py
@@ -15,8 +15,8 @@ Targets:
   b0-native     the brain's b0 grid, for a brain with a b0 registration (b0_source): its R1 of record (route.r1_entry) for the paper's
                 brains, else its own registration from `linc-register mri`; a brain without one is carried into the template only
 You get, in the output folder, per structure and target
-  <S>_<struct>_bfnative_3d{sfx}.nii.gz, <S>_<struct>_<target>_prob{sfx}.nii.gz (+ provenance), <S>_<struct>_<target>_mask{sfx}.nii.gz,
-  <S>_labels_demons_prov_<target>.nii.gz (dense), to_template_<S>{sfx}.json        (sfx = _demons for dense labels)
+  <ID>_<struct>_bfnative_3d{sfx}.nii.gz, <ID>_<struct>_<target>_prob{sfx}.nii.gz (+ provenance), <ID>_<struct>_<target>_mask{sfx}.nii.gz,
+  <ID>_labels_demons_prov_<target>.nii.gz (dense), to_template_<ID>{sfx}.json        (sfx = _demons for dense labels)
 
 Ported from the analysis project's labels/labels_to_template.py (plain and --dense), with each brain's route from the settings.
 """
@@ -75,8 +75,8 @@ def crop(img, dense, margin_mm=2.0):
 
 
 def carry_structures(S, src_dir, out_dir, targets, structs, dense, log=print):
-    """Carry <src_dir>/<S>_<struct>_bfnative_L2{sfx}.nii.gz for each struct to each target, targets = {name: (ref grid, chain)} in the
-    order they are written. Returns the record (also written as to_template_<S>{sfx}.json)."""
+    """Carry <src_dir>/<ID>_<struct>_bfnative_L2{sfx}.nii.gz for each struct to each target, targets = {name: (ref grid, chain)} in the
+    order they are written. Returns the record (also written as to_template_<ID>{sfx}.json)."""
     from shared import xfm
     sfx = "_demons" if dense else ""
     src_dir, d = Path(src_dir), Path(out_dir); d.mkdir(parents=True, exist_ok=True)
@@ -120,9 +120,9 @@ def carry_structures(S, src_dir, out_dir, targets, structs, dense, log=print):
 
 
 def b0_source(S):
-    """Where S's blockface -> b0 registration comes from: ("record", <variant>) for a paper brain (settings/brains/<S>.yaml
+    """Where S's blockface -> b0 registration comes from: ("record", <variant>) for a paper brain (settings/brains/<ID>.yaml
     registration_to_own_mri.variant_of_record, read by route.r1_entry), ("own", <entry folder>) for a brain registered to its b0 by
-    `linc-register mri` ($LINC_DATA/sub-<S>/xfm/bf-native__to__b0-native), or None (no b0 registration: a brain without MRI, or one not
+    `linc-register mri` ($LINC_DATA/sub-<ID>/xfm/bf-native__to__b0-native), or None (no b0 registration: a brain without MRI, or one not
     registered to it yet)."""
     import yaml
     from shared import paths

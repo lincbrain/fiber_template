@@ -2,7 +2,7 @@
 build, the brain's links up to the template.
 
 You need
-  the brain's staged MRI folder (mri.mri_prep stage, or the data release): dwi/b0_brain_n4, t2/echo_n4_brain,
+  the brain's staged MRI folder, $LINC_MRI_DATA/sub-<ID>/mri (mri.mri_prep stage makes it): dwi/b0_brain_n4, t2/echo_n4_brain,
   micro/b0_brain_n4 and the three session masks (masks/); for nmt, NMT v2.0 sym with its SARM labels (settings/link.yaml
   `atlas_reference`: the published templates are downloaded, not redistributed); ANTs 2.5.4 (ANTSPATH); settings/env/anatomix.yml
   ($ANATOMIX_PYTHON) and a GPU.
@@ -20,9 +20,9 @@ What it does
          finished run (--run; the warp the template channels use).
 
 You get
-  t2, micro  the registry entries $LINC_DATA/sub-<ID>/xfm/t2-native__to__b0-native/ and micro-native__to__b0-native/ (one ITK
+  t2, micro  the registry entries $LINC_MRI_DATA/sub-<ID>/xfm/t2-native__to__b0-native/ and micro-native__to__b0-native/ (one ITK
              displacement field on the b0 grid each) and the run files in --out
-  nmt        <MRI folder>/landmarks/nmt_affine_0GenericAffine.mat and SARM6_in_subject.nii.gz
+  nmt        $LINC_MRI_DATA/sub-<ID>/mri/landmarks/nmt_affine_0GenericAffine.mat and SARM6_in_subject.nii.gz
   links      the registry entries b0-native__to__mri-canonical/ and mri-canonical__to__mri-template/, so that python -m shared.xfm moves
              images between the brain's spaces and the template
   A registry entry that exists is refused before any work is done; --overwrite replaces it, after a backup of the old one under
@@ -32,6 +32,8 @@ You get
     python -m mri.mri_register micro --subject MF283
     python -m mri.mri_register nmt --subject MF283
     python -m mri.mri_register links --subject MF283 --run $LINC_WORK/build_mri_channels/runs/rb_final
+The MRI build works in its own working folder, $LINC_MRI_DATA: run these with LINC_DATA=$LINC_MRI_DATA in front, as the steps of
+code/template/build_mri_channels.py are (docs/tutorials/01_mri.md, part A); --mri-root and --xfm-root default to the brain's folders there.
 
 Paper: Methods, "Image registration" and "MRI preprocessing".
 """

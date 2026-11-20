@@ -47,7 +47,7 @@ from blockface.registration.resample import W_LUM, bf_products
 
 
 # ------------------------------------------------------------------------------------------------ inputs
-def own_mri_plan(md, subject, scfg=None, new_brain=False, placing=False):
+def own_mri_plan(md, subject, scfg=None, new_brain=False, placing=False, frame=None):
     """What the registration to the brain's own b0 can do with the files in the brain's mri/ folder `md`, before any work.
     Returns (action, message):
       "ready"  every file it reads is there (or --place-b0 will make the placed b0);
@@ -56,7 +56,8 @@ def own_mri_plan(md, subject, scfg=None, new_brain=False, placing=False):
                this state: the placed b0 (<S>_mri.nii.gz, its mask and its matrix) is a product;
       "stop"   something else is missing; the message says what and where it comes from.
     `scfg` is the brain's settings entry registration_to_own_mri (a paper brain: its fixed b0, b0 mask and start pose of record),
-    `new_brain` treats a paper brain as a new one, `placing` says that --place-b0 was given."""
+    `new_brain` treats a paper brain as a new one, `placing` says that --place-b0 was given, `frame` is the MRI template's 0.5 mm frame
+    that placing the b0 reads (checked only when the b0 is to be placed)."""
     md = Path(md); S = subject
     placed = [md / f"{S}_mri.nii.gz", md / f"{S}_mri_mask.nii.gz", md / f"{S}_mri2template.mat"]
     native = [md / f"{S}_mri_b0_native.nii.gz", md / f"{S}_mri_mask_native.nii.gz"]
@@ -66,6 +67,10 @@ def own_mri_plan(md, subject, scfg=None, new_brain=False, placing=False):
             return "stop", (f"{S}: no b0 in {md}. For a brain with MRI, give --place-b0 B0 [MASK] (docs/tutorials/02_blockface.md, "
                             "Step 3). A brain without MRI has no own b0 to register to: use `linc-register blockface-template` (Step 4).")
         action = "place"
+    if frame is not None and (placing or action == "place") and not Path(frame).exists():
+        return "stop", (f"{S}: placing the b0 reads the MRI template's 0.5 mm frame {frame}, which is not there. It is part of the "
+                        "template in the data folder (template/frames/mri_template_0p5.nii.gz): point LINC_TEMPLATE at that template "
+                        "folder, or run `source settings/roots.sh refresh`.")
     if scfg and not new_brain:
         will_be = {q for q in placed} if (placing or action == "place") else set()
         missing = [q for q in (md / scfg["fixed_b0"], md / scfg["b0_mask"]) if not q.exists() and q not in will_be]

@@ -6,9 +6,9 @@ Per label: crop to its bounding box (+ crop_margin_mm); where the blockface slic
 labeled slice along the slice axis to one template voxel (max filter of 2 x round(voxel / spacing / 2) + 1 slices); anti-alias per source
 axis (Gaussian FWHM = max(source spacing, template voxel), `aa_sigma`); one linear resample onto the template grid. Labels from
 histology can be SPARSE (fiber and terminal annotations), so three outputs per label:
-  <S>_<label>_mri-template_density.nii.gz     the carried anti-aliased fraction (float, 0-1)
-  <S>_<label>_mri-template_footprint.nii.gz   density >= foot: where annotations land
-  <S>_<label>_mri-template.nii.gz             density > solid (0.5): the solid-label rule
+  <ID>_<label>_mri-template_density.nii.gz     the carried anti-aliased fraction (float, 0-1)
+  <ID>_<label>_mri-template_footprint.nii.gz   density >= foot: where annotations land
+  <ID>_<label>_mri-template.nii.gz             density > solid (0.5): the solid-label rule
 QC (report only): fraction of each carried label inside the template brain mask; fraction on the same side (sign of world x, RAS) as the
 case's injection site, when one is labeled.
 
@@ -104,8 +104,8 @@ def _load_ref(ref, brain):
 
 def carry(subject, label_files, *, ref, out_dir, brain=None, chain=None, pull=None, links=None, suffix="_bfnative_L2_demons.nii.gz",
           cfg=None, log=print):
-    """Carry each label file (<S>_<label><suffix>) onto the template grid `ref` along `chain` (shared.xfm.Chain) or `pull`
-    (points -> points, `pull_steps`). Writes the three outputs per label and tracer_template_<S>.json; returns the case record."""
+    """Carry each label file (<ID>_<label><suffix>) onto the template grid `ref` along `chain` (shared.xfm.Chain) or `pull`
+    (points -> points, `pull_steps`). Writes the three outputs per label and tracer_template_<ID>.json; returns the case record."""
     import nibabel as nib
     from scipy.ndimage import gaussian_filter
     from shared import xfm

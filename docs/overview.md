@@ -27,7 +27,7 @@ Each brain's inputs are in the data folder's `brains/sub-<ID>/inputs/`:
 - `histology/`, the scanned sections and the tracer labels drawn from their charts;
 - `manual_annotations/`, whatever a person drew or corrected, such as brain masks, fiducial markers (the round holes in the block face), match tables and the LGN and STN.
   For the paper's brains it also holds the photograph masks made by an earlier network whose weights stay with the laboratory, most of them unchanged, and `settings/manual_inputs.tsv` lists every file with its md5.
-  Two match tables of record were edited by hand after a check of the tracer labels and are in `intermediate/histology/`: MR243's (`num_MR243_r058c.txt`, one row added for section 3's left half) and MF191's (`num_MF191_r058.txt`, section 4 split into its two lobes).
+  Two match tables of record were edited by hand after a check of the tracer labels and are in the brain's `intermediate/histology/`: MR243's (`num_MR243_r058c.txt`, one row added for section 3's left half) and MF191's (`num_MF191_r058.txt`, section 4 split into its two lobes).
 
 Four brains with MRI only, MF283 to MF286, built the MRI template ([01](tutorials/01_mri.md)).
 The 21 photographed brains built the blockface template ([02](tutorials/02_blockface.md)); 13 of them have a b0, such as MR243, and 8 have no MRI, such as MF191.
@@ -63,6 +63,8 @@ $PY -m shared.xfm chain --from bf-native --to mri-template --subject <ID>      #
 $PY -m shared.xfm apply --from bf-native --to mri-template --subject <ID> \
     --ref $LINC_DATA_TREE/template/outputs/template_T2w.nii.gz <image> <output>   # add --nearest for a label image
 ```
+
+`<image>` is any image on the grid of the brain's blockface volume, such as its brain mask, `$LINC_DATA/sub-<ID>/blockface/<ID>_mask.nii.gz`, and `<output>` is the file to write, that image on the template's grid (`--ref`).
 
 An inverted link is solved at every voxel of the target grid, so use a grid of 0.3 mm or coarser.
 For the paper's brains, the data folder also keeps each whole transform as one file, such as `brains/sub-MR243/outputs/MR243_blockface_to_template.nii.gz`, and that folder's `README.txt` shows how to apply it with ANTs alone.
@@ -103,36 +105,64 @@ To retrain, see [code/shared/segment](../code/shared/segment/README.md) and [cod
 
 ## The data folder
 
-| In the data folder | What it is |
+The files live in two places.
+
+**The data folder**, `$LINC_DATA_TREE`, holds the paper's data. The code reads it and never writes into it.
+- `brains/sub-<ID>/inputs/`: what an instrument or a person made.
+- `brains/sub-<ID>/intermediate/`: everything in between, from the paper's run.
+- `brains/sub-<ID>/outputs/`: the paper's finished files.
+- `template/`: the template, split the same way; `models/`: the trained networks; `paper/`: what only the paper's numbers and figures read.
+
+**The repository's `outputs/`**, made by `settings/roots.sh`, holds what your own runs write.
+- `in/`: links to the data folder's files, under the names the code uses; nothing of yours.
+- `local_data/`: `data/`, the working folder (`$LINC_DATA`: one `sub-<ID>/` per brain, with `blockface/`, `mri/`, `xfm/`, `histology/` and `labels/`), `raw/` (`$LINC_RAW`) and `template/` (`$LINC_TEMPLATE`).
+- `local_rebuild/` and `local_mri/`: the working folders for reconstructing a paper brain from its photographs (`$LINC_REBUILD_DATA`) and for the MRI template's build (`$LINC_MRI_DATA`); `local_mri/` is not made when the data folder lacks the four template brains' masks.
+- `work/` (`$LINC_WORK`), `models/` (`$LINC_MODELS`) and `build_everything/` (`run.py`'s commands, logs and checks).
+
+The repository's `outputs/` is not a brain's `outputs/`.
+A brain's `outputs/` is in the data folder and holds the paper's finished files.
+A run does not sort what it writes into inputs, intermediate and outputs: it writes into the working folders, under the code's names, and each command's `--help` and the tutorials say where.
+
+The data folder's top level also holds:
+
+| File | What it is |
 |---|---|
-| `brains/sub-<ID>/` | one folder per brain |
-| `template/` | the template |
-| `models/` | the trained networks, with their cards |
-| `paper/` | files that only the paper's numbers and figures read |
 | `brains.tsv` | every brain: its ID, its name in the paper, its species and its data |
 | `MRI_INPUTS.txt` | each MRI input, what the code does to it and what comes out |
 | `checksums.md5` | checksums of the inputs |
 
-A brain's folder and the template's are split the same way: `inputs/` (what an instrument or a person made), `outputs/` (the finished files) and `intermediate/` (everything else).
-Each folder in the table, and each of a brain's three parts, has a `README.txt` describing what is in it.
-
-The code reads the data folder and never writes into it.
+Each of its folders, and each of a brain's three parts, has a `README.txt` describing what is in it.
 `settings/files.tsv` has one row per file of the data folder, saying where it is and what name the code knows it by.
-`source settings/roots.sh` turns each row into a link under the repository's `outputs/in/` and sets these variables.
+`source settings/roots.sh` turns each row into a link under the repository's `outputs/in/` and sets the [names](#names) below; you set only `LINC_DATA_TREE` ([00](tutorials/00_start_here.md#before-you-start)).
 A data folder may hold less than the whole, for example the inputs alone: a step that needs a missing file then says which.
 After you add files to it, `source settings/roots.sh refresh` links them.
+To keep a new brain's results, copy them into its folder in the data folder, `brains/sub-<ID>/` ([how-to, step 5](how-to/new_brain.md#5-keep-the-results)).
 
-| Variable | Folder | What is there |
+## Names
+
+Every name the documents use, what it is and who sets it.
+`settings/roots.sh` sets the folders and the environments in every shell where you source it; [settings/env](../settings/env/README.md) says which environment runs what.
+
+| Name | What it is | Who sets it |
 |---|---|---|
-| `$LINC_DATA_TREE` | the data folder you gave as `LINC_DATA` | the paper's files |
-| `$LINC_DATA` | `outputs/local_data/data` | each brain's working folder, `sub-<ID>/`, with `blockface/`, `mri/`, `xfm/`, `histology/` and `labels/`; the commands read and write here |
-| `$LINC_TEMPLATE`, `$LINC_RAW` | `outputs/local_data/template`, `outputs/local_data/raw` | the template's files and the raw inputs, under the names the code uses |
-| `$LINC_WORK` | `outputs/work` | working results: registrations' working files and checks, completions, template builds, images moved into the template |
-| `$LINC_MODELS` | `outputs/models` | the networks' weights, joined and checked |
-| `$LINC_REBUILD_DATA`, `$LINC_MRI_DATA` | `outputs/local_rebuild/data`, `outputs/local_mri/data` | reruns of the paper's reconstructions and of the MRI template's build |
+| `$LINC_DATA_TREE` | the data folder, read only: `brains/`, `template/`, `models/`, `paper/` | you, before `source settings/roots.sh` |
+| `$LINC_DATA` | the working folder, `outputs/local_data/data`, one `sub-<ID>/` per brain; the commands read and write here | `settings/roots.sh` |
+| `$LINC_REBUILD_DATA` | the working folder for reconstructing a paper brain from its photographs, `outputs/local_rebuild/data` | `settings/roots.sh`; a command works there when it starts with `LINC_DATA=$LINC_REBUILD_DATA` |
+| `$LINC_MRI_DATA` | the working folder of the MRI template's build, `outputs/local_mri/data` | `settings/roots.sh`; a command works there when it starts with `LINC_DATA=$LINC_MRI_DATA` |
+| `$LINC_TEMPLATE` | the template's files, under the names the code uses, `outputs/local_data/template` | `settings/roots.sh` |
+| `$LINC_RAW` | the raw inputs, under the names the code uses, `outputs/local_data/raw` | `settings/roots.sh` |
+| `$LINC_WORK` | working results, `outputs/work`: registrations' working files and checks, completions, template builds, images moved into the template | `settings/roots.sh` |
+| `$LINC_MODELS` | the networks' weights, joined and checked, `outputs/models` | `settings/roots.sh` |
+| `$PY` | the main Python environment (`linc.yml`): MRI preparation, registration, the MRI template, the labels after `push`, evaluation, the numbers and figures | `settings/roots.sh`, from `envs/linc_envs.sh`, which `install.sh` writes |
+| `$PY_DEEP` | the environment of the segmentation networks and the synthesis (`deep.yml`) | `settings/roots.sh`, from `envs/linc_envs.sh` |
+| `$PY_TIRL` | the environment of the blockface reconstruction, the histology registration and `linc-labels push` (`tirl.yml`) | `settings/roots.sh`, from `envs/linc_envs.sh` |
+| `$ANATOMIX_PYTHON` | the environment of the deformable registrations, anatomix features and FireANTs (`anatomix.yml`); `linc-register` calls it, and the blockface template's final step runs in it | `settings/roots.sh`, from `envs/linc_envs.sh` |
+| `$PY_VIZ3D` | optional: the environment of the 3D tracer figure (`viz3d.yml`) | `settings/roots.sh`, from `envs/linc_envs.sh`, when `install.sh` ran with `--with-figures-3d` |
+| `FSLDIR`, `ANTSPATH`, `MRTRIX` | where FSL 6.0.7.4, ANTs 2.5.4 and MRtrix3 3.0.2 are installed | you ([settings/env](../settings/env/README.md)) |
+| `LINC_TIRL_SRC` | the folder with the TIRL sources | you, before `bash install.sh` |
 
-A `run.py` run writes each step's command, log and check to `outputs/build_everything/`.
-To keep a new brain's results, copy them into the data folder ([how-to, step 5](how-to/new_brain.md#5-keep-the-results)).
+A command may start with a name and its value, as in `LINC_DATA=$LINC_REBUILD_DATA`: that value holds for that command only.
+The tutorials also set short names for one block of commands, such as `M=$LINC_DATA/sub-<ID>/mri`; each is set in the block that uses it.
 
 ## Settings, steps and checks
 
@@ -149,7 +179,7 @@ A registration must be identical or within a set distance of the original, given
 
 ## The environments
 
-`install.sh` builds the Python environments, and `settings/roots.sh` points `$PY`, `$PY_DEEP`, `$PY_TIRL` and `$PY_VIZ3D` to them; [settings/env](../settings/env/README.md) says which runs what, and which other programs you need.
+`install.sh` builds the Python environments, and `settings/roots.sh` points `$PY`, `$PY_DEEP`, `$PY_TIRL`, `$ANATOMIX_PYTHON` and `$PY_VIZ3D` to them ([names](#names)); [settings/env](../settings/env/README.md) says which runs what, and which other programs you need.
 TIRL is not public yet: without its sources, `install.sh` builds the TIRL environment without TIRL, and the steps that need it refuse to run.
 
 ## What the package cannot do

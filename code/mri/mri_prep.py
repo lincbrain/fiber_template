@@ -9,7 +9,7 @@ reference grid), T2 (multi-echo MSME, 0.5 mm) and SANDI microstructure (0.5 mm).
   2. the D9 tensor (`tensor_d9`): dtifit on the eddy-corrected b <= 4800 volumes (1 b0 + 42 DWIs), b-vectors rotated by each
      volume's eddy_correct matrix (polar part), axis convention from MRtrix dwigradcheck; staged on the dwi grid.
   3. the within-MRI registrations T2 -> b0 and micro -> b0 (one ITK displacement field each, the initial affine inside it) are
-     inputs here: $LINC_DATA/sub-<ID>/xfm/{t2,micro}-native__to__b0-native (blockface.registration, anatomix + FireANTs).
+     inputs here: $LINC_MRI_DATA/sub-<ID>/xfm/{t2,micro}-native__to__b0-native (mri.mri_register, anatomix + FireANTs).
   4. the canonical frame (mri.canonical: write_frames_nmt -> canonical.json).
   5. the construction inputs (`prepare`): every payload resampled ONCE onto the canonical grid (antsApplyTransforms with the
      canonical rigid first, then the within-MRI warp), every channel cut to the brain's final manually edited mask:
@@ -23,7 +23,9 @@ reference grid), T2 (multi-echo MSME, 0.5 mm) and SANDI microstructure (0.5 mm).
 
     python -m mri.mri_prep stage --subject MF283 --preprocessed <folder: dwi/, msme/, dt2/> [--mri-root ...] [--overwrite]
     python -m mri.mri_prep prepare --subject MF283 --final-mask <MF283_mask_EDIT.nii.gz> --tensor <tensor_d9_dwigrid>
-        [--mri-root $LINC_DATA/sub-MF283/mri] [--xfm-root $LINC_DATA/sub-MF283/xfm] [--canonical <canonical.json>] [--out <dir>]
+        [--mri-root $LINC_MRI_DATA/sub-MF283/mri] [--xfm-root $LINC_MRI_DATA/sub-MF283/xfm] [--canonical <canonical.json>] [--out <dir>]
+The MRI build works in its own working folder, $LINC_MRI_DATA: run these with LINC_DATA=$LINC_MRI_DATA in front, as the steps of
+code/template/build_mri_channels.py are (docs/tutorials/01_mri.md, part A); the default folders are then the ones shown.
 
 Ported from the analysis project's mri/code/rebuild_prep.py (`canon` with the final manually edited masks, the inputs of record), preprocess_mri.py (the
 staging helpers) and tensor_refit_d9.py (`--from-existing`, the tensor of record). Paths come from settings/mri_construction.yaml

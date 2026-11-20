@@ -5,7 +5,8 @@ The code reads these files and does not repeat their values.
 
 |  |  |
 |---|---|
-| `roots.sh`                | set LINC_DATA, then source this file in every new shell |
+| `roots.sh`                | set LINC_DATA_TREE to the data folder, then source this file in every new shell |
+| `outputs_README.txt`     | what each folder under the repository's `outputs/` is; `roots.sh` writes it there as `README.txt` |
 | `brains/`                 | one file per brain |
 | `<stage>.yaml`            | one file per stage (blockface, registration, completion, histology, labels, link, mri_construction, blockface_template, targets, figures) |
 | `files.tsv`               | every file of the data folder: where it is, what it is, what makes it |

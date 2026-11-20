@@ -9,7 +9,7 @@ $PY_TIRL code/docs/tutorial_figures.py --list                          the figur
 ```
 
 Each figure is one function, drawn in the paper's figure style (`code/figures/figstyle.py`) from the data folder only, and written to `docs/tutorials/figures/<name>.png` (200 dpi, 178 mm wide).
-Its provenance, `<name>.provenance.json`, goes to `outputs/docs/figures_provenance/` and stays local, because it records this machine's paths.
+Its provenance, `<name>.provenance.json`, goes to the repository's `outputs/docs/figures_provenance/` and stays local, because it records this machine's paths.
 `--out <folder>` writes a trial render elsewhere, with the provenance beside it.
 The names start with the page they belong to: overview (00), mri (01), blockface (02) or histology (03).
 The histology figures read the JPEG 2000 sections and need `$PY_TIRL`; the others also run with `$PY`.

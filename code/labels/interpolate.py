@@ -16,7 +16,7 @@ Slice z (t = (z - a) / (b - a)): RGB = (1 - t) A warped by t f_AB + t B warped b
 inside) of each label on a and b, warped the same way, blended with the same weights, thresholded at 0; a label present on only one of
 the two sections tapers towards the other (its SDF there = +far).
 Outputs: histo_rgb_L2.nii.gz (sections + interpolated), provenance_L2.nii.gz (1 real section, 2 interpolated), interp.json; per label
-<name>_bfnative_L2_demons.nii.gz and one <S>_labels_demons_prov.nii.gz per output folder (1 real section, 2 interpolated).
+<name>_bfnative_L2_demons.nii.gz and one <ID>_labels_demons_prov.nii.gz per output folder (1 real section, 2 interpolated).
 
 Ported from the analysis project's labels/histo_interp.py and the demons helpers of its code/recon.py (unchanged).
 """
@@ -267,9 +267,9 @@ def interpolate_v2(subject, *, registrations, match_table_path, first_photo_numb
          hemispheres' footprints, and labels of a hemisphere that does not pair are not blended;
       3. END EXTENSION: a group present on one end only shrinks to a point at the midpoint of the gap (its signed distance on the
          absent side = its equivalent radius) instead of vanishing one slice away.
-    `label_files`: the sheets per class (<S>_<class>_bfnative_L2.nii.gz; classes outside GROUPS are ignored). Writes to `out_dir`:
-    <S>_<group>_bfnative_L2.nii.gz (the union sheets), <S>_<group>_bfnative_L2_demons.nii.gz, <S>_<class>_bfnative_L2_demons.nii.gz
-    (the partition), <S>_labels_demons_prov.nii.gz (1 real section, 2 interpolated), interp_v2.json (the summary, the pairs with their
+    `label_files`: the sheets per class (<ID>_<class>_bfnative_L2.nii.gz; classes outside GROUPS are ignored). Writes to `out_dir`:
+    <ID>_<group>_bfnative_L2.nii.gz (the union sheets), <ID>_<group>_bfnative_L2_demons.nii.gz, <ID>_<class>_bfnative_L2_demons.nii.gz
+    (the partition), <ID>_labels_demons_prov.nii.gz (1 real section, 2 interpolated), interp_v2.json (the summary, the pairs with their
     demons displacement statistics, the per-hemisphere pair rows). No RGB volume is written (the RGB interpolation of record is
     `interpolate`'s). Returns (the record, the output paths). Validated 3 Nov 2026 on MR252 against the products of record: the 11
     volumes voxel-identical, interp_v2.json's pairs and summary identical (34 min under load)."""

@@ -1,0 +1,51 @@
+{
+ "data": {
+  "variants": {
+   "A": {
+    "shade_factor_at_midline": 0.6,
+    "fill_opacity": 0.8,
+    "casing_subpixels": 1,
+    "underlay": 0.6
+   },
+   "B": {
+    "shade_factor_at_midline": 0.6,
+    "fill_opacity": 0.8,
+    "casing_subpixels": 1,
+    "underlay": 0.45
+   },
+   "C": {
+    "shade_factor_at_midline": 0.5,
+    "fill_opacity": 0.8,
+    "casing_subpixels": 1,
+    "underlay": 0.45
+   },
+   "B_no_casing": {
+    "shade_factor_at_midline": 0.6,
+    "fill_opacity": 0.8,
+    "casing_subpixels": 0,
+    "underlay": 0.45
+   }
+  },
+  "recommended": "B",
+  "shade": {
+   "range_mm": [
+    1.0,
+    15.0
+   ],
+   "rule": "darken only: laterally, at the range's end and beyond, the case's color as in the legend; toward the midline its CIELAB L*, a* and b* multiplied by f = fmin + (1 - fmin) t, t = (d - start) / (end - start) held to [0, 1], d the distance from the midline of the drawn voxel nearest the viewer (the most lateral); the range is the 5th to 95th percentile of the drawn pixels' distances, whole mm",
+   "key": "Shade: midline [ramp] lateral, a light gray (0.85) under the same rule"
+  },
+  "transparency": {
+   "outline": "full opacity, shaded as its fill, 0.125 mm wide (two of the four subpixels of a 0.25 mm pixel)",
+   "casing": "black, full opacity, outside each piece's outline, the given number of subpixels (0.0625 mm each), drawn under the piece",
+   "draw_order": "each case's drawn voxels in pieces (26-connected); the pieces from the midline outward by their mean distance from it, so that the nearer the viewer lies on top; each piece's casing, fill, then outline"
+  },
+  "underlay": {
+   "rule": "the T2 image under the two side views is shown at this share of its brightness (its gray scale's upper end raised by 1 / share); the coronal slabs (b-d) are not dimmed"
+  },
+  "view_from_above": {
+   "opacity": "the fill opacity",
+   "shade": "none"
+  }
+ }
+}

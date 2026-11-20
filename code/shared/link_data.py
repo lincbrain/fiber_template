@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
-"""Give the code its working names for the files of the data tree: one link per row of settings/files.tsv.
+"""Give the code its working names for the files of the data folder: one link per row of settings/files.tsv.
 
-    python code/shared/link_data.py <data tree> <folder of links> [--table settings/files.tsv] [--built <folder> ...] [--refresh]
+    python code/shared/link_data.py <data folder> <folder of links> [--table settings/files.tsv] [--built <folder> ...] [--refresh]
 
 You need
-    the data tree (LINC_DATA) and the table. Each row has new_path, the file's path in the data tree, and old_path, the path the code knows
+    the data folder (LINC_DATA_TREE) and the table. Each row has new_path, the file's path in the data folder, and old_path, the path the code knows
     it by. A file the code knows by two names has two rows. With $LINC_000003 set to a copy of LINC dataset 000003 (the histology), raw/linc_000003
-    is one link to that copy, so the code sees the whole dataset; without it, only the dataset's files that the tree holds are linked.
+    is one link to that copy, so the code sees the whole dataset; without it, only the dataset's files that the data folder holds are linked.
 What it does
-    Makes <folder of links>/<old_path>, a link to <data tree>/<new_path>, with real folders above it; a Zarr store is one link. A file the
-    tree does not hold (a row with upload = local, in a tree downloaded from the archive) gets no link and is counted. A folder that holds
-    none of the table's files is not a data tree: it stops there, says which folder looks like one, and changes nothing. Run again with the
-    same table and tree it does nothing; with another table (a `git pull`) or --refresh on the same tree it updates the folder in place:
+    Makes <folder of links>/<old_path>, a link to <data folder>/<new_path>, with real folders above it; a Zarr store is one link. A file the
+    data folder does not hold (a row with upload = local, in a data folder downloaded from the archive) gets no link and is counted. A folder that holds
+    none of the table's files is not a data folder: it stops there, says which folder looks like one, and changes nothing. Run again with the
+    same table and folder it does nothing; with another table (a `git pull`) or --refresh on the same folder it updates the folder in place:
     a link that does not change is left as it is, a changed one is replaced in one step (a new link renamed over the old), a new one
-    is added and one whose row went away is removed, so a step that is running meanwhile keeps reading its files. With another tree it
+    is added and one whose row went away is removed, so a step that is running meanwhile keeps reading its files. With another data folder it
     starts over. It deletes only that folder's links, never the data.
-    --refresh looks at the tree again although the table and the tree are the same: use it after files were added to the tree, which it
+    --refresh looks at the data folder again although the table and the folder are the same: use it after files were added to it, which it
     cannot see by itself (`source settings/roots.sh refresh` does).
     --built names the folders made from these links (the working folders of settings/roots.sh): when one exists and the links were made
-    from another tree, it stops instead of starting over, because those folders hold that tree's files and the results made from them.
+    from another data folder, it stops instead of starting over, because those folders hold that folder's files and the results made from them.
 You get
     the folder of links, and a line saying how many links it made and how many files were absent. settings/roots.sh runs this for you.
 """
@@ -49,7 +49,7 @@ def main():
     ap.add_argument("links", type=Path)
     ap.add_argument("--table", type=Path, default=Path(__file__).resolve().parents[2] / "settings" / "files.tsv")
     ap.add_argument("--built", type=Path, nargs="*", default=[])
-    ap.add_argument("--refresh", action="store_true", help="make the links again although the table and the tree are the same")
+    ap.add_argument("--refresh", action="store_true", help="make the links again although the table and the data folder are the same")
     a = ap.parse_args()
     tree = a.tree.resolve()
     if not tree.is_dir():
@@ -67,12 +67,12 @@ def main():
     if linc:
         rows = [r for r in rows if not r[1].startswith("raw/linc_000003/")]
     here = held(tree, rows)
-    if not here:                                    # not a data tree: say so before anything is deleted or made
+    if not here:                                    # not a data folder: say so before anything is deleted or made
         tops = sorted({new.split("/", 1)[0] + "/" for new, _ in rows})
         near = [p for p in (tree.parent, tree.parent.parent) if held(p, rows, first=True)][:1]
         sys.exit(f"{tree} is not the data folder: none of the files that {a.table.parent.name}/{a.table.name} lists is in it. The data folder is the one "
                  f"that holds {', '.join(tops[:-1])} and {tops[-1]}" + (f"; {near[0]} looks like it." if near else "."))
-    was = stamp.read_text().split("\n")[1:2] if stamp.exists() else []      # the tree the links were made from
+    was = stamp.read_text().split("\n")[1:2] if stamp.exists() else []      # the data folder the links were made from
     built = [b.name for b in a.built if b.exists()]
     if was and was[0] != str(tree) and os.path.isdir(was[0]) and built:
         sys.exit(f"{a.links.parent} was built from another data folder, {was[0]}: {', '.join(built)} hold its files and your results "

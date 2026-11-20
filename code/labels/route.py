@@ -6,7 +6,7 @@ The blockface route, MRI-template world points y -> the brain's blockface world 
     y -> the link of the blockface template to the MRI template (products_figures bft_pull_map) -> x, in the blockface template of
     record (step 9 keeps step 8's frame) -> x + U(x), the brain's step-9 field (bft_step9_fields: a member's last-round field, or its
     registration to the template when it is not a member) -> its member warp of step 8 (bft_member_warps, fsl_rel, its canon grid)
-    -> its native map: the inverse of its S2 rigid placement for a brain without MRI (data/sub-<S>/mri/s2lin_prod/<S>_s2lin.json),
+    -> its native map: the inverse of its S2 rigid placement for a brain without MRI ($LINC_DATA_TREE/brains/sub-<ID>/intermediate/registration/<ID>_s2lin.json),
     else its R1 of record after its placement (r1_record: components 2 and 3 of bf-native__to__b0-native), the map the template's
     build carried the brain with.
 A brain outside the paper (no step-9 field in the settings) takes, after the link, its own registration to the blockface template
@@ -99,12 +99,12 @@ NEW_BRAIN_LINKS = [("bf-template", "mri-template"), ("bf-native", "bf-template")
 
 
 def link_names(S, route):
-    """The links of S's route into the MRI template, as the label records name them ("<src>->(dst) (<S>)")."""
+    """The links of S's route into the MRI template, as the label records name them ("<src>->(dst) (<ID>)")."""
     return [f"{s}->{d} ({S})" for s, d in (BLOCKFACE_LINKS if route == "blockface" else MRI_LINKS)]
 
 
 def r1_entry(S):
-    """S's blockface -> b0 registration of record (settings/brains/<S>.yaml variant_of_record); its QC must pass."""
+    """S's blockface -> b0 registration of record (settings/brains/<ID>.yaml variant_of_record); its QC must pass."""
     import yaml
     c = yaml.safe_load((Path(__file__).resolve().parents[2] / "settings" / "brains" / f"{S}.yaml").read_text())
     v = c["registration_to_own_mri"]["variant_of_record"]

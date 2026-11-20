@@ -22,12 +22,12 @@ You get, under $LINC_DATA/sub-<ID>/labels/
   template/tracer/<ID>_<group>_mri-template_solid2.nii.gz, <ID>_Bundles_mri-template_{connected,solid_v2c,bridges}.nii.gz, <ID>_connect_v2c.json   connect
   (density: float 0-1; solid and footprint: uint8 {0, 1}; provenance: 1 = charted section, 2 = interpolated; connected: 1 = charted, 2 = inferred)
 
-    linc-labels push        --subject MR252 [--kind tracer|structures]
-    linc-labels interpolate --subject MR252 [--method v2|v1]
-    linc-labels carry       --subject MR252 [--entry DIR ...]
-    linc-labels carry       --subject MR243 --kind structures [--dense] [--route blockface|mri]
-    linc-labels connect     --subject MR252
-    linc-labels all         --subject MR252
+    $PY_TIRL code/labels/linc-labels push        --subject <ID> [--kind tracer|structures]
+    $PY      code/labels/linc-labels interpolate --subject <ID> [--method v2|v1]
+    $PY      code/labels/linc-labels carry       --subject <ID> [--entry DIR ...]
+    $PY      code/labels/linc-labels carry       --subject <ID> --kind structures [--dense] [--route blockface|mri]
+    $PY      code/labels/linc-labels connect     --subject <ID>
+             code/labels/linc-labels all         --subject <ID>      (the four in turn, so in one Python that has TIRL for push)
 Every path can be overridden. The transforms of `carry`, in PULL order (a template point goes first to last):
   --entry DIR [--entry DIR ...]     registry entries (shared.xfm), each '<dir>' or '<dir>:inv', in IMAGE order (bf-native first)
   --map DIR:NAME / --warp FILE:CONV[:SRC_GRID] / --ras-pull FILE     a precomputed pull map, in PULL order (template first)
@@ -210,40 +210,40 @@ def main(argv=None):
     sub = ap.add_subparsers(dest="cmd", required=True)
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("--subject", required=True, help="LINC identifier, e.g. MR252")
-    common.add_argument("--grid", help="target blockface grid (default: layout grid)")
-    common.add_argument("--registrations", help="per-piece registration folders (default: layout registrations)")
+    common.add_argument("--grid", help="target blockface grid (default: $LINC_DATA/sub-<ID>/blockface/<ID>_blockface_L2.nii.gz)")
+    common.add_argument("--registrations", help="per-piece registration folders (default: $LINC_DATA/sub-<ID>/histology/registration/tirl)")
     common.add_argument("--match-table", help="section -> photograph table (default: the brain's, in the order of code/histology/match.py find_table)")
-    common.add_argument("--first-photo", type=int, help="photograph number of blockface slice 0 (default: settings/brains/<S>.yaml)")
-    common.add_argument("--out", help="output folder")
+    common.add_argument("--first-photo", type=int, help="photograph number of blockface slice 0 (default: settings/brains/<ID>.yaml)")
+    common.add_argument("--out", help="output folder (default: under $LINC_DATA/sub-<ID>/labels/)")
     p = sub.add_parser("push", parents=[common])
     p.add_argument("--kind", choices=["tracer", "structures"], default="tracer")
     p.add_argument("--annotations"); p.add_argument("--section-map"); p.add_argument("--piece-masks"); p.add_argument("--blockface-pieces")
     p.add_argument("--structures"); p.add_argument("--moving")
     p = sub.add_parser("interpolate", parents=[common])
-    p.add_argument("--labels", nargs="*", help="label sheets (default: every *_bfnative_L2.nii.gz under labels/blockface/)")
+    p.add_argument("--labels", nargs="*", help="label sheets (default: every *_bfnative_L2.nii.gz under $LINC_DATA/sub-<ID>/labels/blockface/)")
     p.add_argument("--interp-dir")
     p.add_argument("--method", choices=["v2", "v1"], help="v2 = the interpolation of record since 3 Nov 2026 (groups, per-hemisphere pairing); v1 = per class, with the RGB volume (default: settings/labels.yaml interpolate.method)")
-    p.add_argument("--regions", help="v2: the atlas regions volume (default: layout regions)")
+    p.add_argument("--regions", help="v2: the regions volume (default: $LINC_DATA/sub-<ID>/histology/regions.nii.gz)")
     p.add_argument("--regions-spacing-um", nargs=2, type=float, metavar=("VX", "VZ"),
                    help="v2: the spacing (um) the regions were made at, in place of settings/histology.yaml's entry for the brain (a brain "
                         "not listed: factor 1), as in linc-histology")
     for name in ("carry", "all"):
         p = sub.add_parser(name, parents=[common])
-        p.add_argument("--labels", nargs="*", help="dense labels (default: labels/blockface/tracer/*_bfnative_L2_demons.nii.gz)")
+        p.add_argument("--labels", nargs="*", help="dense labels (default: $LINC_DATA/sub-<ID>/labels/blockface/tracer/*_bfnative_L2_demons.nii.gz)")
         p.add_argument("--ref"); p.add_argument("--brain")
         p.add_argument("--entry", action="append"); p.add_argument("--map", action="append")
         p.add_argument("--warp", action="append"); p.add_argument("--ras-pull", action="append")
         if name == "carry":
             p.add_argument("--kind", choices=["tracer", "structures"], default="tracer")
             p.add_argument("--dense", action="store_true", help="structures: the demons-interpolated labels (*_bfnative_L2_demons)")
-            p.add_argument("--labels-dir", help="structures: the blockface labels' folder (default: labels/blockface/structures of the brain)")
+            p.add_argument("--labels-dir", help="structures: the blockface labels' folder (default: $LINC_DATA/sub-<ID>/labels/blockface/structures)")
         p.add_argument("--route", choices=["blockface", "mri"], help="the route into the MRI template when no transform is given (default: settings/labels.yaml template_routes, else blockface)")
         if name == "all":
             p.add_argument("--interp-dir")
             for k in ("annotations", "section_map", "piece_masks", "blockface_pieces"):
                 p.add_argument("--" + k.replace("_", "-"))
     p = sub.add_parser("connect", parents=[common])
-    p.add_argument("--labels-dir", help="the carried labels' folder (default: labels/template/tracer of the brain)")
+    p.add_argument("--labels-dir", help="the carried labels' folder (default: $LINC_DATA/sub-<ID>/labels/template/tracer)")
     a = ap.parse_args(argv)
     cfg = LB.config()
     if a.cmd == "push":

@@ -20,7 +20,9 @@ Recipe (settings/link.yaml `b0_to_template`; every input brain-masked):
      uncropped moved mask on the template grid and the outline check of the moved mask (code/template/link/qc.py) are written beside it.
 
     python -m template.link.b0_to_template --subject <ID> --b0 <b0 native> --mask <mask native> --template-b0 B0 --template-mask M \
-        [--registry DIR] [--out DIR] [--device cuda:0] [--overwrite]
+        [--frame FRAME_0P5] [--registry DIR] [--out DIR] [--device cuda:0] [--overwrite]
+--frame (the template's 0.5 mm frame, $LINC_TEMPLATE/frames/mri_template_0p5.nii.gz) makes the placement of step 1 here, for a b0 that has
+none; --place-b0 is its older name, still accepted. `linc-register mri --place-b0` takes the b0 itself, not a frame.
 Inputs default to the data layout (docs/tutorials/00_start_here.md): $LINC_DATA/sub-<ID>/mri/<ID>_mri_b0_native.nii.gz, <ID>_mri_mask_native.nii.gz
 (the brain's mask of record), <ID>_mri2template.mat, <ID>_mri.nii.gz; the bridge = settings/link.yaml inputs.bridge. The registry
 entry goes to $LINC_DATA/sub-<ID>/xfm/b0-native__to__mri-template (or <--registry>/b0-native__to__mri-template); the working files
@@ -213,7 +215,7 @@ def run(subject, b0_path, mask_path, template_b0, template_mask, placement_mat, 
     return rec
 
 
-def main(argv=None, prog=None):
+def parser(prog=None):
     ap = argparse.ArgumentParser(prog=prog, description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--subject", required=True, help="LINC identifier, e.g. MR252")
     ap.add_argument("--b0", default=None, help="native b0 (default $LINC_DATA/sub-<ID>/mri/<ID>_mri_b0_native.nii.gz)")
@@ -222,29 +224,36 @@ def main(argv=None, prog=None):
     ap.add_argument("--template-mask", required=True, help="the MRI template's brain mask (linc_mri_brainmask.nii.gz)")
     ap.add_argument("--placement-mat", default=None, help="FLIRT 6-dof placement of the b0 in the run-113 frame (default .../<ID>_mri2template.mat)")
     ap.add_argument("--placed-b0", default=None, help="its FLIRT reference output (default .../<ID>_mri.nii.gz)")
-    ap.add_argument("--place-b0", default=None, metavar="FRAME_0P5",
-                    help="make the placement instead (blockface.registration.to_own_mri.place_b0 onto this run-113 0.5 mm frame) into OUT/placement")
+    ap.add_argument("--frame", "--place-b0", dest="frame", default=None, metavar="FRAME_0P5",
+                    help="the MRI template's 0.5 mm frame ($LINC_TEMPLATE/frames/mri_template_0p5.nii.gz; in the data folder "
+                         "template/outputs/template_frame_500um.nii.gz): the b0 (--b0, with --mask) is first placed rigidly on it "
+                         "(FLIRT, 6 degrees of freedom) into OUT/placement, instead of reading a placement (--placement-mat, --placed-b0). "
+                         "--place-b0 is its older name, still accepted; it is not linc-register mri's --place-b0, which takes the b0")
     ap.add_argument("--bridge", default=None, help="run-113 -> canonical bridge JSON (default settings/link.yaml inputs.bridge)")
     ap.add_argument("--registry", default=None, help="parent folder of the entry (default $LINC_DATA/sub-<ID>/xfm)")
     ap.add_argument("--out", default=None, help="working files and products (default $LINC_WORK/b0_to_template/<ID>)")
     ap.add_argument("--device", default="cuda:0")
     ap.add_argument("--overwrite", action="store_true", help="replace an existing entry (backed up by code/shared/xfm.py)")
-    a = ap.parse_args(argv)
+    return ap
+
+
+def main(argv=None, prog=None):
+    a = parser(prog).parse_args(argv)
     S = a.subject
-    md = paths.subject_dir(S) / "mri" if not (a.b0 and a.mask and ((a.placement_mat and a.placed_b0) or a.place_b0)) else None
+    md = paths.subject_dir(S) / "mri" if not (a.b0 and a.mask and ((a.placement_mat and a.placed_b0) or a.frame)) else None
     b0 = a.b0 or str(md / f"{S}_mri_b0_native.nii.gz")
     mask = a.mask or str(md / f"{S}_mri_mask_native.nii.gz")
     out = Path(a.out or (paths.work_root() / "b0_to_template" / S))
     need = [("the template's b0", a.template_b0), ("the template's brain mask", a.template_mask), ("the frame bridge", a.bridge or product(inputs()["bridge"]))]
-    need += [("the 0.5 mm frame", a.place_b0)] if a.place_b0 else []
+    need += [("the 0.5 mm frame", a.frame)] if a.frame else []
     missing = [f"{what} ({p})" for what, p in need if not Path(p).exists()]
     if missing:                                       # before any work: the template's files, not the brain's
         raise SystemExit("not found: " + "; ".join(missing) + ". These are the template's files. In the data folder they are template/outputs/ "
                          "(template_b0, template_brain_mask, template_frame_500um) and template/intermediate/construction/bridge_run113_to_canonical/. "
                          "Add them to your data folder, then run 'source settings/roots.sh refresh'.")
-    if a.place_b0:
+    if a.frame:
         from blockface.registration import to_own_mri
-        r = to_own_mri.place_b0(b0, mask, a.place_b0, str(out / "placement"), S)
+        r = to_own_mri.place_b0(b0, mask, a.frame, str(out / "placement"), S)
         mat, placed = r["mri2template_mat"], r["placed_b0"]
     else:
         mat = a.placement_mat or str(md / f"{S}_mri2template.mat")

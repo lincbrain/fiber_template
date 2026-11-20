@@ -1,0 +1,911 @@
+{
+ "data": {
+  "what": "new Fig. 9 with three slabs (b midway between the first and the last prefrontal entry, c rule B, d the present slab), counted on the labels of record (all bundle classes); the drawing is the labels without the light class; figures not adopted",
+  "rules": "Shared definitions (as the distance plot of the bundles along the capsule, and the present slab's record, fig_tracer_v11_h9_s11wr17 b.*):\n  charted voxels = <S>_Bundles_mri-template_sections_footprint >= 0.1 (the labels' charted sections in the template), MF191 mirrored onto the right;\n  capsule = SARM level 6 label 50, right side (x > 0); window = the capsule dilated by 8 voxels (2 mm), right side, in the brain mask;\n  slab = three consecutive template planes (0.25 mm each, 0.75 mm), named by its center plane;\n  the section of a voxel = the section of its nearest section-index voxel (<S>_section_index_mri-template, MF191 mirrored).\n\nRule B (the rostral slab, b): per case and slab, count the charted voxels inside the capsule (not dilated). A case has entered the\ncapsule at a slab when it has >= 20 there (the distance plot's own minimum per point). A case's entry = its most rostral such slab.\nb = the most rostral slab at which all three prefrontal cases (MM1, MM3, MF8) have entered, i.e. the most caudal of their three entry\nslabs; it must lie rostral of MM2's entry. The present slab's rule (c), from the record: three consecutive planes; the largest minimum\nover the four cases of charted in-capsule voxels; ties nearest 18.0 mm.\nAlternative three-slab version: b as above; c = MM2's entry slab; d = the most caudal slab anywhere caudal of c (not necessarily\ncontiguous with it) at which all four cases have >= 20.",
+  "footprint_min": 0.1,
+  "window_mm": 2.0,
+  "slab_thickness_mm": 0.75,
+  "commissure_y_mm": 19.6,
+  "rule": {
+   "min_voxels": 20,
+   "unit": "slab of three planes centered on each plane",
+   "counted": "charted voxels inside the capsule label (not dilated)",
+   "entry_from_commissure_mm": {
+    "MM1": 6.15,
+    "MM3": 2.9,
+    "MF8": 5.9,
+    "MM2": -0.35
+   },
+   "present_rule": "three consecutive planes; largest minimum over the four cases of charted in-capsule voxels; ties nearest 18.0 mm",
+   "present_minimum": 33
+  },
+  "levels": {
+   "b": {
+    "rule": "the slab midway between the most rostral slab in which a prefrontal case (MM1, MM3, MF8) has entered the capsule and the most rostral slab in which all three have (rule B); a midpoint between two planes takes the more rostral one",
+    "midpoint_from_commissure_mm": 4.525,
+    "first_entry_from_commissure_mm": 6.15,
+    "y_mm": 24.25,
+    "from_commissure_mm": 4.65,
+    "planes_mm": [
+     24.0,
+     24.25,
+     24.5
+    ],
+    "edges_mm": [
+     23.875,
+     24.625
+    ],
+    "cases": {
+     "MM1": {
+      "voxels_in_window": 50,
+      "voxels_in_capsule": 13,
+      "share_in_capsule": 0.26,
+      "n_sections": 2,
+      "sections": {
+       "21": 7,
+       "22": 43
+      },
+      "rule_count_in_capsule": 13,
+      "position": {
+       "capsule_length_mm": 4.54,
+       "mm_from_ventral_end_median": -0.28,
+       "quartiles": [
+        -0.5,
+        0.22
+       ],
+       "share_beyond_dorsal_end": 0.0,
+       "share_below_ventral_end": 0.66,
+       "share_outside_capsule_medial": 0.4,
+       "share_outside_capsule_lateral": 0.34,
+       "share_outside_capsule": 0.74,
+       "outside_by_side": {
+        "ventral": 0.64,
+        "dorsal": 0.0,
+        "medial": 0.1,
+        "lateral": 0.0
+       }
+      }
+     },
+     "MM3": {
+      "voxels_in_window": 9,
+      "voxels_in_capsule": 2,
+      "share_in_capsule": 0.2222,
+      "n_sections": 2,
+      "sections": {
+       "20": 7,
+       "21": 2
+      },
+      "rule_count_in_capsule": 2,
+      "position": {
+       "capsule_length_mm": 4.54,
+       "mm_from_ventral_end_median": 0.04,
+       "quartiles": [
+        -0.31,
+        0.42
+       ],
+       "share_beyond_dorsal_end": 0.0,
+       "share_below_ventral_end": 0.444,
+       "share_outside_capsule_medial": 0.333,
+       "share_outside_capsule_lateral": 0.444,
+       "share_outside_capsule": 0.778,
+       "outside_by_side": {
+        "ventral": 0.444,
+        "dorsal": 0.0,
+        "medial": 0.333,
+        "lateral": 0.0
+       }
+      }
+     },
+     "MF8": {
+      "voxels_in_window": 154,
+      "voxels_in_capsule": 46,
+      "share_in_capsule": 0.2987,
+      "n_sections": 2,
+      "sections": {
+       "14": 2,
+       "15": 152
+      },
+      "rule_count_in_capsule": 46,
+      "position": {
+       "capsule_length_mm": 4.54,
+       "mm_from_ventral_end_median": -0.06,
+       "quartiles": [
+        -0.74,
+        1.09
+       ],
+       "share_beyond_dorsal_end": 0.0,
+       "share_below_ventral_end": 0.526,
+       "share_outside_capsule_medial": 0.013,
+       "share_outside_capsule_lateral": 0.688,
+       "share_outside_capsule": 0.701,
+       "outside_by_side": {
+        "ventral": 0.526,
+        "dorsal": 0.0,
+        "medial": 0.013,
+        "lateral": 0.162
+       }
+      }
+     },
+     "MM2": {
+      "voxels_in_window": 0,
+      "voxels_in_capsule": 0,
+      "share_in_capsule": null,
+      "n_sections": 0,
+      "sections": {},
+      "rule_count_in_capsule": 0,
+      "position": null
+     }
+    }
+   },
+   "c": {
+    "rule": "B: the most rostral slab in which all three prefrontal cases have entered; MM2 has not",
+    "y_mm": 22.5,
+    "from_commissure_mm": 2.9,
+    "planes_mm": [
+     22.25,
+     22.5,
+     22.75
+    ],
+    "edges_mm": [
+     22.125,
+     22.875
+    ],
+    "cases": {
+     "MM1": {
+      "voxels_in_window": 51,
+      "voxels_in_capsule": 35,
+      "share_in_capsule": 0.6863,
+      "n_sections": 1,
+      "sections": {
+       "23": 51
+      },
+      "rule_count_in_capsule": 35,
+      "position": {
+       "capsule_length_mm": 6.33,
+       "mm_from_ventral_end_median": 0.59,
+       "quartiles": [
+        0.38,
+        0.87
+       ],
+       "share_beyond_dorsal_end": 0.0,
+       "share_below_ventral_end": 0.039,
+       "share_outside_capsule_medial": 0.157,
+       "share_outside_capsule_lateral": 0.157,
+       "share_outside_capsule": 0.314,
+       "outside_by_side": {
+        "ventral": 0.039,
+        "dorsal": 0.0,
+        "medial": 0.137,
+        "lateral": 0.137
+       }
+      }
+     },
+     "MM3": {
+      "voxels_in_window": 38,
+      "voxels_in_capsule": 25,
+      "share_in_capsule": 0.6579,
+      "n_sections": 1,
+      "sections": {
+       "22": 38
+      },
+      "rule_count_in_capsule": 25,
+      "position": {
+       "capsule_length_mm": 6.33,
+       "mm_from_ventral_end_median": 0.31,
+       "quartiles": [
+        0.14,
+        0.54
+       ],
+       "share_beyond_dorsal_end": 0.0,
+       "share_below_ventral_end": 0.132,
+       "share_outside_capsule_medial": 0.026,
+       "share_outside_capsule_lateral": 0.316,
+       "share_outside_capsule": 0.342,
+       "outside_by_side": {
+        "ventral": 0.053,
+        "dorsal": 0.0,
+        "medial": 0.026,
+        "lateral": 0.263
+       }
+      }
+     },
+     "MF8": {
+      "voxels_in_window": 215,
+      "voxels_in_capsule": 129,
+      "share_in_capsule": 0.6,
+      "n_sections": 2,
+      "sections": {
+       "15": 51,
+       "16": 164
+      },
+      "rule_count_in_capsule": 129,
+      "position": {
+       "capsule_length_mm": 6.33,
+       "mm_from_ventral_end_median": 1.09,
+       "quartiles": [
+        0.22,
+        2.36
+       ],
+       "share_beyond_dorsal_end": 0.0,
+       "share_below_ventral_end": 0.172,
+       "share_outside_capsule_medial": 0.167,
+       "share_outside_capsule_lateral": 0.233,
+       "share_outside_capsule": 0.4,
+       "outside_by_side": {
+        "ventral": 0.144,
+        "dorsal": 0.0,
+        "medial": 0.14,
+        "lateral": 0.116
+       }
+      }
+     },
+     "MM2": {
+      "voxels_in_window": 0,
+      "voxels_in_capsule": 0,
+      "share_in_capsule": null,
+      "n_sections": 0,
+      "sections": {},
+      "rule_count_in_capsule": 0,
+      "position": null
+     }
+    }
+   },
+   "d": {
+    "rule": "the paper's present slab: three consecutive planes; largest minimum over the four cases of charted in-capsule voxels; ties nearest 18.0 mm",
+    "y_mm": 18.5,
+    "from_commissure_mm": -1.1,
+    "planes_mm": [
+     18.25,
+     18.5,
+     18.75
+    ],
+    "edges_mm": [
+     18.125,
+     18.875
+    ],
+    "cases": {
+     "MM1": {
+      "voxels_in_window": 66,
+      "voxels_in_capsule": 59,
+      "share_in_capsule": 0.8939,
+      "n_sections": 2,
+      "sections": {
+       "27": 62,
+       "28": 4
+      },
+      "rule_count_in_capsule": 59,
+      "position": {
+       "capsule_length_mm": 9.2,
+       "mm_from_ventral_end_median": 1.14,
+       "quartiles": [
+        0.79,
+        1.56
+       ],
+       "share_beyond_dorsal_end": 0.0,
+       "share_below_ventral_end": 0.0,
+       "share_outside_capsule_medial": 0.076,
+       "share_outside_capsule_lateral": 0.03,
+       "share_outside_capsule": 0.106,
+       "outside_by_side": {
+        "ventral": 0.0,
+        "dorsal": 0.0,
+        "medial": 0.076,
+        "lateral": 0.03
+       }
+      }
+     },
+     "MM3": {
+      "voxels_in_window": 49,
+      "voxels_in_capsule": 48,
+      "share_in_capsule": 0.9796,
+      "n_sections": 1,
+      "sections": {
+       "26": 49
+      },
+      "rule_count_in_capsule": 48,
+      "position": {
+       "capsule_length_mm": 9.2,
+       "mm_from_ventral_end_median": 1.24,
+       "quartiles": [
+        0.91,
+        1.44
+       ],
+       "share_beyond_dorsal_end": 0.0,
+       "share_below_ventral_end": 0.0,
+       "share_outside_capsule_medial": 0.02,
+       "share_outside_capsule_lateral": 0.0,
+       "share_outside_capsule": 0.02,
+       "outside_by_side": {
+        "ventral": 0.0,
+        "dorsal": 0.0,
+        "medial": 0.02,
+        "lateral": 0.0
+       }
+      }
+     },
+     "MF8": {
+      "voxels_in_window": 224,
+      "voxels_in_capsule": 170,
+      "share_in_capsule": 0.7589,
+      "n_sections": 3,
+      "sections": {
+       "17": 9,
+       "18": 63,
+       "19": 152
+      },
+      "rule_count_in_capsule": 170,
+      "position": {
+       "capsule_length_mm": 9.2,
+       "mm_from_ventral_end_median": 0.91,
+       "quartiles": [
+        0.43,
+        2.74
+       ],
+       "share_beyond_dorsal_end": 0.0,
+       "share_below_ventral_end": 0.062,
+       "share_outside_capsule_medial": 0.183,
+       "share_outside_capsule_lateral": 0.058,
+       "share_outside_capsule": 0.241,
+       "outside_by_side": {
+        "ventral": 0.058,
+        "dorsal": 0.0,
+        "medial": 0.174,
+        "lateral": 0.009
+       }
+      }
+     },
+     "MM2": {
+      "voxels_in_window": 51,
+      "voxels_in_capsule": 33,
+      "share_in_capsule": 0.6471,
+      "n_sections": 3,
+      "sections": {
+       "24": 8,
+       "26": 2,
+       "27": 41
+      },
+      "rule_count_in_capsule": 33,
+      "position": {
+       "capsule_length_mm": 9.2,
+       "mm_from_ventral_end_median": 8.68,
+       "quartiles": [
+        8.26,
+        9.21
+       ],
+       "share_beyond_dorsal_end": 0.275,
+       "share_below_ventral_end": 0.0,
+       "share_outside_capsule_medial": 0.353,
+       "share_outside_capsule_lateral": 0.0,
+       "share_outside_capsule": 0.353,
+       "outside_by_side": {
+        "ventral": 0.0,
+        "dorsal": 0.235,
+        "medial": 0.118,
+        "lateral": 0.0
+       }
+      }
+     }
+    }
+   }
+  },
+  "rule_counts_per_slab": {
+   "-6.10": {
+    "MM1": 0,
+    "MM3": 0,
+    "MF8": 0,
+    "MM2": 0
+   },
+   "-5.85": {
+    "MM1": 0,
+    "MM3": 0,
+    "MF8": 0,
+    "MM2": 0
+   },
+   "-5.60": {
+    "MM1": 0,
+    "MM3": 0,
+    "MF8": 0,
+    "MM2": 11
+   },
+   "-5.35": {
+    "MM1": 0,
+    "MM3": 0,
+    "MF8": 0,
+    "MM2": 34
+   },
+   "-5.10": {
+    "MM1": 0,
+    "MM3": 0,
+    "MF8": 0,
+    "MM2": 73
+   },
+   "-4.85": {
+    "MM1": 0,
+    "MM3": 0,
+    "MF8": 0,
+    "MM2": 121
+   },
+   "-4.60": {
+    "MM1": 0,
+    "MM3": 0,
+    "MF8": 0,
+    "MM2": 165
+   },
+   "-4.35": {
+    "MM1": 0,
+    "MM3": 0,
+    "MF8": 0,
+    "MM2": 197
+   },
+   "-4.10": {
+    "MM1": 0,
+    "MM3": 0,
+    "MF8": 0,
+    "MM2": 197
+   },
+   "-3.85": {
+    "MM1": 0,
+    "MM3": 0,
+    "MF8": 0,
+    "MM2": 167
+   },
+   "-3.60": {
+    "MM1": 0,
+    "MM3": 0,
+    "MF8": 0,
+    "MM2": 146
+   },
+   "-3.35": {
+    "MM1": 0,
+    "MM3": 0,
+    "MF8": 0,
+    "MM2": 129
+   },
+   "-3.10": {
+    "MM1": 4,
+    "MM3": 4,
+    "MF8": 3,
+    "MM2": 115
+   },
+   "-2.85": {
+    "MM1": 13,
+    "MM3": 5,
+    "MF8": 6,
+    "MM2": 109
+   },
+   "-2.60": {
+    "MM1": 21,
+    "MM3": 7,
+    "MF8": 9,
+    "MM2": 98
+   },
+   "-2.35": {
+    "MM1": 31,
+    "MM3": 14,
+    "MF8": 26,
+    "MM2": 79
+   },
+   "-2.10": {
+    "MM1": 42,
+    "MM3": 24,
+    "MF8": 81,
+    "MM2": 35
+   },
+   "-1.85": {
+    "MM1": 52,
+    "MM3": 37,
+    "MF8": 141,
+    "MM2": 7
+   },
+   "-1.60": {
+    "MM1": 59,
+    "MM3": 45,
+    "MF8": 186,
+    "MM2": 16
+   },
+   "-1.35": {
+    "MM1": 59,
+    "MM3": 51,
+    "MF8": 185,
+    "MM2": 30
+   },
+   "-1.10": {
+    "MM1": 59,
+    "MM3": 48,
+    "MF8": 170,
+    "MM2": 33
+   },
+   "-0.85": {
+    "MM1": 41,
+    "MM3": 38,
+    "MF8": 157,
+    "MM2": 24
+   },
+   "-0.60": {
+    "MM1": 33,
+    "MM3": 33,
+    "MF8": 147,
+    "MM2": 19
+   },
+   "-0.35": {
+    "MM1": 28,
+    "MM3": 27,
+    "MF8": 128,
+    "MM2": 20
+   },
+   "-0.10": {
+    "MM1": 33,
+    "MM3": 18,
+    "MF8": 101,
+    "MM2": 16
+   },
+   "+0.15": {
+    "MM1": 22,
+    "MM3": 10,
+    "MF8": 81,
+    "MM2": 7
+   },
+   "+0.40": {
+    "MM1": 16,
+    "MM3": 16,
+    "MF8": 80,
+    "MM2": 0
+   },
+   "+0.65": {
+    "MM1": 21,
+    "MM3": 18,
+    "MF8": 97,
+    "MM2": 0
+   },
+   "+0.90": {
+    "MM1": 32,
+    "MM3": 14,
+    "MF8": 126,
+    "MM2": 0
+   },
+   "+1.15": {
+    "MM1": 33,
+    "MM3": 9,
+    "MF8": 147,
+    "MM2": 0
+   },
+   "+1.40": {
+    "MM1": 43,
+    "MM3": 34,
+    "MF8": 152,
+    "MM2": 0
+   },
+   "+1.65": {
+    "MM1": 49,
+    "MM3": 48,
+    "MF8": 137,
+    "MM2": 0
+   },
+   "+1.90": {
+    "MM1": 46,
+    "MM3": 41,
+    "MF8": 126,
+    "MM2": 0
+   },
+   "+2.15": {
+    "MM1": 23,
+    "MM3": 22,
+    "MF8": 110,
+    "MM2": 0
+   },
+   "+2.40": {
+    "MM1": 10,
+    "MM3": 24,
+    "MF8": 111,
+    "MM2": 0
+   },
+   "+2.65": {
+    "MM1": 20,
+    "MM3": 33,
+    "MF8": 122,
+    "MM2": 0
+   },
+   "+2.90": {
+    "MM1": 35,
+    "MM3": 25,
+    "MF8": 129,
+    "MM2": 0
+   },
+   "+3.15": {
+    "MM1": 42,
+    "MM3": 9,
+    "MF8": 118,
+    "MM2": 0
+   },
+   "+3.40": {
+    "MM1": 29,
+    "MM3": 3,
+    "MF8": 93,
+    "MM2": 0
+   },
+   "+3.65": {
+    "MM1": 18,
+    "MM3": 6,
+    "MF8": 75,
+    "MM2": 0
+   },
+   "+3.90": {
+    "MM1": 15,
+    "MM3": 8,
+    "MF8": 63,
+    "MM2": 0
+   },
+   "+4.15": {
+    "MM1": 17,
+    "MM3": 5,
+    "MF8": 53,
+    "MM2": 0
+   },
+   "+4.40": {
+    "MM1": 15,
+    "MM3": 2,
+    "MF8": 47,
+    "MM2": 0
+   },
+   "+4.65": {
+    "MM1": 13,
+    "MM3": 2,
+    "MF8": 46,
+    "MM2": 0
+   },
+   "+4.90": {
+    "MM1": 19,
+    "MM3": 2,
+    "MF8": 46,
+    "MM2": 0
+   },
+   "+5.15": {
+    "MM1": 23,
+    "MM3": 4,
+    "MF8": 43,
+    "MM2": 0
+   },
+   "+5.40": {
+    "MM1": 21,
+    "MM3": 2,
+    "MF8": 32,
+    "MM2": 0
+   },
+   "+5.65": {
+    "MM1": 26,
+    "MM3": 6,
+    "MF8": 29,
+    "MM2": 0
+   },
+   "+5.90": {
+    "MM1": 25,
+    "MM3": 6,
+    "MF8": 20,
+    "MM2": 0
+   },
+   "+6.15": {
+    "MM1": 20,
+    "MM3": 6,
+    "MF8": 14,
+    "MM2": 0
+   },
+   "+6.40": {
+    "MM1": 5,
+    "MM3": 2,
+    "MF8": 3,
+    "MM2": 0
+   }
+  },
+  "d2": {
+   "thickness_mm": 0.5,
+   "period_mm": 1.0,
+   "rule": "MF8's t and p = the medians over MM1-MM3's runs, rounded to 0.05 mm",
+   "cases": {
+    "MR243": {
+     "case": "MM1",
+     "as_charted": true,
+     "drawn_voxels": 3382,
+     "share_in_footprint": 1.0,
+     "share_interpolated": 0.0,
+     "charted_share": 1.0
+    },
+    "MR256": {
+     "case": "MM3",
+     "as_charted": true,
+     "drawn_voxels": 3237,
+     "share_in_footprint": 1.0,
+     "share_interpolated": 0.0,
+     "charted_share": 1.0
+    },
+    "MF191": {
+     "case": "MF8",
+     "direction": [
+      0.0023,
+      0.9434,
+      0.3315
+     ],
+     "t_mm": 0.5,
+     "p_mm": 1.0,
+     "phase_mm": 0.9,
+     "footprint_in_comb": 0.509,
+     "drawn_voxels": 10302,
+     "share_in_footprint": 0.807,
+     "share_interpolated": 0.193,
+     "charted_share": 0.807
+    },
+    "MR252": {
+     "case": "MM2",
+     "as_charted": true,
+     "drawn_voxels": 2261,
+     "share_in_footprint": 1.0,
+     "share_interpolated": 0.0,
+     "charted_share": 1.0
+    }
+   },
+   "measured": {
+    "MM1": {
+     "subject": "MR243",
+     "normal": [
+      0.0138,
+      0.9651,
+      0.2614
+     ],
+     "tilt_from_y_deg": 15.2,
+     "thickness_mm": {
+      "n": 1951,
+      "median": 0.5,
+      "q25": 0.25,
+      "q75": 0.55
+     },
+     "gap_mm": {
+      "n": 1042,
+      "median": 0.5,
+      "q25": 0.25,
+      "q75": 0.8
+     },
+     "period_mm": {
+      "n": 1042,
+      "median": 1.0,
+      "q25": 0.75,
+      "q75": 1.3
+     },
+     "A_share_in_footprint": 1.0
+    },
+    "MM3": {
+     "subject": "MR256",
+     "normal": [
+      -0.0241,
+      0.9754,
+      0.2193
+     ],
+     "tilt_from_y_deg": 12.7,
+     "thickness_mm": {
+      "n": 1988,
+      "median": 0.45,
+      "q25": 0.25,
+      "q75": 0.5
+     },
+     "gap_mm": {
+      "n": 858,
+      "median": 0.5,
+      "q25": 0.4,
+      "q75": 0.75
+     },
+     "period_mm": {
+      "n": 858,
+      "median": 1.0,
+      "q25": 0.75,
+      "q75": 1.15
+     },
+     "A_share_in_footprint": 1.0
+    },
+    "MF8": {
+     "subject": "MF191",
+     "normal": [
+      0.0023,
+      0.9434,
+      0.3315
+     ],
+     "tilt_from_y_deg": 19.4,
+     "thickness_mm": {
+      "n": 5751,
+      "median": 0.8,
+      "q25": 0.3,
+      "q75": 1.3
+     },
+     "gap_mm": {
+      "n": 3167,
+      "median": 0.5,
+      "q25": 0.2,
+      "q75": 1.6
+     },
+     "period_mm": {
+      "n": 3167,
+      "median": 1.45,
+      "q25": 0.75,
+      "q75": 2.9
+     },
+     "A_share_in_footprint": 1.0
+    },
+    "MM2": {
+     "subject": "MR252",
+     "normal": [
+      -0.0296,
+      0.9291,
+      0.3686
+     ],
+     "tilt_from_y_deg": 21.7,
+     "thickness_mm": {
+      "n": 1275,
+      "median": 0.5,
+      "q25": 0.25,
+      "q75": 0.55
+     },
+     "gap_mm": {
+      "n": 647,
+      "median": 0.55,
+      "q25": 0.3,
+      "q75": 1.0
+     },
+     "period_mm": {
+      "n": 647,
+      "median": 1.05,
+      "q25": 0.8,
+      "q75": 1.6
+     },
+     "A_share_in_footprint": 1.0
+    }
+   }
+  },
+  "figures": {
+   "main (two slabs, row (a) D2)": {
+    "file": "fig9_twoslabs_d2_s11wr17nl",
+    "png_md5": "a8d5a7d8625459c5f5641b45df642ba5",
+    "pdf_md5": "a13be60b83d42b173269be66f4a93aa8"
+   },
+   "MF8 as charted in row (a)": {
+    "file": "fig9_twoslabs_mf8charted_s11wr17nl",
+    "png_md5": "7d99d1eb1671cd7cfe4b5df595bf7a2f",
+    "pdf_md5": "8933851cfdb16a3551838dd8a81da444"
+   },
+   "alternative (three slabs, row (a) D2)": {
+    "file": "fig9_threeslabs_d2_s11wr17nl",
+    "png_md5": "56ded06dd68f0c11a75bcfabeee19b77",
+    "pdf_md5": "72729bc81b32da99765d8310c10cd28c"
+   },
+   "Supplementary S2 (b and c marked)": {
+    "file": "figS2_capsule_distance_twoslabs_s11wr17nl",
+    "png_md5": "0fe7cb874dfbd8e1574bb6a76d64ba5e",
+    "pdf_md5": "94347ea001cb1c910e0960e7f69867b7"
+   }
+  },
+  "drawing": {
+   "faint_outside_window_opacity": 0.35,
+   "rule": "in each slab, each case's pieces (8-connected in its union over the slab's three planes) that lie wholly outside the capsule's 2 mm window are drawn at this opacity; nothing is left out"
+  },
+  "d_equals_record_b": {
+   "voxels_in_window": true,
+   "voxels_in_capsule": true,
+   "n_sections": true,
+   "sections": true,
+   "share_in_capsule": true,
+   "slab_planes_mm": true,
+   "slab_minimum": true
+  },
+  "form": "three slabs of the figure: b (midway between the first and the last prefrontal entry), c (rule B), d (the present slab)",
+  "inputs": {
+   "sections": "labels/tracer_v2_h9_s11wr17/sections_template (the labels of record, all bundle classes)",
+   "sarm": "mri/tc/atlas_v2/NMT_v2.0_sym/SARM_level6_in_template.nii.gz",
+   "sarm_md5": "aa31f851e3cb635c4ebeb052fbe52d4f",
+   "brain_mask": "template/mri/linc_mri_brainmask.nii.gz",
+   "bundles_footprint_md5": {
+    "MM1": "c47a1ac03a1a81ce7216d77cec157581",
+    "MM3": "add8a76b3e371c1c0932dbd6c151eeea",
+    "MF8": "7571c0fcc8b855f0dc7770fbbaf20510",
+    "MM2": "f231166631671ec34359b42545f2cb37"
+   },
+   "record_compared": "fig_tracer_v11_h9_s11wr17.json",
+   "d2": "the virtual sections of an earlier form of row (a) (not drawn in this form; kept as the record wrote it)"
+  }
+ }
+}

@@ -32,12 +32,13 @@ To make one figure: `$PY code/figures/<script>.py --out <file.png>`.
 | 6 | `link.py` |
 | 7 | `histology.py` |
 | 8 | `lgnstn.py` |
-| 9 | `tracer_sections3d.py` |
+| 9 | not in this release: drawn by the analysis from the tracer labels without the light fiber bundle class; the numbers it prints are the references `fig9_coronal_slabs3m_allclasses_s11wr17`, `fig9_rowa_virtual_sections_s11wr17nl` and `fig9_rowa_style_r3_s11wr17nl` (not regenerated, `tests/numbers_exceptions.yaml`) |
 | S1 | `s_bf2mri_steps.py` |
 | S2 | `s_synthesis_gallery.py` |
 | S3 | `s_tracer_fidelity.py` |
-| S4 | `s_networks.py` |
-| not in the paper | `alignment_comparison.py` (it still writes a numbers record), `s_synthesis_depth.py` (its numbers are in the Supplement's text) |
+| S4 | not in this release: each bundle's distance from the internal capsule's ventral end, drawn by the analysis with Fig. 9 |
+| S5 | `s_networks.py` |
+| not in the paper | `alignment_comparison.py` (it still writes a numbers record), `s_synthesis_depth.py` (its numbers are in the Supplement's text), `tracer_sections3d.py` (an earlier form of the tracer figure) |
 
 `figstyle.py` holds the shared figure style, and the font is Liberation Sans.
 

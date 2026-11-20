@@ -2,8 +2,8 @@
 """Run the whole method step by step, on one machine or several, and check each step against the paper's files.
 
 You need
-  the environments and the data roots, set in the shell you start it from (README.md), and the plan,
-  steps.yaml: for each step its command, the check that compares its result with the paper's, what it reads
+  the environments, the data folder and the working folders, set in the shell you start it from
+  (source settings/roots.sh, README.md), and the plan, steps.yaml: for each step its command, the check that compares its result with the paper's, what it reads
   and writes, and the machine it needs. docs/tutorials/ describe the same steps in words.
 What it does
   --plan              prints the plan and runs nothing
@@ -535,6 +535,13 @@ def cmd_run(a, steps):
     missing = unset_variables([by[n] for n in names])
     if missing:
         die("these variables are not set in this shell (source the environment first): " + ", ".join(f"{v} ({n})" for v, n in sorted(missing.items())))
+    if os.environ.get("LINC_DATA"):                                              # every step gets this shell's LINC_DATA: never the data folder
+        sys.path.insert(0, str(Path(__file__).resolve().parent / "code"))
+        from shared import paths
+        if Path(os.environ["LINC_DATA"]).is_dir() and paths.is_data_folder(os.environ["LINC_DATA"]):
+            die(f"LINC_DATA is the data folder ({os.environ['LINC_DATA']}); the steps read and write the working folder made from it, never the "
+                "data folder itself. Run `source settings/roots.sh` in this shell: it keeps the data folder in LINC_DATA_TREE and sets LINC_DATA "
+                "to the working folder.")
     OUT.mkdir(parents=True, exist_ok=True)
     live = scheduler()
     if live:

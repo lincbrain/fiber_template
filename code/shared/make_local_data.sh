@@ -1,12 +1,13 @@
 #!/bin/bash
-# Make your own writable data tree from the project's data of record (read only), so what you run never writes into the record.
+# Make your own writable working folders from the data folder (read only), so what you run never writes into it.
 #     code/shared/make_local_data.sh <dest> [ID ...] [--rebuild ID] [--raw NAME=PATH] [--link ID:PATH=TARGET] [--copy ID:PATH=SOURCE]
 #
 # You need
-#   LINC_RECORDS: the project folder holding data/ and template/ (settings/roots.sh sets it, and runs this script for you).
+#   the data folder, through its files as the code names them: outputs/in, which holds data/ and template/ (settings/roots.sh makes it,
+#   sets LINC_RECORDS to it, and runs this script for you).
 # What it does
-#   For each brain (default MR252 MF191, the walkthrough brains) it re-creates $LINC_RECORDS/data/sub-<ID>/ under <dest>/data as
-#   real folders of yours, with every file inside a link to the record (an OME-Zarr store is one link). Safe to rerun: what exists
+#   For each brain (default MR252 MF191, the walkthrough brains) it re-creates the data folder's data/sub-<ID>/ (outputs/in) under <dest>/data
+#   as real folders of yours, with every file inside a link to the data folder's file (an OME-Zarr store is one link). Safe to rerun: what exists
 #   is left alone, missing parts are added; nothing is deleted or overwritten.
 #   --rebuild ID          for a brain you will reconstruct yourself: blockface/ gets only the manual inputs, as copies
 #                         (curated/<ID>_mask_edited.nii.gz and _holes_edited.nii.gz, 01_brainmask/01_final/ (MF8 / MF9: the
@@ -23,14 +24,14 @@
 #                          brain without MRI, the cross-modal alignment), each meta.json a copy, the transform files
 #                          links. A brain without products of record gets
 #                          empty folders.
-#   <dest>/template/       (point LINC_TEMPLATE here)  links to $LINC_RECORDS/template/*, plus frames/mri_template_0p5.nii.gz (the
+#   <dest>/template/       (point LINC_TEMPLATE here)  links to the data folder's template files (outputs/in/template/*), plus frames/mri_template_0p5.nii.gz (the
 #                          frame linc-register --place-b0 reads)
 #   <dest>/raw/            (point LINC_RAW here)       the --raw links
-#   <dest>/.complete       written last, when the tree is complete (settings/roots.sh builds again when it is missing)
+#   <dest>/.complete       written last, when the folder is complete (settings/roots.sh builds again when it is missing)
 set -eu
-[ $# -ge 1 ] && [ "$1" != "-h" ] && [ "$1" != "--help" ] || { sed -n '2,28p' "$0" | cut -c3-; exit 0; }
+[ $# -ge 1 ] && [ "$1" != "-h" ] && [ "$1" != "--help" ] || { sed -n '2,30p' "$0" | cut -c3-; exit 0; }
 DEST=$1; shift; ARGS="$*"
-REC=${LINC_RECORDS:?set LINC_RECORDS to the project folder holding data/ and template/ (settings/roots.sh sets it)}
+REC=${LINC_RECORDS:?source settings/roots.sh first: it links the files of the data folder into outputs/in and sets LINC_RECORDS to it}
 REPO=$(cd "$(dirname "$0")/../.." && pwd)
 IDS=(); REBUILD=(); RAWS=(); LINKS=(); COPIES=()
 while [ $# -gt 0 ]; do
@@ -80,7 +81,7 @@ for S in "${IDS[@]}"; do
   # for a brain without MRI, the direct placement of record (xfm_d2s2_prod_s125/) and its route through the blockface template (xfm_member/)
   mkdir -p "$dst/xfm"
   v=$(sed -n 's/^ *variant_of_record: *\([A-Za-z0-9_]*\).*/\1/p' "$REPO/settings/brains/$S.yaml" 2>/dev/null | head -1)
-  if [ -d "$src/xfm_record" ]; then       # a data tree: the entries of record are already laid out (settings/files.tsv)
+  if [ -d "$src/xfm_record" ]; then       # a data folder (through its links): the entries of record are already laid out (settings/files.tsv)
     farm "$src/xfm_record" "$dst/xfm_record" xfm
   elif [ -d "$src/xfm" ]; then
     mkdir -p "$dst/xfm_record"

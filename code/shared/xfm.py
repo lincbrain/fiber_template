@@ -759,7 +759,12 @@ def main(argv=None):
                      copy=not a.no_copy, overwrite=a.overwrite)
         print(repr(e))
     else:
-        ch = Chain.between(a.src, a.dst, a.subject, strict=a.strict, allow_inverse=not a.no_inverse)
+        try:
+            ch = Chain.between(a.src, a.dst, a.subject, strict=a.strict, allow_inverse=not a.no_inverse)
+        except LookupError:                       # a step that has not run yet: one line, not a traceback
+            who = f" for {a.subject}" if a.subject else ""
+            sys.exit(f"No transform from {a.src} to {a.dst}{who} yet: the step that makes it has not run in this working folder. "
+                     f"`python -m shared.xfm list{' --subject ' + a.subject if a.subject else ''}` shows the transforms that exist.")
         if a.cmd == "chain":
             print(json.dumps(ch.describe(), indent=1))
         elif a.cmd == "apply":

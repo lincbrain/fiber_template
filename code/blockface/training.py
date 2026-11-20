@@ -1,8 +1,8 @@
-"""The training cases of the three blockface networks, staged from the data tree, so the networks can be trained again from the
+"""The training cases of the three blockface networks, staged from the working folder, so the networks can be trained again from the
 reconstructions (settings/models/README.md; the task files of record: settings/segment/bf_mask2d.json, bf_mask3d.json, bf_holes.json).
 
 You need
-  a task file (settings/segment/<task>.json: its brains, folds and rules) and, for each of its brains, the data tree
+  a task file (settings/segment/<task>.json: its brains, folds and rules) and, for each of its brains, the working folder
   $LINC_DATA/sub-<ID>/blockface (settings/brains/<ID>.yaml for the brain's spacing, jumps, missing sections and section factor f):
   for bf_mask2d 00_slices/, 01_brainmask/01_final/, 02_blockface_mask.ome.zarr, curated/<ID>_bg and curated/<ID>_mask_edited; for
   bf_mask3d curated/<ID>_bg and curated/<ID>_mask_edited; for bf_holes steps/<ID>_03_color.ome.zarr, <ID>.info,

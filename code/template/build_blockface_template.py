@@ -111,7 +111,7 @@ def make_steps(W, paths):
           f"{tpl}'s b0 cost: 0 below the brainstem plane + 1 mm, cosine over 2 mm (rewrites canon_tpl/TPL/d2_b0_costmask in place)"),
         # 2. plan A
         S("run-plan-a", pa_lbl, "linc", [*B, "run-plan-a", "--canon", w("canon_tpl"), "--root", w("runs"), "--name", ra],
-          [run_a], [w("canon_tpl")], "5 min", f"data tree, configs ({na} steps, lambda x{MM['lambda_scale']:g}, smoothing floors), standardspace"),
+          [run_a], [w("canon_tpl")], "5 min", f"the data folder, configs ({na} steps, lambda x{MM['lambda_scale']:g}, smoothing floors), standardspace"),
         S("copy-affine", pa_lbl, "linc", [*B, "copy-affine", "--plan-a-affine", affine, "--run", run_a],
           [run_a / "out" / "affine_step2"], [affine, run_a], "1 min", f"the {nin} inputs' affine stage of record + {tpl} at the identity"),
         S("tpl-affine", pa_lbl, "linc", [*B, "tpl-affine", "--run", run_a, "--ref-template",

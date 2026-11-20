@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Test of the automated match table (linc-histology propose) against the records. Reads the records only; writes under --work.
+"""Test of the automated match table (linc-histology propose) against the paper's tables. Reads the data folder's files only, through
+the repository's outputs/in; writes under --work.
 
-    $PY_TIRL tests/match_propose_records.py --work <folder outside $LINC_RECORDS> --jobs 8
+    $PY_TIRL tests/match_propose_records.py --work <folder outside the repository's outputs/in> --jobs 8
 
 You need
-  $LINC_RECORDS (labels/match_tables, labels/regions_t2_final, the brains' stores and masks); the LINC histology dataset (--linc-dataset,
+  in the repository's outputs/in (settings/roots.sh links the data folder's files there under the names the code reads):
+  labels/match_tables, labels/regions_t2_final, the brains' stores and masks; the LINC histology dataset (--linc-dataset,
   default $LINC_RAW/linc_000003); the folder of the five brains' manually made tables (--manual-tables); settings/env/tirl.yml.
 What it does
   rule      the 12 tables written by the rule of record, recomputed from the record's saved scores: run lines, floor and table writer.
@@ -345,7 +347,7 @@ def main():
         sys.exit("parts saved and five need --manual-tables")
     paths.refuse_records(a.work)
     if (os.path.realpath(a.work) + os.sep).startswith(os.path.realpath(rec) + os.sep):
-        sys.exit("--work must be outside $LINC_RECORDS")
+        sys.exit("--work must be outside the repository's outputs/in (the links to the data folder's files)")
     res = json.load(open(a.json)) if os.path.exists(a.json) else {}
     for part in a.parts.split(","):
         t0 = time.time()

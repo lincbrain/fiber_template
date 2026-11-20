@@ -16,13 +16,14 @@ Install the repository and its requirements as described in the README's [quick 
 Then, in every new shell, run this from the top of the repository:
 
 ```bash
-export LINC_DATA=<the data folder>
+export LINC_DATA_TREE=<the data folder>     # the folder that holds brains/, template/, models/ and paper/
 source settings/roots.sh
 ```
 
-`LINC_DATA` is the data folder itself, the one that holds `brains/`, `template/`, `models/` and `paper/`; given any other folder, `roots.sh` stops and says so ([troubleshooting](../troubleshooting.md#setup)).
-It sets `$PY`, `$PY_TIRL` and `$PY_DEEP` to the Python environments that `install.sh` built, and every command in the tutorials assumes them.
-It also points `$LINC_DATA` to a working folder inside the repository, since the code never writes into the data folder ([overview](../overview.md#the-data-folder)).
+`LINC_DATA_TREE` is the data folder itself, the one that holds `brains/`, `template/`, `models/` and `paper/`; given any other folder, `roots.sh` stops and says so ([troubleshooting](../troubleshooting.md#setup)).
+Setting `LINC_DATA` to the data folder instead, as before, works too: when you set it so, it is the folder used, and after sourcing `LINC_DATA` is the working folder.
+In an interactive shell, `roots.sh` ends with one line that names both: `settings/roots.sh: data folder <path>; working folder <path>`.
+`roots.sh` also sets `$PY`, `$PY_DEEP`, `$PY_TIRL` and `$ANATOMIX_PYTHON` to the Python environments that `install.sh` built, and every command in the tutorials assumes them.
 
 After you add files to the data folder, or after a `git pull`, add the word `refresh` once:
 
@@ -32,6 +33,36 @@ source settings/roots.sh refresh
 
 The first time, `roots.sh` links the data folder's files and fills its working folders, and it does not look again by itself.
 With `refresh` it links the files again and adds what the working folders lack; it deletes and overwrites nothing of yours.
+
+### Where the files are
+
+The files live in two places.
+
+**The data folder**, `$LINC_DATA_TREE`, holds the paper's data. The code reads it and never writes into it.
+- `brains/sub-<ID>/inputs/`: what an instrument or a person made.
+- `brains/sub-<ID>/intermediate/`: everything in between, from the paper's run.
+- `brains/sub-<ID>/outputs/`: the paper's finished files.
+- `template/`: the template, split the same way; `models/`: the trained networks; `paper/`: what only the paper's numbers and figures read.
+
+**The repository's `outputs/`**, made by `settings/roots.sh`, holds what your own runs write.
+- `in/`: links to the data folder's files, under the names the code uses; nothing of yours.
+- `local_data/`: `data/`, the working folder (`$LINC_DATA`: one `sub-<ID>/` per brain, with `blockface/`, `mri/`, `xfm/`, `histology/` and `labels/`), `raw/` (`$LINC_RAW`) and `template/` (`$LINC_TEMPLATE`).
+- `local_rebuild/` and `local_mri/`: the working folders for reconstructing a paper brain from its photographs (`$LINC_REBUILD_DATA`) and for the MRI template's build (`$LINC_MRI_DATA`); `local_mri/` is not made when the data folder lacks the four template brains' masks.
+- `work/` (`$LINC_WORK`), `models/` (`$LINC_MODELS`) and `build_everything/` (`run.py`'s commands, logs and checks).
+
+The repository's `outputs/` is not a brain's `outputs/`.
+A brain's `outputs/` is in the data folder and holds the paper's finished files.
+A run does not sort what it writes into inputs, intermediate and outputs: it writes into the working folders, under the code's names, and each command's `--help` and the tutorials say where.
+
+| Name | What it is | Who sets it |
+|---|---|---|
+| `$LINC_DATA_TREE` | the data folder, read only: `brains/`, `template/`, `models/`, `paper/` | you, before `source settings/roots.sh` |
+| `$LINC_DATA` | the working folder, `outputs/local_data/data`, one `sub-<ID>/` per brain; the commands read and write here | `settings/roots.sh` |
+| `$LINC_REBUILD_DATA` | the working folder for reconstructing a paper brain from its photographs, `outputs/local_rebuild/data` | `settings/roots.sh`; a command works there when it starts with `LINC_DATA=$LINC_REBUILD_DATA` |
+| `$LINC_MRI_DATA` | the working folder of the MRI template's build, `outputs/local_mri/data` | `settings/roots.sh`; a command works there when it starts with `LINC_DATA=$LINC_MRI_DATA` |
+
+The overview's [table of names](../overview.md#names) has every other name the documents use, in the same words.
+In the tutorials, a path into the data folder starts with `$LINC_DATA_TREE/` and a path into the working folder with `$LINC_DATA/`.
 
 ## Two ways to run a step
 

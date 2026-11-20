@@ -537,6 +537,18 @@
   "synthesis_leakfree_fills_depth_a19": {
    "md5_of_record": "f6b23cdadcc5c627136e5501711a97fd",
    "created": "2026-11-19T05:45:30-05:00"
+  },
+  "fig9_coronal_slabs3m_allclasses_s11wr17": {
+   "md5_of_record": "96702ac1a0d94bbb8997373caead4931",
+   "created": "2026-11-20T14:08:05-05:00"
+  },
+  "fig9_rowa_virtual_sections_s11wr17nl": {
+   "md5_of_record": "510d2a8419bb1597f123d38b9812a0f4",
+   "created": "2026-11-20T13:19:34-05:00"
+  },
+  "fig9_rowa_style_r3_s11wr17nl": {
+   "md5_of_record": "af6a04cb57c9f5b83aad2e49f0ead39b",
+   "created": "2026-11-20T13:56:09-05:00"
   }
  }
 }

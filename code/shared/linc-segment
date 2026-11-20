@@ -27,7 +27,7 @@ You get
 `code/shared/linc-segment predict -h` lists the options.
 
 To train the networks again (each command's -h says what it needs, does and writes):
-    $PY code/shared/linc-segment stage --task settings/segment/<model>.json --out DIR            # the blockface networks' training cases, from the data tree
+    $PY code/shared/linc-segment stage --task settings/segment/<model>.json --out DIR            # the blockface networks' training cases, from the working folder
     code/shared/linc-segment train --task <task file> --fold <0-4|all> [--plan]                 # one fold; fold all gives the shipped model
     code/shared/linc-segment folds --task <task file>                                           # a new task's five folds, grouped by brain
 """
@@ -82,7 +82,7 @@ def predict(argv):
 
 
 def stage(argv):
-    ap = argparse.ArgumentParser(prog="linc-segment stage", formatter_class=argparse.RawDescriptionHelpFormatter, description="""Build the training cases of a blockface network from the data tree, so that it can be trained again.
+    ap = argparse.ArgumentParser(prog="linc-segment stage", formatter_class=argparse.RawDescriptionHelpFormatter, description="""Build the training cases of a blockface network from the reconstructions in the working folder, so that it can be trained again.
 
 You need
   the environment settings/env/linc.yml ($PY, not $PY_DEEP: the color store is an OME-Zarr store); a task file, settings/segment/<model>.json

@@ -11,7 +11,8 @@
     $PY tests/compare/compare_mri_build.py entries <your xfm folder> <the paper's xfm folder> <entry> [<entry> ...]
 
 You need the step's outputs and the paper's (the paper's MRI folder of a brain is $LINC_PRODUCTS/mri/data/sub-<ID>, its run
-$LINC_PRODUCTS/mri/tc/rb_final, its link entries $LINC_PRODUCTS/mri/xfm_rb_final/sub-<ID>/xfm).
+$LINC_PRODUCTS/mri/tc/rb_final, its link entries $LINC_PRODUCTS/mri/xfm_rb_final/sub-<ID>/xfm). $LINC_PRODUCTS is
+the repository's outputs/in, where settings/roots.sh links the data folder's files under the names the code reads (settings/files.tsv gives each one's name in $LINC_DATA_TREE): the paper's files are compared under the code's names.
 What it does:
   staged   every staged image (dwi/, t2/, micro/) that the paper also has: voxel values and affine;
   nmt      the share of the brain's voxels (your b0 mask) where your SARM labels equal the paper's;

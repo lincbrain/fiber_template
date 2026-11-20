@@ -17,8 +17,17 @@ You get, in $M = $LINC_DATA/sub-<ID>/mri (or --mri-root)
   b0: $M/dwi/b0.nii.gz, $M/masks/dwi_brain_mask.nii.gz (+ .json when predicted), $M/dwi/b0_brain.nii.gz,
       $M/dwi/b0_brain_n4.nii.gz (+ _bias) and $M/dwi/b0_brain_n4.provenance.json
   t2: $M/t2/echo.nii.gz, $M/masks/t2_brain_mask.nii.gz, $M/t2/echo_n4.nii.gz (+ _bias), $M/t2/echo_n4_brain.nii.gz (+ .provenance.json)
-  and the next command, printed at the end:
-      code/blockface/registration/linc-register mri --subject <ID> --place-b0 $M/dwi/b0_brain_n4.nii.gz $M/masks/dwi_brain_mask.nii.gz --new-brain
+  and, printed at the end (and kept as `next` in the provenance file), the commands of the two routes that go on from a b0:
+      the b0 into the MRI template (docs/tutorials/01_mri.md, Step B2):
+          $PY code/blockface/registration/linc-register mri-template --subject <ID> --b0 $M/dwi/b0_brain_n4.nii.gz
+              --mask $M/masks/dwi_brain_mask.nii.gz --frame $LINC_TEMPLATE/frames/mri_template_0p5.nii.gz
+              --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
+      a brain with blockface photographs: its blockface volume to this b0, then the b0 into the MRI template
+      (docs/tutorials/02_blockface.md, Step 3):
+          $PY code/blockface/registration/linc-register mri --subject <ID> --new-brain
+              --place-b0 $M/dwi/b0_brain_n4.nii.gz $M/masks/dwi_brain_mask.nii.gz
+          $PY code/blockface/registration/linc-register mri-template --subject <ID> --b0 $M/dwi/b0_brain_n4.nii.gz
+              --mask $M/masks/dwi_brain_mask.nii.gz --template-b0 ... --template-mask ...      (the placement that mri made)
 
     linc-mri prep --subject <ID> --image <NIfTI> [--modality b0|t2] [--mask MASK] [--volume N] [--denoise] [--no-n4]
                   [--mri-root DIR] [--device cuda|cpu]

@@ -186,7 +186,7 @@ def encode(frames, dur, out, boxes, start=0, share=SHARE):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--tree", default=os.environ.get("LINC_DATA_TREE"), help="the data tree (default $LINC_DATA_TREE)")
+    ap.add_argument("--tree", default=os.environ.get("LINC_DATA_TREE"), help="the data folder (default $LINC_DATA_TREE)")
     ap.add_argument("--out", default=str(HERE.parents[1] / "docs" / "media" / "template_coronal.gif"))
     ap.add_argument("--width", type=int, default=960, help="pixels")
     ap.add_argument("--step-mm", type=float, default=STEP_MM, help="the planes' spacing (a whole number of 0.25 mm voxels)")
