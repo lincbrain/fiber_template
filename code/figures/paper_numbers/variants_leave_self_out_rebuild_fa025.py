@@ -21,7 +21,7 @@ You get
 
     OMP_NUM_THREADS=4 python code/figures/paper_numbers/variants_leave_self_out_rebuild_fa025.py [--plan]
 
-CPU only, about 30 minutes with 4 threads (paper: Methods, "Comparing template variants").
+CPU only, about 30 minutes with 4 threads (paper: Methods, "Contribution of each MRI contrast and leave-one-brain-out evaluation").
 """
 import os
 for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):

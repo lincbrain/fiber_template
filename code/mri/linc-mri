@@ -32,7 +32,7 @@ You get, in $M = $LINC_DATA/sub-<ID>/mri (or --mri-root)
     linc-mri prep --subject <ID> --image <NIfTI> [--modality b0|t2] [--mask MASK] [--volume N] [--denoise] [--no-n4]
                   [--mri-root DIR] [--device cuda|cpu]
 
-Environment: settings/env/linc.yml. Code: code/mri/mri_new_brain.py (paper: Methods, "MRI preprocessing").
+Environment: settings/env/linc.yml. Code: code/mri/mri_new_brain.py (paper: Methods, "Preprocessing").
 """
 import argparse
 import os

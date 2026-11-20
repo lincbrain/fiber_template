@@ -65,7 +65,7 @@ canonical:
   norm_eps: 1.0e-3
   compositional_floor: 1.0e-3              # frac1 + frac2 renormalized to 1 where their sum exceeds this, 0 elsewhere
 
-# --- per-brain input preparation (Methods, "MRI preprocessing") ---
+# --- per-brain input preparation (Methods, "Preprocessing") ---
 prep:
   layout:                                  # per-brain MRI files, relative to the brain's MRI folder (default $LINC_DATA/sub-<ID>/mri)
     b0: dwi/b0.nii.gz                      # diffusion b0, 0.25 mm: every brain's reference grid

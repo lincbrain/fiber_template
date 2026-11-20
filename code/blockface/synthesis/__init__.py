@@ -1,5 +1,5 @@
 """Caudal completion: the blockface tissue that a brain's photographs lack, predicted from its b0 image and joined to the photographs
-(paper: Methods, "Registration to the brain's own MRI and caudal completion"; the network: Gonzales et al. 2026, ISBI).
+(paper: Methods, "Synthesis of missing sections"; the network: Gonzales et al. 2026, ISBI).
 
   network   the 3D U-Net: b0 at 0.5 mm in, blockface grey at 0.25 mm out
   data      a prepared brain folder (the network's input, the photographs, the masks, the join plane) and training patches

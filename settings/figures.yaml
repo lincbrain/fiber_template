@@ -63,7 +63,8 @@ synthesis_gallery:
   plane: record                       # the axial options only (--frame flat): record | fewest_gaps
 
 networks:
-  standin: MR247                      # Supplementary S4 row (f): MM12, chosen by eye among the eight brains without MRI for a natural occipital
+  standin: MR247                      # the networks figure of Supplementary Section S5, "Deep-learning networks", row (f):
+                                      #   MM12, chosen by eye among the eight brains without MRI for a natural occipital
                                       #   pole in its stand-in b0 (the author, 12 Nov 2026; MF8's looked flat there)
   max_height_mm: 203                  # the figure's height at most: its page with its caption
 

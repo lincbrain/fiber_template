@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""The blockface spacing as used by the reconstructions, per brain and as ranges over the 21 photographed brains (Methods, "Brains").
+"""The blockface spacing as used by the reconstructions, per brain and as ranges over the 21 photographed brains
+(Methods, "Sectioning and blockface photography").
 
     python code/figures/paper_numbers/bf_spacing_used.py
 

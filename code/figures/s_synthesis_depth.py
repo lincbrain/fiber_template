@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Supplementary S1, synthesis of the withheld slabs: the synthesis network's paper (Gonzales et al. 2026,
+"""Supplementary Section S5.3, "Accuracy of the synthesis on withheld slabs": the synthesis network's paper (Gonzales et al. 2026,
 ISBI) Fig. 3, re-rendered in this paper's house style with this paper's names.
 
     python code/figures/s_synthesis_depth.py [--out figures/s_synthesis_depth.pdf]

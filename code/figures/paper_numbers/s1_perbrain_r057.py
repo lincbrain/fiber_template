@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The per-brain table of the blockface brains (Supplementary S1.5, the blockface columns).
+"""The per-brain table of the blockface brains (Supplementary Section S1, "The blockface pipeline", the blockface columns).
 
     python code/figures/paper_numbers/s1_perbrain_r057.py
 

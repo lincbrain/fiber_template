@@ -35,7 +35,7 @@ You get
 The MRI build works in its own working folder, $LINC_MRI_DATA: run these with LINC_DATA=$LINC_MRI_DATA in front, as the steps of
 code/template/build_mri_channels.py are (docs/tutorials/01_mri.md, part A); --mri-root and --xfm-root default to the brain's folders there.
 
-Paper: Methods, "Image registration" and "MRI preprocessing".
+Paper: Methods, "Image registration and segmentation" and "Preprocessing".
 """
 import argparse
 import json

@@ -1,4 +1,5 @@
-"""Display helpers for the figures of the completed volumes (Supplementary S1: code/figures/figS_synthesis_*.py). Display only.
+"""Display helpers for the figures of the completed volumes (Supplementary Sections S1, "The blockface pipeline", and S5.3,
+"Accuracy of the synthesis on withheld slabs": code/figures/figS_synthesis_*.py). Display only.
 
 Flat          views of a prepared brain's volumes on its section-aligned ("flat") deploy grid. The prepared fine grid (<ID>/fine,
               0.25 mm) is a box of the unrotated deploy grid; the flat grid is that grid rotated by R so that its axis 1 runs along the

@@ -16,7 +16,7 @@ You get
 
     python code/figures/paper_numbers/lobo_t2_rebuild.py [--workers 4] [--plan]
 
-Paper: Methods, "Leave one brain out".
+Paper: Methods, "Contribution of each MRI contrast and leave-one-brain-out evaluation"; Results, "Leave-one-brain-out evaluation".
 """
 import argparse
 import sys

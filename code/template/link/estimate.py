@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """The construction estimate of the link, and its comparison with the link (paper: Methods, "Registration of the blockface template
-into the MRI template": "a second, independent estimate of the same mapping").
+to the MRI template": "a second mapping from the blockface template to the MRI template").
 
 Port of the analysis project's mri/code/s5_compose.py (final path: the member list of the dual-channel template, --members-json, with
 the inverse guard) and mri/code/s5_compare.py; runs of record bftemplate/cv/s5_compose_d2bs8_r05_guard (all brain members),

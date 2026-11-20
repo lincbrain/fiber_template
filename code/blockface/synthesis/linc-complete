@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Synthesize the blockface tissue a brain's photographs lack, from its b0 image, and join it to the photographs (paper: Methods, "Blockface to
-MRI registration and synthesis of missing sections"; the network: Supplementary S1).
+"""Synthesize the blockface tissue a brain's photographs lack, from its b0 image, and join it to the photographs (paper: Methods, "Synthesis
+of missing sections"; the network: Supplementary Section S5.2, "Blockface synthesis network").
 
 You need
   the environment settings/env/deep.yml and a GPU with about 2 GB for a whole brain; the brain's prepared folder, named by its Specimen ID (`linc-complete

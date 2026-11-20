@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The sanity check of the 21 reconstructed blockface volumes (Results, "All 21 photographed stacks were reconstructed").
+"""The sanity check of the 21 reconstructed blockface volumes (Results, "Building the blockface template and registering it to the MRI template").
 
     python code/figures/paper_numbers/bf_sanity.py
 

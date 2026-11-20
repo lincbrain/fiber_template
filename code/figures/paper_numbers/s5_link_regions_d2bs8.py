@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Where the registration between the two templates differs from its construction estimate (Results, "The link"; Fig. "link").
+"""Where the registration between the two templates differs from its construction estimate (Results, "Building the blockface template
+and registering it to the MRI template"; Fig. "link").
 
     python code/figures/paper_numbers/s5_link_regions_d2bs8.py
 

@@ -1,6 +1,6 @@
 """A brain's blockface registered directly to a template, without its own MRI: to a blockface template (the blockface-based
 alignment, `to_blockface_template`) or to the MRI template's b0 image (the cross-modal alignment, `direct_placement`: how the 8
-brains without MRI were registered; Methods, "Blockface to MRI registration and synthesis of missing sections").
+brains without MRI were registered; Methods, "Blockface volume to MRI registration").
 
 You need
   the brain's reconstruction and mask (<ID>_blockface.ome.zarr, <ID>_mask), the template image and its mask, FSL and the anatomix

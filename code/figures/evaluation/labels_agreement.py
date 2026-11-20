@@ -1,4 +1,4 @@
-"""Agreement of LGN/STN labels carried into the MRI template (paper: Results, "Labels in the template"; Table 7).
+"""Agreement of LGN/STN labels carried into the MRI template (paper: Results, "Agreement of LGN and STN labels across brains"; Table 7).
 
 Shared by code/figures/paper_numbers/labels_overlap_current.py and lgnstn_geometry_current.py.
 

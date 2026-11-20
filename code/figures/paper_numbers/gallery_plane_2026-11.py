@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""The axial plane of Supplementary S2 (the gallery of the 21 completed blockface volumes): the rule the author chose on 11 Nov 2026,
+"""The axial plane of Supplementary Section S1, "The blockface pipeline"
+(the gallery of the 21 completed blockface volumes): the rule the author chose on 11 Nov 2026,
 and the plane it gives. Every brain on its canonical fine grid (the run-113 world, its rigid placement), one world axial plane for
 all 21, shown from the caudal end to 22 mm rostral of the junction line's median (code/figures/s_synthesis_gallery.py).
 

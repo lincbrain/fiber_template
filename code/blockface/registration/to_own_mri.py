@@ -1,5 +1,5 @@
-"""Registration of a brain's blockface volume to its own b0 image, the first step of the MRI-based alignment (Methods, "Blockface to
-MRI registration and synthesis of missing sections").
+"""Registration of a brain's blockface volume to its own b0 image, the first step of the MRI-based alignment (Methods, "Blockface
+volume to MRI registration").
 
 You need
   the brain's reconstruction and mask, its b0 and b0 brain mask (every input brain-masked), FSL, the anatomix environment and a

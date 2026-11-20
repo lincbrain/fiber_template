@@ -8,6 +8,7 @@ license: Apache-2.0
 authors:
   - given-names: Ricardo A.
     family-names: Gonzales
+    orcid: "https://orcid.org/0000-0002-9384-4602"
     email: rgonzalesvera@mgh.harvard.edu
     affiliation: "Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Harvard Medical School"
   - given-names: Ermias
@@ -49,6 +50,7 @@ preferred-citation:
   authors:
     - given-names: Ricardo A.
       family-names: Gonzales
+      orcid: "https://orcid.org/0000-0002-9384-4602"
     - given-names: Ermias
       family-names: Habte
     - given-names: Ting

@@ -1,5 +1,5 @@
 """Leave one brain out (LOBO) for the MRI template: the held-out brain against the brains a fold was built from (paper: Results
-"MRI template", out-of-sample check; Methods, "Leave one brain out").
+"Leave-one-brain-out evaluation", out-of-sample check; Methods, "Contribution of each MRI contrast and leave-one-brain-out evaluation").
 
 Each fold leaves one of the four MRI brains (and its mirror) out of construction. Every input of the fold, held-out and included, is
 then registered the same way (T2 only, the fold's step-8 schedule) to the same target, the fold's step-8 iteration-01 T2 template.

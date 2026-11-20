@@ -1,4 +1,4 @@
-"""Voxelwise between-input variability of an MRI template variant (paper: Results "MRI template", the variability figure).
+"""Voxelwise between-input variability of an MRI template variant (paper: Results "Between-brain variability", the variability figure).
 
 Per voxel, the mean over the eight inputs (four brains + mirrors) of each input's deviation from the variant's own reconstructed
 template (the mean of the inputs):

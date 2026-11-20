@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Does training on stand-in b0 inputs recover the domain-shift gap? (paper: Supplementary S1, the stand-in network; the paper reads
+"""Does training on stand-in b0 inputs recover the domain-shift gap? (paper:
+Supplementary Section S5.2, "Blockface synthesis network", the stand-in network; the paper reads
 the --final record, d3p_vs_d3_pseudo_prod.summary.all.{n, mean_gain, mean_d3p_pseudo, mean_d3_pseudo, mean_d3_own,
 mean_remaining_gap_to_own, ci95_remaining_gap}).
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """The link: the blockface (dual-channel) template's b0 channel registered to the MRI template's b0 channel (paper: Methods,
-"Registration of the blockface template into the MRI template"), and its export as pull maps in both directions.
+"Registration of the blockface template to the MRI template"), and its export as pull maps in both directions.
 
 Port of the analysis project's mri/code/s5_b0link.py --arm sym (the run of record bftemplate/cv/s5_direct_d2bs8/sym) and
 mri/code/s5_export_maps.py (bftemplate/cv/template2template/d2bs8_s5sym). MOVING = the blockface template's b0 (its other channels are

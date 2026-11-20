@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """The numbers of the synthesis network's supplement and of the synthesis term of the precision weights, as one record (paper:
-Supplementary S1.2-S1.4; the paper reads isbi.*, precision.* and inference.*).
+Supplementary Sections S5.2, "Blockface synthesis network", S5.3, "Accuracy of the synthesis on withheld slabs", and S1.3,
+"Precision weights of the blockface average"; the paper reads isbi.*, precision.* and inference.*).
 
 Nothing is computed here that another record already holds; every value is copied unchanged from the record that computed it:
   isbi.*        the synthesis network's validation, from the number records of the network's own paper (Gonzales et al. 2026, ISBI:

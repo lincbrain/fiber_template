@@ -1,4 +1,4 @@
-"""Measures that compare the seven MRI template variants (paper: Results "MRI template", Table 1, Supplementary Tables).
+"""Measures that compare the seven MRI template variants (paper: Results "Contribution of each MRI contrast", Table 1, Supplementary Tables).
 
 Every variant ("arm") is built from the same inputs: the brains of settings/mri_construction.yaml `inputs` (the paper's four, MF1-MF4 =
 MF283..MF286) and their exact left-right mirrors (suffix f). Each input's canonical images were pushed through the arm's composed full warp once (one interpolation) and cached as

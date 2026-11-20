@@ -245,7 +245,7 @@ For a brain without MRI, only the photographed sections count, with a smooth ram
 The members take about 5 minutes on the CPU.
 On a GPU, the first stage takes about 8.5 hours and the eighth step about 17 hours (estimated), plus about 2.5 hours of CPU steps; both need the card to themselves.
 The link takes about 13 minutes on a GPU.
-Everything is written under `$LINC_WORK/build_blockface_template/` and `$LINC_WORK/build_link/`; the finished blockface channel is the data folder's `template/outputs/template_blockface_*`.
+Everything is written under `$LINC_WORK/build_blockface_template/` and `$LINC_WORK/build_link/`; the finished blockface channel is the data folder's `template/outputs/template_blockface_*`, on the template's 0.25 mm grid and, as `template_blockface_150um_*`, at 0.15 mm.
 
 The published template goes one step further than MMORF's eighth.
 Eleven brains, the ones photographed at every section with few sections filled in and even lighting, are each registered to the average once more, whole brain, with the feature-based engine of Step 3 and a shorter schedule (`step9.registration.args` in `settings/blockface_template.yaml`); this is done three times, and after each round the brains are averaged again from their own photographs.
@@ -257,6 +257,7 @@ $ANATOMIX_PYTHON code/template/blockface_step9.py start                  # the b
 $ANATOMIX_PYTHON code/template/blockface_step9.py round --it 1 --gpu 0   # then --it 2 and --it 3: registration, and the average again
 $ANATOMIX_PYTHON code/template/blockface_step9.py final                  # the average at 0.15 mm, and its checks
 $ANATOMIX_PYTHON code/template/blockface_step9.py in-mri                 # the same in the MRI template's frame
+$ANATOMIX_PYTHON code/template/blockface_step9.py in-mri --res 0.15      # and there at its own 0.15 mm
 ```
 
 The start takes about 8 minutes on 8 cores.
@@ -265,6 +266,7 @@ A round takes under 3 hours on one card; `register --it <k> --gpu <n>` (round `<
 The paper's run, the three rounds and the final average, took about 5 hours on four 48 GB cards; on one card it takes about 10 hours.
 `final` writes the template to `$LINC_WORK/build_blockface_template/step9/final/` and its checks to `checks.json` there: sharper than the start, still matching step 8 at a coarse scale, exactly symmetric, and no folding anywhere.
 Without a GPU, `final --fields-from $LINC_DATA_TREE/template/intermediate/construction/step9_fields` averages the brains through the paper's own fields and reproduces the published template exactly, in about 20 minutes with 8 workers and about half an hour with 4.
+`in-mri` moves the template into the MRI template's frame through the template link, in one resampling, onto its 0.25 mm grid; with `--res 0.15` it writes the same five files at the blockface template's own resolution, 0.15 mm, on a grid over the same box, into its work folder's `in_mri_150um/` (on the CPU, about 6 minutes and 3.6 GB; `run.py`'s step `bf-template-step9-in-mri-150um`).
 `build_blockface_template.py` runs the same commands as its steps `s9-start` to `s9-in-mri`.
 
 ![The template's blockface channel, with the synthesized tissue marked](figures/blockface_07_template.png)

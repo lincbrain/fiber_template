@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""The link between the blockface template and the MRI template (paper: Methods, "Link to the MRI channels and placement of
-photographed brains"; Results, "The link"). The link is a direct registration of the two b0 channels (anatomix + MIND-SSC features,
+"""The link between the blockface template and the MRI template (paper: Methods, "Registration of the blockface template to the MRI
+template"; Results, "Building the blockface template and registering it to the MRI template"). The link is a direct registration of
+the two b0 channels (anatomix + MIND-SSC features,
 warp smoothing sigma 1.25), run with a greedy and a symmetric engine; the construction's own warps give an independent estimate
 (the composition of the member brains' warps, and the template's build warp, each with an inverse-residual guard of 0.1 mm).
 Per link (products: bftemplate_cv/s5_direct_d2bs8/<engine>/s5_link.json, s5_compose_d2bs8_r05_guard/ and s5_tpl_d2bs8_r05_guard/

@@ -39,7 +39,7 @@ xfm/ (the transforms). Under --work (default $LINC_WORK/build_mri_channels):
     python code/template/build_mri_channels.py --from assemble --to channels
 
 Environment: settings/env/linc.yml. Steps and parameters: code/template/README.md and settings/mri_construction.yaml (paper: Methods,
-"MRI preprocessing", "Symmetric groupwise construction", "Template channels"). Validated on MF283 (code/template/README.md, "Validation").
+"Preprocessing", "Symmetric groupwise construction", "Template channels"). Validated on MF283 (code/template/README.md, "Validation").
 """
 import os
 import sys

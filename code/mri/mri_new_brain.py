@@ -1,6 +1,6 @@
 """A new brain's MRI, prepared for `linc-register mri --place-b0` (code/mri/linc-mri prep): from one b0 or T2-weighted NIfTI to the files
 the paper's brains have under $LINC_DATA/sub-<ID>/mri/ (settings/mri_construction.yaml `prep.layout`), by the same steps as the paper's
-preprocessing (Methods, "MRI preprocessing"; mri_prep.stage_dwi / stage_t2):
+preprocessing (Methods, "Preprocessing"; mri_prep.stage_dwi / stage_t2):
 
     b0   stage -> [denoise] -> brain mask -> b0 x mask -> N4 (inside the mask) -> x mask, 1-99 percentile -> (0, 4095]
          dwi/b0.nii.gz, [dwi/b0_denoised.nii.gz], masks/dwi_brain_mask.nii.gz, dwi/b0_brain.nii.gz, dwi/b0_brain_n4.nii.gz (+ _bias)

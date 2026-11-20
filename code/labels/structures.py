@@ -1,6 +1,6 @@
 """Solid structures drawn on histology (the LGN and STN), carried from the blockface (bf-native) into the brain's own b0 and into the MRI
-template, ONE linear resample per target (paper: Methods, "Histology registration and label propagation"; Results, "Labels in the
-template").
+template, ONE linear resample per target (paper: Methods, "Histology registration and label propagation"; Results, "Agreement of LGN
+and STN labels across brains").
 
 Per structure (settings/labels.yaml push.structures):
   crop the label to its bounding box + 2 mm (at least 1 mm along the section axis, axis 1); plain labels (sheets, one blockface slice per

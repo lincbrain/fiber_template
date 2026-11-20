@@ -1,4 +1,4 @@
-"""Per-brain preparation of the MRI construction inputs (paper: Methods, "MRI preprocessing" and "Symmetric groupwise construction").
+"""Per-brain preparation of the MRI construction inputs (paper: Methods, "Preprocessing" and "Symmetric groupwise construction").
 
 Each of the four MRI brains (MF1-MF4 = LINC MF283-MF286) has three sessions on three grids: diffusion (b0 and tensor, 0.25 mm: the
 reference grid), T2 (multi-echo MSME, 0.5 mm) and SANDI microstructure (0.5 mm). The steps, in order:

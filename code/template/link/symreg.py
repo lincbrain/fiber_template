@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Symmetric feature-based registration of two images A and B: one solve, both directions, neither image privileged
-(paper: Methods, "Image registration"; used by the link and by the mappings to published templates).
+(paper: Methods, "Image registration and segmentation"; used by the link and by the mappings to published templates).
 
 Port of the analysis project's mri/code/symreg_upstream.py (with the helpers it took from mri/code/symreg.py and the input check of
 code/input_mask_check.py). Behavior is unchanged; only paths, the environment overrides and the docstrings differ (see the end).

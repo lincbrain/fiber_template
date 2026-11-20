@@ -1,5 +1,5 @@
 """A prepared brain folder (layout: code/blockface/synthesis/__init__.py) from one brain's own products, the input of code/blockface/synthesis/linc-complete
-(paper: Methods, "Registration to the brain's own MRI and caudal completion"). One process, nothing written but the folder (and, when
+(paper: Methods, "Synthesis of missing sections"). One process, nothing written but the folder (and, when
 asked, the intermediate grids). CPU, numpy / scipy / nibabel; the OME-Zarr store is read for its JSON metadata only.
 
 Inputs (path templates, {ID}, {mri} = $LINC_DATA/sub-<ID>/mri, {bf} = $LINC_DATA/sub-<ID>/blockface, {nonlin} = the products folder):

@@ -8,9 +8,10 @@ Terms are explained in the [overview](overview.md) and its [glossary](overview.m
 ### I only want the template. Do I need the code?
 
 No.
-The template is in LINC dataset 000059, under `derivatives/template/` (its blockface channel is in `micr/`, on the template's grid and, at 0.15 mm, in its own space), and in the data folder's `template/outputs/`.
+The template is in LINC dataset 000059, under `derivatives/template/`: its MRI channels in `anat/` and `dwi/`, its masks and labels in `labels/`, the transforms to and from NMT v2, INIA19 and CIVM-R in `xfms/`, and its blockface channel in `micr/`, in color at 0.15 mm in the template's frame, with its photographed fraction and synthesized mask.
+The data folder's `template/outputs/` holds every file: the blockface channel at both 0.25 mm and 0.15 mm, all five files of each, and the blockface template in its own space.
 Any NIfTI viewer, such as FSLeyes or ITK-SNAP, opens it.
-To apply its mappings to NMT v2, INIA19 and CIVM-R without this code, see the dataset's `derivatives/template/xfms/README.txt`.
+To apply its mappings to NMT v2, INIA19 and CIVM-R without this code, see the dataset's `README.txt`, which gives one command for each direction.
 
 ### What can I run without TIRL?
 

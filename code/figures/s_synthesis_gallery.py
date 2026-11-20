@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Supplementary S2, the completed blockface volume of every one of the 21 sectioned brains in one axial plane of the template frame
+"""Supplementary Section S1, "The blockface pipeline": the completed blockface volume of every one of the 21 sectioned brains in one axial
+plane of the template frame
 (the author's choice, 11 Nov 2026), in this paper's house style, with this paper's names.
 
     python code/figures/s_synthesis_gallery.py [--out figures/s_synthesis_gallery.pdf]

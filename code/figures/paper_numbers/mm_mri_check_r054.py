@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """What can be verified about the MRI of the ten photographed M. mulatta brains with MRI (MM1-MM10 = MR243, MR252, MR256, MR249, MR250,
-MR251, MR253, MR254, MR257, MR261) (paper: Methods, "Photographed brains and histology", and Table 1).
+MR251, MR253, MR254, MR257, MR261) (paper: Methods, "Acquisition", and Table 1).
   curated     products: curated_mri/<ID>/dwi.nii.gz (the diffusion series whose volume 0 is the b0 image used): number of volumes and
               voxel size from the header.
   raw Bruker  where a raw ParaVision session survives (<raw Bruker root>/<ID>_*/<scan>/{method,acqp}): the diffusion scans with

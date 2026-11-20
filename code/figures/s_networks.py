@@ -4,7 +4,8 @@ output, with the facts of each network beside it.
 
 You need
   the records under $LINC_NUMBERS: segmodels_{mri_brainmask,bf_mask2d,bf_mask3d,bf_holes}_2026-11 (Supplementary S5, Table S8) and
-  d3_methods (Supplementary S1); the products of record under $LINC_PRODUCTS: the segmentation networks' tasks, training cases and
+  d3_methods (Supplementary Section S5.2, "Blockface synthesis network"); the products of record under $LINC_PRODUCTS: the
+  segmentation networks' tasks, training cases and
   held-out masks (settings/internal/products_segmentation.yaml `segmodels`), and the synthesis networks' inputs and outputs
   (settings/internal/products_completion.yaml `completed`, `completion_inputs`). settings/env/linc.yml ($PY).
 

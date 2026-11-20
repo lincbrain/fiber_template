@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""The MRI route: a photographed brain's own b0 image registered to the MRI template's b0 channel (paper: Methods, "Link to the MRI
-channels and placement of photographed brains", sec:m-link). Writes the registry entry b0-native -> mri-template (code/shared/xfm.py).
+"""The MRI route: a photographed brain's own b0 image registered to the MRI template's b0 channel (paper: Methods, "Registration of the
+blockface template to the MRI template", paragraph "MRI-based and blockface-based alignment", sec:m-link). Writes the registry entry
+b0-native -> mri-template (code/shared/xfm.py).
 
 Recipe (settings/link.yaml `b0_to_template`; every input brain-masked):
   1. canonical placement P0 = R_bridge @ W_flirt: the b0's FLIRT 6-dof placement in the run-113 frame (<ID>_mri2template.mat with its

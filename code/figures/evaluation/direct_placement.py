@@ -1,5 +1,5 @@
 """How accurate the cross-modal alignment is: for each brain with MRI, it is compared with the MRI-based alignment (Methods,
-"Blockface to MRI registration and synthesis of missing sections"; Results).
+"Blockface volume to MRI registration"; Results).
 
 You need
   for each brain with MRI, its cross-modal alignment (code/blockface/registration/direct.py) and its MRI-based alignment: blockface -> own b0

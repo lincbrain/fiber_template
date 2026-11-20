@@ -83,7 +83,8 @@ A last step sharpened it at 0.15 mm with 11 brains (photographed at every sectio
 That step keeps the template's space, so the link below still applies.
 
 **The template link** registers the blockface template's b0 to the MRI template's b0.
-The blockface template moved through it becomes the template's blockface channel, `template/outputs/template_blockface_*`.
+The blockface template moved through it becomes the template's blockface channel: five files, the gray image, the color image, the brain mask, the photographed fraction and the synthesized mask, `template/outputs/template_blockface_{grey,rgb,mask,photographed_fraction,synthesized_mask}.nii.gz` on the template's 0.25 mm grid.
+The same five files are also made at the blockface template's own resolution, 0.15 mm, in the template's frame, `template/outputs/template_blockface_150um_*`: on a grid of 427 × 534 × 320 voxels over the same box, so that a viewer that places images by their affine shows them on the MRI channels.
 The blockface template itself, in its own space, is in `template/outputs/blockface_template/`.
 `build_link.py` also registers the template to NMT v2, INIA19 and CIVM-R.
 

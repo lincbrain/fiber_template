@@ -1182,6 +1182,29 @@ steps:
     note: 'The route of code/template/link/register.py blockface_in_mri, then the gray and the color multiplied by the carried brain mask.
       Tested 15 Nov from a clone: 2 min 15 s, 5 of 5 identical; from a clone on the paper''s template (made with the published
       weights): 5 of 5 identical'
+  - name: bf-template-step9-in-mri-150um
+    group: blockface-template
+    title: Blockface template, step 9 in the MRI template's frame at 0.15 mm, its own resolution (template_blockface_150um_*)
+    reads: $LINC_WORK/build_blockface_template/step9_of_record/final; the template link of record
+    writes: $LINC_WORK/build_blockface_template/step9_of_record/in_mri_150um/ (linc_bf_grey, rgb, brainmask, photographed_fraction, synthesized_mask)
+    run: $ANATOMIX_PYTHON code/template/blockface_step9.py in-mri --res 0.15 --work $LINC_WORK/build_blockface_template/step9_of_record
+    check: 'R=$LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_s11w_full/in_mri_template_150um/T3s11_015_in_mri_150um; [ -e ${R}_grey.nii.gz ] || { echo "the
+      0.15 mm files are not in this data folder: nothing to compare with"; exit 3; }; n=0; for k in grey rgb brainmask photographed_fraction synthesized_mask; do
+      cmp -s $LINC_WORK/build_blockface_template/step9_of_record/in_mri_150um/linc_bf_$k.nii.gz ${R}_$k.nii.gz && n=$((n+1)); done; echo "$n of 5 files identical to the paper''s"; [ $n -eq 5 ]'
+    expect: the five files identical to the paper's 0.15 mm files, byte for byte
+    needs: [bf-template-step9-average]
+    gpu_gb: 0
+    gpu_model: ''
+    gpu_alone: false
+    ram_gb: 8
+    cores: 1
+    disk_gb: 0.5
+    hours: 0.12
+    timed: clone
+    optional: true
+    note: 'The same route and rules as bf-template-step9-in-mri, on a 0.15 mm grid over the MRI template''s box (code/template/blockface_step9.py
+      mri_grid): 427 x 534 x 320 voxels, origin (-31.95, -30.10, -7.55) mm. Tested 20 Nov on the template of record: 6 min 11 s, peak
+      3.6 GB, 5 of 5 identical to the 0.15 mm files; the default in-mri gave its five 0.25 mm files byte for byte beside it.'
   - name: bf-template-step9-rounds
     group: blockface-template
     title: Blockface template, step 9's three rounds of registration and the average (GPU)

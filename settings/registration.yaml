@@ -1,5 +1,5 @@
-# Parameters of the paper's registrations (Methods, "Image registration" and "Blockface to MRI registration and synthesis of missing
-# sections"; the blockface-based alignment of the alignment comparison). Read by code/blockface/registration/ and code/blockface/registration/linc-register.
+# Parameters of the paper's registrations (Methods, "Image registration and segmentation" and "Blockface volume to MRI registration";
+# the blockface-based alignment of the alignment comparison). Read by code/blockface/registration/ and code/blockface/registration/linc-register.
 
 # The registration of a brain's blockface to its own b0 (R1 v3, code/blockface/registration/to_own_mri.py)
 to_own_mri:
@@ -48,8 +48,8 @@ direct:
       loss: cc
       gate_features_by_mask: false
 
-# The registration QC (code/blockface/registration/qc.py, `linc-register qc`; Methods, "Evaluation of the pathway"): the gate of the analysis
-# project's code/regqc.py. The outline check's thresholds are settings/link.yaml `outline`.
+# The registration QC (code/blockface/registration/qc.py, `linc-register qc`; Methods, "Evaluation of the registration pipeline"): the
+# gate of the analysis project's code/regqc.py. The outline check's thresholds are settings/link.yaml `outline`.
 qc:
   scale_lo: 0.9                    # same-animal registrations: every principal scale of the linear part in [0.9, 1.1]
   scale_hi: 1.1

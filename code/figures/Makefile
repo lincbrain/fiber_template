@@ -11,8 +11,9 @@
 #
 # Set the roots first (see README.md): LINC_PRODUCTS, LINC_DATA, LINC_TEMPLATE, LINC_RAW, LINC_MODELS, LINC_NUMBERS.
 # Each target runs in the environment it ran in for the paper (settings/env/README.md): PY = settings/env/linc.yml; PY_MRI = the same python (an alias kept for the MRI records) (the heavy MRI
-# records and the figures FIGURES_MRI lists); PY_DEEP = settings/env/deep.yml (the d3_* records, Supplementary S1 and the LGN/STN
-# budget, and their three figures); PY_TIRL = settings/env/tirl.yml (histology, s_tracer_fidelity;
+# records and the figures FIGURES_MRI lists); PY_DEEP = settings/env/deep.yml (the d3_* records, Supplementary Sections S1, "The blockface
+# pipeline", and S5, "Deep-learning networks", and the LGN/STN budget, and their three figures); PY_TIRL = settings/env/tirl.yml
+# (histology, s_tracer_fidelity;
 # histo_pixel_sizes_r057).
 
 PY ?= python
@@ -101,7 +102,7 @@ r060_target_comparison:
 	else echo "SKIPPED r060_target_comparison: NMT v2 and CIVM-R not found under settings/link.yaml inputs.atlas_reference (see settings/targets.yaml)"; fi
 
 # the LGN and STN rows of the same comparison: carried onto the target grids that r060_target_comparison prepares in $$LINC_WORK/r060
-# the gallery's axial plane (Supplementary S2): reads NMT v2's SARM from the same published templates
+# the gallery's axial plane (Supplementary Section S1, "The blockface pipeline"): reads NMT v2's SARM from the same published templates
 gallery_plane_2026-11:
 	@if $(HAVE_ATLASES); then $(PY_DEEP) paper_numbers/$@.py; \
 	else echo "SKIPPED gallery_plane_2026-11: NMT v2 not found under settings/link.yaml inputs.atlas_reference (see settings/targets.yaml)"; fi
@@ -174,7 +175,8 @@ histology: histology_h9
 	@if [ -z "$(HISTOLOGY_ARGS)" ]; then echo "SKIPPED histology: set HISTOLOGY_ARGS (histology source data outside the release)"; \
 	else $(PY_TIRL) histology.py $(HISTOLOGY_ARGS) --out $(OUT)/figures/$@.png; fi
 
-# the chart-to-template figure (Supplementary S3): the darkfield sections and charts of the LINC histology dataset
+# the chart-to-template figure (Supplementary Section S2, "Tracer labels: from the sections to the template"): the
+# darkfield sections and charts of the LINC histology dataset
 s_tracer_fidelity:
 	@if [ ! -d "$(LINC_RAW)/linc_000003/rawdata" ]; then echo "SKIPPED s_tracer_fidelity: put the LINC histology dataset 000003 at \$$LINC_RAW/linc_000003"; \
 	else $(PY_TIRL) $@.py --out $(OUT)/figures/$@.png; fi

@@ -30,20 +30,23 @@ What it does
              the start and the template averaged there; the checks (sharpness against the start; r and shift against step 8;
              exact symmetry) -> final/checks.json.
   in-mri     the template in the MRI template's frame through the template link, as code/template/link/register.py
-             blockface_in_mri does, and multiplied by its carried brain mask.
+             blockface_in_mri does, and multiplied by its carried brain mask: on the MRI template's 0.25 mm grid, or with
+             --res 0.15 on a 0.15 mm grid over the same outer box (the template's own resolution) -> in_mri_150um/.
   refine     optional, one 48 GB card: a brain registered whole brain to the finished template with a member's job. A brain of
              the paper starts from its step-8 warp; a new brain from its registration to the blockface template (photographs only),
              and gets a refined transform entry (the field, then its own entry) in $LINC_DATA/sub-<ID>/xfm_step9/.
 You get
   under the work folder: nln_step_09/iteration_00..03 (the rounds, as MMORF's run folders are laid out: inputs/, fields_raw/,
   fields/, the template T<k><tag>_*, with the member set's tag from the settings), final/ (the 0.15 mm template
-  T3<tag>_{grey,rgb,brainmask,real_mask,photo_share,P}, the start T0<tag>, the fields, checks.json) and in_mri/ (linc_bf_*).
+  T3<tag>_{grey,rgb,brainmask,real_mask,photo_share,P}, the start T0<tag>, the fields, checks.json) and in_mri/ (linc_bf_*;
+  in_mri_<res>um/ with --res).
 
     $ANATOMIX_PYTHON code/template/blockface_step9.py start [-j 8]
     $ANATOMIX_PYTHON code/template/blockface_step9.py round --it 1 --gpu 0         # rounds 2 and 3 the same way
     $ANATOMIX_PYTHON code/template/blockface_step9.py register --it 1 --gpu 1      # optional: another card joins round 1
     $ANATOMIX_PYTHON code/template/blockface_step9.py final [-j 8]
     $ANATOMIX_PYTHON code/template/blockface_step9.py in-mri
+    $ANATOMIX_PYTHON code/template/blockface_step9.py in-mri --res 0.15            # the same at 0.15 mm
 
 Ported from the analysis project's bftemplate/hr_2026-11-12/hr.py (the carry, its polish of 14 Nov 2026, the combination, the
 unbias by composition), step9/step9.py, step9/s9reg15.py and step9/s9_015.py (the 0.15 mm grid), and step9/s9_015_mri.py;
@@ -956,14 +959,31 @@ def checks(last):
 
 
 # ----------------------------------------------------------------------------------------------------------------- in-mri
-def in_mri(template_prefix, maps, out):
+def mri_grid(shp0, A0, res=None):
+    """The grid of the template in the MRI template's frame: the MRI template's own (shape shp0, affine A0) when res is None; else
+    voxels of res mm along the same axes over the same outer box (the voxel centers +- half a voxel), n = ceil(box length / res)
+    per axis, centered on the box's center (the box grows by less than one voxel per axis, split equally; a grid symmetric about
+    x = 0 stays so)."""
+    if res is None:
+        return tuple(shp0), A0
+    s0 = np.linalg.norm(A0[:3, :3], axis=0)
+    D = A0[:3, :3] / s0
+    center = A0[:3, 3] + A0[:3, :3] @ ((np.array(shp0[:3]) - 1) / 2.0)
+    n = [int(np.ceil(shp0[i] * s0[i] / res - 1e-9)) for i in range(3)]
+    A = np.eye(4); A[:3, :3] = D * res
+    A[:3, 3] = center - A[:3, :3] @ ((np.array(n) - 1) / 2.0)
+    return tuple(n), np.round(A, 6)
+
+
+def in_mri(template_prefix, maps, out, res=None):
     """The template in the MRI template's frame through the exported pull map <maps>/bftemplate__to__mri-template, one resample
     each (code/template/link/register.py blockface_in_mri's rule: gray, RGB cubic, clipped to [0, 1]; brain mask linear > 0.5;
-    photographed fraction linear; synthesized = brain mask & fraction < 0.5), then gray and RGB multiplied by the brain mask."""
+    photographed fraction linear; synthesized = brain mask & fraction < 0.5), then gray and RGB multiplied by the brain mask. On the
+    MRI template's 0.25 mm grid, or on mri_grid(res) when res (mm) is given."""
     from template.link.common import inputs as link_inputs, product
     t0 = time.time(); os.makedirs(out, exist_ok=True)
     m = X.load_map(f"{maps}/bftemplate__to__mri-template", "full")
-    g = nib.load(product(link_inputs()["mri_b0"])); shp, A = g.shape[:3], g.affine
+    g = nib.load(product(link_inputs()["mri_b0"])); shp, A = mri_grid(g.shape[:3], g.affine, res)
 
     def pull(path, order):
         i = nib.load(path)
@@ -978,8 +998,8 @@ def in_mri(template_prefix, maps, out):
     for name, v, dt in (("grey", grey, np.float32), ("rgb", rgb, np.float32), ("brainmask", mask, np.uint8),
                         ("photographed_fraction", frac, np.float32), ("synthesized_mask", synth, np.uint8)):
         nib.save(nib.Nifti1Image(np.ascontiguousarray(v.astype(dt)), A), f"{out}/linc_bf_{name}.nii.gz")
-    v = 0.25 ** 3 / 1000
-    rec = dict(brainmask_voxels=int(mask.sum()), brain_cm3=float(mask.sum() * v), synthesized_voxels=int(synth.sum()),
+    v = (0.25 if res is None else res) ** 3 / 1000
+    rec = dict(**({} if res is None else dict(grid=dict(voxel_mm=res, shape=list(shp), affine=A.tolist()))), brainmask_voxels=int(mask.sum()), brain_cm3=float(mask.sum() * v), synthesized_voxels=int(synth.sum()),
                synthesized_cm3=float(synth.sum() * v), synthesized_share_of_brain=float(synth.sum() / mask.sum()),
                wall_s=round(time.time() - t0, 1))
     json.dump(rec, open(f"{out}/blockface_in_mri.json", "w"), indent=1)
@@ -1138,6 +1158,8 @@ def main(argv=None):
     ap.add_argument("--subject", default=None, help="refine: the brain")
     ap.add_argument("--registry", default=None, help="refine, a brain outside the paper: write the refined entry here (default $LINC_DATA/sub-<ID>/xfm_step9; "
                                                      "the brain's own xfm/ also works: its entry is then replaced, with a backup)")
+    ap.add_argument("--res", type=float, default=None, help="in-mri: the voxel size in mm, e.g. 0.15, on a grid over the MRI template's "
+                                                            "box (default: the MRI template's own 0.25 mm grid) -> <work>/in_mri_<res>um/")
     ap.add_argument("--fields-from", default=None, help="final: the last round's fields from this folder instead of the build's "
                                                          "(on either grid; e.g. the data folder's step9_fields)")
     a = ap.parse_args(argv)
@@ -1167,7 +1189,7 @@ def main(argv=None):
         checks(last)
     elif a.cmd == "in-mri":
         use_grid("mirror", W / "final")
-        in_mri(tpl(last), P()["template_link"], W / "in_mri")
+        in_mri(tpl(last), P()["template_link"], W / ("in_mri" if a.res is None else f"in_mri_{int(round(a.res * 1000))}um"), a.res)
     elif a.cmd == "refine":
         refine(a.subject, W, a.gpu, a.cap_gib, scratch, a.j, a.registry)
 

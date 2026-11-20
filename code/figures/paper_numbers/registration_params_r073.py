@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""The parameters of the deformable blockface-to-b0 registration, as one record (paper: Methods, "Blockface to MRI registration and
-synthesis of missing sections").
+"""The parameters of the deformable blockface-to-b0 registration, as one record (paper: Methods, "Blockface volume to MRI
+registration").
 
     python code/figures/paper_numbers/registration_params_r073.py
 

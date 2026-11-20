@@ -36,8 +36,7 @@ To make one figure: `$PY code/figures/<script>.py --out <file.png>`.
 | S1 | `s_bf2mri_steps.py` |
 | S2 | `s_synthesis_gallery.py` |
 | S3 | `s_tracer_fidelity.py` |
-| S4 | not in this release: each bundle's distance from the internal capsule's ventral end, drawn by the analysis with Fig. 9 |
-| S5 | `s_networks.py` |
+| S4 | `s_networks.py` |
 | not in the paper | `alignment_comparison.py` (it still writes a numbers record), `s_synthesis_depth.py` (its numbers are in the Supplement's text), `tracer_sections3d.py` (an earlier form of the tracer figure) |
 
 `figstyle.py` holds the shared figure style, and the font is Liberation Sans.

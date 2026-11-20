@@ -1,5 +1,5 @@
 """Feature-based deformable registration (moving -> fixed), the method of every pairwise deformable registration in the paper
-(Methods, "Image registration"): features from a pretrained network (anatomix) and self-similarity context descriptors
+(Methods, "Image registration and segmentation"): features from a pretrained network (anatomix) and self-similarity context descriptors
 (MIND-SSC, which encode how each voxel's neighborhood resembles its surroundings), registered with FireANTs.
 
 You need

@@ -12,7 +12,7 @@ fig_routes_1c_section:
   compare: ["example_pair", "brains", "section_index_ijk", "section_nmt_y_mm", "crop_height_pct", "fov_mm"]
 bf_sanity:
   reason: "written 27 Sep 2026, before the 2 Oct spacing calibration rescaled 18 brains' headers (their extents, slice steps and centroid steps); the regenerated record is the current state"
-  # the paper reads: bf_sanity.n ("All 21 photographed stacks were reconstructed")
+  # the paper reads: bf_sanity.n (Results: "we reconstructed all 21 photographed brains into blockface volumes")
   compare: ["n", "rows|len", "rows.*.subject"]
 
 d3_domain_shift:

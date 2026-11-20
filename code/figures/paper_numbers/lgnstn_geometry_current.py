@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""LGN/STN label geometry beyond Dice and ASSD (paper: Results, "Labels in the template"; Table 7 and its supplementary detail).
+"""LGN/STN label geometry beyond Dice and ASSD (paper: Results, "Agreement of LGN and STN labels across brains"; Table 7 and its
+supplementary detail).
 
 Inputs, per label set (code/labels/route.py lgnstn_sets: the MRI route, tag _h9, and the blockface route when the settings send the brains
 through it, tag template_chain_tag): exactly the labels scored by $LINC_NUMBERS/labels_overlap_current<tag>.json (run

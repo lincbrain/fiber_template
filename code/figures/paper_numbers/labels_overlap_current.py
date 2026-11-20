@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Overlap of the LGN and STN labels carried from histology into the MRI template (paper: Results, "Labels in the template"; Table 7).
+"""Overlap of the LGN and STN labels carried from histology into the MRI template
+(paper: Results, "Agreement of LGN and STN labels across brains"; Table 7).
 
 The labels of three histology brains (MM1-MM3) were drawn on histology, carried to the blockface, interpolated between sections, and
 carried to the MRI template, each set on its route (code/labels/route.py lgnstn_sets): through each brain's own MRI (blockface -> b0 ->

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The blockface camera of record, for the camera sentence of Methods ("Brains"), read from the raw photographs' EXIF.
+"""The blockface camera of record, for the camera sentence of Methods ("Sectioning and blockface photography"), read from the raw photographs' EXIF.
 
     python code/figures/paper_numbers/bf_camera_exif.py [--raw $LINC_RAW]
 
