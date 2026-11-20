@@ -83,7 +83,22 @@ def mri_route(a):
     scfg = (yaml.safe_load(scfg_p.read_text()) if scfg_p.exists() else {}).get("registration_to_own_mri")
     bf = dict(final_zarr=str(bd / f"{S}_blockface.ome.zarr"), final_mask=str(bd / f"{S}_mask.nii.gz"),
               iso_grey=str(bd / f"{S}_blockface_iso_grey.nii.gz"), iso_mask=str(bd / f"{S}_mask_iso.nii.gz"))
+    if not (os.path.exists(bf["final_zarr"]) and os.path.exists(bf["final_mask"])):
+        sys.exit(f"{S}: no reconstruction in {bd} ({S}_blockface.ome.zarr, {S}_mask.nii.gz). $LINC_DATA is {paths.data_root()}; "
+                 "a paper brain you reconstructed yourself is under $LINC_REBUILD_DATA: put LINC_DATA=$LINC_REBUILD_DATA in front of "
+                 "this command (docs/tutorials/02_blockface.md, Step 3).")
+    plan, why = to_own_mri.own_mri_plan(md, S, scfg, new_brain=a.new_brain, placing=bool(a.place_b0))
+    if plan == "stop":                          # before any work: one line instead of a traceback from a missing file
+        sys.exit(why)
     _iso_pair(S)
+    if plan == "place":                         # a data folder of inputs only: the placed b0 is a product, made here from the inputs
+        print(f"{S}: the placed b0 is not in {md}: placing it from {S}_mri_b0_native.nii.gz and its mask, as --place-b0 does")
+        for q in (md / f"{S}_mri.nii.gz", md / f"{S}_mri_mask.nii.gz", md / f"{S}_mri2template.mat"):
+            if q.is_symlink():                  # never write through a link into the data folder: the link goes, its target stays
+                q.unlink()
+        to_own_mri.place_b0(str(md / f"{S}_mri_b0_native.nii.gz"), str(md / f"{S}_mri_mask_native.nii.gz"),
+                            str(paths.template_root() / "frames" / "mri_template_0p5.nii.gz"), str(md), S,
+                            search_deg=int(cfg["b0_placement_search_deg"]))
     if a.place_b0:
         if len(a.place_b0) == 2:
             b0_native, mask_native = a.place_b0

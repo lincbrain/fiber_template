@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """sigma^2_pred(D) of the completion (code/blockface/synthesis/sigma2.py): the records d3_A_sigma2_pred(_flat) (own b0, the leave-slab-out
-network d3_lso_A_s0) and d3p_A_sigma2_pred(_flat) (stand-in b0, d3p_lso_A_s0). Not read by the paper's text: the blockface template's
-precision weights read d3_A_sigma2_pred_flat (code/figures/paper_numbers/precision_weights_b1_d2b_s8.py), and d3_methods reads s2_interp.
+network d3_lso_A_s0) and d3p_A_sigma2_pred(_flat) (stand-in b0, d3p_lso_A_s0). Not read by the paper's text: the precision weights
+(code/figures/paper_numbers/precision_weights_b1_d2b_s8.py) read s2_interp from d3_A_sigma2_pred_flat, and its s2_syn only for the rule
+of the template files released on 16 Nov (the published template's s2_syn is sigma2_leakfree_a19's); d3_methods reads s2_interp.
 "_flat" = the same curve, constant beyond its last measured depth (the variant the construction used).
 From the withheld-slab evaluation of record (products: completion_eval/<run>.json and its saved joined predictions
 pred/<run>_<ID>_deployed.nii.gz) and the prepared brains. Depth tables -> $LINC_WORK/completion/<run>_depth_tables.json.

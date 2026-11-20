@@ -50,11 +50,20 @@ mkdir -p "$_O"
   echo "settings/roots.sh: $(tail -n 1 "$_LOG")" >&2
   unset _FT _O _IN _L _LOG _T _R; return 1
 }
-# refresh: the working folders are filled again from the new links (code/shared/make_local_data.sh leaves alone what exists)
-_W="building"; _ONCE="once; "
+# refresh: the working folders are filled again from the new links (code/shared/make_local_data.sh leaves alone what exists), for the
+# brains they start with and for every brain added to them since (the data-folders step, or code/shared/make_local_data.sh by hand)
+_W="building"; _ONCE="once; "; _XL=""; _XR=""
 if [ -n "$_R" ]; then
   rm -f "$_L/.complete" "$_O/local_rebuild/.complete" "$_O/local_mri/.complete"
   _W="adding what is missing to"; _ONCE=""
+  for _S in "$_L"/data/sub-*/; do
+    [ -d "$_S" ] || continue; _S=${_S%/}; _S=${_S##*/sub-}
+    case " MR252 MF191 MF283 " in *" $_S "*) ;; *) _XL="$_XL $_S" ;; esac
+  done
+  for _S in "$_O/local_rebuild"/data/sub-*/; do
+    [ -d "$_S" ] || continue; _S=${_S%/}; _S=${_S##*/sub-}
+    case " MR252 MF191 MR263 " in *" $_S "*) ;; *) _XR="$_XR --rebuild $_S" ;; esac
+  done
   echo "settings/roots.sh: the links are made again ($(tail -n 1 "$_LOG" | sed 's/^[^:]*: //'))" >&2
 fi
 export LINC_DATA_TREE=$_T
@@ -79,11 +88,11 @@ _LINKS="--link MR252:histology/annotations=$_IN/raw/linc_000003/rawdata/sub-MR25
         --link MR252:histology/regions.nii.gz=$_IN/labels/regions_t2_final/MR252_regions_t2.nii.gz"
 if [ ! -e "$_L/.complete" ]; then
   echo "settings/roots.sh: $_W $_L (${_ONCE}log: $_LOG)" >&2
-  "$_FT/code/shared/make_local_data.sh" "$_L" MR252 MF191 MF283 $_RAW $_LINKS >> "$_LOG" 2>&1 || echo "settings/roots.sh: FAILED: $(tail -n 1 "$_LOG") (log: $_LOG)" >&2
+  "$_FT/code/shared/make_local_data.sh" "$_L" MR252 MF191 MF283 $_XL $_RAW $_LINKS >> "$_LOG" 2>&1 || echo "settings/roots.sh: FAILED: $(tail -n 1 "$_LOG") (log: $_LOG)" >&2
 fi
 if [ ! -e "$_O/local_rebuild/.complete" ]; then
   echo "settings/roots.sh: $_W $_O/local_rebuild (${_ONCE}log: $_LOG)" >&2
-  "$_FT/code/shared/make_local_data.sh" "$_O/local_rebuild" --rebuild MR252 --rebuild MF191 --rebuild MR263 $_RAW >> "$_LOG" 2>&1 || echo "settings/roots.sh: FAILED: $(tail -n 1 "$_LOG") (log: $_LOG)" >&2
+  "$_FT/code/shared/make_local_data.sh" "$_O/local_rebuild" --rebuild MR252 --rebuild MF191 --rebuild MR263 $_XR $_RAW >> "$_LOG" 2>&1 || echo "settings/roots.sh: FAILED: $(tail -n 1 "$_LOG") (log: $_LOG)" >&2
 fi
 if [ ! -e "$_O/local_mri/.complete" ]; then
   _M=""
@@ -95,7 +104,7 @@ if [ ! -e "$_O/local_mri/.complete" ]; then
   "$_FT/code/shared/make_local_data.sh" "$_O/local_mri" MF283 MF284 MF285 MF286 $_M >> "$_LOG" 2>&1 || echo "settings/roots.sh: FAILED: $(tail -n 1 "$_LOG") (log: $_LOG)" >&2
   unset _M _S _K
 fi
-[ -e "$_L/raw/match_tables_manual_annotations" ] || ln -s "$_IN/raw/match_tables_manual_annotations" "$_L/raw/match_tables_manual_annotations"   # the manual match tables (num_<ID>.txt) of MM1 and MM3
+[ -e "$_L/raw/match_tables_manual_annotations" ] || [ -L "$_L/raw/match_tables_manual_annotations" ] || ln -s "$_IN/raw/match_tables_manual_annotations" "$_L/raw/match_tables_manual_annotations"   # the manual match tables (num_<ID>.txt) of MM1 and MM3
 export LINC_DATA=$_L/data LINC_TEMPLATE=$_L/template LINC_RAW=$_L/raw
 export LINC_PARTICIPANTS=$LINC_RAW/linc_000003/participants.tsv
 export LINC_REBUILD_DATA=$_O/local_rebuild/data      # for linc-reconstruct: LINC_DATA=$LINC_REBUILD_DATA code/blockface/linc-reconstruct ...
@@ -103,12 +112,12 @@ export LINC_MRI_DATA=$_O/local_mri/data              # for the MRI build: LINC_D
 export LINC_MRI_PREPROCESSED=$_O/local_mri/preprocessed   # <ID>/{dwi,msme,dt2}: what stage-<ID> reads
 for _S in MF283 MF284 MF285 MF286; do
   _P=$LINC_MRI_PREPROCESSED/$_S; mkdir -p "$_P"
-  [ -e "$_P/dwi" ] || ln -s "$LINC_RAW/macaque_mri/Preprocessing/$_S/CS_DSI" "$_P/dwi"
-  [ -e "$_P/msme" ] || ln -s "$LINC_RAW/microstructure/data/$_S/msme.n32" "$_P/msme"
-  [ -e "$_P/dt2" ] || ln -s "$LINC_RAW/microstructure/data/$_S/dmri.dt2" "$_P/dt2"
+  [ -e "$_P/dwi" ] || [ -L "$_P/dwi" ] || ln -s "$LINC_RAW/macaque_mri/Preprocessing/$_S/CS_DSI" "$_P/dwi"
+  [ -e "$_P/msme" ] || [ -L "$_P/msme" ] || ln -s "$LINC_RAW/microstructure/data/$_S/msme.n32" "$_P/msme"
+  [ -e "$_P/dt2" ] || [ -L "$_P/dt2" ] || ln -s "$LINC_RAW/microstructure/data/$_S/dmri.dt2" "$_P/dt2"
 done
 unset _S _P
 export LINC_WORK=$_O/work LINC_NUMBERS=$_O/numbers
 export HISTOLOGY_ARGS="--jp2-root $LINC_RAW/linc_000003/sourcedata"                  # the histology figure reads the JPEG 2000 sections
 export MM_MRI_ARGS="--raw-bruker-root $_L/raw/mri_mm --unpacked-root $_L/raw/macaque_mri"   # the numbers record mm_mri_check_r054 reads the raw MRI
-unset _FT _O _IN _L _LOG _RAW _LINKS _T _R _W _ONCE
+unset _FT _O _IN _L _LOG _RAW _LINKS _T _R _W _ONCE _XL _XR

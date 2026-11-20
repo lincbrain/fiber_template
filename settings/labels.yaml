@@ -69,7 +69,7 @@ carry:
   slab: 8                                       # template slices per evaluation of a pull map
 
 # --- the chain the tracer labels in the template come from: their products keys' folders and the tracer records' names <base><tag> ---
-template_chain_tag: _h9_s11r17                      # the H9 histology registration; MF8 through the step-9 blockface template (15 Nov 2026)
+template_chain_tag: _h9_s11wr17                      # the H9 histology registration; MF8 through the step-9 blockface template (15 Nov 2026)
 # each tracer case's route into the MRI template (code/labels/route.py): blockface (the blockface template of record: the link, the
 # brain's step-9 field, its member warp of step 8, its native map) or mri (its R1 of record and its b0's registration to the template)
 template_routes: {MR243: blockface, MR252: blockface, MR256: blockface, MF191: blockface}

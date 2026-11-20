@@ -429,6 +429,7 @@ steps:
       MF285 MF286; do mkdir -p $W/data/sub-$S && ln -sfn $LINC_PRODUCTS/mri/data/sub-$S $W/data/sub-$S/mri && ln -sfn $LINC_PRODUCTS/mri/data/sub-$S/xfm
       $W/data/sub-$S/xfm && ln -sfn $LINC_PRODUCTS/mri/data/sub-$S/canonical_rebuild_manual_annotations_frac $W/prep/$S; done && LINC_DATA=$W/data $PY code/template/build_mri_channels.py
       --work $W --step channels
+    again: --force
     check: '[ $(ls $LINC_WORK/mri_paper_run/channels | grep -c "^linc_mri_.*\.nii\.gz$") -ge 20 ] && $PY tests/compare/compare_nifti.py $LINC_WORK/mri_paper_run/channels
       $LINC_PRODUCTS/template/mri $(ls $LINC_WORK/mri_paper_run/channels | grep "^linc_mri_.*\.nii\.gz$")'
     expect: all 20 channel files identical to the template's, voxel for voxel
@@ -455,6 +456,7 @@ steps:
       then run ''source settings/roots.sh refresh'' and this step again. A new brain does not need this step (docs/tutorials/01_mri.md, part B).";
       exit 1; }; } && $PY -m mri.mri_register links --subject {id} --run $LINC_PRODUCTS/mri/tc/rb_final --mri-root $LINC_PRODUCTS/mri/data/sub-{id}
       --xfm-root $LINC_WORK/mri_links/{id}/xfm --out $LINC_WORK/mri_links/{id}/run'
+    again: --overwrite
     check: $PY tests/compare/compare_mri_build.py entries $LINC_WORK/mri_links/{id}/xfm $LINC_PRODUCTS/mri/xfm_rb_final/sub-{id}/xfm b0-native__to__mri-canonical
       mri-canonical__to__mri-template
     expect: both entries' files identical to the paper's, and their QC passes
@@ -1078,7 +1080,8 @@ steps:
     writes: $LINC_WORK/build_blockface_template/runs/d2bs8/, final/ (d2bs8_grey, d2bs8_b0, masks), final_run113/ (the published files, member warps)
     run: $PY code/template/build_blockface_template.py --from s8-frame --to member-warps
     check: W=$LINC_WORK/build_blockface_template/final && R=$LINC_PRODUCTS/bftemplate/d2b/final_s8 && $PY tests/compare/compare_registration.py image $W/d2bs8_b0.nii.gz
-      $R/d2bs8_b0.nii.gz && $PY tests/compare/compare_registration.py image $W/d2bs8_grey.nii.gz $R/d2bs8_grey.nii.gz
+      $R/d2bs8_b0.nii.gz && $PY tests/compare/compare_registration.py image $W/d2bs8_grey.nii.gz
+      $LINC_PRODUCTS/bftemplate/d2b/s8/tc/d2bs8/final_d2bs8_s11w_run113/d2bs8_grey.nii.gz
     expect: the published template's blockface and b0 channels correlate with the paper's at r >= 0.9999 (a tolerance never tested)
     needs: [bf-template-first-stage]
     gpu_gb: 12
@@ -1094,7 +1097,11 @@ steps:
       CPU steps; its disk is an estimate. GPU memory, from the paper''s run''s dispatch log (4 tasks per 48 GB card, 130 task starts): the
       card never had less than 42.4 GB free when a task started, so its tasks used under about 6 GB together; 12 GB is that run''s admission
       rule (a task started only with 12,000 MiB free). Starts from this run''s first stage, which already differs from the paper''s at steps 6
-      and 7, so it cannot be identical.'
+      and 7, so it cannot be identical. The final average''s blockface channels were made again with the published weights
+      (final_d2bs8_s11w_run113); the b0 channel and the member warps did not change, because their weights are the cost masks, not
+      the rule. The data folder''s final_s8 holds the eighth step''s files released on 16 Nov 2026, whose blockface channels were made
+      with the earlier weights (their gray correlates with the one made again at r 0.99982), and not the gray made again; run from the
+      data folder, the gray''s comparison therefore says that it has nothing to compare with.'
 
   - name: bf-template-step9-start
     group: blockface-template
@@ -1103,7 +1110,7 @@ steps:
       own b0 or its placement, its completed volume and seam record
     writes: $LINC_WORK/build_blockface_template/step9/nln_step_09/iteration_00/ (the 22 inputs, about 24 GB, and the start T0s11)
     run: $ANATOMIX_PYTHON code/template/blockface_step9.py start -j 8
-    check: $PY tests/compare/compare_mri_build.py run $LINC_WORK/build_blockface_template/step9/nln_step_09/iteration_00 $LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_s11/nln_step_09/iteration_00 --parts
+    check: $PY tests/compare/compare_mri_build.py run $LINC_WORK/build_blockface_template/step9/nln_step_09/iteration_00 $LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_s11w_full/nln_step_09/iteration_00 --parts
       T0s11_grey.nii.gz T0s11_brainmask.nii.gz T0s11_real_mask.nii.gz T0s11_photo_share.nii.gz T0s11_P.nii.gz --min 5
     expect: the start's five files identical to the paper's
     needs: [data-folders]
@@ -1116,19 +1123,24 @@ steps:
     hours: 0.15
     timed: clone
     optional: false
-    note: 'Tested 15 Nov from a clone (8 workers, about 8 GB each): 8 min 18 s; the 22 inputs (88 arrays) and the start identical to the
-      paper''s, byte for byte. Needs $ANATOMIX_PYTHON (the averaging uses its torch)'
+    note: 'The paper''s start, of step 9 made with the published weights (out_s11w_full), was made by this command from a clone.
+      Tested 19 Nov from a clone of this release (4 workers of 2 threads, the largest process 29.4 GB): 11 min 18 s; the 22 inputs
+      (88 arrays) and the start identical to the paper''s, byte for byte. Tested 15 Nov from a clone on the inputs of the run behind the
+      template files released on 16 Nov (8 workers, about 8 GB each): 8 min 18 s, identical to that run''s. Step 9 reads from step 8''s files the member warps and the coverage, which do not depend
+      on the weights of synthesized tissue, and, for its checks only, step 8''s gray, brain mask and real mask. These are the files
+      released on 16 Nov 2026; step 8''s average made again with the published weights is not shipped. Needs $ANATOMIX_PYTHON (the
+      averaging uses its torch)'
   - name: bf-template-step9-average
     group: blockface-template
     title: Blockface template, step 9's average at 0.15 mm from the fields of record (the published template)
-    reads: the 22 inputs' fields of record ($LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_03/fields, the data folder's
+    reads: the 22 inputs' fields of record ($LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_s11w_full/final/nln_step_09/iteration_03/fields, the data folder's
       template/intermediate/construction/step9_fields); the same as bf-template-step9-start
     writes: $LINC_WORK/build_blockface_template/step9_of_record/final/ (the start and the template at 0.15 mm, their inputs, checks.json)
-    run: $ANATOMIX_PYTHON code/template/blockface_step9.py final --work $LINC_WORK/build_blockface_template/step9_of_record --fields-from $LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_03/fields
+    run: $ANATOMIX_PYTHON code/template/blockface_step9.py final --work $LINC_WORK/build_blockface_template/step9_of_record --fields-from $LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_s11w_full/final/nln_step_09/iteration_03/fields
       -j 8
-    check: W=$LINC_WORK/build_blockface_template/step9_of_record/final/nln_step_09 && $PY tests/compare/compare_mri_build.py run $W/iteration_03 $LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_03
+    check: W=$LINC_WORK/build_blockface_template/step9_of_record/final/nln_step_09 && $PY tests/compare/compare_mri_build.py run $W/iteration_03 $LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_s11w_full/final/nln_step_09/iteration_03
       --parts T3s11_grey.nii.gz T3s11_rgb.nii.gz T3s11_brainmask.nii.gz T3s11_real_mask.nii.gz T3s11_photo_share.nii.gz T3s11_P.nii.gz --min 6
-      && $PY tests/compare/compare_mri_build.py run $W/iteration_00 $LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_00 --parts T0s11_grey.nii.gz
+      && $PY tests/compare/compare_mri_build.py run $W/iteration_00 $LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_s11w_full/final/nln_step_09/iteration_00 --parts T0s11_grey.nii.gz
       T0s11_brainmask.nii.gz T0s11_real_mask.nii.gz T0s11_photo_share.nii.gz T0s11_P.nii.gz --min 5
     expect: the published template's six files (gray, color, the two masks, the photographed fraction, the tissue probability) and the start's
       five identical to the paper's
@@ -1143,8 +1155,11 @@ steps:
     timed: clone
     optional: false
     note: 'The CPU half of step 9: it averages the brains through the fields the paper''s run made, so it is identical on any machine.
-      Tested 15 Nov from a clone (8 workers): 20 min, 6 of 6 and 5 of 5 identical. Its checks.json holds the step''s checks (sharpness
-      1.19 x the start; r 0.993 against step 8 after a 1 mm low-pass; exact symmetry; no folds)'
+      The fields of record are those of step 9 made with the published weights (out_s11w_full). Tested 19 Nov from a clone of this
+      release on them (4 workers of 2 threads, the largest process 29.6 GB): 27 min 52 s; 6 of 6 and 5 of 5 identical to the paper''s,
+      byte for byte, as is every other array it writes. Tested 15 Nov from a clone on the fields of the run behind the template files
+      released on 16 Nov (8 workers): 20 min, 6 of 6 and 5 of 5 identical. Its checks.json
+      holds the step''s checks (sharpness 1.19 x the start; r 0.993 against step 8 after a 1 mm low-pass; exact symmetry; no folds)'
   - name: bf-template-step9-in-mri
     group: blockface-template
     title: Blockface template, step 9 in the MRI template's frame (the published template_blockface_* files)
@@ -1152,7 +1167,7 @@ steps:
     writes: $LINC_WORK/build_blockface_template/step9_of_record/in_mri/ (linc_bf_grey, rgb, brainmask, photographed_fraction, synthesized_mask)
     run: $ANATOMIX_PYTHON code/template/blockface_step9.py in-mri --work $LINC_WORK/build_blockface_template/step9_of_record
     check: 'n=0; for k in grey rgb brainmask photographed_fraction synthesized_mask; do cmp -s $LINC_WORK/build_blockface_template/step9_of_record/in_mri/linc_bf_$k.nii.gz
-      $LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_015_s11/in_mri_template/T3s11_015_in_mri_$k.nii.gz && n=$((n+1)); done; echo "$n of 5 files identical to the paper''s"; [ $n -eq 5 ]'
+      $LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_s11w_full/in_mri_template/T3s11_015_in_mri_$k.nii.gz && n=$((n+1)); done; echo "$n of 5 files identical to the paper''s"; [ $n -eq 5 ]'
     expect: the five files identical to the paper's, byte for byte
     needs: [bf-template-step9-average]
     gpu_gb: 0
@@ -1165,7 +1180,8 @@ steps:
     timed: clone
     optional: false
     note: 'The route of code/template/link/register.py blockface_in_mri, then the gray and the color multiplied by the carried brain mask.
-      Tested 15 Nov from a clone: 2 min 15 s, 5 of 5 identical'
+      Tested 15 Nov from a clone: 2 min 15 s, 5 of 5 identical; from a clone on the paper''s template (made with the published
+      weights): 5 of 5 identical'
   - name: bf-template-step9-rounds
     group: blockface-template
     title: Blockface template, step 9's three rounds of registration and the average (GPU)
@@ -1173,7 +1189,7 @@ steps:
     writes: $LINC_WORK/build_blockface_template/step9/nln_step_09/iteration_01 to 03 (about 60 GB each), $LINC_WORK/build_blockface_template/step9/final/, $LINC_WORK/build_blockface_template/step9/in_mri/
     run: $PY code/template/build_blockface_template.py --from s9-round-1 --to s9-in-mri
     check: $PY tests/compare/compare_registration.py image $LINC_WORK/build_blockface_template/step9/final/nln_step_09/iteration_03/T3s11_grey.nii.gz
-      $LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_03/T3s11_grey.nii.gz
+      $LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_s11w_full/final/nln_step_09/iteration_03/T3s11_grey.nii.gz
     expect: the template correlates with the paper's at r >= 0.9999 (a tolerance never tested)
     needs: [bf-template-step9-start]
     gpu_gb: 46
@@ -1185,10 +1201,13 @@ steps:
     hours: 10
     timed: estimated
     optional: true
-    note: 'Never rerun whole. The paper''s run: 66 registrations on four RTX 6000 Ada cards (each 4.5 to 7.5 min, peak 35 to 38 GB of
-      the card, chunk 2), 3 h 25 min with the CPU steps; on one card about 7 h of registrations plus about 3 h of CPU steps. More cards
-      join a round with `blockface_step9.py register --it <k> --gpu <n>`. One registration rerun from a clone (15 Nov: MF278, round 1 of
-      the analysis''s 12-brain run, on another RTX 6000 Ada): 5 min 53 s, peak 36.5 GB, its field byte-identical to that run''s'
+    note: 'Never rerun whole. The paper''s run, with the published weights: 66 registrations on four RTX 6000 Ada cards (4.2 to 6.2 min
+      each, up to 11.4 min in the first round while CPU steps ran beside it; peak 35 to 38 GiB of the card, chunk 2), 0 folds; 6 h 35 min
+      from the start to the final checks, 82 min of which the second round waited for its last registration, refused at first by a card
+      that another job was using. On one card about 7 h of registrations plus about 3 h of CPU steps. More cards join a round with
+      `blockface_step9.py register --it <k> --gpu <n>`. Before its first round, one registration from the start of the run behind the
+      template files released on 16 Nov (MF278, on another RTX 6000 Ada) gave that run''s field byte for byte, as one rerun from a clone
+      had on 15 Nov (MF278, round 1 of the analysis''s 12-brain run: 5 min 53 s, peak 36.5 GB)'
   - name: bf-template-step9-refine
     group: blockface-template
     for: [MF191]
@@ -1198,7 +1217,7 @@ steps:
     writes: $LINC_WORK/build_blockface_template/step9/final/refine/ ({id}.npy, the field; inputs/, the start); for a brain outside step 8 also
       the refined entry in $LINC_DATA/sub-{id}/xfm_step9/
     run: $ANATOMIX_PYTHON code/template/blockface_step9.py refine --subject {id} --gpu 0
-    check: 'cmp $LINC_WORK/build_blockface_template/step9/final/refine/{id}.npy $LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_015_s11/outside10/fields/{id}.npy
+    check: 'cmp $LINC_WORK/build_blockface_template/step9/final/refine/{id}.npy $LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_s11w_full/final/refine/{id}.npy
       && echo "{id}: the field identical to the paper''s"'
     expect: the field identical to the paper's (MF191 belongs to step 8, so it starts from its member warp, as the paper's field did)
     needs: [data-folders]
@@ -1690,7 +1709,8 @@ steps:
     timed: estimated
     optional: false
     note: 'The paper''s route for every brain (the transforms that built the blockface template, code/labels/route.py), checked
-      against the published labels (labels/tracer_template_v2_h9_s11r17, {chain_tag} in settings/labels.yaml); labels-carry carries MM1-MM3 on the MRI route, the comparison the paper reports.'
+      against the published labels (labels/tracer_template_v2_h9_s11wr17, {chain_tag} in settings/labels.yaml); labels-carry carries MM1-MM3 on the MRI route, the comparison the paper reports. On 19 Nov 2026, through the final step made again
+      (s11w): MR243 33, MR252 21, MR256 27 and MF191 33 files, all identical, 0.5 to 4 minutes per brain.'
   - name: labels-connect-route
     group: labels
     for: labels
@@ -1711,7 +1731,8 @@ steps:
     hours: 0.05
     timed: estimated
     optional: false
-    note: 'The paper''s route, checked against labels/tracer_template_v2c_h9_s11r17; the paper reports the pathway on this route only.'
+    note: 'The paper''s route, checked against labels/tracer_template_v2c_h9_s11wr17; the paper reports the pathway on this route only. On 19 Nov 2026
+      (s11w): 3 of 3 identical for each of the four brains.'
   - name: labels-carry-structures
     group: labels
     for: [MR243, MR252, MR256]
@@ -1733,8 +1754,9 @@ steps:
     hours: 0.08
     timed: clone
     optional: false
-    note: 'The paper''s route, checked against the published LGN and STN ({lgnstn_dir}: labels/push_current_h9_s11r17). On 15 Nov: 126 of 126
-      on both routes (42 per brain with the 3D labels), 2 to 5 minutes per brain.'
+    note: 'The paper''s route, checked against the published LGN and STN ({lgnstn_dir}: labels/push_current_h9_s11wr17). On 15 Nov: 126 of 126
+      on both routes (42 per brain with the 3D labels), 2 to 5 minutes per brain. On 19 Nov 2026, through the final step made again (s11w):
+      34 of 34 identical for each of the three brains, 3 to 5 minutes per brain.'
   - name: labels-carry-structures-mri
     group: labels
     for: [MR243, MR252, MR256]

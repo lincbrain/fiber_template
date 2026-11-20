@@ -48,7 +48,9 @@ def test_nifti(tmp_path):
 def test_registration_reconstruction_histology_mri_build(tmp_path):
     mine, paper = tmp_path / "mine", tmp_path / "absent"
     mine.mkdir()
+    img(mine / "a.nii.gz", 1)
     for args in ((C / "compare_registration.py", "entry", mine, paper),
+                 (C / "compare_registration.py", "image", mine / "a.nii.gz", paper / "a.nii.gz"),
                  (C / "compare_reconstruction.py", "MR252", mine, paper),
                  (C / "compare_histology.py", mine, paper),
                  (C / "compare_mri_build.py", "run", mine, paper)):

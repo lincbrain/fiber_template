@@ -163,7 +163,8 @@ def test_roots_refresh_links_again_and_fills_the_working_folders_again(tmp_path)
     calls = repo / "calls.txt"
     (repo / "code" / "shared" / "join_weights.sh").write_text("exit 0\n")
     helper = repo / "code" / "shared" / "make_local_data.sh"       # what the real one does that matters here: it writes <dest>/.complete last
-    helper.write_text(f'#!/bin/bash\nmkdir -p "$1"\necho "$1" >> "{calls}"\necho done > "$1/.complete"\n')
+    args = repo / "args.txt"                                        # every argument of each call, one call per line
+    helper.write_text(f'#!/bin/bash\nmkdir -p "$1"\necho "$1" >> "{calls}"\necho "$@" >> "{args}"\necho done > "$1/.complete"\n')
     helper.chmod(0o755)
     out = repo / "outputs"
 
@@ -171,8 +172,13 @@ def test_roots_refresh_links_again_and_fills_the_working_folders_again(tmp_path)
     assert stdout.strip() == f"rc=0 tree={tree}", err
     assert calls.read_text().split() == [str(out / "local_data"), str(out / "local_rebuild"), str(out / "local_mri")]
     assert "building" in err and "(once; " in err
+    first = args.read_text().splitlines()                          # built with the brains each folder starts with
+    assert first[0].startswith(f"{out / 'local_data'} MR252 MF191 MF283 --raw ")
+    assert first[1].startswith(f"{out / 'local_rebuild'} --rebuild MR252 --rebuild MF191 --rebuild MR263 --raw ")
     mine = out / "local_data" / "my_result.txt"                    # something the user made in a working folder
     mine.write_text("mine")
+    for d in ("local_data/data/sub-MR252", "local_data/data/sub-MR243", "local_rebuild/data/sub-MR252", "local_rebuild/data/sub-MR256"):
+        (out / d).mkdir(parents=True)                              # brains in the working folders: two they start with, two added since
 
     later = tree / ROWS[3][0]                                      # the data folder gains a file
     later.parent.mkdir(parents=True, exist_ok=True)
@@ -186,6 +192,9 @@ def test_roots_refresh_links_again_and_fills_the_working_folders_again(tmp_path)
     assert os.readlink(str(out / "in" / ROWS[3][1])) == f"{tree}/{ROWS[3][0]}"
     assert "the links are made again (3 links" in err and err.count("adding what is missing to") == 3 and "once" not in err
     assert len(calls.read_text().split()) == 6
+    again = args.read_text().splitlines()                          # a brain added to a working folder since is filled again too, once
+    assert again[3].startswith(f"{out / 'local_data'} MR252 MF191 MF283 MR243 --raw ")
+    assert again[4].startswith(f"{out / 'local_rebuild'} --rebuild MR252 --rebuild MF191 --rebuild MR263 --rebuild MR256 --raw ")
     assert all((out / d / ".complete").exists() for d in ("local_data", "local_rebuild", "local_mri"))
     assert mine.read_text() == "mine"                              # nothing of the user's is touched
 

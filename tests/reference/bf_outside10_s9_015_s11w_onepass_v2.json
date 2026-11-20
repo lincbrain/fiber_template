@@ -1,0 +1,546 @@
+{
+ "data": {
+  "local_ncc_sigma_mm": 0.5,
+  "erosion_mm": 1.05,
+  "n_brains": 10,
+  "n_with_mri": 3,
+  "brains": {
+   "MF275": {
+    "alias": "MF6",
+    "ncc_step8": 0.7188,
+    "ncc_step9": 0.8391,
+    "gain": 0.1203,
+    "region_voxels": 6257362,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0079,
+    "max_disp_mm": 4.96759557723999,
+    "ncc_mri": 0.7204,
+    "ncc_step8_mri_region": 0.7188,
+    "ncc_step9_mri_region": 0.8391,
+    "mri_region_voxels": 6257330
+   },
+   "MR243": {
+    "alias": "MM1",
+    "ncc_step8": 0.7313,
+    "ncc_step9": 0.8546,
+    "gain": 0.1233,
+    "region_voxels": 13602116,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0129,
+    "max_disp_mm": 3.229905128479004,
+    "ncc_mri": 0.7207,
+    "ncc_step8_mri_region": 0.7313,
+    "ncc_step9_mri_region": 0.8546,
+    "mri_region_voxels": 13602021
+   },
+   "MR249": {
+    "alias": "MM4",
+    "ncc_step8": 0.709,
+    "ncc_step9": 0.8467,
+    "gain": 0.1377,
+    "region_voxels": 12738929,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0127,
+    "max_disp_mm": 2.79764461517334,
+    "ncc_mri": 0.7096,
+    "ncc_step8_mri_region": 0.7091,
+    "ncc_step9_mri_region": 0.8468,
+    "mri_region_voxels": 12731830
+   },
+   "MF191": {
+    "alias": "MF8",
+    "ncc_step8": 0.6923,
+    "ncc_step9": 0.8064,
+    "gain": 0.1141,
+    "region_voxels": 12912394,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0036,
+    "max_disp_mm": 6.790295600891113
+   },
+   "MF196": {
+    "alias": "MF9",
+    "ncc_step8": 0.741,
+    "ncc_step9": 0.8352,
+    "gain": 0.0942,
+    "region_voxels": 12696123,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0154,
+    "max_disp_mm": 6.526198387145996
+   },
+   "MF204": {
+    "alias": "MF10",
+    "ncc_step8": 0.7331,
+    "ncc_step9": 0.8396,
+    "gain": 0.1065,
+    "region_voxels": 12198429,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0075,
+    "max_disp_mm": 6.55609655380249
+   },
+   "MR244": {
+    "alias": "MM11",
+    "ncc_step8": 0.7447,
+    "ncc_step9": 0.8448,
+    "gain": 0.1001,
+    "region_voxels": 13114881,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0065,
+    "max_disp_mm": 5.475649833679199
+   },
+   "MR247": {
+    "alias": "MM12",
+    "ncc_step8": 0.692,
+    "ncc_step9": 0.8245,
+    "gain": 0.1325,
+    "region_voxels": 11714937,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0196,
+    "max_disp_mm": 5.210341930389404
+   },
+   "MR248": {
+    "alias": "MM13",
+    "ncc_step8": 0.5993,
+    "ncc_step9": 0.7555,
+    "gain": 0.1562,
+    "region_voxels": 12629218,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0022,
+    "max_disp_mm": 5.433132171630859
+   },
+   "MR263": {
+    "alias": "MM14",
+    "ncc_step8": 0.7093,
+    "ncc_step9": 0.8332,
+    "gain": 0.1238,
+    "region_voxels": 5935241,
+    "folds_engine_grid": 0,
+    "folds_template_grid": 0,
+    "min_det": 0.0101,
+    "max_disp_mm": 3.6992971897125244
+   }
+  },
+  "per_brain": {
+   "step8": {
+    "n": 10,
+    "median": 0.7141,
+    "q1": 0.6965,
+    "q3": 0.7327,
+    "iqr": 0.0362,
+    "min": 0.5993,
+    "max": 0.7447
+   },
+   "step9": {
+    "n": 10,
+    "median": 0.8372,
+    "q1": 0.8267,
+    "q3": 0.8435,
+    "iqr": 0.0168,
+    "min": 0.7555,
+    "max": 0.8546
+   },
+   "gain": {
+    "n": 10,
+    "median": 0.1218,
+    "q1": 0.1084,
+    "q3": 0.1303,
+    "iqr": 0.0219,
+    "min": 0.0942,
+    "max": 0.1562
+   },
+   "all_improve": true
+  },
+  "pairwise": {
+   "n_pairs": 45,
+   "step8": {
+    "n": 45,
+    "median": 0.6041,
+    "q1": 0.5868,
+    "q3": 0.6311,
+    "iqr": 0.0443,
+    "min": 0.4954,
+    "max": 0.6868
+   },
+   "step9": {
+    "n": 45,
+    "median": 0.7521,
+    "q1": 0.7275,
+    "q3": 0.7605,
+    "iqr": 0.033,
+    "min": 0.6713,
+    "max": 0.7781
+   },
+   "after_ge_before": true,
+   "mask": "(p8_i>=0.5)&(p8_j>=0.5)&(p9_i>=0.5)&(p9_j>=0.5)&brain mask, eroded 1 mm: before and after on the same voxels",
+   "pairs": {
+    "MF275-MR243": {
+     "step8": 0.60409,
+     "step9": 0.75481,
+     "voxels": 6058569,
+     "check_onepass_16nov_rule": 0.75603
+    },
+    "MF275-MR249": {
+     "step8": 0.59655,
+     "step9": 0.76043,
+     "voxels": 4933436,
+     "check_onepass_16nov_rule": 0.76383
+    },
+    "MF275-MF191": {
+     "step8": 0.59054,
+     "step9": 0.73158,
+     "voxels": 5970477,
+     "check_onepass_16nov_rule": 0.73336
+    },
+    "MF275-MF196": {
+     "step8": 0.62009,
+     "step9": 0.75635,
+     "voxels": 6100250,
+     "check_onepass_16nov_rule": 0.75746
+    },
+    "MF275-MF204": {
+     "step8": 0.61513,
+     "step9": 0.75277,
+     "voxels": 6117408,
+     "check_onepass_16nov_rule": 0.75391
+    },
+    "MF275-MR244": {
+     "step8": 0.61759,
+     "step9": 0.76051,
+     "voxels": 6104977,
+     "check_onepass_16nov_rule": 0.76136
+    },
+    "MF275-MR247": {
+     "step8": 0.58979,
+     "step9": 0.73893,
+     "voxels": 4816356,
+     "check_onepass_16nov_rule": 0.74121
+    },
+    "MF275-MR248": {
+     "step8": 0.49537,
+     "step9": 0.67675,
+     "voxels": 6024519,
+     "check_onepass_16nov_rule": 0.67913
+    },
+    "MF275-MR263": {
+     "step8": 0.60178,
+     "step9": 0.7565,
+     "voxels": 3704253,
+     "check_onepass_16nov_rule": 0.7557
+    },
+    "MR243-MR249": {
+     "step8": 0.61454,
+     "step9": 0.77565,
+     "voxels": 11927483,
+     "check_onepass_16nov_rule": 0.77605
+    },
+    "MR243-MF191": {
+     "step8": 0.59124,
+     "step9": 0.73723,
+     "voxels": 12458488,
+     "check_onepass_16nov_rule": 0.73736
+    },
+    "MR243-MF196": {
+     "step8": 0.63114,
+     "step9": 0.76557,
+     "voxels": 12188584,
+     "check_onepass_16nov_rule": 0.76594
+    },
+    "MR243-MF204": {
+     "step8": 0.62956,
+     "step9": 0.76768,
+     "voxels": 11727065,
+     "check_onepass_16nov_rule": 0.76771
+    },
+    "MR243-MR244": {
+     "step8": 0.63985,
+     "step9": 0.77751,
+     "voxels": 12710866,
+     "check_onepass_16nov_rule": 0.77769
+    },
+    "MR243-MR247": {
+     "step8": 0.60033,
+     "step9": 0.75208,
+     "voxels": 10933862,
+     "check_onepass_16nov_rule": 0.75258
+    },
+    "MR243-MR248": {
+     "step8": 0.52651,
+     "step9": 0.68657,
+     "voxels": 12142616,
+     "check_onepass_16nov_rule": 0.68598
+    },
+    "MR243-MR263": {
+     "step8": 0.60422,
+     "step9": 0.75826,
+     "voxels": 5300957,
+     "check_onepass_16nov_rule": 0.76052
+    },
+    "MR249-MF191": {
+     "step8": 0.56866,
+     "step9": 0.73794,
+     "voxels": 11395671,
+     "check_onepass_16nov_rule": 0.73812
+    },
+    "MR249-MF196": {
+     "step8": 0.61068,
+     "step9": 0.76259,
+     "voxels": 11004695,
+     "check_onepass_16nov_rule": 0.76397
+    },
+    "MR249-MF204": {
+     "step8": 0.59512,
+     "step9": 0.75487,
+     "voxels": 10520023,
+     "check_onepass_16nov_rule": 0.75611
+    },
+    "MR249-MR244": {
+     "step8": 0.6214,
+     "step9": 0.77483,
+     "voxels": 11442628,
+     "check_onepass_16nov_rule": 0.77564
+    },
+    "MR249-MR247": {
+     "step8": 0.58984,
+     "step9": 0.76034,
+     "voxels": 9992077,
+     "check_onepass_16nov_rule": 0.76091
+    },
+    "MR249-MR248": {
+     "step8": 0.51979,
+     "step9": 0.69271,
+     "voxels": 10978160,
+     "check_onepass_16nov_rule": 0.6926
+    },
+    "MR249-MR263": {
+     "step8": 0.57447,
+     "step9": 0.74921,
+     "voxels": 4504924,
+     "check_onepass_16nov_rule": 0.75108
+    },
+    "MF191-MF196": {
+     "step8": 0.63904,
+     "step9": 0.75153,
+     "voxels": 11812042,
+     "check_onepass_16nov_rule": 0.75272
+    },
+    "MF191-MF204": {
+     "step8": 0.6551,
+     "step9": 0.76303,
+     "voxels": 11454041,
+     "check_onepass_16nov_rule": 0.7633
+    },
+    "MF191-MR244": {
+     "step8": 0.6386,
+     "step9": 0.74395,
+     "voxels": 12299758,
+     "check_onepass_16nov_rule": 0.74464
+    },
+    "MF191-MR247": {
+     "step8": 0.58682,
+     "step9": 0.71726,
+     "voxels": 10283325,
+     "check_onepass_16nov_rule": 0.71966
+    },
+    "MF191-MR248": {
+     "step8": 0.51785,
+     "step9": 0.67129,
+     "voxels": 11746157,
+     "check_onepass_16nov_rule": 0.67149
+    },
+    "MF191-MR263": {
+     "step8": 0.60252,
+     "step9": 0.72748,
+     "voxels": 5101406,
+     "check_onepass_16nov_rule": 0.73209
+    },
+    "MF196-MF204": {
+     "step8": 0.68684,
+     "step9": 0.77805,
+     "voxels": 11369885,
+     "check_onepass_16nov_rule": 0.77925
+    },
+    "MF196-MR244": {
+     "step8": 0.66921,
+     "step9": 0.76752,
+     "voxels": 12035783,
+     "check_onepass_16nov_rule": 0.76859
+    },
+    "MF196-MR247": {
+     "step8": 0.62065,
+     "step9": 0.74505,
+     "voxels": 10318990,
+     "check_onepass_16nov_rule": 0.74709
+    },
+    "MF196-MR248": {
+     "step8": 0.53789,
+     "step9": 0.68658,
+     "voxels": 11463723,
+     "check_onepass_16nov_rule": 0.68751
+    },
+    "MF196-MR263": {
+     "step8": 0.63939,
+     "step9": 0.75211,
+     "voxels": 5116345,
+     "check_onepass_16nov_rule": 0.755
+    },
+    "MF204-MR244": {
+     "step8": 0.65824,
+     "step9": 0.76327,
+     "voxels": 11714795,
+     "check_onepass_16nov_rule": 0.76417
+    },
+    "MF204-MR247": {
+     "step8": 0.6215,
+     "step9": 0.74141,
+     "voxels": 10029985,
+     "check_onepass_16nov_rule": 0.74346
+    },
+    "MF204-MR248": {
+     "step8": 0.54551,
+     "step9": 0.69057,
+     "voxels": 11142542,
+     "check_onepass_16nov_rule": 0.69221
+    },
+    "MF204-MR263": {
+     "step8": 0.63925,
+     "step9": 0.75335,
+     "voxels": 5034945,
+     "check_onepass_16nov_rule": 0.75598
+    },
+    "MR244-MR247": {
+     "step8": 0.65183,
+     "step9": 0.76721,
+     "voxels": 10450521,
+     "check_onepass_16nov_rule": 0.76892
+    },
+    "MR244-MR248": {
+     "step8": 0.5442,
+     "step9": 0.69014,
+     "voxels": 12136776,
+     "check_onepass_16nov_rule": 0.69111
+    },
+    "MR244-MR263": {
+     "step8": 0.63998,
+     "step9": 0.75473,
+     "voxels": 4989521,
+     "check_onepass_16nov_rule": 0.75784
+    },
+    "MR247-MR248": {
+     "step8": 0.57266,
+     "step9": 0.70216,
+     "voxels": 10011391,
+     "check_onepass_16nov_rule": 0.70254
+    },
+    "MR247-MR263": {
+     "step8": 0.59217,
+     "step9": 0.72555,
+     "voxels": 4656671,
+     "check_onepass_16nov_rule": 0.72534
+    },
+    "MR248-MR263": {
+     "step8": 0.51432,
+     "step9": 0.673,
+     "voxels": 4946960,
+     "check_onepass_16nov_rule": 0.67568
+    }
+   },
+   "check_onepass_16nov_rule_all_equal": false
+  },
+  "folds_total": 0,
+  "folds_total_engine_grid": 0,
+  "folds_total_template_grid": 0,
+  "template": "bftemplate/hr_2026-11-12/step9/out_s11w_full/final/nln_step_09/iteration_03/T3s11",
+  "measure": "local NCC, Gaussian window (sigma above, truncate 3), mean over the region",
+  "engine": "as paper/numbers/bf_outside10_s9_015_s11.json, on the ten outside fields of the final step made with the published weights; the after image carried once (onepass.py)",
+  "reproduction": {
+   "saved_script": "the analysis's saved one-pass script (onepass.py)",
+   "reproduces_16nov_record_exactly": false
+  },
+  "definition": "The same measurement on the final template made with the published weights: the record's script, unchanged but for its input\nfolders, read the final template, its ten outside fields and its precision rule, and carried each brain's photographs before and\nafter with that rule (the variant below; with the 'before' carry as made for the template files released on 16 Nov instead, every\nprinted value is the same). Run on the inputs of the template files released on 16 Nov, the same script gave the data of the 16 Nov\nrecord (a control of the analysis); step 0 below belongs to that run, so the per-brain 16 Nov check values are not part of this\nrecord. The original definition follows.\n18 Nov 2026 (rules in NOTE.md, written 16:04 before any v2 number): the ten brains outside the blockface template's\nfinal step, with the \"after\" image carried once (the 16 Nov onepass rule, saved here as onepass.py), every value the paper's\nparagraph needs in ONE record, before and after always on the same voxels.\n  0. check: this folder's onepass_eval.json (the rerun of the saved onepass.py) equals the data of\n     paper/numbers/bf_outside10_s9_015_s11_onepass.json (16 Nov) exactly; else stop;\n  1. per brain: local NCC with the template before (step 8) and after (one pass) on `common` (p8 & p9 & real mask, eroded 1 mm);\n  2. MRI route (MF6, MM1, MM4): MRI-based alignment, step 8 and after, on common & MRI-route validity;\n  3. pairwise (45 pairs): before and after on ONE joint mask (p8_i & p8_j & p9_i & p9_j & brain mask, eroded 1 mm); and the 16 Nov\n     rule's after (p9 masks only) as a check;\n  4. folds per outside10 field (engine grid from its _done.json, template grid by hr.folds_field); the NCC window and erosion.\nKey names follow paper/numbers/bf_outside10_s9_015_s11.json so the paper's tokens change only the record name.",
+  "template_view": "a working folder of the analysis: the final template made with the published weights, at the names the script reads (T3s11)",
+  "s11w": {
+   "variant": "primary",
+   "before": "a working folder of the analysis: each brain's photographs carried onto the template grid without a step-9 field, with the final step's precision rule",
+   "used": {
+    "O9": "the ten outside fields of the final step made with the published weights (a working folder of the analysis)",
+    "TPL": "the final template made with the published weights (a working folder of the analysis)",
+    "PJ": "$LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_s11w_full/precision_rule.json",
+    "torch_threads_cap": 6
+   },
+   "control": "a working file of the analysis (control_bf_outside10_s9_015_s11_onepass_v2.json)",
+   "copy_of": "a script of the analysis (outside10_onepass_v2.py)",
+   "diff": "a working file of the analysis (outside10_s11w_v2.diff)",
+   "printed_primary": {
+    "pairwise_step8": 0.6,
+    "pairwise_step9": 0.75,
+    "n_pairs": 45,
+    "per_brain_step9": 0.84,
+    "ncc_step9": [
+     0.76,
+     0.85
+    ],
+    "per_brain_step8": 0.71,
+    "gain": [
+     0.09,
+     0.16
+    ],
+    "folds_total": 0,
+    "ncc_mri": [
+     0.71,
+     0.72
+    ],
+    "ncc_step8_mri_region": [
+     0.71,
+     0.73
+    ],
+    "ncc_step9_mri_region": [
+     0.84,
+     0.85
+    ],
+    "all_improve": true,
+    "after_ge_before": true
+   },
+   "printed_check": {
+    "pairwise_step8": 0.6,
+    "pairwise_step9": 0.75,
+    "n_pairs": 45,
+    "per_brain_step9": 0.84,
+    "ncc_step9": [
+     0.76,
+     0.85
+    ],
+    "per_brain_step8": 0.71,
+    "gain": [
+     0.09,
+     0.16
+    ],
+    "folds_total": 0,
+    "ncc_mri": [
+     0.71,
+     0.72
+    ],
+    "ncc_step8_mri_region": [
+     0.71,
+     0.73
+    ],
+    "ncc_step9_mri_region": [
+     0.84,
+     0.85
+    ],
+    "all_improve": true,
+    "after_ge_before": true
+   },
+   "check_variant_file": "a working file of the analysis (variant_check.json)",
+   "printed_values_that_differ": [],
+   "definition_note": "primary: before and after carried with the new template's precision rule; check: before as built (the record's rule), after with the new rule (the analysis's definitions)"
+  }
+ }
+}

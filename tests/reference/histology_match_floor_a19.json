@@ -1,0 +1,7 @@
+{
+ "data": {
+  "definition": "The score floor of the rule that matched the labeled sections to their photographs (Methods, the matching of sections): a\ncomponent whose registration scores below it on its run line stays unmatched. Copied from this release's\nsettings/histology.yaml (propose.score_floor); nothing is computed.",
+  "source": "fiber_template 56f26bc:settings/histology.yaml -> propose.score_floor",
+  "score_floor": 0.45
+ }
+}

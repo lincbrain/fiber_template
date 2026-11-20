@@ -47,6 +47,37 @@ from blockface.registration.resample import W_LUM, bf_products
 
 
 # ------------------------------------------------------------------------------------------------ inputs
+def own_mri_plan(md, subject, scfg=None, new_brain=False, placing=False):
+    """What the registration to the brain's own b0 can do with the files in the brain's mri/ folder `md`, before any work.
+    Returns (action, message):
+      "ready"  every file it reads is there (or --place-b0 will make the placed b0);
+      "place"  the placed b0 is not there but the b0 as acquired and its mask are (<S>_mri_b0_native.nii.gz,
+               <S>_mri_mask_native.nii.gz): place it first, as --place-b0 does. A data folder that holds the inputs only is in
+               this state: the placed b0 (<S>_mri.nii.gz, its mask and its matrix) is a product;
+      "stop"   something else is missing; the message says what and where it comes from.
+    `scfg` is the brain's settings entry registration_to_own_mri (a paper brain: its fixed b0, b0 mask and start pose of record),
+    `new_brain` treats a paper brain as a new one, `placing` says that --place-b0 was given."""
+    md = Path(md); S = subject
+    placed = [md / f"{S}_mri.nii.gz", md / f"{S}_mri_mask.nii.gz", md / f"{S}_mri2template.mat"]
+    native = [md / f"{S}_mri_b0_native.nii.gz", md / f"{S}_mri_mask_native.nii.gz"]
+    action = "ready"
+    if not placing and not all(q.exists() for q in placed):
+        if not all(q.exists() for q in native):
+            return "stop", (f"{S}: no b0 in {md}. For a brain with MRI, give --place-b0 B0 [MASK] (docs/tutorials/02_blockface.md, "
+                            "Step 3). A brain without MRI has no own b0 to register to: use `linc-register blockface-template` (Step 4).")
+        action = "place"
+    if scfg and not new_brain:
+        will_be = {q for q in placed} if (placing or action == "place") else set()
+        missing = [q for q in (md / scfg["fixed_b0"], md / scfg["b0_mask"]) if not q.exists() and q not in will_be]
+        if missing:
+            return "stop", (f"{S}: the registration of record reads {' and '.join(str(q.relative_to(md)) for q in missing)}, not in {md}. "
+                            f"It is a product of the paper's run, kept in the data folder under brains/sub-{S}/intermediate/registration/: "
+                            "add that folder to your data folder and run `source settings/roots.sh refresh`. Or add --new-brain to "
+                            "register without it: the start pose is then estimated and the placed b0's own mask is used, so the result "
+                            "is not the paper's.")
+    return action, None
+
+
 def place_b0(b0_native, mask_native, mri_ref, outdir, subject, search_deg=90):
     """The b0 (and its brain mask) placed rigidly on the MRI template's 0.5 mm grid (FLIRT 6 dof, correlation ratio, +-search_deg on
     every axis) -> <S>_mri.nii.gz, <S>_mri_mask.nii.gz, <S>_mri2template.mat in outdir."""

@@ -60,6 +60,14 @@ fig_tracer_sections3d_v6_h9_c:
             "point_px_at_window", "projection", "protocol", "still_visibility_pixels", "video", "view", "views", "window_px"]
   not_regenerated: true
   # history since 15 Nov 2026: the paper reads fig_tracer_sections3d_v6_h9_s11_c
+precision_weights_b1_d2b_s8_s11wb:
+  reason: "the published weights of the blockface template, first written by a script of the analysis. That record also holds
+    its definitions as text, the 16 Nov record's block with a control, and the curve's edge rule (s2_syn_min_brains, s2_syn_all_brains_to_mm)
+    from a working file of the analysis; precision_weights_b1_d2b_s8.py regenerates the rule, its scope and the precision block below"
+  # the paper reads: precision_weights_b1_d2b_s8_s11wb.precision.s2_syn.*, .precision.weight_ratio.*, .precision.weight_ratio_interp
+  compare: ["precision.tau2", "precision.s2_interp", "precision.s2_syn", "precision.s2_syn_measured_to_mm", "precision.s2_syn_from_mm",
+            "precision.s2_syn_flat_from_mm", "precision.s2_syn_curve", "precision.weight_ratio", "precision.weight_ratio_interp", "rule",
+            "rule_file", "scope"]
 
 # Reference only: records of a test whose inputs this release does not ship. No script in code/figures/paper_numbers writes them, so
 # `make check` does not compare them. A record regenerated elsewhere is compared on the fields below.
@@ -68,6 +76,10 @@ MANIFEST:
   not_regenerated: true
 lgnstn_targets_r060b:
   reason: "history: lgnstn_targets_r060c replaces it in the paper and reads it as an input"
+  not_regenerated: true
+sigma2_leakfree_a19:
+  reason: "input only: the synthesis error from the withheld-slab test made without the withheld tissue; the test's
+    registrations are not in this release. precision_weights_b1_d2b_s8.py reads its curves.lfr1"
   not_regenerated: true
 # History: the label records on the histology registrations of record before 12 Nov 2026. The paper reads their _h9 versions (the
 # registrations with the per-component nonlinear stiffness, settings/histology.yaml tirl.stiff_nonlinear), which this release regenerates.
@@ -175,7 +187,7 @@ tracer_sections_v2_h9:
 tracer_template_v2_all_h9:
   reason: "history: since 15 Nov 2026 the paper reads tracer_template_v2_all_h9_s11 (MF8 through the step-9 blockface template; MM1-MM3 unchanged)"
   not_regenerated: true
-fig_tracer_r058_h9_s11r17:
+fig_tracer_r058_h9_s11wr17:
   reason: "written by the tracer figure's script (code/figures/tracer.py): its free-text method field is that script's docstring and its outputs field the figure files it wrote, which name the analysis project's variant script and paths; every value is regenerated"
   compare: ["cases", "voxel_mm3", "rules", "groups", "slab", "colors", "mirrored_for_display", "alic_counts_slab_solid", "injection_sites_b",
             "mf8_unbridged_outlined"]
@@ -183,17 +195,17 @@ fig_tracer_r058_h9_s11r17:
 # The LGN and STN records of 16 Nov 2026 (lgnstn_label_volumes.py, lgnstn_label_extents.py) are written without rounding, so a value the
 # paper prints is rounded once; the records before them rounded to 2 or 3 decimals first, and a few printed values moved by one in the
 # last digit.
-lgnstn_label_volumes_h9_s11r17b:
+lgnstn_label_volumes_h9_s11wr17b:
   reason: "the record of record also holds unrounded_note, how it was made (the earlier script with rounding turned off); every value and the note are compared"
   compare: ["LGN", "STN", "note"]
-lgnstn_label_extents_h9_s11r17b:
+lgnstn_label_extents_h9_s11wr17b:
   reason: "the record of record also holds unrounded_note, how it was made (the earlier script with rounding turned off); every value and the note are compared"
   compare: ["rows", "sarm_minus_ours_mean", "note"]
 lgnstn_label_volumes_h9r17b:
-  reason: "the MRI route's labels, written beside the blockface route's lgnstn_label_volumes_h9_s11r17b; the paper reads only the latter"
+  reason: "the MRI route's labels, written beside the blockface route's lgnstn_label_volumes_h9_s11wr17b; the paper reads only the latter"
   no_reference: true
 lgnstn_label_extents_h9r17b:
-  reason: "the MRI route's labels, written beside the blockface route's lgnstn_label_extents_h9_s11r17b; the paper reads only the latter"
+  reason: "the MRI route's labels, written beside the blockface route's lgnstn_label_extents_h9_s11wr17b; the paper reads only the latter"
   no_reference: true
 lgnstn_label_volumes_h9:
   reason: "history: since 16 Nov 2026 the paper reads lgnstn_label_volumes_h9_s11b; the MRI route's values, unrounded, are in lgnstn_label_volumes_h9b"
@@ -291,13 +303,13 @@ inverse_residuals_r079:
 mri_template_frac_renormalization:
   reason: "what the renormalization of the soma and neurite fractions changes in the MRI template: it reads the build's per-input warped fractions and masks (40 working files of the template build), which the data folder does not hold"
   not_regenerated: true
-bf_step9_settings_s11b:
+bf_step9_settings_s11wb:
   reason: "the final step's settings and grids as the paper prints them, read from the paper's run's job, average and mean-removal records; a run of the final step with this release (code/template/blockface_step9.py) writes records of the same kind under $LINC_WORK, but the paper's run's records are not in the data folder"
   not_regenerated: true
-bf_outside10_s9_015_s11_onepass_v2:
+bf_outside10_s9_015_s11w_onepass_v2:
   reason: "the ten brains outside the final step, before and after their registration to the final template, on the same voxels: it reads the working arrays of the eighth-step and final-step builds and each brain's carried images, kept with the analysis, not in the data folder; one of the ten registrations is reproduced by steps.yaml bf-template-step9-refine (MF191, field identical)"
   not_regenerated: true
-fig_tracer_v11_h9_s11r17:
+fig_tracer_v11_h9_s11wr17:
   reason: "the numbers printed with the tracer figure (Fig. 10): written with the figure by a script of the analysis from the tracer labels carried into the template and the SARM atlas resampled to it; the figure's own script is not in this release"
   not_regenerated: true
 s5_link_ncc_settings_r085:
@@ -309,6 +321,26 @@ bf_markers_r079:
 bf_intensity_jumps_s11:
   reason: "the section-to-section lighting steps of the final step's brains and of MM14 (Methods, Final step, criterion iii): it reads MM14's blockface volume from before its brightness correction, which is kept only with the analysis"
   not_regenerated: true
-lgnstn_bfroute_s11r17:
+lgnstn_bfroute_s11wr17:
   reason: "the LGN and STN of MM1-MM3 carried into the template through the blockface route, from the results of a run of the analysis that this release does not include"
+  not_regenerated: true
+synthesis_leakfree_perbrain_a19:
+  reason: "per-brain counts of the withheld-slab test made without the withheld tissue (Supplementary Section S5), read from that test's two records, whose inputs (the networks' predictions on the test's placements and the placements themselves) are working files of the analysis that the data folder does not hold"
+  # the paper reads: own_b0_arm.{lfr1,lfr1c}.n_seen_above_never_seen, standin_arm.{CC,CCcc}.n_gain_positive
+  not_regenerated: true
+histology_match_floor_a19:
+  reason: "the score floor of the matching rule (Methods, the matching of sections), copied from this release's settings/histology.yaml (propose.score_floor); the record is a copy of that setting, not a computation"
+  # the paper reads: score_floor
+  not_regenerated: true
+standin_2x2_a19:
+  reason: "the stand-in arm of the withheld-slab test made without the withheld tissue (Supplementary Section S5), in a 2 x 2 of registrations and inverses; its inputs, the stand-in network's scores on each cell's placements, are working files of the analysis that the data folder does not hold"
+  # the paper reads: cells.{CC,CCcc}.summary.{mean_d3p_pseudo,mean_d3_pseudo,mean_d3_own,mean_gain,ci95_gain}, cells.record.summary.n
+  not_regenerated: true
+synthesis_leakfree_ownarm_a19:
+  reason: "the own-b0 arm of the withheld-slab test made without the withheld tissue (Supplementary Section S5); its inputs, the networks' evaluations on those placements, are working files of the analysis that the data folder does not hold"
+  # the paper reads: arms.{seen,never_seen}.{lfr1,lfr1c}.mean
+  not_regenerated: true
+synthesis_leakfree_fills_depth_a19:
+  reason: "the never-seen networks' margin over the best simple fill and their SSIM by depth in the withheld-slab test made without the withheld tissue (Supplementary Section S5); its inputs, the networks' evaluations and the simple fills on those placements, are working files of the analysis that the data folder does not hold"
+  # the paper reads: cells.{lfr1,lfr1c}.{fill_best.mean,vs_best_fill.{mean,n,n_positive,ci95_t},per_mm.{0-1mm,6-7mm}.*}
   not_regenerated: true

@@ -68,71 +68,71 @@
       "voxels_bf": 49442,
       "vol_bf_mm3": 334.661,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 34464,
-      "voxels_template_gt05": 15371,
-      "density_sum_mm3": 279.285,
+      "voxels_template_footprint": 34517,
+      "voxels_template_gt05": 15404,
+      "density_sum_mm3": 279.976,
       "frac_in_brain": 0.9968,
-      "x_mean_mm": -6.195,
-      "frac_same_side_as_injection": 0.8719
+      "x_mean_mm": -6.183,
+      "frac_same_side_as_injection": 0.8718
      },
      "Fiber_bundles": {
       "sections": 1,
       "voxels_bf": 512,
       "vol_bf_mm3": 3.466,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 560,
-      "voxels_template_gt05": 181,
-      "density_sum_mm3": 3.874,
-      "frac_in_brain": 0.9946,
-      "x_mean_mm": 0.286,
-      "frac_same_side_as_injection": 0.4375
+      "voxels_template_footprint": 562,
+      "voxels_template_gt05": 184,
+      "density_sum_mm3": 3.876,
+      "frac_in_brain": 0.9947,
+      "x_mean_mm": 0.3,
+      "frac_same_side_as_injection": 0.4324
      },
      "Fiber_dense_bundle": {
       "sections": 34,
       "voxels_bf": 23225,
       "vol_bf_mm3": 157.204,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 15705,
-      "voxels_template_gt05": 7192,
-      "density_sum_mm3": 129.133,
-      "frac_in_brain": 0.9973,
-      "x_mean_mm": -5.87,
-      "frac_same_side_as_injection": 0.9392
+      "voxels_template_footprint": 15722,
+      "voxels_template_gt05": 7215,
+      "density_sum_mm3": 129.438,
+      "frac_in_brain": 0.9972,
+      "x_mean_mm": -5.868,
+      "frac_same_side_as_injection": 0.9394
      },
      "Fiber_light_bundle": {
       "sections": 35,
       "voxels_bf": 7279,
       "vol_bf_mm3": 49.27,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 6237,
-      "voxels_template_gt05": 1583,
-      "density_sum_mm3": 39.986,
-      "frac_in_brain": 0.9995,
-      "x_mean_mm": -6.843,
-      "frac_same_side_as_injection": 0.7353
+      "voxels_template_footprint": 6227,
+      "voxels_template_gt05": 1579,
+      "density_sum_mm3": 39.956,
+      "frac_in_brain": 0.9994,
+      "x_mean_mm": -6.803,
+      "frac_same_side_as_injection": 0.7333
      },
      "Fiber_moderate_bundle": {
       "sections": 45,
       "voxels_bf": 19314,
       "vol_bf_mm3": 130.732,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 14483,
-      "voxels_template_gt05": 5861,
-      "density_sum_mm3": 111.596,
+      "voxels_template_footprint": 14535,
+      "voxels_template_gt05": 5890,
+      "density_sum_mm3": 111.999,
       "frac_in_brain": 0.9957,
-      "x_mean_mm": -6.027,
-      "frac_same_side_as_injection": 0.8278
+      "x_mean_mm": -6.024,
+      "frac_same_side_as_injection": 0.828
      },
      "Fibers": {
       "sections": 49,
       "voxels_bf": 40983,
       "vol_bf_mm3": 277.404,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 41009,
-      "voxels_template_gt05": 5829,
-      "density_sum_mm3": 232.681,
-      "frac_in_brain": 0.9973,
-      "x_mean_mm": -4.544,
+      "voxels_template_footprint": 41025,
+      "voxels_template_gt05": 5861,
+      "density_sum_mm3": 232.898,
+      "frac_in_brain": 0.9975,
+      "x_mean_mm": -4.53,
       "frac_same_side_as_injection": 0.7732
      },
      "Injection_site": {
@@ -140,11 +140,11 @@
       "voxels_bf": 1066,
       "vol_bf_mm3": 7.215,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 957,
-      "voxels_template_gt05": 443,
-      "density_sum_mm3": 7.872,
+      "voxels_template_footprint": 955,
+      "voxels_template_gt05": 445,
+      "density_sum_mm3": 7.844,
       "frac_in_brain": 1.0,
-      "x_mean_mm": -5.691,
+      "x_mean_mm": -5.695,
       "frac_same_side_as_injection": 1.0
      },
      "Terminal_dense": {
@@ -152,55 +152,55 @@
       "voxels_bf": 55699,
       "vol_bf_mm3": 377.013,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 33377,
-      "voxels_template_gt05": 19345,
-      "density_sum_mm3": 319.585,
-      "frac_in_brain": 0.9858,
-      "x_mean_mm": -7.097,
-      "frac_same_side_as_injection": 0.9812
+      "voxels_template_footprint": 33429,
+      "voxels_template_gt05": 19357,
+      "density_sum_mm3": 320.241,
+      "frac_in_brain": 0.9861,
+      "x_mean_mm": -7.076,
+      "frac_same_side_as_injection": 0.9809
      },
      "Terminal_light": {
       "sections": 43,
       "voxels_bf": 20831,
       "vol_bf_mm3": 141.0,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 18127,
-      "voxels_template_gt05": 4485,
-      "density_sum_mm3": 115.526,
-      "frac_in_brain": 0.9946,
-      "x_mean_mm": -7.457,
-      "frac_same_side_as_injection": 0.8788
+      "voxels_template_footprint": 18094,
+      "voxels_template_gt05": 4472,
+      "density_sum_mm3": 115.191,
+      "frac_in_brain": 0.9945,
+      "x_mean_mm": -7.435,
+      "frac_same_side_as_injection": 0.879
      },
      "Terminal_moderate": {
       "sections": 36,
       "voxels_bf": 34546,
       "vol_bf_mm3": 233.833,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 25363,
-      "voxels_template_gt05": 9928,
-      "density_sum_mm3": 190.756,
+      "voxels_template_footprint": 25401,
+      "voxels_template_gt05": 9961,
+      "density_sum_mm3": 191.076,
       "frac_in_brain": 0.9863,
-      "x_mean_mm": -8.397,
-      "frac_same_side_as_injection": 0.9593
+      "x_mean_mm": -8.392,
+      "frac_same_side_as_injection": 0.9592
      },
      "Terminals": {
       "sections": 47,
       "voxels_bf": 111025,
       "vol_bf_mm3": 751.5,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 72877,
-      "voxels_template_gt05": 35541,
-      "density_sum_mm3": 625.538,
-      "frac_in_brain": 0.9873,
-      "x_mean_mm": -7.475,
-      "frac_same_side_as_injection": 0.9479
+      "voxels_template_footprint": 72919,
+      "voxels_template_gt05": 35630,
+      "density_sum_mm3": 626.178,
+      "frac_in_brain": 0.9875,
+      "x_mean_mm": -7.466,
+      "frac_same_side_as_injection": 0.948
      }
     }
    }
   },
   "sources": {
-   "route_B": "paper/numbers/tracer_template_v2_h9_s11r17.json",
-   "MF191": "paper/numbers/tracer_template_v2_mf191_h9_s11r17.json"
+   "route_B": "paper/numbers/tracer_template_v2_h9_s11wr17.json",
+   "MF191": "paper/numbers/tracer_template_v2_mf191_h9_s11wr17.json"
   },
   "audit_rematch": {
    "rule": "paper/numbers/tracer_match_audit_r058.json credible offsets (detected despite the scan's bias to the record slice); decided 30 Oct 2026: move only where the tissue outline agrees",

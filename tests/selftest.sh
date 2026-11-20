@@ -47,7 +47,7 @@ tirl_py() {                                     # the settings/env/tirl.yml step
 }
 
 # --- the tests (tests/), each in its environment
-step test_paths            "$PY"      tests/run.py tests/test_paths.py tests/test_subjects_overview.py tests/test_labels_structures.py tests/test_labels_scale.py tests/test_refine_entry.py tests/test_run_machines.py tests/test_xfm_inverse.py tests/test_scale_warning.py
+step test_paths            "$PY"      tests/run.py tests/test_paths.py tests/test_subjects_overview.py tests/test_labels_structures.py tests/test_labels_scale.py tests/test_refine_entry.py tests/test_run_machines.py tests/test_xfm_inverse.py tests/test_scale_warning.py tests/test_register_inputs.py
 step weights               bash -c "$PY tests/verify_weights.py settings/models/segmentation.sha256 --root models/segment && $PY tests/verify_weights.py settings/models/completion_public.sha256 --root models/completion"
 step test_segment          "$PY_DEEP" tests/run.py tests/test_segment.py
 step test_completion       "$PY_DEEP" tests/run.py tests/test_completion.py

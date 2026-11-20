@@ -33,9 +33,9 @@
    "md5_of_record": "9efbb49457151c9e7142371f1dde5449",
    "created": "2026-10-05T15:34:14-04:00"
   },
-  "bf_template_metrics_s9_015_s11": {
-   "md5_of_record": "6dfd8dc09cb7f9d8345e46aa354f2623",
-   "created": "2026-11-15T18:42:22-05:00"
+  "bf_template_metrics_s9_015_s11w": {
+   "md5_of_record": "29679f81e125e61d0779b983da15d80d",
+   "created": "2026-11-19T17:57:16-05:00"
   },
   "bf_tubes_per_brain_r073": {
    "md5_of_record": "cd7133e83d7ca55c87288a73ec1440e0",
@@ -181,6 +181,14 @@
   "precision_weights_b1_d2b_s8": {
    "md5_of_record": "81e18e2af9177d4b1983e6fee9516927",
    "created": "2026-10-05T07:36:40-04:00"
+  },
+  "precision_weights_b1_d2b_s8_s11wb": {
+   "md5_of_record": "17a8ac89dd62a932302d5d187788c62f",
+   "created": "2026-11-19T11:33:23-05:00"
+  },
+  "sigma2_leakfree_a19": {
+   "md5_of_record": "87c0493ca2367346cee3523023e10876",
+   "created": "2026-11-19T04:31:25-05:00"
   },
   "r057_missing_extent": {
    "md5_of_record": "55b5410c9d4f97eeff62dd512561f776",
@@ -386,53 +394,13 @@
    "md5_of_record": "da976477582667793bbff4db18838cc2",
    "created": "2026-11-16T11:57:57-05:00"
   },
-  "tracer_alic_topography_v2c_h9_s11r17": {
-   "md5_of_record": "c35de83cf4f63a745b54859e79feeaf5",
-   "created": "2026-11-17T21:46:41-05:00"
-  },
-  "tracer_alic_topography_v5_h9_s11r17": {
-   "md5_of_record": "6d94d421f0e7e1a2bd642ed2d4fd3471",
-   "created": "2026-11-17T21:46:36-05:00"
-  },
-  "tracer_connected_v2c_h9_s11r17": {
-   "md5_of_record": "0fa9893b7df23e7f0da6b975b02d6f55",
-   "created": "2026-11-17T21:46:18-05:00"
-  },
-  "tracer_label_volumes_v2c_h9_s11r17": {
-   "md5_of_record": "f2a1750f2df19c2936594f65cacd3948",
-   "created": "2026-11-17T21:46:41-05:00"
-  },
-  "tracer_placement_v2c_h9_s11r17": {
-   "md5_of_record": "95f61e05153059ff925c1dd1da564575",
-   "created": "2026-11-17T21:46:32-05:00"
-  },
-  "tracer_template_v2_all_h9_s11r17": {
-   "md5_of_record": "7e45f07417956e753e36c51e518c5d97",
-   "created": "2026-11-17T21:44:09-05:00"
-  },
-  "lgnstn_label_volumes_h9_s11r17b": {
-   "md5_of_record": "ddf22f93a6c2fec650bfdf7f6d36b794",
-   "created": "2026-11-17T23:41:54-05:00"
-  },
-  "lgnstn_label_extents_h9_s11r17b": {
-   "md5_of_record": "22b42f1f5d8f4cbcb7542a1f2e073937",
-   "created": "2026-11-17T23:41:50-05:00"
-  },
   "labels_overlap_current_h9r17": {
    "md5_of_record": "6b668167381f122be86847be66a6eb29",
    "created": "2026-11-17T20:57:15-05:00"
   },
-  "labels_overlap_current_h9_s11r17": {
-   "md5_of_record": "c8aa62a9d50b00fb93c4e4f971251186",
-   "created": "2026-11-17T21:33:40-05:00"
-  },
   "lgnstn_geometry_current_h9r17": {
    "md5_of_record": "08da2749402997f2c890090a3f84b5d5",
    "created": "2026-11-17T21:05:18-05:00"
-  },
-  "lgnstn_geometry_current_h9_s11r17": {
-   "md5_of_record": "1e53947d7593b7a21425567719f05e9f",
-   "created": "2026-11-17T21:41:52-05:00"
   },
   "lgnstn_b0_visibility_r059_h9r17": {
    "md5_of_record": "81871740a6e45da67685ec0874f83b99",
@@ -446,14 +414,6 @@
    "md5_of_record": "f0553a239cfd6be862e0360095b63cc8",
    "created": "2026-11-17T21:14:27-05:00"
   },
-  "fig_tracer_r058_h9_s11r17": {
-   "md5_of_record": "b70e3cca420293b784e29eb8d45b8e02",
-   "created": "2026-11-17T21:47:10-05:00"
-  },
-  "fig_tracer_sections3d_v6_h9_s11r17_c": {
-   "md5_of_record": "8678c6060698fdea951b5e890f473b50",
-   "created": "2026-11-17T22:22:29-05:00"
-  },
   "lgnstn_midplane_planes_r059_h9r17": {
    "md5_of_record": "031ce9391422be48bb7408dfc826a394",
    "created": "2026-11-17T22:16:47-05:00"
@@ -465,10 +425,6 @@
   "tracer_sections_r058d_r17": {
    "md5_of_record": "b8d63f91ef0a4a41d14f8b1d7e70eefe",
    "created": "2026-11-17T23:41:54-05:00"
-  },
-  "tracer_sections_v2_h9_s11r17": {
-   "md5_of_record": "d2b1cdadbd80cb5ccb7092a4e45abac6",
-   "created": "2026-11-17T21:44:06-05:00"
   },
   "lobo_allchannels_rebuild": {
    "md5_of_record": "95e5b2690c10cd67fc8515c567378540",
@@ -482,17 +438,13 @@
    "md5_of_record": "9c304b0a23580c7a7cef63b222f895c7",
    "created": "2026-11-16T08:56:18-05:00"
   },
-  "bf_step9_settings_s11b": {
-   "md5_of_record": "e73247a75dade6bd37683820a7c6decf",
-   "created": "2026-11-16T12:02:58-05:00"
+  "bf_step9_settings_s11wb": {
+   "md5_of_record": "036b9eeb4f1f0b8081ae191d1241eef5",
+   "created": "2026-11-19T17:57:19-05:00"
   },
-  "bf_outside10_s9_015_s11_onepass_v2": {
-   "md5_of_record": "383441ce4182990f766c2687e3a2e87e",
-   "created": "2026-11-18T16:37:03-05:00"
-  },
-  "fig_tracer_v11_h9_s11r17": {
-   "md5_of_record": "e037a6b4e72828a65777f4000b38b510",
-   "created": "2026-11-18T00:11:27-05:00"
+  "bf_outside10_s9_015_s11w_onepass_v2": {
+   "md5_of_record": "66e12ff70624265f6868a6d36b4bad4c",
+   "created": "2026-11-19T19:45:52-05:00"
   },
   "s5_link_ncc_settings_r085": {
    "md5_of_record": "78630a5c40d88ef36ba65604741fe50d",
@@ -506,9 +458,85 @@
    "md5_of_record": "cd4f3128ad72f518d2eaa2655f62999d",
    "created": "2026-11-18T16:15:27-05:00"
   },
-  "lgnstn_bfroute_s11r17": {
-   "md5_of_record": "17ac7b2b9e079d332d55ebbbe8438725",
-   "created": "2026-11-17T23:41:54-05:00"
+  "fig_tracer_v11_h9_s11wr17": {
+   "md5_of_record": "0d15939160686381e2369fba3cf716bc",
+   "created": "2026-11-19T18:49:45-05:00"
+  },
+  "lgnstn_bfroute_s11wr17": {
+   "md5_of_record": "9ef3aebdf7a3434668d7127525f25301",
+   "created": "2026-11-19T18:49:33-05:00"
+  },
+  "tracer_sections_v2_h9_s11wr17": {
+   "md5_of_record": "5a89b90e8c4c5f2fbb0079ab68a93e4e",
+   "created": "2026-11-19T18:14:21-05:00"
+  },
+  "tracer_connected_v2c_h9_s11wr17": {
+   "md5_of_record": "85160040c0760e5dc253526246b369e7",
+   "created": "2026-11-19T18:16:28-05:00"
+  },
+  "tracer_label_volumes_v2c_h9_s11wr17": {
+   "md5_of_record": "33819c388dc0e3447a906917ca703957",
+   "created": "2026-11-19T18:16:51-05:00"
+  },
+  "tracer_alic_topography_v2c_h9_s11wr17": {
+   "md5_of_record": "7a4c56a875313bd9d9f7cbc52b1647c8",
+   "created": "2026-11-19T18:16:51-05:00"
+  },
+  "tracer_placement_v2c_h9_s11wr17": {
+   "md5_of_record": "cc78c7b85b15bc6eb8421e24790ce7bb",
+   "created": "2026-11-19T18:16:42-05:00"
+  },
+  "tracer_template_v2_all_h9_s11wr17": {
+   "md5_of_record": "9ec18cc72a7085f4ec13e4103cc9e092",
+   "created": "2026-11-19T18:14:30-05:00"
+  },
+  "tracer_alic_topography_v5_h9_s11wr17": {
+   "md5_of_record": "dc83ac1b5b0d1247a264c6dcbc2ebd32",
+   "created": "2026-11-19T18:16:46-05:00"
+  },
+  "lgnstn_label_volumes_h9_s11wr17b": {
+   "md5_of_record": "f98b3b77e9846dc7a03a8b185cae4959",
+   "created": "2026-11-19T18:34:07-05:00"
+  },
+  "lgnstn_label_extents_h9_s11wr17b": {
+   "md5_of_record": "d0560aa4a762de0c11175b77dc3e009f",
+   "created": "2026-11-19T18:34:04-05:00"
+  },
+  "labels_overlap_current_h9_s11wr17": {
+   "md5_of_record": "4f5acfc52007965bd7be11dbf5c63a52",
+   "created": "2026-11-19T18:17:05-05:00"
+  },
+  "lgnstn_geometry_current_h9_s11wr17": {
+   "md5_of_record": "94be9c6378bc632623335719f023c678",
+   "created": "2026-11-19T18:23:56-05:00"
+  },
+  "fig_tracer_r058_h9_s11wr17": {
+   "md5_of_record": "9d3ff88895396192fdb806f24fc22d2c",
+   "created": "2026-11-19T18:17:23-05:00"
+  },
+  "fig_tracer_sections3d_v6_h9_s11wr17_c": {
+   "md5_of_record": "8a1452bcbbdefb8698d57013cd984425",
+   "created": "2026-11-19T19:50:58-05:00"
+  },
+  "synthesis_leakfree_perbrain_a19": {
+   "md5_of_record": "d83335d937eea893cb4054b31bfb2a96",
+   "created": "2026-11-19T04:37:16-05:00"
+  },
+  "histology_match_floor_a19": {
+   "md5_of_record": "fa3a93efee6c93834ccfa715dea6e735",
+   "created": "2026-11-19T05:19:24-05:00"
+  },
+  "standin_2x2_a19": {
+   "md5_of_record": "587b42cd025ede5e7513bc19c086a130",
+   "created": "2026-11-19T04:31:24-05:00"
+  },
+  "synthesis_leakfree_ownarm_a19": {
+   "md5_of_record": "43bc93161c65ca842f195281b5a40f57",
+   "created": "2026-11-19T04:31:25-05:00"
+  },
+  "synthesis_leakfree_fills_depth_a19": {
+   "md5_of_record": "f6b23cdadcc5c627136e5501711a97fd",
+   "created": "2026-11-19T05:45:30-05:00"
   }
  }
 }

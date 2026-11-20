@@ -1,0 +1,1906 @@
+{
+ "data": {
+  "what": "The stand-in arm of the withheld-slab test (Supplementary Section S5) in a 2 x 2 design: the registrations (those of record,\nor made on the photographs cut at the simulated junction) by the inverse of the exported transform (the fixed point as run,\nor exact), with the further cells that hold a stage at the record's. Each cell gives, per brain, the slab SSIM of the\nstand-in network (d3p_pseudo) and of the own-b0 network given the stand-in b0 (d3_pseudo) or its own b0 (d3_own), and their\nsummary over the brains (mean, gain, bootstrap 95 % intervals). without_MR254 repeats the cells over the other 11 brains.\nThe inputs of each cell are working files of the analysis that the data folder does not hold.",
+  "cells": {
+   "record": {
+    "cell": "record",
+    "what": "registrations of record, inverse as run (the paper's numbers)",
+    "inputs": [
+     "the stand-in network's slab scores for this cell (a working file of the analysis)",
+     "record d3_domain_shift_prod"
+    ],
+    "per_brain": {
+     "MF278": {
+      "d3p_pseudo": 0.6558650750102419,
+      "d3_pseudo": 0.6181029153592659,
+      "d3_own": 0.6335470531926011,
+      "gain": 0.03776215965097607,
+      "remaining_gap_to_own": 0.022318021817640865,
+      "score_vox": 446763
+     },
+     "MF282": {
+      "d3p_pseudo": 0.7368863505475661,
+      "d3_pseudo": 0.7156241875068814,
+      "d3_own": 0.7437675723842546,
+      "gain": 0.021262163040684734,
+      "remaining_gap_to_own": -0.006881221836688489,
+      "score_vox": 593220
+     },
+     "MR243": {
+      "d3p_pseudo": 0.5877168414493402,
+      "d3_pseudo": 0.5416169843326012,
+      "d3_own": 0.7146171517670155,
+      "gain": 0.04609985711673903,
+      "remaining_gap_to_own": -0.12690031031767524,
+      "score_vox": 541206
+     },
+     "MR249": {
+      "d3p_pseudo": 0.5649470819367303,
+      "d3_pseudo": 0.523783826165729,
+      "d3_own": 0.7241413593292236,
+      "gain": 0.04116325577100122,
+      "remaining_gap_to_own": -0.15919427739249337,
+      "score_vox": 426289
+     },
+     "MR250": {
+      "d3p_pseudo": 0.5566713441820705,
+      "d3_pseudo": 0.5046554762943118,
+      "d3_own": 0.6964226043691822,
+      "gain": 0.05201586788775869,
+      "remaining_gap_to_own": -0.1397512601871117,
+      "score_vox": 529002
+     },
+     "MR251": {
+      "d3p_pseudo": 0.6329256074769156,
+      "d3_pseudo": 0.5998154214450291,
+      "d3_own": 0.686651485306876,
+      "gain": 0.033110186031886535,
+      "remaining_gap_to_own": -0.05372587782996041,
+      "score_vox": 411920
+     },
+     "MR252": {
+      "d3p_pseudo": 0.49101722240448,
+      "d3_pseudo": 0.46292930841445923,
+      "d3_own": 0.6513397204024451,
+      "gain": 0.028087913990020752,
+      "remaining_gap_to_own": -0.16032249799796516,
+      "score_vox": 293580
+     },
+     "MR253": {
+      "d3p_pseudo": 0.5748909109582504,
+      "d3_pseudo": 0.5330522414296865,
+      "d3_own": 0.5469893279174963,
+      "gain": 0.041838669528563854,
+      "remaining_gap_to_own": 0.027901583040754074,
+      "score_vox": 267100
+     },
+     "MR254": {
+      "d3p_pseudo": 0.6286366230249405,
+      "d3_pseudo": 0.5846395814418792,
+      "d3_own": 0.7176952016353607,
+      "gain": 0.04399704158306128,
+      "remaining_gap_to_own": -0.08905857861042021,
+      "score_vox": 816972
+     },
+     "MR256": {
+      "d3p_pseudo": 0.5152443881545749,
+      "d3_pseudo": 0.48878833651542664,
+      "d3_own": 0.7052969187498093,
+      "gain": 0.026456051639148215,
+      "remaining_gap_to_own": -0.19005253059523441,
+      "score_vox": 473060
+     },
+     "MR257": {
+      "d3p_pseudo": 0.6546232536435127,
+      "d3_pseudo": 0.6102107927203179,
+      "d3_own": 0.7487768813967705,
+      "gain": 0.04441246092319484,
+      "remaining_gap_to_own": -0.09415362775325775,
+      "score_vox": 671663
+     },
+     "MR261": {
+      "d3p_pseudo": 0.467429912516049,
+      "d3_pseudo": 0.4554344585963658,
+      "d3_own": 0.6353669954197747,
+      "gain": 0.011995453919683208,
+      "remaining_gap_to_own": -0.16793708290372572,
+      "score_vox": 221363
+     }
+    },
+    "summary": {
+     "n": 12,
+     "mean_d3p_pseudo": 0.588904550942056,
+     "mean_d3_pseudo": 0.5532211275184962,
+     "mean_d3_own": 0.6837176893225675,
+     "mean_gain": 0.03568342342355987,
+     "ci95_gain": [
+      0.028842826721078213,
+      0.04160391899668675
+     ],
+     "mean_remaining_gap_to_own": -0.09481313838051146,
+     "ci95_remaining_gap": [
+      -0.1350672424114826,
+      -0.05306986780173241
+     ]
+    }
+   },
+   "ENV": {
+    "cell": "ENV",
+    "what": "registrations of record, inverse as run, re-scored in today's environment (control of the environment)",
+    "inputs": [
+     "the stand-in network's slab scores for this cell (a working file of the analysis)",
+     "the domain-shift record recomputed for this cell (a working file of the analysis)"
+    ],
+    "per_brain": {
+     "MF278": {
+      "d3p_pseudo": 0.6558766256679188,
+      "d3_pseudo": 0.6181083962772832,
+      "d3_own": 0.6335409744219347,
+      "gain": 0.03776822939063562,
+      "remaining_gap_to_own": 0.022335651245984134,
+      "score_vox": 446763
+     },
+     "MF282": {
+      "d3p_pseudo": 0.7368891870274263,
+      "d3_pseudo": 0.7156159906995063,
+      "d3_own": 0.7437521499745986,
+      "gain": 0.02127319632792002,
+      "remaining_gap_to_own": -0.0068629629471722575,
+      "score_vox": 593220
+     },
+     "MR243": {
+      "d3p_pseudo": 0.5877214098970095,
+      "d3_pseudo": 0.5416153240948915,
+      "d3_own": 0.7146128788590431,
+      "gain": 0.046106085802117946,
+      "remaining_gap_to_own": -0.12689146896203363,
+      "score_vox": 541206
+     },
+     "MR249": {
+      "d3p_pseudo": 0.5649558614801478,
+      "d3_pseudo": 0.5237834530848043,
+      "d3_own": 0.7241321824215077,
+      "gain": 0.04117240839534342,
+      "remaining_gap_to_own": -0.15917632094135992,
+      "score_vox": 426289
+     },
+     "MR250": {
+      "d3p_pseudo": 0.556673001424939,
+      "d3_pseudo": 0.5046502603035347,
+      "d3_own": 0.6964204510052999,
+      "gain": 0.05202274112140437,
+      "remaining_gap_to_own": -0.1397474495803609,
+      "score_vox": 529002
+     },
+     "MR251": {
+      "d3p_pseudo": 0.6329321231160845,
+      "d3_pseudo": 0.5998176915305001,
+      "d3_own": 0.686651509148734,
+      "gain": 0.03311443158558436,
+      "remaining_gap_to_own": -0.053719386032649474,
+      "score_vox": 411920
+     },
+     "MR252": {
+      "d3p_pseudo": 0.4910171053239277,
+      "d3_pseudo": 0.4629277523074831,
+      "d3_own": 0.6513324124472482,
+      "gain": 0.028089353016444607,
+      "remaining_gap_to_own": -0.16031530712332043,
+      "score_vox": 293580
+     },
+     "MR253": {
+      "d3p_pseudo": 0.5748994965106249,
+      "d3_pseudo": 0.5330587029457092,
+      "d3_own": 0.5469743538027009,
+      "gain": 0.04184079356491566,
+      "remaining_gap_to_own": 0.02792514270792401,
+      "score_vox": 267100
+     },
+     "MR254": {
+      "d3p_pseudo": 0.6286378228664398,
+      "d3_pseudo": 0.5846338909864426,
+      "d3_own": 0.7176872313022613,
+      "gain": 0.04400393187999718,
+      "remaining_gap_to_own": -0.08904940843582154,
+      "score_vox": 816972
+     },
+     "MR256": {
+      "d3p_pseudo": 0.5152415260672569,
+      "d3_pseudo": 0.4887760207056999,
+      "d3_own": 0.7052872223513467,
+      "gain": 0.026465505361557007,
+      "remaining_gap_to_own": -0.19004569628408974,
+      "score_vox": 473060
+     },
+     "MR257": {
+      "d3p_pseudo": 0.6546314656734467,
+      "d3_pseudo": 0.6102073080837727,
+      "d3_own": 0.7487770646810532,
+      "gain": 0.044424157589673996,
+      "remaining_gap_to_own": -0.09414559900760655,
+      "score_vox": 671663
+     },
+     "MR261": {
+      "d3p_pseudo": 0.46742628301892963,
+      "d3_pseudo": 0.4554382253970419,
+      "d3_own": 0.6353735647031239,
+      "gain": 0.01198805762188776,
+      "remaining_gap_to_own": -0.16794728168419426,
+      "score_vox": 221363
+     }
+    },
+    "summary": {
+     "n": 12,
+     "mean_d3p_pseudo": 0.5889084923395126,
+     "mean_d3_pseudo": 0.5532194180347224,
+     "mean_d3_own": 0.683711832926571,
+     "mean_gain": 0.03568907430479016,
+     "ci95_gain": [
+      0.028845210058359695,
+      0.04161033472539733
+     ],
+     "mean_remaining_gap_to_own": -0.09480334058705837,
+     "ci95_remaining_gap": [
+      -0.1350619372945917,
+      -0.05305609149070952
+     ]
+    }
+   },
+   "RX": {
+    "cell": "RX",
+    "what": "registrations of record, exact inverse",
+    "inputs": [
+     "the stand-in network's slab scores for this cell (a working file of the analysis)",
+     "the domain-shift record recomputed for this cell (a working file of the analysis)"
+    ],
+    "per_brain": {
+     "MF278": {
+      "d3p_pseudo": 0.6557741905703689,
+      "d3_pseudo": 0.618704305453734,
+      "d3_own": 0.6335409744219347,
+      "gain": 0.03706988511663489,
+      "remaining_gap_to_own": 0.02223321614843421,
+      "score_vox": 446763
+     },
+     "MF282": {
+      "d3p_pseudo": 0.7370153899286308,
+      "d3_pseudo": 0.7159602612841363,
+      "d3_own": 0.7437521499745986,
+      "gain": 0.021055128644494547,
+      "remaining_gap_to_own": -0.006736760045967793,
+      "score_vox": 593220
+     },
+     "MR243": {
+      "d3p_pseudo": 0.5906085601697365,
+      "d3_pseudo": 0.5451466807474693,
+      "d3_own": 0.7146128788590431,
+      "gain": 0.045461879422267204,
+      "remaining_gap_to_own": -0.12400431868930661,
+      "score_vox": 541206
+     },
+     "MR249": {
+      "d3p_pseudo": 0.5647401710351309,
+      "d3_pseudo": 0.5237482179094244,
+      "d3_own": 0.7241321824215077,
+      "gain": 0.04099195312570647,
+      "remaining_gap_to_own": -0.15939201138637682,
+      "score_vox": 426289
+     },
+     "MR250": {
+      "d3p_pseudo": 0.5572662014587253,
+      "d3_pseudo": 0.5073955935590407,
+      "d3_own": 0.6964204510052999,
+      "gain": 0.04987060789968456,
+      "remaining_gap_to_own": -0.13915424954657463,
+      "score_vox": 529002
+     },
+     "MR251": {
+      "d3p_pseudo": 0.6335895146642413,
+      "d3_pseudo": 0.6013729470116752,
+      "d3_own": 0.686651509148734,
+      "gain": 0.032216567652566086,
+      "remaining_gap_to_own": -0.05306199448449267,
+      "score_vox": 411920
+     },
+     "MR252": {
+      "d3p_pseudo": 0.49053669827325,
+      "d3_pseudo": 0.462821894458362,
+      "d3_own": 0.6513324124472482,
+      "gain": 0.027714803814888,
+      "remaining_gap_to_own": -0.16079571417399813,
+      "score_vox": 293580
+     },
+     "MR253": {
+      "d3p_pseudo": 0.5749766000856956,
+      "d3_pseudo": 0.5335219328602155,
+      "d3_own": 0.5469743538027009,
+      "gain": 0.04145466722548008,
+      "remaining_gap_to_own": 0.028002246282994747,
+      "score_vox": 267100
+     },
+     "MR254": {
+      "d3p_pseudo": 0.6291230285167694,
+      "d3_pseudo": 0.5830656617879868,
+      "d3_own": 0.7176872313022613,
+      "gain": 0.04605736672878258,
+      "remaining_gap_to_own": -0.08856420278549193,
+      "score_vox": 816972
+     },
+     "MR256": {
+      "d3p_pseudo": 0.514505428395101,
+      "d3_pseudo": 0.48768362935100285,
+      "d3_own": 0.7052872223513467,
+      "gain": 0.026821799044098205,
+      "remaining_gap_to_own": -0.19078179395624562,
+      "score_vox": 473060
+     },
+     "MR257": {
+      "d3p_pseudo": 0.6540186896920204,
+      "d3_pseudo": 0.6098128229379653,
+      "d3_own": 0.7487770646810532,
+      "gain": 0.04420586675405502,
+      "remaining_gap_to_own": -0.09475837498903283,
+      "score_vox": 671663
+     },
+     "MR261": {
+      "d3p_pseudo": 0.4683596672756331,
+      "d3_pseudo": 0.45691233979804174,
+      "d3_own": 0.6353735647031239,
+      "gain": 0.011447327477591362,
+      "remaining_gap_to_own": -0.1670138974274908,
+      "score_vox": 221363
+     }
+    },
+    "summary": {
+     "n": 12,
+     "mean_d3p_pseudo": 0.5892095116721087,
+     "mean_d3_pseudo": 0.5538455239299213,
+     "mean_d3_own": 0.683711832926571,
+     "mean_gain": 0.035363987742187415,
+     "ci95_gain": [
+      0.028492537249120896,
+      0.041272983538494165
+     ],
+     "mean_remaining_gap_to_own": -0.09450232125446241,
+     "ci95_remaining_gap": [
+      -0.13487223249801555,
+      -0.05279333692604447
+     ]
+    }
+   },
+   "CF": {
+    "cell": "CF",
+    "what": "S2 on cut photographs, inverse as run",
+    "inputs": [
+     "the stand-in network's slab scores for this cell (a working file of the analysis)",
+     "the domain-shift record recomputed for this cell (a working file of the analysis)"
+    ],
+    "per_brain": {
+     "MF278": {
+      "d3p_pseudo": 0.21047208074367407,
+      "d3_pseudo": 0.21895904297178442,
+      "d3_own": 0.6335409744219347,
+      "gain": -0.00848696222811035,
+      "remaining_gap_to_own": -0.4230688936782606,
+      "score_vox": 446763
+     },
+     "MF282": {
+      "d3p_pseudo": 0.24370970405346037,
+      "d3_pseudo": 0.25168391404783025,
+      "d3_own": 0.7437521499745986,
+      "gain": -0.007974209994369874,
+      "remaining_gap_to_own": -0.5000424459211382,
+      "score_vox": 593220
+     },
+     "MR243": {
+      "d3p_pseudo": 0.22315803061549863,
+      "d3_pseudo": 0.24350863477836052,
+      "d3_own": 0.7146128788590431,
+      "gain": -0.020350604162861885,
+      "remaining_gap_to_own": -0.49145484824354446,
+      "score_vox": 541206
+     },
+     "MR249": {
+      "d3p_pseudo": 0.21667285787838478,
+      "d3_pseudo": 0.22495949102772606,
+      "d3_own": 0.7241321824215077,
+      "gain": -0.008286633149341277,
+      "remaining_gap_to_own": -0.5074593245431229,
+      "score_vox": 426289
+     },
+     "MR250": {
+      "d3p_pseudo": 0.19164905025094164,
+      "d3_pseudo": 0.19009584758211584,
+      "d3_own": 0.6964204510052999,
+      "gain": 0.0015532026688258038,
+      "remaining_gap_to_own": -0.5047714007543582,
+      "score_vox": 529002
+     },
+     "MR251": {
+      "d3p_pseudo": 0.24256912682737622,
+      "d3_pseudo": 0.2663556886570794,
+      "d3_own": 0.686651509148734,
+      "gain": -0.023786561829703207,
+      "remaining_gap_to_own": -0.44408238232135777,
+      "score_vox": 411920
+     },
+     "MR252": {
+      "d3p_pseudo": 0.14741610935223953,
+      "d3_pseudo": 0.18277375160583428,
+      "d3_own": 0.6513324124472482,
+      "gain": -0.03535764225359475,
+      "remaining_gap_to_own": -0.5039163030950087,
+      "score_vox": 293580
+     },
+     "MR253": {
+      "d3p_pseudo": 0.18745803638982275,
+      "d3_pseudo": 0.18727230579437068,
+      "d3_own": 0.5469743538027009,
+      "gain": 0.0001857305954520716,
+      "remaining_gap_to_own": -0.35951631741287815,
+      "score_vox": 267100
+     },
+     "MR254": {
+      "d3p_pseudo": 0.2512095373868942,
+      "d3_pseudo": 0.24742844939231873,
+      "d3_own": 0.7176872313022613,
+      "gain": 0.003781087994575494,
+      "remaining_gap_to_own": -0.4664776939153671,
+      "score_vox": 816972
+     },
+     "MR256": {
+      "d3p_pseudo": 0.20641962319080318,
+      "d3_pseudo": 0.20186432796929563,
+      "d3_own": 0.7052872223513467,
+      "gain": 0.004555295221507549,
+      "remaining_gap_to_own": -0.49886759916054346,
+      "score_vox": 473060
+     },
+     "MR257": {
+      "d3p_pseudo": 0.20973755456507207,
+      "d3_pseudo": 0.21586477383971214,
+      "d3_own": 0.7487770646810532,
+      "gain": -0.006127219274640078,
+      "remaining_gap_to_own": -0.5390395101159812,
+      "score_vox": 671663
+     },
+     "MR261": {
+      "d3p_pseudo": 0.25972567019718035,
+      "d3_pseudo": 0.24738049560359546,
+      "d3_own": 0.6353735647031239,
+      "gain": 0.01234517459358489,
+      "remaining_gap_to_own": -0.37564789450594355,
+      "score_vox": 221363
+     }
+    },
+    "summary": {
+     "n": 12,
+     "mean_d3p_pseudo": 0.21584978178761235,
+     "mean_d3_pseudo": 0.22317889360583532,
+     "mean_d3_own": 0.683711832926571,
+     "mean_gain": -0.007329111818222968,
+     "ci95_gain": [
+      -0.015096547737373641,
+      -0.0003190841432134028
+     ],
+     "mean_remaining_gap_to_own": -0.4678620511389587,
+     "ci95_remaining_gap": [
+      -0.49649870585442013,
+      -0.4354253940933619
+     ]
+    }
+   },
+   "CX": {
+    "cell": "CX",
+    "what": "S2 on cut photographs, exact inverse",
+    "inputs": [
+     "the stand-in network's slab scores for this cell (a working file of the analysis)",
+     "the domain-shift record recomputed for this cell (a working file of the analysis)"
+    ],
+    "per_brain": {
+     "MF278": {
+      "d3p_pseudo": 0.2096196295637073,
+      "d3_pseudo": 0.21802578189156271,
+      "d3_own": 0.6335409744219347,
+      "gain": -0.00840615232785541,
+      "remaining_gap_to_own": -0.4239213448582274,
+      "score_vox": 446763
+     },
+     "MF282": {
+      "d3p_pseudo": 0.24064123360257522,
+      "d3_pseudo": 0.24874131527601503,
+      "d3_own": 0.7437521499745986,
+      "gain": -0.008100081673439813,
+      "remaining_gap_to_own": -0.5031109163720233,
+      "score_vox": 593220
+     },
+     "MR243": {
+      "d3p_pseudo": 0.22335165971890092,
+      "d3_pseudo": 0.24154415167868137,
+      "d3_own": 0.7146128788590431,
+      "gain": -0.018192491959780455,
+      "remaining_gap_to_own": -0.4912612191401422,
+      "score_vox": 541206
+     },
+     "MR249": {
+      "d3p_pseudo": 0.2254256617139887,
+      "d3_pseudo": 0.22602979452521713,
+      "d3_own": 0.7241321824215077,
+      "gain": -0.000604132811228425,
+      "remaining_gap_to_own": -0.498706520707519,
+      "score_vox": 426289
+     },
+     "MR250": {
+      "d3p_pseudo": 0.18812475740617396,
+      "d3_pseudo": 0.18846160524031697,
+      "d3_own": 0.6964204510052999,
+      "gain": -0.0003368478341430059,
+      "remaining_gap_to_own": -0.508295693599126,
+      "score_vox": 529002
+     },
+     "MR251": {
+      "d3p_pseudo": 0.24606025091239384,
+      "d3_pseudo": 0.26282963156700134,
+      "d3_own": 0.686651509148734,
+      "gain": -0.016769380654607507,
+      "remaining_gap_to_own": -0.44059125823634016,
+      "score_vox": 411920
+     },
+     "MR252": {
+      "d3p_pseudo": 0.15706664390329803,
+      "d3_pseudo": 0.18450982190136397,
+      "d3_own": 0.6513324124472482,
+      "gain": -0.02744317799806595,
+      "remaining_gap_to_own": -0.4942657685439501,
+      "score_vox": 293580
+     },
+     "MR253": {
+      "d3p_pseudo": 0.18863470503129065,
+      "d3_pseudo": 0.1898784563333417,
+      "d3_own": 0.5469743538027009,
+      "gain": -0.0012437513020510382,
+      "remaining_gap_to_own": -0.3583396487714102,
+      "score_vox": 267100
+     },
+     "MR254": {
+      "d3p_pseudo": 0.25018994748592377,
+      "d3_pseudo": 0.2474163979291916,
+      "d3_own": 0.7176872313022613,
+      "gain": 0.0027735495567321744,
+      "remaining_gap_to_own": -0.46749728381633754,
+      "score_vox": 816972
+     },
+     "MR256": {
+      "d3p_pseudo": 0.2029832054727844,
+      "d3_pseudo": 0.20179198229951517,
+      "d3_own": 0.7052872223513467,
+      "gain": 0.0011912231732692236,
+      "remaining_gap_to_own": -0.5023040168785623,
+      "score_vox": 473060
+     },
+     "MR257": {
+      "d3p_pseudo": 0.20822864174842834,
+      "d3_pseudo": 0.21110031493008136,
+      "d3_own": 0.7487770646810532,
+      "gain": -0.002871673181653017,
+      "remaining_gap_to_own": -0.5405484229326248,
+      "score_vox": 671663
+     },
+     "MR261": {
+      "d3p_pseudo": 0.25926005467772484,
+      "d3_pseudo": 0.24525332344429834,
+      "d3_own": 0.6353735647031239,
+      "gain": 0.014006731233426495,
+      "remaining_gap_to_own": -0.37611351002539906,
+      "score_vox": 221363
+     }
+    },
+    "summary": {
+     "n": 12,
+     "mean_d3p_pseudo": 0.21663219926976582,
+     "mean_d3_pseudo": 0.22213188141804888,
+     "mean_d3_own": 0.683711832926571,
+     "mean_gain": -0.005499682148283061,
+     "ci95_gain": [
+      -0.011596160853668689,
+      0.0004523576977598535
+     ],
+     "mean_remaining_gap_to_own": -0.4670796336568052,
+     "ci95_remaining_gap": [
+      -0.4960528326482993,
+      -0.43464599974761065
+     ]
+    }
+   },
+   "CXc": {
+    "cell": "CXc",
+    "what": "S2 on cut photographs with its 9-dof stage held at the record's, exact inverse; targets of record",
+    "inputs": [
+     "the stand-in network's slab scores for this cell (a working file of the analysis)",
+     "the domain-shift record recomputed for this cell (a working file of the analysis)"
+    ],
+    "per_brain": {
+     "MF278": {
+      "d3p_pseudo": 0.23692443786245404,
+      "d3_pseudo": 0.24211470782756805,
+      "d3_own": 0.6335409572630217,
+      "gain": -0.005190269965114014,
+      "remaining_gap_to_own": -0.3966165194005677,
+      "score_vox": 446763
+     },
+     "MF282": {
+      "d3p_pseudo": 0.3078204169304466,
+      "d3_pseudo": 0.3259235770971167,
+      "d3_own": 0.7437521429622874,
+      "gain": -0.01810316016667013,
+      "remaining_gap_to_own": -0.4359317260318408,
+      "score_vox": 593220
+     },
+     "MR243": {
+      "d3p_pseudo": 0.27909713859359425,
+      "d3_pseudo": 0.2915885290130973,
+      "d3_own": 0.7146128304302692,
+      "gain": -0.012491390419503035,
+      "remaining_gap_to_own": -0.435515691836675,
+      "score_vox": 541206
+     },
+     "MR249": {
+      "d3p_pseudo": 0.3031379983380989,
+      "d3_pseudo": 0.2869538190188231,
+      "d3_own": 0.7241322707246851,
+      "gain": 0.016184179319275793,
+      "remaining_gap_to_own": -0.4209942723865862,
+      "score_vox": 426289
+     },
+     "MR250": {
+      "d3p_pseudo": 0.24283387994065003,
+      "d3_pseudo": 0.23497001198576947,
+      "d3_own": 0.6964204574332518,
+      "gain": 0.00786386795488056,
+      "remaining_gap_to_own": -0.45358657749260173,
+      "score_vox": 529002
+     },
+     "MR251": {
+      "d3p_pseudo": 0.31233060700552806,
+      "d3_pseudo": 0.32425222950322286,
+      "d3_own": 0.6866514716829573,
+      "gain": -0.011921622497694795,
+      "remaining_gap_to_own": -0.3743208646774292,
+      "score_vox": 411920
+     },
+     "MR252": {
+      "d3p_pseudo": 0.28388513198920656,
+      "d3_pseudo": 0.27904838642903734,
+      "d3_own": 0.6513323507138661,
+      "gain": 0.00483674556016922,
+      "remaining_gap_to_own": -0.3674472187246595,
+      "score_vox": 293580
+     },
+     "MR253": {
+      "d3p_pseudo": 0.2626207648621251,
+      "d3_pseudo": 0.2695986549369991,
+      "d3_own": 0.5469743808110555,
+      "gain": -0.0069778900748739825,
+      "remaining_gap_to_own": -0.28435361594893044,
+      "score_vox": 267100
+     },
+     "MR254": {
+      "d3p_pseudo": 0.26598549231886864,
+      "d3_pseudo": 0.2581759385764599,
+      "d3_own": 0.7176872301101684,
+      "gain": 0.00780955374240877,
+      "remaining_gap_to_own": -0.4517017377912998,
+      "score_vox": 816972
+     },
+     "MR256": {
+      "d3p_pseudo": 0.2575744778982231,
+      "d3_pseudo": 0.2711144307894366,
+      "d3_own": 0.7052872202226094,
+      "gain": -0.013539952891213514,
+      "remaining_gap_to_own": -0.4477127423243863,
+      "score_vox": 473060
+     },
+     "MR257": {
+      "d3p_pseudo": 0.29005283750593663,
+      "d3_pseudo": 0.2978627562522888,
+      "d3_own": 0.7487770050764084,
+      "gain": -0.0078099187463521735,
+      "remaining_gap_to_own": -0.4587241675704718,
+      "score_vox": 671663
+     },
+     "MR261": {
+      "d3p_pseudo": 0.22076379827090672,
+      "d3_pseudo": 0.2181317156979016,
+      "d3_own": 0.6353737328733716,
+      "gain": 0.0026320825730051234,
+      "remaining_gap_to_own": -0.41460993460246487,
+      "score_vox": 221363
+     }
+    },
+    "summary": {
+     "n": 12,
+     "mean_d3p_pseudo": 0.27191891512633654,
+     "mean_d3_pseudo": 0.27497789642731,
+     "mean_d3_own": 0.6837118375253294,
+     "mean_gain": -0.0030589813009735145,
+     "ci95_gain": [
+      -0.008584872803577004,
+      0.0029853386805432625
+     ],
+     "mean_remaining_gap_to_own": -0.41179292239899273,
+     "ci95_remaining_gap": [
+      -0.43599368888447726,
+      -0.38172676376219467
+     ]
+    }
+   },
+   "CC": {
+    "cell": "CC",
+    "what": "S2 and r1 on cut photographs, exact inverse; targets placed by the cut r1",
+    "inputs": [
+     "the stand-in network's slab scores for this cell (a working file of the analysis)",
+     "the domain-shift record recomputed for this cell (a working file of the analysis)"
+    ],
+    "per_brain": {
+     "MF278": {
+      "d3p_pseudo": 0.34126677281326717,
+      "d3_pseudo": 0.329034686088562,
+      "d3_own": 0.31383951877554256,
+      "gain": 0.01223208672470516,
+      "remaining_gap_to_own": 0.027427254037724613,
+      "score_vox": 354163
+     },
+     "MF282": {
+      "d3p_pseudo": 0.2910347161656719,
+      "d3_pseudo": 0.2953437710717573,
+      "d3_own": 0.26184866615271163,
+      "gain": -0.004309054906085408,
+      "remaining_gap_to_own": 0.029186050012960263,
+      "score_vox": 547823
+     },
+     "MR243": {
+      "d3p_pseudo": 0.28084718679286996,
+      "d3_pseudo": 0.2959424249675809,
+      "d3_own": 0.4863652629511697,
+      "gain": -0.015095238174710923,
+      "remaining_gap_to_own": -0.20551807615829976,
+      "score_vox": 542707
+     },
+     "MR249": {
+      "d3p_pseudo": 0.2606422911797251,
+      "d3_pseudo": 0.27383893728256226,
+      "d3_own": 0.24864235520362854,
+      "gain": -0.013196646102837162,
+      "remaining_gap_to_own": 0.011999935976096554,
+      "score_vox": 330284
+     },
+     "MR250": {
+      "d3p_pseudo": 0.21544440048483182,
+      "d3_pseudo": 0.21994739777918132,
+      "d3_own": 0.29469902946982746,
+      "gain": -0.004502997294349498,
+      "remaining_gap_to_own": -0.07925462898499563,
+      "score_vox": 502123
+     },
+     "MR251": {
+      "d3p_pseudo": 0.2834342658519745,
+      "d3_pseudo": 0.28634365243571147,
+      "d3_own": 0.4546942642756871,
+      "gain": -0.0029093865837369615,
+      "remaining_gap_to_own": -0.1712599984237126,
+      "score_vox": 407479
+     },
+     "MR252": {
+      "d3p_pseudo": 0.18280774062233313,
+      "d3_pseudo": 0.19823064282536507,
+      "d3_own": 0.41876738518476486,
+      "gain": -0.01542290220303194,
+      "remaining_gap_to_own": -0.23595964456243174,
+      "score_vox": 324770
+     },
+     "MR253": {
+      "d3p_pseudo": 0.3577753007411957,
+      "d3_pseudo": 0.33060163632035255,
+      "d3_own": 0.26071607350156856,
+      "gain": 0.027173664420843124,
+      "remaining_gap_to_own": 0.09705922723962712,
+      "score_vox": 193896
+     },
+     "MR254": {
+      "d3p_pseudo": 0.2793560177087784,
+      "d3_pseudo": 0.27262906182785424,
+      "d3_own": 0.6527488219494723,
+      "gain": 0.006726955880924146,
+      "remaining_gap_to_own": -0.3733928042406939,
+      "score_vox": 838946
+     },
+     "MR256": {
+      "d3p_pseudo": 0.3055482804775238,
+      "d3_pseudo": 0.27735269598422513,
+      "d3_own": 0.3540777934174384,
+      "gain": 0.028195584493298675,
+      "remaining_gap_to_own": -0.04852951293991459,
+      "score_vox": 463087
+     },
+     "MR257": {
+      "d3p_pseudo": 0.3005987809350093,
+      "d3_pseudo": 0.29328635432535693,
+      "d3_own": 0.38301977586178554,
+      "gain": 0.007312426609652367,
+      "remaining_gap_to_own": -0.08242099492677624,
+      "score_vox": 674231
+     },
+     "MR261": {
+      "d3p_pseudo": 0.3094383354844718,
+      "d3_pseudo": 0.3070017130210482,
+      "d3_own": 0.2966467537756624,
+      "gain": 0.002436622463423632,
+      "remaining_gap_to_own": 0.012791581708809396,
+      "score_vox": 140821
+     }
+    },
+    "summary": {
+     "n": 12,
+     "mean_d3p_pseudo": 0.2840161741048044,
+     "mean_d3_pseudo": 0.2816294144941297,
+     "mean_d3_own": 0.36883880837660493,
+     "mean_gain": 0.002386759610674601,
+     "ci95_gain": [
+      -0.005166041685231503,
+      0.01069141701523333
+     ],
+     "mean_remaining_gap_to_own": -0.08482263427180053,
+     "ci95_remaining_gap": [
+      -0.1627015025749323,
+      -0.013984983801669916
+     ]
+    }
+   },
+   "CCc": {
+    "cell": "CCc",
+    "what": "S2 on cut photographs and r1 with its linear stage held at the record's (deformable on the cut stack), exact inverse; targets placed by that r1",
+    "inputs": [
+     "the stand-in network's slab scores for this cell (a working file of the analysis)",
+     "the domain-shift record recomputed for this cell (a working file of the analysis)"
+    ],
+    "per_brain": {
+     "MF278": {
+      "d3p_pseudo": 0.34458281935164425,
+      "d3_pseudo": 0.3546252589334141,
+      "d3_own": 0.39617648178880865,
+      "gain": -0.010042439581769869,
+      "remaining_gap_to_own": -0.0515936624371644,
+      "score_vox": 457021
+     },
+     "MF282": {
+      "d3p_pseudo": 0.3653932400047779,
+      "d3_pseudo": 0.3704167556762695,
+      "d3_own": 0.5249360996484757,
+      "gain": -0.0050235156714916185,
+      "remaining_gap_to_own": -0.15954285964369774,
+      "score_vox": 574125
+     },
+     "MR243": {
+      "d3p_pseudo": 0.2692774909795547,
+      "d3_pseudo": 0.29244546683467165,
+      "d3_own": 0.535582744345373,
+      "gain": -0.02316797585511693,
+      "remaining_gap_to_own": -0.2663052533658183,
+      "score_vox": 545425
+     },
+     "MR249": {
+      "d3p_pseudo": 0.29476992896309606,
+      "d3_pseudo": 0.26970946457650924,
+      "d3_own": 0.3871629944554082,
+      "gain": 0.025060464386586823,
+      "remaining_gap_to_own": -0.09239306549231213,
+      "score_vox": 426176
+     },
+     "MR250": {
+      "d3p_pseudo": 0.25121081653324995,
+      "d3_pseudo": 0.23879602193540217,
+      "d3_own": 0.4624338424673267,
+      "gain": 0.012414794597847778,
+      "remaining_gap_to_own": -0.21122302593407677,
+      "score_vox": 542595
+     },
+     "MR251": {
+      "d3p_pseudo": 0.31546088669981276,
+      "d3_pseudo": 0.3195491318191801,
+      "d3_own": 0.560625182730811,
+      "gain": -0.00408824511936734,
+      "remaining_gap_to_own": -0.2451642960309982,
+      "score_vox": 418892
+     },
+     "MR252": {
+      "d3p_pseudo": 0.17249988819713946,
+      "d3_pseudo": 0.19276990189596457,
+      "d3_own": 0.437329571556162,
+      "gain": -0.020270013698825112,
+      "remaining_gap_to_own": -0.2648296833590225,
+      "score_vox": 327336
+     },
+     "MR253": {
+      "d3p_pseudo": 0.3458020913860072,
+      "d3_pseudo": 0.3466167845155882,
+      "d3_own": 0.32283819304860156,
+      "gain": -0.00081469312958099,
+      "remaining_gap_to_own": 0.02296389833740564,
+      "score_vox": 247124
+     },
+     "MR254": {
+      "d3p_pseudo": 0.2866131309785095,
+      "d3_pseudo": 0.2858386808166317,
+      "d3_own": 0.6962573212735793,
+      "gain": 0.000774450161877771,
+      "remaining_gap_to_own": -0.4096441902950698,
+      "score_vox": 841611
+     },
+     "MR256": {
+      "d3p_pseudo": 0.28849335068038534,
+      "d3_pseudo": 0.27100406480687006,
+      "d3_own": 0.5440252753240722,
+      "gain": 0.01748928587351528,
+      "remaining_gap_to_own": -0.25553192464368685,
+      "score_vox": 482660
+     },
+     "MR257": {
+      "d3p_pseudo": 0.34353429606048075,
+      "d3_pseudo": 0.33066245241136083,
+      "d3_own": 0.6478693259925377,
+      "gain": 0.012871843649119918,
+      "remaining_gap_to_own": -0.3043350299320569,
+      "score_vox": 689412
+     },
+     "MR261": {
+      "d3p_pseudo": 0.2607379784541471,
+      "d3_pseudo": 0.26038000732660294,
+      "d3_own": 0.3854052589407989,
+      "gain": 0.0003579711275441544,
+      "remaining_gap_to_own": -0.12466728048665182,
+      "score_vox": 222312
+     }
+    },
+    "summary": {
+     "n": 12,
+     "mean_d3p_pseudo": 0.29486465985740046,
+     "mean_d3_pseudo": 0.29440116596237204,
+     "mean_d3_own": 0.4917201909643296,
+     "mean_gain": 0.0004634938950283223,
+     "ci95_gain": [
+      -0.007617995300738763,
+      0.008506615066528642
+     ],
+     "mean_remaining_gap_to_own": -0.1968555311069292,
+     "ci95_remaining_gap": [
+      -0.2605080778595202,
+      -0.1301485822484333
+     ]
+    }
+   },
+   "CCcc": {
+    "cell": "CCcc",
+    "what": "S2 with its 9-dof stage of record and r1 with its linear stage of record, both deformable on the cut stack, exact inverse; targets placed by that r1: the optimistic bound",
+    "inputs": [
+     "the stand-in network's slab scores for this cell (a working file of the analysis)",
+     "the domain-shift record recomputed for this cell (a working file of the analysis)"
+    ],
+    "per_brain": {
+     "MF278": {
+      "d3p_pseudo": 0.3685413328084079,
+      "d3_pseudo": 0.3751428339517478,
+      "d3_own": 0.39617648178880865,
+      "gain": -0.006601501143339905,
+      "remaining_gap_to_own": -0.02763514898040076,
+      "score_vox": 457021
+     },
+     "MF282": {
+      "d3p_pseudo": 0.4460670986771584,
+      "d3_pseudo": 0.4524113070964813,
+      "d3_own": 0.5249360996484757,
+      "gain": -0.0063442084193229276,
+      "remaining_gap_to_own": -0.07886900097131727,
+      "score_vox": 574125
+     },
+     "MR243": {
+      "d3p_pseudo": 0.33579353106265164,
+      "d3_pseudo": 0.3355890506384324,
+      "d3_own": 0.535582744345373,
+      "gain": 0.0002044804242192222,
+      "remaining_gap_to_own": -0.19978921328272137,
+      "score_vox": 545425
+     },
+     "MR249": {
+      "d3p_pseudo": 0.3782875725516566,
+      "d3_pseudo": 0.32977023389604354,
+      "d3_own": 0.3871629944554082,
+      "gain": 0.048517338655613085,
+      "remaining_gap_to_own": -0.008875421903751568,
+      "score_vox": 426176
+     },
+     "MR250": {
+      "d3p_pseudo": 0.3182506105479072,
+      "d3_pseudo": 0.3017735810694741,
+      "d3_own": 0.4624338424673267,
+      "gain": 0.016477029478433103,
+      "remaining_gap_to_own": -0.1441832319194195,
+      "score_vox": 542595
+     },
+     "MR251": {
+      "d3p_pseudo": 0.38838733392102376,
+      "d3_pseudo": 0.3963858016899654,
+      "d3_own": 0.560625182730811,
+      "gain": -0.007998467768941642,
+      "remaining_gap_to_own": -0.1722378488097872,
+      "score_vox": 418892
+     },
+     "MR252": {
+      "d3p_pseudo": 0.3360861021059531,
+      "d3_pseudo": 0.32353498483145676,
+      "d3_own": 0.437329571556162,
+      "gain": 0.012551117274496315,
+      "remaining_gap_to_own": -0.1012434694502089,
+      "score_vox": 327336
+     },
+     "MR253": {
+      "d3p_pseudo": 0.40595425017501996,
+      "d3_pseudo": 0.4044591661380685,
+      "d3_own": 0.32283819304860156,
+      "gain": 0.0014950840369514773,
+      "remaining_gap_to_own": 0.0831160571264184,
+      "score_vox": 247124
+     },
+     "MR254": {
+      "d3p_pseudo": 0.41452281951319936,
+      "d3_pseudo": 0.40198420198159474,
+      "d3_own": 0.6962573212735793,
+      "gain": 0.012538617531604623,
+      "remaining_gap_to_own": -0.28173450176037995,
+      "score_vox": 841611
+     },
+     "MR256": {
+      "d3p_pseudo": 0.3630917790744986,
+      "d3_pseudo": 0.3583699358361108,
+      "d3_own": 0.5440252753240722,
+      "gain": 0.004721843238387757,
+      "remaining_gap_to_own": -0.1809334962495736,
+      "score_vox": 482660
+     },
+     "MR257": {
+      "d3p_pseudo": 0.4165664983958733,
+      "d3_pseudo": 0.3983213676185143,
+      "d3_own": 0.6478693259925377,
+      "gain": 0.01824513077735901,
+      "remaining_gap_to_own": -0.23130282759666437,
+      "score_vox": 689412
+     },
+     "MR261": {
+      "d3p_pseudo": 0.3106769174337387,
+      "d3_pseudo": 0.3092592512922628,
+      "d3_own": 0.3854052589407989,
+      "gain": 0.0014176661414759262,
+      "remaining_gap_to_own": -0.0747283415070602,
+      "score_vox": 222312
+     }
+    },
+    "summary": {
+     "n": 12,
+     "mean_d3p_pseudo": 0.3735188205222573,
+     "mean_d3_pseudo": 0.36558347633667937,
+     "mean_d3_own": 0.4917201909643296,
+     "mean_gain": 0.007935344185578003,
+     "ci95_gain": [
+      0.00039473230841192183,
+      0.017253006797524725
+     ],
+     "mean_remaining_gap_to_own": -0.1182013704420722,
+     "ci95_remaining_gap": [
+      -0.17264897996072054,
+      -0.06118143680629234
+     ]
+    }
+   }
+  },
+  "without_MR254": {
+   "record_11": {
+    "cell": "record",
+    "what": "registrations of record, inverse as run (the paper's numbers)",
+    "inputs": [
+     "the stand-in network's slab scores for this cell (a working file of the analysis)",
+     "record d3_domain_shift_prod"
+    ],
+    "per_brain": {
+     "MF278": {
+      "d3p_pseudo": 0.6558650750102419,
+      "d3_pseudo": 0.6181029153592659,
+      "d3_own": 0.6335470531926011,
+      "gain": 0.03776215965097607,
+      "remaining_gap_to_own": 0.022318021817640865,
+      "score_vox": 446763
+     },
+     "MF282": {
+      "d3p_pseudo": 0.7368863505475661,
+      "d3_pseudo": 0.7156241875068814,
+      "d3_own": 0.7437675723842546,
+      "gain": 0.021262163040684734,
+      "remaining_gap_to_own": -0.006881221836688489,
+      "score_vox": 593220
+     },
+     "MR243": {
+      "d3p_pseudo": 0.5877168414493402,
+      "d3_pseudo": 0.5416169843326012,
+      "d3_own": 0.7146171517670155,
+      "gain": 0.04609985711673903,
+      "remaining_gap_to_own": -0.12690031031767524,
+      "score_vox": 541206
+     },
+     "MR249": {
+      "d3p_pseudo": 0.5649470819367303,
+      "d3_pseudo": 0.523783826165729,
+      "d3_own": 0.7241413593292236,
+      "gain": 0.04116325577100122,
+      "remaining_gap_to_own": -0.15919427739249337,
+      "score_vox": 426289
+     },
+     "MR250": {
+      "d3p_pseudo": 0.5566713441820705,
+      "d3_pseudo": 0.5046554762943118,
+      "d3_own": 0.6964226043691822,
+      "gain": 0.05201586788775869,
+      "remaining_gap_to_own": -0.1397512601871117,
+      "score_vox": 529002
+     },
+     "MR251": {
+      "d3p_pseudo": 0.6329256074769156,
+      "d3_pseudo": 0.5998154214450291,
+      "d3_own": 0.686651485306876,
+      "gain": 0.033110186031886535,
+      "remaining_gap_to_own": -0.05372587782996041,
+      "score_vox": 411920
+     },
+     "MR252": {
+      "d3p_pseudo": 0.49101722240448,
+      "d3_pseudo": 0.46292930841445923,
+      "d3_own": 0.6513397204024451,
+      "gain": 0.028087913990020752,
+      "remaining_gap_to_own": -0.16032249799796516,
+      "score_vox": 293580
+     },
+     "MR253": {
+      "d3p_pseudo": 0.5748909109582504,
+      "d3_pseudo": 0.5330522414296865,
+      "d3_own": 0.5469893279174963,
+      "gain": 0.041838669528563854,
+      "remaining_gap_to_own": 0.027901583040754074,
+      "score_vox": 267100
+     },
+     "MR256": {
+      "d3p_pseudo": 0.5152443881545749,
+      "d3_pseudo": 0.48878833651542664,
+      "d3_own": 0.7052969187498093,
+      "gain": 0.026456051639148215,
+      "remaining_gap_to_own": -0.19005253059523441,
+      "score_vox": 473060
+     },
+     "MR257": {
+      "d3p_pseudo": 0.6546232536435127,
+      "d3_pseudo": 0.6102107927203179,
+      "d3_own": 0.7487768813967705,
+      "gain": 0.04441246092319484,
+      "remaining_gap_to_own": -0.09415362775325775,
+      "score_vox": 671663
+     },
+     "MR261": {
+      "d3p_pseudo": 0.467429912516049,
+      "d3_pseudo": 0.4554344585963658,
+      "d3_own": 0.6353669954197747,
+      "gain": 0.011995453919683208,
+      "remaining_gap_to_own": -0.16793708290372572,
+      "score_vox": 221363
+     }
+    },
+    "summary": {
+     "n": 11,
+     "mean_d3p_pseudo": 0.5852925443890665,
+     "mean_d3_pseudo": 0.5503649044345522,
+     "mean_d3_own": 0.6806288245668589,
+     "mean_gain": 0.034927639954514283,
+     "ci95_gain": [
+      0.027826327337474498,
+      0.04147468746602471
+     ],
+     "mean_remaining_gap_to_own": -0.09533628017779248,
+     "ci95_remaining_gap": [
+      -0.13772225973877666,
+      -0.049342533749960636
+     ]
+    }
+   },
+   "CF_11": {
+    "cell": "CF",
+    "what": "S2 on cut photographs, inverse as run",
+    "inputs": [
+     "the stand-in network's slab scores for this cell (a working file of the analysis)",
+     "the domain-shift record recomputed for this cell (a working file of the analysis)"
+    ],
+    "per_brain": {
+     "MF278": {
+      "d3p_pseudo": 0.21047208074367407,
+      "d3_pseudo": 0.21895904297178442,
+      "d3_own": 0.6335409744219347,
+      "gain": -0.00848696222811035,
+      "remaining_gap_to_own": -0.4230688936782606,
+      "score_vox": 446763
+     },
+     "MF282": {
+      "d3p_pseudo": 0.24370970405346037,
+      "d3_pseudo": 0.25168391404783025,
+      "d3_own": 0.7437521499745986,
+      "gain": -0.007974209994369874,
+      "remaining_gap_to_own": -0.5000424459211382,
+      "score_vox": 593220
+     },
+     "MR243": {
+      "d3p_pseudo": 0.22315803061549863,
+      "d3_pseudo": 0.24350863477836052,
+      "d3_own": 0.7146128788590431,
+      "gain": -0.020350604162861885,
+      "remaining_gap_to_own": -0.49145484824354446,
+      "score_vox": 541206
+     },
+     "MR249": {
+      "d3p_pseudo": 0.21667285787838478,
+      "d3_pseudo": 0.22495949102772606,
+      "d3_own": 0.7241321824215077,
+      "gain": -0.008286633149341277,
+      "remaining_gap_to_own": -0.5074593245431229,
+      "score_vox": 426289
+     },
+     "MR250": {
+      "d3p_pseudo": 0.19164905025094164,
+      "d3_pseudo": 0.19009584758211584,
+      "d3_own": 0.6964204510052999,
+      "gain": 0.0015532026688258038,
+      "remaining_gap_to_own": -0.5047714007543582,
+      "score_vox": 529002
+     },
+     "MR251": {
+      "d3p_pseudo": 0.24256912682737622,
+      "d3_pseudo": 0.2663556886570794,
+      "d3_own": 0.686651509148734,
+      "gain": -0.023786561829703207,
+      "remaining_gap_to_own": -0.44408238232135777,
+      "score_vox": 411920
+     },
+     "MR252": {
+      "d3p_pseudo": 0.14741610935223953,
+      "d3_pseudo": 0.18277375160583428,
+      "d3_own": 0.6513324124472482,
+      "gain": -0.03535764225359475,
+      "remaining_gap_to_own": -0.5039163030950087,
+      "score_vox": 293580
+     },
+     "MR253": {
+      "d3p_pseudo": 0.18745803638982275,
+      "d3_pseudo": 0.18727230579437068,
+      "d3_own": 0.5469743538027009,
+      "gain": 0.0001857305954520716,
+      "remaining_gap_to_own": -0.35951631741287815,
+      "score_vox": 267100
+     },
+     "MR256": {
+      "d3p_pseudo": 0.20641962319080318,
+      "d3_pseudo": 0.20186432796929563,
+      "d3_own": 0.7052872223513467,
+      "gain": 0.004555295221507549,
+      "remaining_gap_to_own": -0.49886759916054346,
+      "score_vox": 473060
+     },
+     "MR257": {
+      "d3p_pseudo": 0.20973755456507207,
+      "d3_pseudo": 0.21586477383971214,
+      "d3_own": 0.7487770646810532,
+      "gain": -0.006127219274640078,
+      "remaining_gap_to_own": -0.5390395101159812,
+      "score_vox": 671663
+     },
+     "MR261": {
+      "d3p_pseudo": 0.25972567019718035,
+      "d3_pseudo": 0.24738049560359546,
+      "d3_own": 0.6353735647031239,
+      "gain": 0.01234517459358489,
+      "remaining_gap_to_own": -0.37564789450594355,
+      "score_vox": 221363
+     }
+    },
+    "summary": {
+     "n": 11,
+     "mean_d3p_pseudo": 0.21263525855131393,
+     "mean_d3_pseudo": 0.2209743885343368,
+     "mean_d3_own": 0.6806231603469627,
+     "mean_gain": -0.008339129983022829,
+     "ci95_gain": [
+      -0.016300396360697807,
+      -0.0006695999001696003
+     ],
+     "mean_remaining_gap_to_own": -0.4679879017956488,
+     "ci95_remaining_gap": [
+      -0.4986873485946591,
+      -0.43326371302208166
+     ]
+    }
+   },
+   "CX_11": {
+    "cell": "CX",
+    "what": "S2 on cut photographs, exact inverse",
+    "inputs": [
+     "the stand-in network's slab scores for this cell (a working file of the analysis)",
+     "the domain-shift record recomputed for this cell (a working file of the analysis)"
+    ],
+    "per_brain": {
+     "MF278": {
+      "d3p_pseudo": 0.2096196295637073,
+      "d3_pseudo": 0.21802578189156271,
+      "d3_own": 0.6335409744219347,
+      "gain": -0.00840615232785541,
+      "remaining_gap_to_own": -0.4239213448582274,
+      "score_vox": 446763
+     },
+     "MF282": {
+      "d3p_pseudo": 0.24064123360257522,
+      "d3_pseudo": 0.24874131527601503,
+      "d3_own": 0.7437521499745986,
+      "gain": -0.008100081673439813,
+      "remaining_gap_to_own": -0.5031109163720233,
+      "score_vox": 593220
+     },
+     "MR243": {
+      "d3p_pseudo": 0.22335165971890092,
+      "d3_pseudo": 0.24154415167868137,
+      "d3_own": 0.7146128788590431,
+      "gain": -0.018192491959780455,
+      "remaining_gap_to_own": -0.4912612191401422,
+      "score_vox": 541206
+     },
+     "MR249": {
+      "d3p_pseudo": 0.2254256617139887,
+      "d3_pseudo": 0.22602979452521713,
+      "d3_own": 0.7241321824215077,
+      "gain": -0.000604132811228425,
+      "remaining_gap_to_own": -0.498706520707519,
+      "score_vox": 426289
+     },
+     "MR250": {
+      "d3p_pseudo": 0.18812475740617396,
+      "d3_pseudo": 0.18846160524031697,
+      "d3_own": 0.6964204510052999,
+      "gain": -0.0003368478341430059,
+      "remaining_gap_to_own": -0.508295693599126,
+      "score_vox": 529002
+     },
+     "MR251": {
+      "d3p_pseudo": 0.24606025091239384,
+      "d3_pseudo": 0.26282963156700134,
+      "d3_own": 0.686651509148734,
+      "gain": -0.016769380654607507,
+      "remaining_gap_to_own": -0.44059125823634016,
+      "score_vox": 411920
+     },
+     "MR252": {
+      "d3p_pseudo": 0.15706664390329803,
+      "d3_pseudo": 0.18450982190136397,
+      "d3_own": 0.6513324124472482,
+      "gain": -0.02744317799806595,
+      "remaining_gap_to_own": -0.4942657685439501,
+      "score_vox": 293580
+     },
+     "MR253": {
+      "d3p_pseudo": 0.18863470503129065,
+      "d3_pseudo": 0.1898784563333417,
+      "d3_own": 0.5469743538027009,
+      "gain": -0.0012437513020510382,
+      "remaining_gap_to_own": -0.3583396487714102,
+      "score_vox": 267100
+     },
+     "MR256": {
+      "d3p_pseudo": 0.2029832054727844,
+      "d3_pseudo": 0.20179198229951517,
+      "d3_own": 0.7052872223513467,
+      "gain": 0.0011912231732692236,
+      "remaining_gap_to_own": -0.5023040168785623,
+      "score_vox": 473060
+     },
+     "MR257": {
+      "d3p_pseudo": 0.20822864174842834,
+      "d3_pseudo": 0.21110031493008136,
+      "d3_own": 0.7487770646810532,
+      "gain": -0.002871673181653017,
+      "remaining_gap_to_own": -0.5405484229326248,
+      "score_vox": 671663
+     },
+     "MR261": {
+      "d3p_pseudo": 0.25926005467772484,
+      "d3_pseudo": 0.24525332344429834,
+      "d3_own": 0.6353735647031239,
+      "gain": 0.014006731233426495,
+      "remaining_gap_to_own": -0.37611351002539906,
+      "score_vox": 221363
+     }
+    },
+    "summary": {
+     "n": 11,
+     "mean_d3p_pseudo": 0.21358149488647876,
+     "mean_d3_pseudo": 0.219833289007945,
+     "mean_d3_own": 0.6806231603469627,
+     "mean_gain": -0.006251794121466264,
+     "ci95_gain": [
+      -0.012709643226521251,
+      0.0002031672388025938
+     ],
+     "mean_remaining_gap_to_own": -0.4670416654604841,
+     "ci95_remaining_gap": [
+      -0.49800999688580583,
+      -0.432540597343131
+     ]
+    }
+   },
+   "CXc_11": {
+    "cell": "CXc",
+    "what": "S2 on cut photographs with its 9-dof stage held at the record's, exact inverse; targets of record",
+    "inputs": [
+     "the stand-in network's slab scores for this cell (a working file of the analysis)",
+     "the domain-shift record recomputed for this cell (a working file of the analysis)"
+    ],
+    "per_brain": {
+     "MF278": {
+      "d3p_pseudo": 0.23692443786245404,
+      "d3_pseudo": 0.24211470782756805,
+      "d3_own": 0.6335409572630217,
+      "gain": -0.005190269965114014,
+      "remaining_gap_to_own": -0.3966165194005677,
+      "score_vox": 446763
+     },
+     "MF282": {
+      "d3p_pseudo": 0.3078204169304466,
+      "d3_pseudo": 0.3259235770971167,
+      "d3_own": 0.7437521429622874,
+      "gain": -0.01810316016667013,
+      "remaining_gap_to_own": -0.4359317260318408,
+      "score_vox": 593220
+     },
+     "MR243": {
+      "d3p_pseudo": 0.27909713859359425,
+      "d3_pseudo": 0.2915885290130973,
+      "d3_own": 0.7146128304302692,
+      "gain": -0.012491390419503035,
+      "remaining_gap_to_own": -0.435515691836675,
+      "score_vox": 541206
+     },
+     "MR249": {
+      "d3p_pseudo": 0.3031379983380989,
+      "d3_pseudo": 0.2869538190188231,
+      "d3_own": 0.7241322707246851,
+      "gain": 0.016184179319275793,
+      "remaining_gap_to_own": -0.4209942723865862,
+      "score_vox": 426289
+     },
+     "MR250": {
+      "d3p_pseudo": 0.24283387994065003,
+      "d3_pseudo": 0.23497001198576947,
+      "d3_own": 0.6964204574332518,
+      "gain": 0.00786386795488056,
+      "remaining_gap_to_own": -0.45358657749260173,
+      "score_vox": 529002
+     },
+     "MR251": {
+      "d3p_pseudo": 0.31233060700552806,
+      "d3_pseudo": 0.32425222950322286,
+      "d3_own": 0.6866514716829573,
+      "gain": -0.011921622497694795,
+      "remaining_gap_to_own": -0.3743208646774292,
+      "score_vox": 411920
+     },
+     "MR252": {
+      "d3p_pseudo": 0.28388513198920656,
+      "d3_pseudo": 0.27904838642903734,
+      "d3_own": 0.6513323507138661,
+      "gain": 0.00483674556016922,
+      "remaining_gap_to_own": -0.3674472187246595,
+      "score_vox": 293580
+     },
+     "MR253": {
+      "d3p_pseudo": 0.2626207648621251,
+      "d3_pseudo": 0.2695986549369991,
+      "d3_own": 0.5469743808110555,
+      "gain": -0.0069778900748739825,
+      "remaining_gap_to_own": -0.28435361594893044,
+      "score_vox": 267100
+     },
+     "MR256": {
+      "d3p_pseudo": 0.2575744778982231,
+      "d3_pseudo": 0.2711144307894366,
+      "d3_own": 0.7052872202226094,
+      "gain": -0.013539952891213514,
+      "remaining_gap_to_own": -0.4477127423243863,
+      "score_vox": 473060
+     },
+     "MR257": {
+      "d3p_pseudo": 0.29005283750593663,
+      "d3_pseudo": 0.2978627562522888,
+      "d3_own": 0.7487770050764084,
+      "gain": -0.0078099187463521735,
+      "remaining_gap_to_own": -0.4587241675704718,
+      "score_vox": 671663
+     },
+     "MR261": {
+      "d3p_pseudo": 0.22076379827090672,
+      "d3_pseudo": 0.2181317156979016,
+      "d3_own": 0.6353737328733716,
+      "gain": 0.0026320825730051234,
+      "remaining_gap_to_own": -0.41460993460246487,
+      "score_vox": 221363
+     }
+    },
+    "summary": {
+     "n": 11,
+     "mean_d3p_pseudo": 0.27245831719974273,
+     "mean_d3_pseudo": 0.27650534714102365,
+     "mean_d3_own": 0.6806231654721621,
+     "mean_gain": -0.004047029941280995,
+     "ci95_gain": [
+      -0.009759833452499752,
+      0.0021384486521741687
+     ],
+     "mean_remaining_gap_to_own": -0.4081648482724194,
+     "ci95_remaining_gap": [
+      -0.43391598128006803,
+      -0.3767230244718172
+     ]
+    }
+   },
+   "CC_11": {
+    "cell": "CC",
+    "what": "S2 and r1 on cut photographs, exact inverse; targets placed by the cut r1",
+    "inputs": [
+     "the stand-in network's slab scores for this cell (a working file of the analysis)",
+     "the domain-shift record recomputed for this cell (a working file of the analysis)"
+    ],
+    "per_brain": {
+     "MF278": {
+      "d3p_pseudo": 0.34126677281326717,
+      "d3_pseudo": 0.329034686088562,
+      "d3_own": 0.31383951877554256,
+      "gain": 0.01223208672470516,
+      "remaining_gap_to_own": 0.027427254037724613,
+      "score_vox": 354163
+     },
+     "MF282": {
+      "d3p_pseudo": 0.2910347161656719,
+      "d3_pseudo": 0.2953437710717573,
+      "d3_own": 0.26184866615271163,
+      "gain": -0.004309054906085408,
+      "remaining_gap_to_own": 0.029186050012960263,
+      "score_vox": 547823
+     },
+     "MR243": {
+      "d3p_pseudo": 0.28084718679286996,
+      "d3_pseudo": 0.2959424249675809,
+      "d3_own": 0.4863652629511697,
+      "gain": -0.015095238174710923,
+      "remaining_gap_to_own": -0.20551807615829976,
+      "score_vox": 542707
+     },
+     "MR249": {
+      "d3p_pseudo": 0.2606422911797251,
+      "d3_pseudo": 0.27383893728256226,
+      "d3_own": 0.24864235520362854,
+      "gain": -0.013196646102837162,
+      "remaining_gap_to_own": 0.011999935976096554,
+      "score_vox": 330284
+     },
+     "MR250": {
+      "d3p_pseudo": 0.21544440048483182,
+      "d3_pseudo": 0.21994739777918132,
+      "d3_own": 0.29469902946982746,
+      "gain": -0.004502997294349498,
+      "remaining_gap_to_own": -0.07925462898499563,
+      "score_vox": 502123
+     },
+     "MR251": {
+      "d3p_pseudo": 0.2834342658519745,
+      "d3_pseudo": 0.28634365243571147,
+      "d3_own": 0.4546942642756871,
+      "gain": -0.0029093865837369615,
+      "remaining_gap_to_own": -0.1712599984237126,
+      "score_vox": 407479
+     },
+     "MR252": {
+      "d3p_pseudo": 0.18280774062233313,
+      "d3_pseudo": 0.19823064282536507,
+      "d3_own": 0.41876738518476486,
+      "gain": -0.01542290220303194,
+      "remaining_gap_to_own": -0.23595964456243174,
+      "score_vox": 324770
+     },
+     "MR253": {
+      "d3p_pseudo": 0.3577753007411957,
+      "d3_pseudo": 0.33060163632035255,
+      "d3_own": 0.26071607350156856,
+      "gain": 0.027173664420843124,
+      "remaining_gap_to_own": 0.09705922723962712,
+      "score_vox": 193896
+     },
+     "MR256": {
+      "d3p_pseudo": 0.3055482804775238,
+      "d3_pseudo": 0.27735269598422513,
+      "d3_own": 0.3540777934174384,
+      "gain": 0.028195584493298675,
+      "remaining_gap_to_own": -0.04852951293991459,
+      "score_vox": 463087
+     },
+     "MR257": {
+      "d3p_pseudo": 0.3005987809350093,
+      "d3_pseudo": 0.29328635432535693,
+      "d3_own": 0.38301977586178554,
+      "gain": 0.007312426609652367,
+      "remaining_gap_to_own": -0.08242099492677624,
+      "score_vox": 674231
+     },
+     "MR261": {
+      "d3p_pseudo": 0.3094383354844718,
+      "d3_pseudo": 0.3070017130210482,
+      "d3_own": 0.2966467537756624,
+      "gain": 0.002436622463423632,
+      "remaining_gap_to_own": 0.012791581708809396,
+      "score_vox": 140821
+     }
+    },
+    "summary": {
+     "n": 11,
+     "mean_d3p_pseudo": 0.28443982468626133,
+     "mean_d3_pseudo": 0.282447628372882,
+     "mean_d3_own": 0.3430288071427079,
+     "mean_gain": 0.001992196313379188,
+     "ci95_gain": [
+      -0.006199538989446442,
+      0.01118332967511626
+     ],
+     "mean_remaining_gap_to_own": -0.05858898245644661,
+     "ci95_remaining_gap": [
+      -0.12081857439195118,
+      -0.0004837431024807695
+     ]
+    }
+   },
+   "CCc_11": {
+    "cell": "CCc",
+    "what": "S2 on cut photographs and r1 with its linear stage held at the record's (deformable on the cut stack), exact inverse; targets placed by that r1",
+    "inputs": [
+     "the stand-in network's slab scores for this cell (a working file of the analysis)",
+     "the domain-shift record recomputed for this cell (a working file of the analysis)"
+    ],
+    "per_brain": {
+     "MF278": {
+      "d3p_pseudo": 0.34458281935164425,
+      "d3_pseudo": 0.3546252589334141,
+      "d3_own": 0.39617648178880865,
+      "gain": -0.010042439581769869,
+      "remaining_gap_to_own": -0.0515936624371644,
+      "score_vox": 457021
+     },
+     "MF282": {
+      "d3p_pseudo": 0.3653932400047779,
+      "d3_pseudo": 0.3704167556762695,
+      "d3_own": 0.5249360996484757,
+      "gain": -0.0050235156714916185,
+      "remaining_gap_to_own": -0.15954285964369774,
+      "score_vox": 574125
+     },
+     "MR243": {
+      "d3p_pseudo": 0.2692774909795547,
+      "d3_pseudo": 0.29244546683467165,
+      "d3_own": 0.535582744345373,
+      "gain": -0.02316797585511693,
+      "remaining_gap_to_own": -0.2663052533658183,
+      "score_vox": 545425
+     },
+     "MR249": {
+      "d3p_pseudo": 0.29476992896309606,
+      "d3_pseudo": 0.26970946457650924,
+      "d3_own": 0.3871629944554082,
+      "gain": 0.025060464386586823,
+      "remaining_gap_to_own": -0.09239306549231213,
+      "score_vox": 426176
+     },
+     "MR250": {
+      "d3p_pseudo": 0.25121081653324995,
+      "d3_pseudo": 0.23879602193540217,
+      "d3_own": 0.4624338424673267,
+      "gain": 0.012414794597847778,
+      "remaining_gap_to_own": -0.21122302593407677,
+      "score_vox": 542595
+     },
+     "MR251": {
+      "d3p_pseudo": 0.31546088669981276,
+      "d3_pseudo": 0.3195491318191801,
+      "d3_own": 0.560625182730811,
+      "gain": -0.00408824511936734,
+      "remaining_gap_to_own": -0.2451642960309982,
+      "score_vox": 418892
+     },
+     "MR252": {
+      "d3p_pseudo": 0.17249988819713946,
+      "d3_pseudo": 0.19276990189596457,
+      "d3_own": 0.437329571556162,
+      "gain": -0.020270013698825112,
+      "remaining_gap_to_own": -0.2648296833590225,
+      "score_vox": 327336
+     },
+     "MR253": {
+      "d3p_pseudo": 0.3458020913860072,
+      "d3_pseudo": 0.3466167845155882,
+      "d3_own": 0.32283819304860156,
+      "gain": -0.00081469312958099,
+      "remaining_gap_to_own": 0.02296389833740564,
+      "score_vox": 247124
+     },
+     "MR256": {
+      "d3p_pseudo": 0.28849335068038534,
+      "d3_pseudo": 0.27100406480687006,
+      "d3_own": 0.5440252753240722,
+      "gain": 0.01748928587351528,
+      "remaining_gap_to_own": -0.25553192464368685,
+      "score_vox": 482660
+     },
+     "MR257": {
+      "d3p_pseudo": 0.34353429606048075,
+      "d3_pseudo": 0.33066245241136083,
+      "d3_own": 0.6478693259925377,
+      "gain": 0.012871843649119918,
+      "remaining_gap_to_own": -0.3043350299320569,
+      "score_vox": 689412
+     },
+     "MR261": {
+      "d3p_pseudo": 0.2607379784541471,
+      "d3_pseudo": 0.26038000732660294,
+      "d3_own": 0.3854052589407989,
+      "gain": 0.0003579711275441544,
+      "remaining_gap_to_own": -0.12466728048665182,
+      "score_vox": 222312
+     }
+    },
+    "summary": {
+     "n": 11,
+     "mean_d3p_pseudo": 0.2956147988463905,
+     "mean_d3_pseudo": 0.29517957370289394,
+     "mean_d3_own": 0.47312590639076146,
+     "mean_gain": 0.00043522514349655423,
+     "ci95_gain": [
+      -0.008051639762082282,
+      0.009139634713608962
+     ],
+     "mean_remaining_gap_to_own": -0.1775111075443709,
+     "ci95_remaining_gap": [
+      -0.23385294956415076,
+      -0.11713895880416841
+     ]
+    }
+   },
+   "CCcc_11": {
+    "cell": "CCcc",
+    "what": "S2 with its 9-dof stage of record and r1 with its linear stage of record, both deformable on the cut stack, exact inverse; targets placed by that r1: the optimistic bound",
+    "inputs": [
+     "the stand-in network's slab scores for this cell (a working file of the analysis)",
+     "the domain-shift record recomputed for this cell (a working file of the analysis)"
+    ],
+    "per_brain": {
+     "MF278": {
+      "d3p_pseudo": 0.3685413328084079,
+      "d3_pseudo": 0.3751428339517478,
+      "d3_own": 0.39617648178880865,
+      "gain": -0.006601501143339905,
+      "remaining_gap_to_own": -0.02763514898040076,
+      "score_vox": 457021
+     },
+     "MF282": {
+      "d3p_pseudo": 0.4460670986771584,
+      "d3_pseudo": 0.4524113070964813,
+      "d3_own": 0.5249360996484757,
+      "gain": -0.0063442084193229276,
+      "remaining_gap_to_own": -0.07886900097131727,
+      "score_vox": 574125
+     },
+     "MR243": {
+      "d3p_pseudo": 0.33579353106265164,
+      "d3_pseudo": 0.3355890506384324,
+      "d3_own": 0.535582744345373,
+      "gain": 0.0002044804242192222,
+      "remaining_gap_to_own": -0.19978921328272137,
+      "score_vox": 545425
+     },
+     "MR249": {
+      "d3p_pseudo": 0.3782875725516566,
+      "d3_pseudo": 0.32977023389604354,
+      "d3_own": 0.3871629944554082,
+      "gain": 0.048517338655613085,
+      "remaining_gap_to_own": -0.008875421903751568,
+      "score_vox": 426176
+     },
+     "MR250": {
+      "d3p_pseudo": 0.3182506105479072,
+      "d3_pseudo": 0.3017735810694741,
+      "d3_own": 0.4624338424673267,
+      "gain": 0.016477029478433103,
+      "remaining_gap_to_own": -0.1441832319194195,
+      "score_vox": 542595
+     },
+     "MR251": {
+      "d3p_pseudo": 0.38838733392102376,
+      "d3_pseudo": 0.3963858016899654,
+      "d3_own": 0.560625182730811,
+      "gain": -0.007998467768941642,
+      "remaining_gap_to_own": -0.1722378488097872,
+      "score_vox": 418892
+     },
+     "MR252": {
+      "d3p_pseudo": 0.3360861021059531,
+      "d3_pseudo": 0.32353498483145676,
+      "d3_own": 0.437329571556162,
+      "gain": 0.012551117274496315,
+      "remaining_gap_to_own": -0.1012434694502089,
+      "score_vox": 327336
+     },
+     "MR253": {
+      "d3p_pseudo": 0.40595425017501996,
+      "d3_pseudo": 0.4044591661380685,
+      "d3_own": 0.32283819304860156,
+      "gain": 0.0014950840369514773,
+      "remaining_gap_to_own": 0.0831160571264184,
+      "score_vox": 247124
+     },
+     "MR256": {
+      "d3p_pseudo": 0.3630917790744986,
+      "d3_pseudo": 0.3583699358361108,
+      "d3_own": 0.5440252753240722,
+      "gain": 0.004721843238387757,
+      "remaining_gap_to_own": -0.1809334962495736,
+      "score_vox": 482660
+     },
+     "MR257": {
+      "d3p_pseudo": 0.4165664983958733,
+      "d3_pseudo": 0.3983213676185143,
+      "d3_own": 0.6478693259925377,
+      "gain": 0.01824513077735901,
+      "remaining_gap_to_own": -0.23130282759666437,
+      "score_vox": 689412
+     },
+     "MR261": {
+      "d3p_pseudo": 0.3106769174337387,
+      "d3_pseudo": 0.3092592512922628,
+      "d3_own": 0.3854052589407989,
+      "gain": 0.0014176661414759262,
+      "remaining_gap_to_own": -0.0747283415070602,
+      "score_vox": 222312
+     }
+    },
+    "summary": {
+     "n": 11,
+     "mean_d3p_pseudo": 0.3697911842503536,
+     "mean_d3_pseudo": 0.36227431945986893,
+     "mean_d3_own": 0.47312590639076146,
+     "mean_gain": 0.007516864790484675,
+     "ci95_gain": [
+      -0.0005292841821328763,
+      0.01775368931277882
+     ],
+     "mean_remaining_gap_to_own": -0.10333472214040786,
+     "ci95_remaining_gap": [
+      -0.15481348832757166,
+      -0.0484742000943478
+     ]
+    }
+   }
+  },
+  "missing": []
+ }
+}

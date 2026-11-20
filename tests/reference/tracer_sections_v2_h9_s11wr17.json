@@ -17,86 +17,86 @@
       "sections": 34,
       "voxels_bf": 32102,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 8495,
-      "density_sum_mm3": 52.578
+      "voxels_template_footprint": 8516,
+      "density_sum_mm3": 52.688
      },
      "Terminals": {
       "sections": 35,
       "voxels_bf": 36595,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 9126,
-      "density_sum_mm3": 59.114
+      "voxels_template_footprint": 9156,
+      "density_sum_mm3": 59.412
      },
      "Injection_site": {
       "sections": 1,
       "voxels_bf": 1599,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 137,
-      "density_sum_mm3": 0.97
+      "voxels_template_footprint": 141,
+      "density_sum_mm3": 1.0
      },
      "Fibers": {
       "sections": 30,
       "voxels_bf": 301,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 61,
-      "density_sum_mm3": 0.439
+      "voxels_template_footprint": 55,
+      "density_sum_mm3": 0.435
      },
      "Fiber_light_bundle": {
       "sections": 32,
       "voxels_bf": 18567,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 5170,
-      "density_sum_mm3": 31.909
+      "voxels_template_footprint": 5188,
+      "density_sum_mm3": 31.979
      },
      "Fiber_moderate_bundle": {
       "sections": 28,
       "voxels_bf": 10973,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 2782,
-      "density_sum_mm3": 17.106
+      "voxels_template_footprint": 2777,
+      "density_sum_mm3": 17.179
      },
      "Fiber_dense_bundle": {
       "sections": 17,
       "voxels_bf": 2187,
       "widened_half_slices": 0,
       "voxels_template_footprint": 485,
-      "density_sum_mm3": 2.903
+      "density_sum_mm3": 2.87
      },
      "Unnamed_outline": {
       "sections": 3,
       "voxels_bf": 506,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 142,
-      "density_sum_mm3": 0.849
+      "voxels_template_footprint": 146,
+      "density_sum_mm3": 0.843
      },
      "Terminal_light": {
       "sections": 32,
       "voxels_bf": 6989,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 2071,
-      "density_sum_mm3": 12.277
+      "voxels_template_footprint": 2039,
+      "density_sum_mm3": 11.991
      },
      "Terminal_moderate": {
       "sections": 23,
       "voxels_bf": 11163,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 2507,
-      "density_sum_mm3": 15.996
+      "voxels_template_footprint": 2498,
+      "density_sum_mm3": 16.021
      },
      "Terminal_dense": {
       "sections": 29,
       "voxels_bf": 18487,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 4564,
-      "density_sum_mm3": 30.902
+      "voxels_template_footprint": 4637,
+      "density_sum_mm3": 31.464
      }
     },
     "sections": 35,
-    "points_rows": 17919,
+    "points_rows": 17966,
     "section_spacing_mm": {
-     "median": 0.932,
-     "p90": 1.065,
-     "max": 1.893
+     "median": 0.935,
+     "p90": 1.052,
+     "max": 1.872
     },
     "spacing_note": "absolute spacing along the mean section normal; see <S>_sections.json"
    },
@@ -113,58 +113,58 @@
       "sections": 26,
       "voxels_bf": 10309,
       "widened_half_slices": 3,
-      "voxels_template_footprint": 2269,
-      "density_sum_mm3": 14.835
+      "voxels_template_footprint": 2261,
+      "density_sum_mm3": 14.811
      },
      "Injection_site": {
       "sections": 2,
       "voxels_bf": 436,
       "widened_half_slices": 3,
       "voxels_template_footprint": 32,
-      "density_sum_mm3": 0.207
+      "density_sum_mm3": 0.188
      },
      "Fibers": {
       "sections": 12,
       "voxels_bf": 17,
       "widened_half_slices": 3,
       "voxels_template_footprint": 1,
-      "density_sum_mm3": 0.026
+      "density_sum_mm3": 0.027
      },
      "Fiber_light_bundle": {
       "sections": 10,
       "voxels_bf": 4270,
       "widened_half_slices": 3,
-      "voxels_template_footprint": 940,
-      "density_sum_mm3": 6.119
+      "voxels_template_footprint": 941,
+      "density_sum_mm3": 6.109
      },
      "Fiber_moderate_bundle": {
       "sections": 13,
       "voxels_bf": 5788,
       "widened_half_slices": 3,
-      "voxels_template_footprint": 1272,
-      "density_sum_mm3": 8.425
+      "voxels_template_footprint": 1270,
+      "density_sum_mm3": 8.408
      },
      "Fiber_dense_bundle": {
       "sections": 3,
       "voxels_bf": 251,
       "widened_half_slices": 3,
-      "voxels_template_footprint": 57,
-      "density_sum_mm3": 0.291
+      "voxels_template_footprint": 50,
+      "density_sum_mm3": 0.295
      },
      "Bundle": {
       "sections": 25,
       "voxels_bf": 10035,
       "widened_half_slices": 3,
-      "voxels_template_footprint": 2234,
-      "density_sum_mm3": 14.592
+      "voxels_template_footprint": 2221,
+      "density_sum_mm3": 14.558
      }
     },
     "sections": 27,
-    "points_rows": 4536,
+    "points_rows": 4515,
     "section_spacing_mm": {
      "median": 0.95,
-     "p90": 2.21,
-     "max": 3.845
+     "p90": 2.195,
+     "max": 3.823
     },
     "spacing_note": "absolute spacing along the mean section normal; see <S>_sections.json"
    },
@@ -181,15 +181,15 @@
       "sections": 31,
       "voxels_bf": 22692,
       "widened_half_slices": 3,
-      "voxels_template_footprint": 5118,
-      "density_sum_mm3": 33.263
+      "voxels_template_footprint": 5124,
+      "density_sum_mm3": 33.4
      },
      "Terminals": {
       "sections": 34,
       "voxels_bf": 16884,
       "widened_half_slices": 3,
-      "voxels_template_footprint": 3463,
-      "density_sum_mm3": 22.028
+      "voxels_template_footprint": 3502,
+      "density_sum_mm3": 22.174
      },
      "Fibers": {
       "sections": 3,
@@ -202,51 +202,51 @@
       "sections": 26,
       "voxels_bf": 8267,
       "widened_half_slices": 3,
-      "voxels_template_footprint": 1891,
-      "density_sum_mm3": 12.012
+      "voxels_template_footprint": 1902,
+      "density_sum_mm3": 12.02
      },
      "Fiber_moderate_bundle": {
       "sections": 27,
       "voxels_bf": 13824,
       "widened_half_slices": 3,
-      "voxels_template_footprint": 3112,
-      "density_sum_mm3": 20.529
+      "voxels_template_footprint": 3110,
+      "density_sum_mm3": 20.659
      },
      "Fiber_dense_bundle": {
       "sections": 16,
       "voxels_bf": 629,
       "widened_half_slices": 3,
-      "voxels_template_footprint": 134,
-      "density_sum_mm3": 0.758
+      "voxels_template_footprint": 131,
+      "density_sum_mm3": 0.756
      },
      "Terminal_light": {
       "sections": 29,
       "voxels_bf": 4786,
       "widened_half_slices": 3,
-      "voxels_template_footprint": 986,
-      "density_sum_mm3": 6.199
+      "voxels_template_footprint": 1007,
+      "density_sum_mm3": 6.216
      },
      "Terminal_moderate": {
       "sections": 30,
       "voxels_bf": 9343,
       "widened_half_slices": 3,
-      "voxels_template_footprint": 1817,
-      "density_sum_mm3": 11.459
+      "voxels_template_footprint": 1822,
+      "density_sum_mm3": 11.551
      },
      "Terminal_dense": {
       "sections": 18,
       "voxels_bf": 2897,
       "widened_half_slices": 3,
-      "voxels_template_footprint": 689,
-      "density_sum_mm3": 4.504
+      "voxels_template_footprint": 701,
+      "density_sum_mm3": 4.539
      }
     },
     "sections": 36,
-    "points_rows": 8631,
+    "points_rows": 8675,
     "section_spacing_mm": {
-     "median": 0.95,
-     "p90": 1.093,
-     "max": 1.51
+     "median": 0.959,
+     "p90": 1.076,
+     "max": 1.444
     },
     "spacing_note": "absolute spacing along the mean section normal; see <S>_sections.json"
    },
@@ -263,86 +263,86 @@
       "sections": 31,
       "voxels_bf": 30378,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 26270,
-      "density_sum_mm3": 170.155
+      "voxels_template_footprint": 26322,
+      "density_sum_mm3": 170.489
      },
      "Terminals": {
       "sections": 32,
       "voxels_bf": 71158,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 59096,
-      "density_sum_mm3": 398.021
+      "voxels_template_footprint": 59165,
+      "density_sum_mm3": 398.092
      },
      "Injection_site": {
       "sections": 3,
       "voxels_bf": 656,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 775,
+      "voxels_template_footprint": 781,
       "density_sum_mm3": 5.299
      },
      "Fibers": {
       "sections": 35,
       "voxels_bf": 30571,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 33044,
-      "density_sum_mm3": 172.006
+      "voxels_template_footprint": 33050,
+      "density_sum_mm3": 172.224
      },
      "Fiber_light_bundle": {
       "sections": 24,
       "voxels_bf": 5634,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 5162,
-      "density_sum_mm3": 31.032
+      "voxels_template_footprint": 5147,
+      "density_sum_mm3": 30.973
      },
      "Fiber_moderate_bundle": {
       "sections": 27,
       "voxels_bf": 12827,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 11161,
-      "density_sum_mm3": 74.506
+      "voxels_template_footprint": 11188,
+      "density_sum_mm3": 74.659
      },
      "Fiber_dense_bundle": {
       "sections": 19,
       "voxels_bf": 12293,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 10167,
-      "density_sum_mm3": 66.046
+      "voxels_template_footprint": 10212,
+      "density_sum_mm3": 66.274
      },
      "Fiber_bundles": {
       "sections": 1,
       "voxels_bf": 512,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 560,
-      "density_sum_mm3": 3.874
+      "voxels_template_footprint": 562,
+      "density_sum_mm3": 3.876
      },
      "Terminal_light": {
       "sections": 30,
       "voxels_bf": 14993,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 14151,
-      "density_sum_mm3": 84.521
+      "voxels_template_footprint": 14131,
+      "density_sum_mm3": 84.297
      },
      "Terminal_moderate": {
       "sections": 24,
       "voxels_bf": 24401,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 19735,
-      "density_sum_mm3": 129.533
+      "voxels_template_footprint": 19731,
+      "density_sum_mm3": 129.625
      },
      "Terminal_dense": {
       "sections": 19,
       "voxels_bf": 31815,
       "widened_half_slices": 0,
-      "voxels_template_footprint": 25267,
-      "density_sum_mm3": 184.296
+      "voxels_template_footprint": 25336,
+      "density_sum_mm3": 184.501
      }
     },
     "sections": 29,
-    "points_rows": 120022,
+    "points_rows": 120138,
     "section_spacing_mm": {
-     "median": 1.384,
-     "p90": 2.047,
-     "max": 2.678
+     "median": 1.385,
+     "p90": 2.048,
+     "max": 2.681
     },
     "spacing_note": "absolute spacing along the mean section normal; see <S>_sections.json"
    }

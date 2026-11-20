@@ -54,85 +54,85 @@
     "side": "right",
     "site": {
      "footprint": {
-      "voxels": 137,
+      "voxels": 141,
       "centroid_template_mm": [
-       0.98,
+       0.96,
        40.67,
-       22.48
+       22.49
       ],
       "charm": {
        "level_1": [
         {
          "label": "Frontal",
-         "share": 0.956
+         "share": 0.95
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.044
+         "share": 0.05
         }
        ],
        "level_2": [
         {
          "label": "OFC",
-         "share": 0.956
+         "share": 0.95
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.044
+         "share": 0.05
         }
        ],
        "level_3": [
         {
          "label": "med_OFC",
-         "share": 0.956
+         "share": 0.95
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.044
+         "share": 0.05
         }
        ],
        "level_4": [
         {
          "label": "area_10",
-         "share": 0.956
+         "share": 0.95
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.044
+         "share": 0.05
         }
        ],
        "level_5": [
         {
          "label": "area_10",
-         "share": 0.956
+         "share": 0.95
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.044
+         "share": 0.05
         }
        ],
        "level_6": [
         {
          "label": "area_10o",
-         "share": 0.642
+         "share": 0.631
         },
         {
          "label": "area_10mr",
-         "share": 0.314
+         "share": 0.319
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.044
+         "share": 0.05
         }
        ]
       }
      },
      "solid": {
-      "voxels": 44,
+      "voxels": 45,
       "centroid_template_mm": [
-       0.99,
-       40.72,
-       22.47
+       0.97,
+       40.73,
+       22.49
       ],
       "charm": {
        "level_1": [
@@ -168,11 +168,11 @@
        "level_6": [
         {
          "label": "area_10o",
-         "share": 0.727
+         "share": 0.711
         },
         {
          "label": "area_10mr",
-         "share": 0.273
+         "share": 0.289
         }
        ]
       }
@@ -182,17 +182,17 @@
      "footprint": {
       "ic": {
        "range": {
-        "n": 166,
-        "rel_dv": 0.16,
+        "n": 169,
+        "rel_dv": 0.159,
         "rel_dv_iqr": [
          0.087,
-         0.237
+         0.233
         ],
         "share_ventral_half": 1.0,
         "capsule_dv_extent_mm": 7.5,
-        "z_mean_mm": 16.12,
+        "z_mean_mm": 16.11,
         "capsule_z_mean_mm": 18.71,
-        "dz_mm": -2.59,
+        "dz_mm": -2.61,
         "x_abs_mean_mm": 3.86,
         "capsule_x_abs_mean_mm": 6.71
        },
@@ -213,22 +213,22 @@
          "capsule_x_abs_mean_mm": 7.42
         },
         "18.0": {
-         "n": 116,
-         "rel_dv": 0.184,
+         "n": 119,
+         "rel_dv": 0.182,
          "rel_dv_iqr": [
           0.103,
           0.258
          ],
          "share_ventral_half": 1.0,
          "capsule_dv_extent_mm": 7.5,
-         "z_mean_mm": 16.11,
+         "z_mean_mm": 16.1,
          "capsule_z_mean_mm": 18.5,
-         "dz_mm": -2.39,
-         "x_abs_mean_mm": 3.79,
+         "dz_mm": -2.4,
+         "x_abs_mean_mm": 3.8,
          "capsule_x_abs_mean_mm": 6.4
         },
         "20.0": {
-         "n": 65,
+         "n": 66,
          "rel_dv": 0.1,
          "rel_dv_iqr": [
           0.043,
@@ -238,25 +238,25 @@
          "capsule_dv_extent_mm": 5.75,
          "z_mean_mm": 16.64,
          "capsule_z_mean_mm": 19.03,
-         "dz_mm": -2.39,
-         "x_abs_mean_mm": 4.22,
+         "dz_mm": -2.38,
+         "x_abs_mean_mm": 4.23,
          "capsule_x_abs_mean_mm": 6.86
         }
        }
       },
       "ic_plus_0p5mm": {
        "range": {
-        "n": 257,
-        "rel_dv": 0.203,
+        "n": 259,
+        "rel_dv": 0.202,
         "rel_dv_iqr": [
          0.143,
          0.265
         ],
         "share_ventral_half": 1.0,
         "capsule_dv_extent_mm": 8.5,
-        "z_mean_mm": 16.01,
+        "z_mean_mm": 16.0,
         "capsule_z_mean_mm": 18.58,
-        "dz_mm": -2.57,
+        "dz_mm": -2.58,
         "x_abs_mean_mm": 3.78,
         "capsule_x_abs_mean_mm": 6.61
        },
@@ -277,23 +277,23 @@
          "capsule_x_abs_mean_mm": 7.25
         },
         "18.0": {
-         "n": 170,
-         "rel_dv": 0.218,
+         "n": 172,
+         "rel_dv": 0.216,
          "rel_dv_iqr": [
-          0.171,
+          0.166,
           0.286
          ],
          "share_ventral_half": 1.0,
          "capsule_dv_extent_mm": 8.5,
-         "z_mean_mm": 16.07,
+         "z_mean_mm": 16.06,
          "capsule_z_mean_mm": 18.44,
-         "dz_mm": -2.36,
-         "x_abs_mean_mm": 3.69,
+         "dz_mm": -2.38,
+         "x_abs_mean_mm": 3.7,
          "capsule_x_abs_mean_mm": 6.36
         },
         "20.0": {
-         "n": 106,
-         "rel_dv": 0.147,
+         "n": 108,
+         "rel_dv": 0.146,
          "rel_dv_iqr": [
           0.074,
           0.226
@@ -303,7 +303,7 @@
          "z_mean_mm": 16.39,
          "capsule_z_mean_mm": 18.89,
          "dz_mm": -2.5,
-         "x_abs_mean_mm": 4.25,
+         "x_abs_mean_mm": 4.26,
          "capsule_x_abs_mean_mm": 6.73
         }
        }
@@ -312,17 +312,17 @@
      "solid": {
       "ic": {
        "range": {
-        "n": 33,
-        "rel_dv": 0.132,
+        "n": 32,
+        "rel_dv": 0.136,
         "rel_dv_iqr": [
-         0.065,
+         0.068,
          0.226
         ],
         "share_ventral_half": 1.0,
         "capsule_dv_extent_mm": 7.5,
-        "z_mean_mm": 16.0,
+        "z_mean_mm": 15.99,
         "capsule_z_mean_mm": 18.71,
-        "dz_mm": -2.71,
+        "dz_mm": -2.72,
         "x_abs_mean_mm": 3.85,
         "capsule_x_abs_mean_mm": 6.71
        },
@@ -347,34 +347,34 @@
         },
         "20.0": {
          "n": 12,
-         "rel_dv": 0.04,
+         "rel_dv": 0.043,
          "rel_dv_iqr": [
-          0.0,
+          0.033,
           0.054
          ],
          "share_ventral_half": 1.0,
          "capsule_dv_extent_mm": 5.75,
-         "z_mean_mm": 16.48,
+         "z_mean_mm": 16.5,
          "capsule_z_mean_mm": 19.03,
-         "dz_mm": -2.55,
-         "x_abs_mean_mm": 4.19,
+         "dz_mm": -2.53,
+         "x_abs_mean_mm": 4.21,
          "capsule_x_abs_mean_mm": 6.86
         }
        }
       },
       "ic_plus_0p5mm": {
        "range": {
-        "n": 58,
-        "rel_dv": 0.2,
+        "n": 56,
+        "rel_dv": 0.197,
         "rel_dv_iqr": [
-         0.147,
-         0.263
+         0.146,
+         0.26
         ],
         "share_ventral_half": 1.0,
         "capsule_dv_extent_mm": 8.5,
-        "z_mean_mm": 15.98,
+        "z_mean_mm": 15.96,
         "capsule_z_mean_mm": 18.58,
-        "dz_mm": -2.6,
+        "dz_mm": -2.63,
         "x_abs_mean_mm": 3.73,
         "capsule_x_abs_mean_mm": 6.61
        },
@@ -399,17 +399,17 @@
         },
         "20.0": {
          "n": 23,
-         "rel_dv": 0.135,
+         "rel_dv": 0.133,
          "rel_dv_iqr": [
           0.074,
           0.18
          ],
          "share_ventral_half": 1.0,
          "capsule_dv_extent_mm": 7.0,
-         "z_mean_mm": 16.3,
+         "z_mean_mm": 16.32,
          "capsule_z_mean_mm": 18.89,
-         "dz_mm": -2.59,
-         "x_abs_mean_mm": 4.21,
+         "dz_mm": -2.57,
+         "x_abs_mean_mm": 4.22,
          "capsule_x_abs_mean_mm": 6.73
         }
        }
@@ -433,10 +433,10 @@
       "solid_ic_plus_0p5mm": "ventral"
      },
      "n": {
-      "footprint_ic": 166,
-      "footprint_ic_plus_0p5mm": 257,
-      "solid_ic": 33,
-      "solid_ic_plus_0p5mm": 58
+      "footprint_ic": 169,
+      "footprint_ic_plus_0p5mm": 259,
+      "solid_ic": 32,
+      "solid_ic_plus_0p5mm": 56
      },
      "consistent": {
       "footprint_ic": true,
@@ -454,86 +454,86 @@
       "voxels": 32,
       "centroid_template_mm": [
        1.45,
-       23.7,
-       28.76
+       23.68,
+       28.7
       ],
       "charm": {
        "level_1": [
         {
          "label": "Frontal",
-         "share": 0.938
+         "share": 0.906
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.062
+         "share": 0.094
         }
        ],
        "level_2": [
         {
          "label": "motor",
-         "share": 0.938
+         "share": 0.906
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.062
+         "share": 0.094
         }
        ],
        "level_3": [
         {
          "label": "SMA/preSMA",
-         "share": 0.938
+         "share": 0.906
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.062
+         "share": 0.094
         }
        ],
        "level_4": [
         {
          "label": "SMA/preSMA",
-         "share": 0.938
+         "share": 0.906
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.062
+         "share": 0.094
         }
        ],
        "level_5": [
         {
          "label": "preSMA",
-         "share": 0.656
+         "share": 0.594
         },
         {
          "label": "SMA",
-         "share": 0.281
+         "share": 0.312
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.062
+         "share": 0.094
         }
        ],
        "level_6": [
         {
          "label": "preSMA",
-         "share": 0.656
+         "share": 0.594
         },
         {
          "label": "SMA",
-         "share": 0.281
+         "share": 0.312
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.062
+         "share": 0.094
         }
        ]
       }
      },
      "solid": {
-      "voxels": 7,
+      "voxels": 8,
       "centroid_template_mm": [
-       1.45,
-       23.71,
-       28.82
+       1.62,
+       23.69,
+       28.81
       ],
       "charm": {
        "level_1": [
@@ -563,21 +563,21 @@
        "level_5": [
         {
          "label": "preSMA",
-         "share": 0.857
+         "share": 0.75
         },
         {
          "label": "SMA",
-         "share": 0.143
+         "share": 0.25
         }
        ],
        "level_6": [
         {
          "label": "preSMA",
-         "share": 0.857
+         "share": 0.75
         },
         {
          "label": "SMA",
-         "share": 0.143
+         "share": 0.25
         }
        ]
       }
@@ -587,49 +587,49 @@
      "footprint": {
       "ic": {
        "range": {
-        "n": 285,
-        "rel_dv": 0.697,
+        "n": 287,
+        "rel_dv": 0.702,
         "rel_dv_iqr": [
          0.606,
-         0.844
+         0.862
         ],
-        "share_ventral_half": 0.144,
+        "share_ventral_half": 0.143,
         "capsule_dv_extent_mm": 7.5,
-        "z_mean_mm": 19.97,
+        "z_mean_mm": 20.01,
         "capsule_z_mean_mm": 18.71,
-        "dz_mm": 1.25,
-        "x_abs_mean_mm": 7.81,
+        "dz_mm": 1.29,
+        "x_abs_mean_mm": 7.83,
         "capsule_x_abs_mean_mm": 6.71
        },
        "per_plane": {
         "16.0": {
-         "n": 348,
-         "rel_dv": 0.49,
+         "n": 349,
+         "rel_dv": 0.491,
          "rel_dv_iqr": [
-          0.26,
+          0.267,
           0.688
          ],
-         "share_ventral_half": 0.437,
+         "share_ventral_half": 0.436,
          "capsule_dv_extent_mm": 7.75,
-         "z_mean_mm": 18.55,
+         "z_mean_mm": 18.56,
          "capsule_z_mean_mm": 18.9,
-         "dz_mm": -0.35,
+         "dz_mm": -0.34,
          "x_abs_mean_mm": 7.1,
          "capsule_x_abs_mean_mm": 7.42
         },
         "18.0": {
-         "n": 74,
-         "rel_dv": 0.804,
+         "n": 71,
+         "rel_dv": 0.81,
          "rel_dv_iqr": [
           0.724,
-          0.897
+          0.903
          ],
          "share_ventral_half": 0.0,
          "capsule_dv_extent_mm": 7.5,
-         "z_mean_mm": 20.8,
+         "z_mean_mm": 20.85,
          "capsule_z_mean_mm": 18.5,
-         "dz_mm": 2.3,
-         "x_abs_mean_mm": 8.46,
+         "dz_mm": 2.34,
+         "x_abs_mean_mm": 8.48,
          "capsule_x_abs_mean_mm": 6.4
         },
         "20.0": {
@@ -651,64 +651,64 @@
       },
       "ic_plus_0p5mm": {
        "range": {
-        "n": 333,
-        "rel_dv": 0.674,
+        "n": 331,
+        "rel_dv": 0.678,
         "rel_dv_iqr": [
          0.583,
-         0.839
+         0.848
         ],
-        "share_ventral_half": 0.177,
+        "share_ventral_half": 0.175,
         "capsule_dv_extent_mm": 8.5,
-        "z_mean_mm": 19.95,
+        "z_mean_mm": 19.98,
         "capsule_z_mean_mm": 18.58,
-        "dz_mm": 1.37,
-        "x_abs_mean_mm": 7.81,
+        "dz_mm": 1.4,
+        "x_abs_mean_mm": 7.83,
         "capsule_x_abs_mean_mm": 6.61
        },
        "per_plane": {
         "16.0": {
-         "n": 424,
-         "rel_dv": 0.453,
+         "n": 423,
+         "rel_dv": 0.456,
          "rel_dv_iqr": [
           0.235,
           0.639
          ],
-         "share_ventral_half": 0.517,
+         "share_ventral_half": 0.513,
          "capsule_dv_extent_mm": 8.75,
-         "z_mean_mm": 18.19,
+         "z_mean_mm": 18.21,
          "capsule_z_mean_mm": 18.66,
-         "dz_mm": -0.46,
-         "x_abs_mean_mm": 7.0,
+         "dz_mm": -0.44,
+         "x_abs_mean_mm": 7.02,
          "capsule_x_abs_mean_mm": 7.25
         },
         "18.0": {
-         "n": 89,
-         "rel_dv": 0.803,
+         "n": 82,
+         "rel_dv": 0.802,
          "rel_dv_iqr": [
-          0.735,
+          0.737,
           0.886
          ],
          "share_ventral_half": 0.0,
          "capsule_dv_extent_mm": 8.5,
-         "z_mean_mm": 21.06,
+         "z_mean_mm": 21.05,
          "capsule_z_mean_mm": 18.44,
-         "dz_mm": 2.63,
-         "x_abs_mean_mm": 8.48,
+         "dz_mm": 2.62,
+         "x_abs_mean_mm": 8.51,
          "capsule_x_abs_mean_mm": 6.36
         },
         "20.0": {
-         "n": 27,
-         "rel_dv": 0.903,
+         "n": 28,
+         "rel_dv": 0.905,
          "rel_dv_iqr": [
           0.871,
-          0.935
+          0.936
          ],
          "share_ventral_half": 0.0,
          "capsule_dv_extent_mm": 7.0,
-         "z_mean_mm": 21.86,
+         "z_mean_mm": 21.88,
          "capsule_z_mean_mm": 18.89,
-         "dz_mm": 2.97,
-         "x_abs_mean_mm": 9.17,
+         "dz_mm": 2.99,
+         "x_abs_mean_mm": 9.18,
          "capsule_x_abs_mean_mm": 6.73
         }
        }
@@ -717,64 +717,64 @@
      "solid": {
       "ic": {
        "range": {
-        "n": 70,
-        "rel_dv": 0.683,
+        "n": 69,
+        "rel_dv": 0.678,
         "rel_dv_iqr": [
-         0.578,
+         0.576,
          0.839
         ],
-        "share_ventral_half": 0.2,
+        "share_ventral_half": 0.203,
         "capsule_dv_extent_mm": 7.5,
-        "z_mean_mm": 19.87,
+        "z_mean_mm": 19.84,
         "capsule_z_mean_mm": 18.71,
-        "dz_mm": 1.16,
-        "x_abs_mean_mm": 7.74,
+        "dz_mm": 1.12,
+        "x_abs_mean_mm": 7.72,
         "capsule_x_abs_mean_mm": 6.71
        },
        "per_plane": {
         "16.0": {
-         "n": 122,
-         "rel_dv": 0.454,
+         "n": 119,
+         "rel_dv": 0.446,
          "rel_dv_iqr": [
-          0.214,
+          0.207,
           0.633
          ],
-         "share_ventral_half": 0.5,
+         "share_ventral_half": 0.504,
          "capsule_dv_extent_mm": 7.75,
-         "z_mean_mm": 18.3,
+         "z_mean_mm": 18.24,
          "capsule_z_mean_mm": 18.9,
-         "dz_mm": -0.61,
-         "x_abs_mean_mm": 7.03,
+         "dz_mm": -0.66,
+         "x_abs_mean_mm": 7.01,
          "capsule_x_abs_mean_mm": 7.42
         },
         "18.0": {
          "n": 9,
-         "rel_dv": 0.777,
+         "rel_dv": 0.781,
          "rel_dv_iqr": [
           0.806,
           0.839
          ],
          "share_ventral_half": 0.0,
          "capsule_dv_extent_mm": 7.5,
-         "z_mean_mm": 20.58,
+         "z_mean_mm": 20.61,
          "capsule_z_mean_mm": 18.5,
-         "dz_mm": 2.08,
-         "x_abs_mean_mm": 8.57,
+         "dz_mm": 2.11,
+         "x_abs_mean_mm": 8.54,
          "capsule_x_abs_mean_mm": 6.4
         },
         "20.0": {
-         "n": 6,
-         "rel_dv": 0.938,
+         "n": 5,
+         "rel_dv": 0.933,
          "rel_dv_iqr": [
-          0.918,
-          0.963
+          0.913,
+          0.957
          ],
          "share_ventral_half": 0.0,
          "capsule_dv_extent_mm": 5.75,
-         "z_mean_mm": 21.75,
+         "z_mean_mm": 21.7,
          "capsule_z_mean_mm": 19.03,
-         "dz_mm": 2.72,
-         "x_abs_mean_mm": 9.17,
+         "dz_mm": 2.67,
+         "x_abs_mean_mm": 9.22,
          "capsule_x_abs_mean_mm": 6.86
         }
        }
@@ -782,63 +782,63 @@
       "ic_plus_0p5mm": {
        "range": {
         "n": 80,
-        "rel_dv": 0.678,
+        "rel_dv": 0.679,
         "rel_dv_iqr": [
          0.583,
-         0.837
+         0.85
         ],
         "share_ventral_half": 0.2,
         "capsule_dv_extent_mm": 8.5,
         "z_mean_mm": 20.0,
         "capsule_z_mean_mm": 18.58,
         "dz_mm": 1.42,
-        "x_abs_mean_mm": 7.8,
+        "x_abs_mean_mm": 7.81,
         "capsule_x_abs_mean_mm": 6.61
        },
        "per_plane": {
         "16.0": {
-         "n": 128,
-         "rel_dv": 0.452,
+         "n": 125,
+         "rel_dv": 0.445,
          "rel_dv_iqr": [
-          0.241,
-          0.618
+          0.235,
+          0.611
          ],
-         "share_ventral_half": 0.523,
+         "share_ventral_half": 0.528,
          "capsule_dv_extent_mm": 8.75,
-         "z_mean_mm": 18.2,
+         "z_mean_mm": 18.14,
          "capsule_z_mean_mm": 18.66,
-         "dz_mm": -0.46,
-         "x_abs_mean_mm": 7.02,
+         "dz_mm": -0.51,
+         "x_abs_mean_mm": 7.0,
          "capsule_x_abs_mean_mm": 7.25
         },
         "18.0": {
-         "n": 12,
-         "rel_dv": 0.795,
+         "n": 11,
+         "rel_dv": 0.784,
          "rel_dv_iqr": [
           0.771,
-          0.861
+          0.838
          ],
          "share_ventral_half": 0.0,
          "capsule_dv_extent_mm": 8.5,
-         "z_mean_mm": 20.98,
+         "z_mean_mm": 20.89,
          "capsule_z_mean_mm": 18.44,
-         "dz_mm": 2.54,
-         "x_abs_mean_mm": 8.56,
+         "dz_mm": 2.45,
+         "x_abs_mean_mm": 8.53,
          "capsule_x_abs_mean_mm": 6.36
         },
         "20.0": {
          "n": 10,
-         "rel_dv": 0.904,
+         "rel_dv": 0.918,
          "rel_dv_iqr": [
-          0.88,
-          0.92
+          0.885,
+          0.939
          ],
          "share_ventral_half": 0.0,
          "capsule_dv_extent_mm": 7.0,
-         "z_mean_mm": 21.9,
+         "z_mean_mm": 22.0,
          "capsule_z_mean_mm": 18.89,
-         "dz_mm": 3.01,
-         "x_abs_mean_mm": 9.18,
+         "dz_mm": 3.11,
+         "x_abs_mean_mm": 9.15,
          "capsule_x_abs_mean_mm": 6.73
         }
        }
@@ -862,9 +862,9 @@
       "solid_ic_plus_0p5mm": "dorsal"
      },
      "n": {
-      "footprint_ic": 285,
-      "footprint_ic_plus_0p5mm": 333,
-      "solid_ic": 70,
+      "footprint_ic": 287,
+      "footprint_ic_plus_0p5mm": 331,
+      "solid_ic": 69,
       "solid_ic_plus_0p5mm": 80
      },
      "consistent": {
@@ -886,17 +886,17 @@
      "footprint": {
       "ic": {
        "range": {
-        "n": 122,
-        "rel_dv": 0.152,
+        "n": 123,
+        "rel_dv": 0.154,
         "rel_dv_iqr": [
          0.069,
-         0.226
+         0.234
         ],
         "share_ventral_half": 1.0,
         "capsule_dv_extent_mm": 7.5,
-        "z_mean_mm": 16.0,
+        "z_mean_mm": 16.02,
         "capsule_z_mean_mm": 18.71,
-        "dz_mm": -2.71,
+        "dz_mm": -2.7,
         "x_abs_mean_mm": 3.85,
         "capsule_x_abs_mean_mm": 6.71
        },
@@ -925,32 +925,32 @@
          ],
          "share_ventral_half": 1.0,
          "capsule_dv_extent_mm": 7.5,
-         "z_mean_mm": 16.01,
+         "z_mean_mm": 16.02,
          "capsule_z_mean_mm": 18.5,
-         "dz_mm": -2.49,
+         "dz_mm": -2.48,
          "x_abs_mean_mm": 3.8,
          "capsule_x_abs_mean_mm": 6.4
         },
         "20.0": {
-         "n": 35,
-         "rel_dv": 0.097,
+         "n": 36,
+         "rel_dv": 0.094,
          "rel_dv_iqr": [
-          0.043,
+          0.041,
           0.172
          ],
          "share_ventral_half": 1.0,
          "capsule_dv_extent_mm": 5.75,
-         "z_mean_mm": 16.59,
+         "z_mean_mm": 16.58,
          "capsule_z_mean_mm": 19.03,
-         "dz_mm": -2.44,
-         "x_abs_mean_mm": 4.05,
+         "dz_mm": -2.45,
+         "x_abs_mean_mm": 4.03,
          "capsule_x_abs_mean_mm": 6.86
         }
        }
       },
       "ic_plus_0p5mm": {
        "range": {
-        "n": 192,
+        "n": 193,
         "rel_dv": 0.184,
         "rel_dv_iqr": [
          0.118,
@@ -958,9 +958,9 @@
         ],
         "share_ventral_half": 1.0,
         "capsule_dv_extent_mm": 8.5,
-        "z_mean_mm": 15.88,
+        "z_mean_mm": 15.89,
         "capsule_z_mean_mm": 18.58,
-        "dz_mm": -2.7,
+        "dz_mm": -2.69,
         "x_abs_mean_mm": 3.83,
         "capsule_x_abs_mean_mm": 6.61
        },
@@ -989,25 +989,25 @@
          ],
          "share_ventral_half": 1.0,
          "capsule_dv_extent_mm": 8.5,
-         "z_mean_mm": 15.99,
+         "z_mean_mm": 16.0,
          "capsule_z_mean_mm": 18.44,
          "dz_mm": -2.44,
          "x_abs_mean_mm": 3.73,
          "capsule_x_abs_mean_mm": 6.36
         },
         "20.0": {
-         "n": 85,
-         "rel_dv": 0.12,
+         "n": 86,
+         "rel_dv": 0.119,
          "rel_dv_iqr": [
           0.038,
           0.194
          ],
          "share_ventral_half": 1.0,
          "capsule_dv_extent_mm": 7.0,
-         "z_mean_mm": 16.32,
+         "z_mean_mm": 16.31,
          "capsule_z_mean_mm": 18.89,
-         "dz_mm": -2.57,
-         "x_abs_mean_mm": 4.09,
+         "dz_mm": -2.58,
+         "x_abs_mean_mm": 4.07,
          "capsule_x_abs_mean_mm": 6.73
         }
        }
@@ -1154,8 +1154,8 @@
       "solid_ic_plus_0p5mm": "ventral"
      },
      "n": {
-      "footprint_ic": 122,
-      "footprint_ic_plus_0p5mm": 192,
+      "footprint_ic": 123,
+      "footprint_ic_plus_0p5mm": 193,
       "solid_ic": 36,
       "solid_ic_plus_0p5mm": 52
      },
@@ -1172,139 +1172,139 @@
     "side": "left",
     "site": {
      "footprint": {
-      "voxels": 775,
+      "voxels": 781,
       "centroid_template_mm": [
        -5.73,
-       30.18,
-       20.6
+       30.17,
+       20.59
       ],
       "charm": {
        "level_1": [
         {
          "label": "Frontal",
-         "share": 0.846
+         "share": 0.845
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.154
+         "share": 0.155
         }
        ],
        "level_2": [
         {
          "label": "OFC",
-         "share": 0.846
+         "share": 0.845
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.154
+         "share": 0.155
         }
        ],
        "level_3": [
         {
          "label": "lat_OFC",
-         "share": 0.846
+         "share": 0.845
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.154
+         "share": 0.155
         }
        ],
        "level_4": [
         {
          "label": "areas_11/13",
-         "share": 0.846
+         "share": 0.845
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.154
+         "share": 0.155
         }
        ],
        "level_5": [
         {
          "label": "area_13",
-         "share": 0.757
+         "share": 0.755
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.154
+         "share": 0.155
         },
         {
          "label": "area_11",
-         "share": 0.089
+         "share": 0.09
         }
        ],
        "level_6": [
         {
          "label": "area_13m",
-         "share": 0.757
+         "share": 0.755
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.154
+         "share": 0.155
         },
         {
          "label": "area_11m",
-         "share": 0.061
+         "share": 0.06
         }
        ]
       }
      },
      "solid": {
-      "voxels": 250,
+      "voxels": 251,
       "centroid_template_mm": [
        -5.77,
        30.27,
-       20.71
+       20.7
       ],
       "charm": {
        "level_1": [
         {
          "label": "Frontal",
-         "share": 0.912
+         "share": 0.908
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.088
+         "share": 0.092
         }
        ],
        "level_2": [
         {
          "label": "OFC",
-         "share": 0.912
+         "share": 0.908
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.088
+         "share": 0.092
         }
        ],
        "level_3": [
         {
          "label": "lat_OFC",
-         "share": 0.912
+         "share": 0.908
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.088
+         "share": 0.092
         }
        ],
        "level_4": [
         {
          "label": "areas_11/13",
-         "share": 0.912
+         "share": 0.908
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.088
+         "share": 0.092
         }
        ],
        "level_5": [
         {
          "label": "area_13",
-         "share": 0.852
+         "share": 0.849
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.088
+         "share": 0.092
         },
         {
          "label": "area_11",
@@ -1314,11 +1314,11 @@
        "level_6": [
         {
          "label": "area_13m",
-         "share": 0.852
+         "share": 0.849
         },
         {
          "label": "outside CHARM cortex",
-         "share": 0.088
+         "share": 0.092
         },
         {
          "label": "area_11m",
@@ -1332,18 +1332,18 @@
      "footprint": {
       "ic": {
        "range": {
-        "n": 483,
-        "rel_dv": 0.252,
+        "n": 495,
+        "rel_dv": 0.256,
         "rel_dv_iqr": [
-         0.116,
-         0.333
+         0.129,
+         0.345
         ],
-        "share_ventral_half": 0.87,
+        "share_ventral_half": 0.871,
         "capsule_dv_extent_mm": 7.5,
-        "z_mean_mm": 16.83,
+        "z_mean_mm": 16.86,
         "capsule_z_mean_mm": 18.74,
-        "dz_mm": -1.91,
-        "x_abs_mean_mm": 4.28,
+        "dz_mm": -1.88,
+        "x_abs_mean_mm": 4.3,
         "capsule_x_abs_mean_mm": 6.74
        },
        "per_plane": {
@@ -1363,30 +1363,30 @@
          "capsule_x_abs_mean_mm": 7.48
         },
         "18.0": {
-         "n": 306,
-         "rel_dv": 0.258,
+         "n": 308,
+         "rel_dv": 0.26,
          "rel_dv_iqr": [
           0.129,
-          0.333
+          0.355
          ],
-         "share_ventral_half": 0.856,
+         "share_ventral_half": 0.857,
          "capsule_dv_extent_mm": 7.5,
-         "z_mean_mm": 16.62,
+         "z_mean_mm": 16.64,
          "capsule_z_mean_mm": 18.54,
-         "dz_mm": -1.92,
-         "x_abs_mean_mm": 4.11,
+         "dz_mm": -1.91,
+         "x_abs_mean_mm": 4.12,
          "capsule_x_abs_mean_mm": 6.43
         },
         "20.0": {
-         "n": 247,
-         "rel_dv": 0.291,
+         "n": 257,
+         "rel_dv": 0.292,
          "rel_dv_iqr": [
           0.13,
           0.348
          ],
-         "share_ventral_half": 0.826,
+         "share_ventral_half": 0.829,
          "capsule_dv_extent_mm": 5.75,
-         "z_mean_mm": 17.73,
+         "z_mean_mm": 17.74,
          "capsule_z_mean_mm": 18.98,
          "dz_mm": -1.25,
          "x_abs_mean_mm": 5.16,
@@ -1396,17 +1396,17 @@
       },
       "ic_plus_0p5mm": {
        "range": {
-        "n": 702,
-        "rel_dv": 0.28,
+        "n": 713,
+        "rel_dv": 0.282,
         "rel_dv_iqr": [
          0.152,
-         0.355
+         0.364
         ],
-        "share_ventral_half": 0.865,
+        "share_ventral_half": 0.87,
         "capsule_dv_extent_mm": 8.5,
-        "z_mean_mm": 16.74,
+        "z_mean_mm": 16.75,
         "capsule_z_mean_mm": 18.58,
-        "dz_mm": -1.85,
+        "dz_mm": -1.83,
         "x_abs_mean_mm": 4.23,
         "capsule_x_abs_mean_mm": 6.62
        },
@@ -1427,28 +1427,28 @@
          "capsule_x_abs_mean_mm": 7.27
         },
         "18.0": {
-         "n": 418,
-         "rel_dv": 0.277,
+         "n": 420,
+         "rel_dv": 0.278,
          "rel_dv_iqr": [
           0.147,
-          0.343
+          0.345
          ],
-         "share_ventral_half": 0.856,
+         "share_ventral_half": 0.86,
          "capsule_dv_extent_mm": 8.5,
          "z_mean_mm": 16.53,
          "capsule_z_mean_mm": 18.45,
-         "dz_mm": -1.93,
+         "dz_mm": -1.92,
          "x_abs_mean_mm": 4.02,
          "capsule_x_abs_mean_mm": 6.37
         },
         "20.0": {
-         "n": 404,
-         "rel_dv": 0.31,
+         "n": 412,
+         "rel_dv": 0.311,
          "rel_dv_iqr": [
-          0.144,
-          0.394
+          0.148,
+          0.395
          ],
-         "share_ventral_half": 0.819,
+         "share_ventral_half": 0.825,
          "capsule_dv_extent_mm": 6.75,
          "z_mean_mm": 17.53,
          "capsule_z_mean_mm": 18.86,
@@ -1462,18 +1462,18 @@
      "solid": {
       "ic": {
        "range": {
-        "n": 139,
-        "rel_dv": 0.209,
+        "n": 140,
+        "rel_dv": 0.213,
         "rel_dv_iqr": [
          0.129,
          0.258
         ],
-        "share_ventral_half": 0.935,
+        "share_ventral_half": 0.936,
         "capsule_dv_extent_mm": 7.5,
-        "z_mean_mm": 16.46,
+        "z_mean_mm": 16.49,
         "capsule_z_mean_mm": 18.74,
-        "dz_mm": -2.28,
-        "x_abs_mean_mm": 3.91,
+        "dz_mm": -2.25,
+        "x_abs_mean_mm": 3.93,
         "capsule_x_abs_mean_mm": 6.74
        },
        "per_plane": {
@@ -1481,30 +1481,30 @@
          "n": 0
         },
         "18.0": {
-         "n": 92,
-         "rel_dv": 0.208,
+         "n": 91,
+         "rel_dv": 0.211,
          "rel_dv_iqr": [
           0.129,
-          0.246
+          0.25
          ],
-         "share_ventral_half": 0.946,
+         "share_ventral_half": 0.945,
          "capsule_dv_extent_mm": 7.5,
-         "z_mean_mm": 16.18,
+         "z_mean_mm": 16.21,
          "capsule_z_mean_mm": 18.54,
-         "dz_mm": -2.36,
-         "x_abs_mean_mm": 3.7,
+         "dz_mm": -2.34,
+         "x_abs_mean_mm": 3.71,
          "capsule_x_abs_mean_mm": 6.43
         },
         "20.0": {
-         "n": 77,
-         "rel_dv": 0.216,
+         "n": 83,
+         "rel_dv": 0.214,
          "rel_dv_iqr": [
-          0.043,
-          0.304
+          0.078,
+          0.307
          ],
-         "share_ventral_half": 0.922,
+         "share_ventral_half": 0.94,
          "capsule_dv_extent_mm": 5.75,
-         "z_mean_mm": 17.17,
+         "z_mean_mm": 17.16,
          "capsule_z_mean_mm": 18.98,
          "dz_mm": -1.82,
          "x_abs_mean_mm": 4.69,
@@ -1515,17 +1515,17 @@
       "ic_plus_0p5mm": {
        "range": {
         "n": 169,
-        "rel_dv": 0.241,
+        "rel_dv": 0.245,
         "rel_dv_iqr": [
-         0.167,
-         0.29
+         0.171,
+         0.294
         ],
         "share_ventral_half": 0.941,
         "capsule_dv_extent_mm": 8.5,
-        "z_mean_mm": 16.33,
+        "z_mean_mm": 16.37,
         "capsule_z_mean_mm": 18.58,
-        "dz_mm": -2.25,
-        "x_abs_mean_mm": 3.91,
+        "dz_mm": -2.21,
+        "x_abs_mean_mm": 3.93,
         "capsule_x_abs_mean_mm": 6.62
        },
        "per_plane": {
@@ -1533,32 +1533,32 @@
          "n": 0
         },
         "18.0": {
-         "n": 104,
-         "rel_dv": 0.233,
+         "n": 102,
+         "rel_dv": 0.237,
          "rel_dv_iqr": [
-          0.164,
+          0.171,
           0.286
          ],
-         "share_ventral_half": 0.942,
+         "share_ventral_half": 0.941,
          "capsule_dv_extent_mm": 8.5,
-         "z_mean_mm": 16.09,
+         "z_mean_mm": 16.13,
          "capsule_z_mean_mm": 18.45,
-         "dz_mm": -2.36,
-         "x_abs_mean_mm": 3.73,
+         "dz_mm": -2.32,
+         "x_abs_mean_mm": 3.74,
          "capsule_x_abs_mean_mm": 6.37
         },
         "20.0": {
-         "n": 104,
+         "n": 110,
          "rel_dv": 0.263,
          "rel_dv_iqr": [
-          0.148,
-          0.323
+          0.149,
+          0.333
          ],
-         "share_ventral_half": 0.913,
+         "share_ventral_half": 0.927,
          "capsule_dv_extent_mm": 6.75,
-         "z_mean_mm": 17.01,
+         "z_mean_mm": 17.02,
          "capsule_z_mean_mm": 18.86,
-         "dz_mm": -1.85,
+         "dz_mm": -1.84,
          "x_abs_mean_mm": 4.61,
          "capsule_x_abs_mean_mm": 6.72
         }
@@ -1583,9 +1583,9 @@
       "solid_ic_plus_0p5mm": "ventral"
      },
      "n": {
-      "footprint_ic": 483,
-      "footprint_ic_plus_0p5mm": 702,
-      "solid_ic": 139,
+      "footprint_ic": 495,
+      "footprint_ic_plus_0p5mm": 713,
+      "solid_ic": 140,
       "solid_ic_plus_0p5mm": 169
      },
      "consistent": {
@@ -1597,6 +1597,6 @@
     }
    }
   },
-  "labels": "labels/tracer_v2_h9_s11r17/sections_template"
+  "labels": "labels/tracer_v2_h9_s11wr17/sections_template"
  }
 }

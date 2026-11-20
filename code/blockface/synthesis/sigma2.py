@@ -1,5 +1,7 @@
 """sigma^2_pred(D): the completion's squared error by depth past the cut, which the blockface template's construction turns into
-precision weights for predicted tissue (code/figures/paper_numbers/precision_weights_b1_d2b_s8.py reads d3_A_sigma2_pred_flat).
+precision weights for predicted tissue. The template files released on 16 Nov used this curve (d3_A_sigma2_pred_flat); the published
+template uses the same measurement from the withheld-slab test made without the withheld tissue (sigma2_leakfree_a19,
+curves.lfr1). code/figures/paper_numbers/precision_weights_b1_d2b_s8.py reads both.
 
 Measured on the withheld slabs of the 12 evaluation brains, from the leave-slab-out network's joined predictions (deploy.join, saved
 by the evaluation as <run>_<ID>_deployed.nii.gz on [0, 1]), mapped back to the photographs' grey with each brain's target

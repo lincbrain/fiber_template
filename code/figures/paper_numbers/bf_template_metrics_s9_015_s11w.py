@@ -2,7 +2,7 @@
 """The published blockface template's numbers (Results, the blockface template): step 9 at 0.15 mm on its 11 brains, read from its
 saved products only (no template recomputed).
 
-    python code/figures/paper_numbers/bf_template_metrics_s9_015_s11.py
+    python code/figures/paper_numbers/bf_template_metrics_s9_015_s11w.py
 
 You need
   the template's products (settings/internal/products_blockface.yaml: `bftemplate_step9`, the template on its own grid, and
@@ -12,7 +12,8 @@ What it does
   photographed fraction < 0.5), the brain where no photograph contributes at all, and the symmetry (max |V - mirror(V)| of the
   grayscale, color and both masks); the brain and predicted volumes in the MRI template's frame; step 8's beside them.
 You get
-  $LINC_NUMBERS/bf_template_metrics_s9_015_s11.json.
+  $LINC_NUMBERS/bf_template_metrics_s9_015_s11w.json: the template made with the published weights. The record
+  bf_template_metrics_s9_015_s11 held the same numbers for the template files released on 16 Nov.
 """
 import json
 import sys
@@ -34,7 +35,7 @@ DEFINITION = ("The blockface template's numbers, step 9 at 0.15 mm, from its sav
               "also brain & photographed fraction = 0;\n"
               "  symmetry: max |V - mirror(V)| of the gray, color, brain mask and real mask (exact 0 expected);\n"
               "  the same in the MRI template's frame (through the template link, at 0.25 mm), for information.")
-LABEL, ARM = "step 9 at 0.15 mm, 11 brains", "s9_015_s11"   # the record's label and arm
+LABEL, ARM = "step 9 at 0.15 mm, 11 brains", "s9_015_s11w"   # the record's label and arm
 
 
 def main():
@@ -69,10 +70,10 @@ def main():
     print(f"{ARM} brain {row['brain_cm3']:.2f} cm3 predicted {row['predicted_cm3']:.2f} cm3 ({100 * row['predicted_share_of_brain']:.2f} %) "
           f"zero {row['photo_share_zero_cm3']:.2f} cm3 | MRI frame {row['in_mri_template']['predicted_cm3']:.2f} cm3 "
           f"({100 * row['in_mri_template']['predicted_share_of_brain']:.2f} %) | sym {sym}")
-    provenance.write_numbers("bf_template_metrics_s9_015_s11", dict(templates=[row], definition=DEFINITION),
+    provenance.write_numbers("bf_template_metrics_s9_015_s11w", dict(templates=[row], definition=DEFINITION),
                              inputs=[f"{T}_{k}.nii.gz" for k in ("brainmask", "photo_share", "grey", "rgb", "real_mask")]
                              + [f"{MRI}_brainmask.nii.gz", f"{MRI}_synthesized_mask.nii.gz", prod["bftemplate_step8"] / "metrics.json"],
-                             cmd="python code/figures/paper_numbers/bf_template_metrics_s9_015_s11.py", md5=False)
+                             cmd="python code/figures/paper_numbers/bf_template_metrics_s9_015_s11w.py", md5=False)
 
 
 if __name__ == "__main__":

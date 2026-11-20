@@ -38,7 +38,8 @@ reconstruction:
     iters: 200
     dev: 1.5
     dilate: 15
-  tube_inpainting:                   # the marker tubes: grown by their dark halo, filled by a biharmonic solve at L4, feathered in
+  tube_inpainting:                   # the marker tubes: a biharmonic solve at L4 on their mask dilated by `dilate`,
+                                     # blended in at L1 inside the mask grown by their dark halo (halo_frac) and over a `feather_band` ring
     dilate: 2
     margin: 12
     halo_frac: 0.88

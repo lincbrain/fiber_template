@@ -168,3 +168,16 @@ def test_a_registrations_entry_is_refused_first_and_replaced_after_a_backup(tmp_
         R._free(b, "t2-native", "b0-native", True)                 # removed, so the next entry can be written
         assert not Path(again.dir).exists()
         assert (Path(R._entry(b, "t2-native", warp, "toy", 1.25, overwrite=True).dir) / "meta.json").exists()
+
+
+def test_plan_gives_the_rerun_words_to_the_steps_that_refuse():
+    """steps.yaml: a step of the MRI build whose own command refuses what an earlier run left has `again`, the words run.py adds
+    when the step is run again (--force, --redo, or after a failure); without them the step stops on its own outputs. The words
+    are added at the end of the step's command, so the command must end with the tool that takes them."""
+    import yaml
+    steps = {s["name"]: s for s in yaml.safe_load((REPO / "steps.yaml").read_text())["steps"]}
+    for name in ("mri-stage", "mri-tensor", "mri-nmt", "mri-frames", "mri-prepare", "mri-channels"):
+        assert steps[name].get("again") == "--force", name
+        assert "build_mri_channels.py" in steps[name]["run"].split("&&")[-1], name
+    assert steps["mri-links"].get("again") == "--overwrite"
+    assert "mri.mri_register links" in steps["mri-links"]["run"].split("&&")[-1]

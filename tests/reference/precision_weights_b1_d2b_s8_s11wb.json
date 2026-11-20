@@ -1,0 +1,196 @@
+{
+ "data": {
+  "definition": "* the rule = bftemplate/hr_2026-11-12/step9/out_s11w_full/precision_rule.json (byte copy of out_015_s11w's): the record's precision_rule_b1.json with only s2_syn\n    replaced by sigma2_leakfree_a19 data.curves.lfr1 (the leak-free withheld-slab test in which the whole registration was made\n    without the withheld tissue; the record's own sigma2_v3.py --also-flat, flat beyond its last depth). tau2 and s2_interp are the\n    record's, so the interpolation ratio is the record's.\n  * s2_syn.mm<x> = the curve at x mm by linear interpolation, constant below its first and beyond its last depth (as r057's f).\n  * weight_ratio.mm<x> = tau2 / (tau2 + s2_syn(x)) (precision_b1.py's ratios_at); weight_ratio_interp = tau2 / (tau2 + s2_interp).\n  * s2_syn_from_mm / s2_syn_measured_to_mm = the curve's first / last depth; s2_syn_min_brains and s2_syn_all_brains_to_mm = the\n    curve's edge rule (sigma2_v3.py curves.edge3: depths reached by at least that many brains; all brains up to that depth);\n    s2_syn_flat_from_mm = the first depth from which the curve is constant to its end.",
+  "precision": {
+   "rule": "w = 1/(tau2 + sigma2): per brain and voxel, photographed part r[phi/tau2 + (1 - phi)/(tau2 + s2_interp)], synthesized part (1 - r) m/(tau2 + s2_syn(D)); r = the cross-fade weight, phi = the photographed share, D = mm past the junction plane, m = 1 for a brain with MRI and 0 for one without (bftemplate/finish_t1.py = linc/construction/blockface_finish.py)",
+   "tau2": 0.008166845887899399,
+   "s2_interp": 0.002596967106607432,
+   "s2_syn": {
+    "mm0p5": 0.02559148382063149,
+    "mm1": 0.029123358238362308,
+    "mm2": 0.034695969682719825,
+    "mm4": 0.04675257110400536,
+    "mm7": 0.0526680019983051,
+    "mm8": 0.0526680019983051
+   },
+   "s2_syn_measured_to_mm": 8.0,
+   "s2_syn_from_mm": 0.5,
+   "s2_syn_min_brains": 3,
+   "s2_syn_all_brains_to_mm": 4.375,
+   "s2_syn_flat_from_mm": 5.5,
+   "s2_syn_curve": "per-depth MSE of the leave-slab-out network's joined prediction against the withheld photographs, on the leak-free targets in which the whole registration was made without the withheld tissue (sigma2_leakfree_a19 curves.lfr1; 12 brains), adjusted for brain, isotonic over the depths reached by >= 3 brains; constant below the first and beyond the last measured depth",
+   "weight_ratio": {
+    "mm0p5": 0.2419,
+    "mm2": 0.1905,
+    "mm8": 0.1342
+   },
+   "weight_ratio_interp": 0.7587,
+   "weight_ratio_interp_note": "unchanged from the record (precision_weights_b1_d2b_s8 interp_ratio): tau2 and s2_interp are the record's; only s2_syn was replaced",
+   "units": "the photographs' brightness per brain, (B - p1)/(p99 - p1) over its photographed tissue"
+  },
+  "rule": {
+   "tau2": 0.008166845887899399,
+   "s2_interp": 0.002596967106607432,
+   "s2_syn": {
+    "d_mm": [
+     0.5,
+     0.75,
+     1.0,
+     1.25,
+     1.5,
+     1.75,
+     2.0,
+     2.25,
+     2.5,
+     2.75,
+     3.0,
+     3.25,
+     3.5,
+     3.75,
+     4.0,
+     4.25,
+     4.5,
+     4.75,
+     5.0,
+     5.25,
+     5.5,
+     5.75,
+     6.0,
+     6.25,
+     6.5,
+     6.75,
+     7.0,
+     7.25,
+     7.5,
+     7.75,
+     8.0
+    ],
+    "s2": [
+     0.02559148382063149,
+     0.027354369035155607,
+     0.029123358238362308,
+     0.0307076130290493,
+     0.03224587271501029,
+     0.033446272579724094,
+     0.034695969682719825,
+     0.03621499629363785,
+     0.03727780665982952,
+     0.03727780665982952,
+     0.04136793806524803,
+     0.04236967359389395,
+     0.04423633749114846,
+     0.045538917548172644,
+     0.04675257110400536,
+     0.04725944926689462,
+     0.04843680799625977,
+     0.04843680799625977,
+     0.04843680799625977,
+     0.04988903134359284,
+     0.0526680019983051,
+     0.0526680019983051,
+     0.0526680019983051,
+     0.0526680019983051,
+     0.0526680019983051,
+     0.0526680019983051,
+     0.0526680019983051,
+     0.0526680019983051,
+     0.0526680019983051,
+     0.0526680019983051,
+     0.0526680019983051
+    ],
+    "slope_beyond": 0.0,
+    "index": "mm caudal of the join (the clean cut face plane), along the seam normal (finish_t1: max(-seam_depth, 0) of the d3 products)"
+   },
+   "units": "the final caches' grey (tau2 re-measured on the B1 stage-1 build; sigma2 from d3_A_sigma2_pred_flat.json)",
+   "sources": {
+    "tau2": "$LINC_PRODUCTS/bftemplate/d2b/s8/precision_d2bs8/tau2.json tau2_used",
+    "s2_syn": "$LINC_PRODUCTS/paper/numbers/sigma2_leakfree_a19.json data.curves.lfr1",
+    "s2_interp": "$LINC_PRODUCTS/paper/numbers/d3_A_sigma2_pred_flat.json s2_interp"
+   },
+   "tau2_region": {
+    "n_vox": 2006015,
+    "cm3": 31.343984375,
+    "mean": 0.008610136806964874,
+    "median": 0.008166845887899399,
+    "p10_25_75_90": [
+     0.00586223229765892,
+     0.006826843600720167,
+     0.009947886690497398,
+     0.012028990313410759
+    ],
+    "measured_frac": 0.7889567126865951
+   },
+   "ratios_at": {
+    "0.5mm": 0.2419,
+    "2mm": 0.1905,
+    "8mm": 0.1342
+   },
+   "interp_ratio": 0.7587,
+   "replaced": {
+    "from_rule": "$LINC_PRODUCTS/bftemplate/d2b/s8/precision_d2bs8/precision_rule_b1.json",
+    "field": "s2_syn",
+    "curve": "lfr1",
+    "record_s2": [
+     0.007315188386542332,
+     0.008173246839677569,
+     0.008859773620250215,
+     0.009151230466424912,
+     0.009720935626679774,
+     0.010344951840466972,
+     0.011015906027077343,
+     0.011264730889747044,
+     0.011573125278567895,
+     0.012371005905870187,
+     0.01313421910417483,
+     0.013305138135957259,
+     0.013424906196174721,
+     0.013981826304170173,
+     0.01425010250926803,
+     0.014759880123088332,
+     0.015200863777752932,
+     0.016389685462267344,
+     0.016389685462267344,
+     0.016389685462267344,
+     0.016763473371220205,
+     0.016992248179724462,
+     0.016992248179724462,
+     0.016992248179724462,
+     0.016992248179724462,
+     0.016992248179724462,
+     0.016992248179724462
+    ],
+    "record_ratios_at": {
+     "0.5mm": 0.5275,
+     "2mm": 0.4257,
+     "8mm": 0.3246
+    },
+    "note": "only s2_syn (and the ratios_at it implies, and its source) differs from the record's rule"
+   }
+  },
+  "rule_file": "$LINC_PRODUCTS/bftemplate/hr_2026-11-12/step9/out_s11w_full/precision_rule.json",
+  "record": {
+   "name": "precision_weights_b1_d2b_s8 / r057_s1_synthesis.precision",
+   "s2_syn": {
+    "mm0p5": 0.007315188386542332,
+    "mm1": 0.008859773620250215,
+    "mm2": 0.011015906027077343,
+    "mm4": 0.01425010250926803,
+    "mm7": 0.016992248179724462,
+    "mm8": 0.016992248179724462
+   },
+   "weight_ratio": {
+    "mm0p5": 0.5275,
+    "mm2": 0.4257,
+    "mm8": 0.3246
+   },
+   "weight_ratio_interp": 0.7587,
+   "s2_syn_measured_to_mm": 7.0
+  },
+  "control_record_block_recomputed": {
+   "s2_syn_equal": true,
+   "weight_ratio_equal": true,
+   "weight_ratio_interp_equal": true
+  },
+  "scope": "the end-of-step-8 average (its blockface channels) and every average of step 9 (the start, the three rounds, the final average; out_s11w_full); MMORF's steps 1-8, the step-8 member warps and the step-8 b0 channel (weighted by the cost masks) and the link stay of record"
+ }
+}

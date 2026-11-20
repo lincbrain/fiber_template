@@ -182,15 +182,43 @@
    }
   },
   "inverse_residual_mm_per_iteration": [
-   0.000835,
-   0.000988,
-   0.000937
+   0.000915,
+   0.000799,
+   0.000966
   ],
   "inverse_rounds_per_iteration": [
-   27,
+   19,
    21,
-   22
+   20
   ],
-  "definition_s11b": "bf_step9_settings_s11b (16 Nov, for the Methods' final-step paragraph): bf_step9_settings_s11's data unchanged (nothing\nremoved) plus the grids and the photographs' source, each read from the saved build:\n  registration_grid_mm         the iteration jobs' reg_vox (out_s11/nln_step_09/iteration_0k/queue/jobs/*.json)\n  intermediate_average_grid_mm the iteration templates T1s11-T3s11 (out_s11/combine_T{k}s11.json vox_mm, shape)\n  mean_removal_grid_mm         the unbias (composition, damped fixed point) runs on step9_s11.py's VOX grid (= the iteration templates')\n  final_average_grid_mm        T3s11 at 0.15 mm (out_015_s11/combine_T3s11.json vox_mm, shape)\n  photographs                  the source level (each brain's data/sub-<S>/blockface/<S>_blockface_L2.nii.gz), in-plane pixel and\n                               section step per brain (the L2 affine's column norms; the section axis is axis 1), and hr.py's pairing\n                               rule (PAIR_BELOW_MM: sections closer than it are averaged in adjacent pairs) with the resulting step\n  inverse_residual_mm_per_iteration  the mean-removal inverse's final residual (max, mm) and rounds (out_s11/unbias_it0k.json)\n    PYTHONNOUSERSITE=1 mri/env/mmorf/bin/python bftemplate/hr_2026-11-12/step9/s9_settings_numbers_s11b.py"
+  "definition_s11b": "bf_step9_settings_s11b (16 Nov, for the Methods' final-step paragraph): bf_step9_settings_s11's data unchanged (nothing\nremoved) plus the grids and the photographs' source, each read from the saved build:\n  registration_grid_mm         the iteration jobs' reg_vox (out_s11/nln_step_09/iteration_0k/queue/jobs/*.json)\n  intermediate_average_grid_mm the iteration templates T1s11-T3s11 (out_s11/combine_T{k}s11.json vox_mm, shape)\n  mean_removal_grid_mm         the unbias (composition, damped fixed point) runs on step9_s11.py's VOX grid (= the iteration templates')\n  final_average_grid_mm        T3s11 at 0.15 mm (out_015_s11/combine_T3s11.json vox_mm, shape)\n  photographs                  the source level (each brain's data/sub-<S>/blockface/<S>_blockface_L2.nii.gz), in-plane pixel and\n                               section step per brain (the L2 affine's column norms; the section axis is axis 1), and hr.py's pairing\n                               rule (PAIR_BELOW_MM: sections closer than it are averaged in adjacent pairs) with the resulting step\n  inverse_residual_mm_per_iteration  the mean-removal inverse's final residual (max, mm) and rounds (out_s11/unbias_it0k.json)\n    PYTHONNOUSERSITE=1 mri/env/mmorf/bin/python bftemplate/hr_2026-11-12/step9/s9_settings_numbers_s11b.py",
+  "polish": {
+   "near_vox": 2,
+   "record_grid_mm": 0.25,
+   "rim_mm": 0.5,
+   "near_vox_sources": {
+    "the clone that ran the final step": {
+     "path": "settings/blockface_template.yaml",
+     "near_vox": 2
+    },
+    "the public repository at 1ad391b": {
+     "path": "settings/blockface_template.yaml",
+     "near_vox": 2
+    }
+   },
+   "record_grid_from": "synthesis/out_d3_full/<S>/<S>_bf_completed.nii.gz zooms, 11 members",
+   "rule": "the band about each member's record brain where its photograph's own mask is read (hr.polish_source; release blockface_step9.py POLISH_NEAR_VOX = settings step9.polish.near_vox)"
+  },
+  "s11w": {
+   "note": "the record's own script, unchanged, run on the final step made with the published weights; only its input folders changed",
+   "replaces": "bf_step9_settings_s11b",
+   "script": "a script of the analysis (s9_settings_numbers_s11b.py)",
+   "runner": "a script of the analysis (run_rec.py)",
+   "template_folder": "the final step's template made with the published weights (bftemplate_step9)",
+   "control": "a working file of the analysis (control_bf_step9_settings_s11b.json)",
+   "control_reproduced_exactly": true,
+   "step8_average_folder": null,
+   "inputs_are_resolved": "the link folder's files are recorded by their real paths"
+  }
  }
 }

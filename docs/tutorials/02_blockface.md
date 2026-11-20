@@ -111,6 +111,12 @@ $PY code/blockface/registration/linc-register mri-template --subject <ID> \
 For a new brain, `--place-b0` first places the b0 on the template's grid (the MRI brain-mask network makes a mask if none is given) and the start pose is estimated; `--new-brain` makes a paper brain do the same.
 `mri-template` then registers the b0 to the template (01).
 
+For a paper brain you reconstructed yourself (Step 1), put `LINC_DATA=$LINC_REBUILD_DATA` in front of the `mri` command, so that it reads your volume.
+The command also reads the brain's b0 placed on the template's grid, which is a product (`brains/sub-<ID>/intermediate/registration/` in the data folder).
+If your data folder holds the inputs only, `mri` places the b0 itself from the b0 as acquired and its mask, with the same result.
+Six brains (MF278, MR249, MR252, MR254, MR256 and MR261) also read a brain mask of record from that folder, and MR253 an N4-corrected b0, which nothing here makes again: add the folder for those brains to your data folder and run `source settings/roots.sh refresh`, or `mri` stops and names the file.
+A brain without MRI (MF191, for example) has no Step 3; go to Step 4.
+
 On a paper brain the result is identical to the original; on a brain treated as new, everything up to the deformable stage has been tested ([FAQ](../faq.md#what-has-been-tested-on-a-brain-that-is-not-one-of-the-papers)).
 Each takes about 15 minutes on a GPU, one at a time on a card; `mri` needs 15 to 25 GB free (it varies by brain).
 The transforms go to `$LINC_DATA/sub-<ID>/xfm/bf-native__to__b0-native/` and `b0-native__to__mri-template/`, each with its warp, its linear parts and `meta.json`, and the working files to `$LINC_WORK/register/<ID>/`.
@@ -241,9 +247,9 @@ $ANATOMIX_PYTHON code/template/blockface_step9.py in-mri                 # the s
 The start takes about 8 minutes on 8 cores.
 Each round registers 22 volumes (each brain and its mirror image), about 7 minutes each on a 48 GB card, of which a registration uses about 36 GB.
 A round takes under 3 hours on one card; `register --it <k> --gpu <n>` started on more cards shares the work.
-The paper's run, the three rounds and the final average, took 3 hours 25 minutes on four 48 GB cards; on one card it takes about 10 hours.
+The paper's run, the three rounds and the final average, took about 5 hours on four 48 GB cards; on one card it takes about 10 hours.
 `final` writes the template to `$LINC_WORK/build_blockface_template/step9/final/` and its checks to `checks.json` there: sharper than the start, still matching step 8 at a coarse scale, exactly symmetric, and no folding anywhere.
-Without a GPU, `final --fields-from <the data folder's template/intermediate/construction/step9_fields>` averages the brains through the paper's own fields and reproduces the published template exactly, in about 20 minutes.
+Without a GPU, `final --fields-from <the data folder's template/intermediate/construction/step9_fields>` averages the brains through the paper's own fields and reproduces the published template exactly, in about 20 minutes with 8 workers and about half an hour with 4.
 `build_blockface_template.py` runs the same commands as its steps `s9-start` to `s9-in-mri`.
 
 ![The template's blockface channel, with the synthesized tissue marked](figures/blockface_07_template.png)

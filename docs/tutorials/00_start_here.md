@@ -81,4 +81,4 @@ The members are listed in `settings/mri_construction.yaml` and `settings/blockfa
 This is a decision, not a routine step.
 The MRI template's groupwise construction took 3.5 days on one 48 GB card in the paper's run.
 The blockface template's first stage takes about 8.5 hours on a free card, and its eighth step, at 0.25 mm, about 17 hours on one card (estimated) plus about 2.5 hours of CPU steps.
-Its final step, on eleven brains at 0.15 mm, took 3 hours 25 minutes on four 48 GB cards in the paper's run, and takes about 10 hours on one.
+Its final step, on eleven brains at 0.15 mm, took about 5 hours on four 48 GB cards in the paper's run, and takes about 10 hours on one.

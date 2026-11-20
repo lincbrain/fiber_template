@@ -82,16 +82,16 @@
    "C2": {
     "per_brain": {
      "MR243": {
-      "r": 0.9119,
-      "n": 764226
+      "r": 0.9108,
+      "n": 764787
      },
      "MR252": {
-      "r": 0.9085,
-      "n": 786682
+      "r": 0.9097,
+      "n": 787157
      },
      "MR256": {
-      "r": 0.8923,
-      "n": 759644
+      "r": 0.8925,
+      "n": 761230
      }
     },
     "passed": true
@@ -221,122 +221,122 @@
      "R9 primary MR243 lhLGN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 2414
+      "voxels": 2416
      },
      "R9 primary MR243 lhSTN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 348
+      "voxels": 351
      },
      "R9 primary MR243 rhLGN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 2242
+      "voxels": 2245
      },
      "R9 primary MR243 rhSTN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 413
+      "voxels": 417
      },
      "R9 primary MR252 lhLGN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 2023
+      "voxels": 2020
      },
      "R9 primary MR252 lhSTN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 460
+      "voxels": 463
      },
      "R9 primary MR252 rhLGN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 2175
+      "voxels": 2178
      },
      "R9 primary MR252 rhSTN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 511
+      "voxels": 512
      },
      "R9 primary MR256 lhLGN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 1882
+      "voxels": 1876
      },
      "R9 primary MR256 lhSTN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 309
+      "voxels": 306
      },
      "R9 primary MR256 rhLGN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 2300
+      "voxels": 2297
      },
      "R9 primary MR256 rhSTN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 374
+      "voxels": 369
      },
      "R9 composites MR243 lhLGN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 2414
+      "voxels": 2416
      },
      "R9 composites MR243 lhSTN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 348
+      "voxels": 351
      },
      "R9 composites MR243 rhLGN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 2242
+      "voxels": 2245
      },
      "R9 composites MR243 rhSTN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 413
+      "voxels": 417
      },
      "R9 composites MR252 lhLGN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 1956
+      "voxels": 1957
      },
      "R9 composites MR252 lhSTN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 484
+      "voxels": 486
      },
      "R9 composites MR252 rhLGN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 2080
+      "voxels": 2083
      },
      "R9 composites MR252 rhSTN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 520
+      "voxels": 521
      },
      "R9 composites MR256 lhLGN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 1882
+      "voxels": 1876
      },
      "R9 composites MR256 lhSTN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 309
+      "voxels": 306
      },
      "R9 composites MR256 rhLGN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 2300
+      "voxels": 2297
      },
      "R9 composites MR256 rhSTN": {
       "nonempty": true,
       "inside_box": true,
-      "voxels": 374
+      "voxels": 369
      }
     },
     "passed": true
@@ -351,7 +351,7 @@
    "LGN assd_mm": {
     "MRI": 0.291,
     "R8": 0.2515,
-    "R9": 0.1695
+    "R9": 0.17
    },
    "LGN hd95_mm": {
     "MRI": 0.75,
@@ -361,12 +361,12 @@
    "LGN dice": {
     "MRI": 0.7262,
     "R8": 0.7613,
-    "R9": 0.8425
+    "R9": 0.8415
    },
    "STN centroid_mm": {
     "MRI": 0.4845,
     "R8": 0.6495,
-    "R9": 0.554
+    "R9": 0.561
    },
    "STN assd_mm": {
     "MRI": 0.277,
@@ -376,24 +376,24 @@
    "STN hd95_mm": {
     "MRI": 0.762,
     "R8": 0.7705,
-    "R9": 0.633
+    "R9": 0.626
    },
    "STN dice": {
     "MRI": 0.5599,
     "R8": 0.5458,
-    "R9": 0.667
+    "R9": 0.6652
    }
   },
   "table_composites": {
    "LGN centroid_mm": {
     "MRI": 0.4945,
     "R8": 0.54,
-    "R9": 0.2745
+    "R9": 0.2735
    },
    "LGN assd_mm": {
     "MRI": 0.279,
     "R8": 0.245,
-    "R9": 0.163
+    "R9": 0.1635
    },
    "LGN hd95_mm": {
     "MRI": 0.75,
@@ -403,27 +403,27 @@
    "LGN dice": {
     "MRI": 0.7349,
     "R8": 0.7673,
-    "R9": 0.8441
+    "R9": 0.8438
    },
    "STN centroid_mm": {
     "MRI": 0.496,
     "R8": 0.6435,
-    "R9": 0.5355
+    "R9": 0.5425
    },
    "STN assd_mm": {
     "MRI": 0.278,
     "R8": 0.302,
-    "R9": 0.2045
+    "R9": 0.2055
    },
    "STN hd95_mm": {
     "MRI": 0.762,
     "R8": 0.791,
-    "R9": 0.621
+    "R9": 0.614
    },
    "STN dice": {
     "MRI": 0.5585,
     "R8": 0.549,
-    "R9": 0.6721
+    "R9": 0.6683
    }
   },
   "summary": {
@@ -1005,69 +1005,69 @@
       "pairwise_subjects": {
        "centroid_mm": {
         "n": 6,
-        "mean": 0.318,
+        "mean": 0.3202,
         "median": 0.237,
-        "min": 0.112,
-        "max": 0.694,
-        "sd": 0.2277
+        "min": 0.11,
+        "max": 0.703,
+        "sd": 0.2327
        },
        "assd_mm": {
         "n": 6,
-        "mean": 0.1812,
-        "median": 0.1695,
-        "min": 0.137,
-        "max": 0.256,
-        "sd": 0.0446
+        "mean": 0.1815,
+        "median": 0.17,
+        "min": 0.135,
+        "max": 0.258,
+        "sd": 0.0457
        },
        "hd95_mm": {
         "n": 6,
-        "mean": 0.5455,
+        "mean": 0.5513,
         "median": 0.496,
         "min": 0.354,
-        "max": 0.866,
-        "sd": 0.2074
+        "max": 0.901,
+        "sd": 0.2184
        },
        "dice": {
         "n": 6,
-        "mean": 0.8352,
-        "median": 0.8425,
-        "min": 0.7719,
-        "max": 0.8827,
-        "sd": 0.0436
+        "mean": 0.8348,
+        "median": 0.8415,
+        "min": 0.7707,
+        "max": 0.884,
+        "sd": 0.0441
        }
       },
       "subject_vs_GT": {
        "centroid_mm": {
         "n": 6,
-        "mean": 0.3703,
-        "median": 0.3345,
-        "min": 0.247,
-        "max": 0.622,
-        "sd": 0.1364
+        "mean": 0.372,
+        "median": 0.3355,
+        "min": 0.251,
+        "max": 0.626,
+        "sd": 0.1369
        },
        "assd_mm": {
         "n": 6,
-        "mean": 0.2272,
-        "median": 0.2345,
-        "min": 0.184,
-        "max": 0.254,
-        "sd": 0.0297
+        "mean": 0.2282,
+        "median": 0.2355,
+        "min": 0.186,
+        "max": 0.255,
+        "sd": 0.0293
        },
        "hd95_mm": {
         "n": 6,
-        "mean": 0.5492,
+        "mean": 0.5537,
         "median": 0.559,
         "min": 0.5,
-        "max": 0.559,
-        "sd": 0.0241
+        "max": 0.586,
+        "sd": 0.0284
        },
        "dice": {
         "n": 6,
-        "mean": 0.7764,
-        "median": 0.7702,
-        "min": 0.7376,
-        "max": 0.8285,
-        "sd": 0.0363
+        "mean": 0.7755,
+        "median": 0.7698,
+        "min": 0.7368,
+        "max": 0.8269,
+        "sd": 0.036
        }
       }
      },
@@ -1075,53 +1075,53 @@
       "pairwise_subjects": {
        "centroid_mm": {
         "n": 6,
-        "mean": 0.5432,
-        "median": 0.554,
-        "min": 0.287,
-        "max": 0.817,
-        "sd": 0.211
+        "mean": 0.5492,
+        "median": 0.561,
+        "min": 0.303,
+        "max": 0.829,
+        "sd": 0.2146
        },
        "assd_mm": {
         "n": 6,
-        "mean": 0.2082,
+        "mean": 0.2115,
         "median": 0.204,
-        "min": 0.18,
-        "max": 0.243,
-        "sd": 0.0274
+        "min": 0.186,
+        "max": 0.251,
+        "sd": 0.0276
        },
        "hd95_mm": {
         "n": 6,
-        "mean": 0.6372,
-        "median": 0.633,
+        "mean": 0.6348,
+        "median": 0.626,
         "min": 0.5,
         "max": 0.791,
-        "sd": 0.1135
+        "sd": 0.1119
        },
        "dice": {
         "n": 6,
-        "mean": 0.6675,
-        "median": 0.667,
-        "min": 0.6138,
-        "max": 0.7268,
-        "sd": 0.0457
+        "mean": 0.6634,
+        "median": 0.6652,
+        "min": 0.6086,
+        "max": 0.7176,
+        "sd": 0.0432
        }
       },
       "subject_vs_GT": {
        "centroid_mm": {
         "n": 6,
-        "mean": 0.4673,
-        "median": 0.4285,
-        "min": 0.133,
-        "max": 0.945,
-        "sd": 0.341
+        "mean": 0.468,
+        "median": 0.43,
+        "min": 0.12,
+        "max": 0.943,
+        "sd": 0.3434
        },
        "assd_mm": {
         "n": 6,
-        "mean": 0.1833,
-        "median": 0.181,
-        "min": 0.155,
+        "mean": 0.184,
+        "median": 0.1815,
+        "min": 0.156,
         "max": 0.221,
-        "sd": 0.0264
+        "sd": 0.0258
        },
        "hd95_mm": {
         "n": 6,
@@ -1133,11 +1133,11 @@
        },
        "dice": {
         "n": 6,
-        "mean": 0.6887,
-        "median": 0.6959,
-        "min": 0.6411,
-        "max": 0.7355,
-        "sd": 0.0411
+        "mean": 0.6879,
+        "median": 0.6957,
+        "min": 0.6412,
+        "max": 0.7325,
+        "sd": 0.0393
        }
       }
      }
@@ -1147,69 +1147,69 @@
       "pairwise_subjects": {
        "centroid_mm": {
         "n": 6,
-        "mean": 0.3343,
-        "median": 0.2745,
-        "min": 0.112,
-        "max": 0.694,
-        "sd": 0.2145
+        "mean": 0.3363,
+        "median": 0.2735,
+        "min": 0.11,
+        "max": 0.703,
+        "sd": 0.2193
        },
        "assd_mm": {
         "n": 6,
-        "mean": 0.1813,
-        "median": 0.163,
-        "min": 0.148,
-        "max": 0.256,
-        "sd": 0.0418
+        "mean": 0.1815,
+        "median": 0.1635,
+        "min": 0.149,
+        "max": 0.258,
+        "sd": 0.0425
        },
        "hd95_mm": {
         "n": 6,
-        "mean": 0.5282,
+        "mean": 0.5303,
         "median": 0.433,
         "min": 0.354,
-        "max": 0.866,
-        "sd": 0.216
+        "max": 0.901,
+        "sd": 0.2235
        },
        "dice": {
         "n": 6,
-        "mean": 0.8352,
-        "median": 0.8441,
-        "min": 0.7719,
-        "max": 0.8732,
-        "sd": 0.0367
+        "mean": 0.8351,
+        "median": 0.8438,
+        "min": 0.7707,
+        "max": 0.8723,
+        "sd": 0.0371
        }
       },
       "subject_vs_GT": {
        "centroid_mm": {
         "n": 6,
-        "mean": 0.3742,
-        "median": 0.3345,
-        "min": 0.247,
-        "max": 0.622,
-        "sd": 0.1379
+        "mean": 0.376,
+        "median": 0.3355,
+        "min": 0.251,
+        "max": 0.626,
+        "sd": 0.1383
        },
        "assd_mm": {
         "n": 6,
-        "mean": 0.2305,
-        "median": 0.236,
-        "min": 0.184,
-        "max": 0.254,
-        "sd": 0.0278
+        "mean": 0.2317,
+        "median": 0.237,
+        "min": 0.186,
+        "max": 0.255,
+        "sd": 0.0274
        },
        "hd95_mm": {
         "n": 6,
-        "mean": 0.5492,
+        "mean": 0.5537,
         "median": 0.559,
         "min": 0.5,
-        "max": 0.559,
-        "sd": 0.0241
+        "max": 0.586,
+        "sd": 0.0284
        },
        "dice": {
         "n": 6,
-        "mean": 0.7722,
-        "median": 0.7653,
-        "min": 0.7389,
-        "max": 0.8285,
-        "sd": 0.0334
+        "mean": 0.7714,
+        "median": 0.7651,
+        "min": 0.7383,
+        "max": 0.8269,
+        "sd": 0.033
        }
       }
      },
@@ -1217,53 +1217,53 @@
       "pairwise_subjects": {
        "centroid_mm": {
         "n": 6,
-        "mean": 0.4912,
-        "median": 0.5355,
-        "min": 0.23,
-        "max": 0.681,
-        "sd": 0.1978
+        "mean": 0.4978,
+        "median": 0.5425,
+        "min": 0.225,
+        "max": 0.693,
+        "sd": 0.2018
        },
        "assd_mm": {
         "n": 6,
-        "mean": 0.2073,
-        "median": 0.2045,
-        "min": 0.18,
-        "max": 0.244,
-        "sd": 0.027
+        "mean": 0.2112,
+        "median": 0.2055,
+        "min": 0.186,
+        "max": 0.253,
+        "sd": 0.0277
        },
        "hd95_mm": {
         "n": 6,
-        "mean": 0.6332,
-        "median": 0.621,
+        "mean": 0.6308,
+        "median": 0.614,
         "min": 0.5,
         "max": 0.791,
-        "sd": 0.111
+        "sd": 0.1099
        },
        "dice": {
         "n": 6,
-        "mean": 0.6702,
-        "median": 0.6721,
-        "min": 0.6154,
-        "max": 0.7268,
-        "sd": 0.0415
+        "mean": 0.665,
+        "median": 0.6683,
+        "min": 0.6086,
+        "max": 0.7176,
+        "sd": 0.0399
        }
       },
       "subject_vs_GT": {
        "centroid_mm": {
         "n": 6,
-        "mean": 0.4382,
-        "median": 0.4095,
-        "min": 0.133,
-        "max": 0.808,
-        "sd": 0.3017
+        "mean": 0.4388,
+        "median": 0.411,
+        "min": 0.12,
+        "max": 0.806,
+        "sd": 0.3047
        },
        "assd_mm": {
         "n": 6,
-        "mean": 0.1793,
-        "median": 0.181,
-        "min": 0.155,
-        "max": 0.2,
-        "sd": 0.0208
+        "mean": 0.1802,
+        "median": 0.1815,
+        "min": 0.156,
+        "max": 0.201,
+        "sd": 0.0203
        },
        "hd95_mm": {
         "n": 6,
@@ -1275,11 +1275,11 @@
        },
        "dice": {
         "n": 6,
-        "mean": 0.6956,
-        "median": 0.6991,
-        "min": 0.6411,
-        "max": 0.7355,
-        "sd": 0.0346
+        "mean": 0.6942,
+        "median": 0.6988,
+        "min": 0.6412,
+        "max": 0.7325,
+        "sd": 0.0336
        }
       }
      }
@@ -2664,142 +2664,142 @@
      "struct": "lhLGN",
      "a": "MR243",
      "b": "MR252",
-     "dice": 0.7987,
+     "dice": 0.7985,
      "assd_mm": 0.207,
      "hd95_mm": 0.707,
      "hd95_max_directed_mm": 0.791,
-     "hd100_mm": 1.369,
-     "centroid_mm": 0.488,
+     "hd100_mm": 1.436,
+     "centroid_mm": 0.496,
      "centroid_offset_mm_signed": {
-      "x": -0.23,
-      "y": -0.407,
-      "z": 0.139
+      "x": -0.237,
+      "y": -0.41,
+      "z": 0.146
      },
      "centroid_offset_mm_abs": {
-      "x": 0.23,
-      "y": 0.407,
-      "z": 0.139
+      "x": 0.237,
+      "y": 0.41,
+      "z": 0.146
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.92,
-      "y": 1.63,
-      "z": 0.56
+      "x": 0.95,
+      "y": 1.64,
+      "z": 0.58
      },
-     "vox_a": 2414,
-     "vox_b": 2023
+     "vox_a": 2416,
+     "vox_b": 2020
     },
     {
      "struct": "lhLGN",
      "a": "MR243",
      "b": "MR256",
-     "dice": 0.7719,
-     "assd_mm": 0.256,
-     "hd95_mm": 0.866,
-     "hd95_max_directed_mm": 1.031,
+     "dice": 0.7707,
+     "assd_mm": 0.258,
+     "hd95_mm": 0.901,
+     "hd95_max_directed_mm": 1.056,
      "hd100_mm": 1.768,
-     "centroid_mm": 0.694,
+     "centroid_mm": 0.703,
      "centroid_offset_mm_signed": {
-      "x": -0.223,
-      "y": -0.544,
-      "z": 0.369
+      "x": -0.23,
+      "y": -0.547,
+      "z": 0.378
      },
      "centroid_offset_mm_abs": {
-      "x": 0.223,
-      "y": 0.544,
-      "z": 0.369
+      "x": 0.23,
+      "y": 0.547,
+      "z": 0.378
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.89,
-      "y": 2.18,
-      "z": 1.47
+      "x": 0.92,
+      "y": 2.19,
+      "z": 1.51
      },
-     "vox_a": 2414,
-     "vox_b": 1882
+     "vox_a": 2416,
+     "vox_b": 1876
     },
     {
      "struct": "lhLGN",
      "a": "MR243",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.7471,
-     "assd_mm": 0.254,
+     "dice": 0.7459,
+     "assd_mm": 0.255,
      "hd95_mm": 0.559,
      "hd95_max_directed_mm": 0.744,
      "hd100_mm": 1.541,
-     "centroid_mm": 0.622,
+     "centroid_mm": 0.626,
      "centroid_offset_mm_signed": {
-      "x": -0.06,
-      "y": -0.361,
-      "z": 0.503
+      "x": -0.064,
+      "y": -0.362,
+      "z": 0.507
      },
      "centroid_offset_mm_abs": {
-      "x": 0.06,
-      "y": 0.361,
-      "z": 0.503
+      "x": 0.064,
+      "y": 0.362,
+      "z": 0.507
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.24,
-      "y": 1.44,
-      "z": 2.01
+      "x": 0.25,
+      "y": 1.45,
+      "z": 2.03
      },
-     "vox_a": 2414,
+     "vox_a": 2416,
      "vox_b": 2429
     },
     {
      "struct": "lhLGN",
      "a": "MR252",
      "b": "MR256",
-     "dice": 0.8292,
-     "assd_mm": 0.183,
+     "dice": 0.8275,
+     "assd_mm": 0.185,
      "hd95_mm": 0.559,
      "hd95_max_directed_mm": 0.75,
-     "hd100_mm": 1.369,
-     "centroid_mm": 0.267,
+     "hd100_mm": 1.5,
+     "centroid_mm": 0.269,
      "centroid_offset_mm_signed": {
       "x": 0.007,
-      "y": -0.137,
-      "z": 0.229
+      "y": -0.136,
+      "z": 0.232
      },
      "centroid_offset_mm_abs": {
       "x": 0.007,
-      "y": 0.137,
-      "z": 0.229
+      "y": 0.136,
+      "z": 0.232
      },
      "centroid_offset_voxels_abs": {
       "x": 0.03,
-      "y": 0.55,
-      "z": 0.92
+      "y": 0.54,
+      "z": 0.93
      },
-     "vox_a": 2023,
-     "vox_b": 1882
+     "vox_a": 2020,
+     "vox_b": 1876
     },
     {
      "struct": "lhLGN",
      "a": "MR252",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.7376,
+     "dice": 0.7368,
      "assd_mm": 0.253,
      "hd95_mm": 0.559,
      "hd95_max_directed_mm": 0.612,
      "hd100_mm": 1.031,
-     "centroid_mm": 0.404,
+     "centroid_mm": 0.403,
      "centroid_offset_mm_signed": {
-      "x": 0.17,
-      "y": 0.046,
-      "z": 0.363
+      "x": 0.173,
+      "y": 0.048,
+      "z": 0.361
      },
      "centroid_offset_mm_abs": {
-      "x": 0.17,
-      "y": 0.046,
-      "z": 0.363
+      "x": 0.173,
+      "y": 0.048,
+      "z": 0.361
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.68,
-      "y": 0.18,
-      "z": 1.45
+      "x": 0.69,
+      "y": 0.19,
+      "z": 1.44
      },
-     "vox_a": 2023,
+     "vox_a": 2020,
      "vox_b": 2429
     },
     {
@@ -2807,170 +2807,170 @@
      "a": "MR256",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.7525,
-     "assd_mm": 0.25,
-     "hd95_mm": 0.559,
+     "dice": 0.7526,
+     "assd_mm": 0.251,
+     "hd95_mm": 0.586,
      "hd95_max_directed_mm": 0.75,
-     "hd100_mm": 1.25,
-     "centroid_mm": 0.28,
+     "hd100_mm": 1.275,
+     "centroid_mm": 0.281,
      "centroid_offset_mm_signed": {
-      "x": 0.163,
-      "y": 0.183,
-      "z": 0.134
+      "x": 0.167,
+      "y": 0.185,
+      "z": 0.13
      },
      "centroid_offset_mm_abs": {
-      "x": 0.163,
-      "y": 0.183,
-      "z": 0.134
+      "x": 0.167,
+      "y": 0.185,
+      "z": 0.13
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.65,
-      "y": 0.73,
-      "z": 0.54
+      "x": 0.67,
+      "y": 0.74,
+      "z": 0.52
      },
-     "vox_a": 1882,
+     "vox_a": 1876,
      "vox_b": 2429
     },
     {
      "struct": "lhSTN",
      "a": "MR243",
      "b": "MR252",
-     "dice": 0.646,
-     "assd_mm": 0.193,
+     "dice": 0.6486,
+     "assd_mm": 0.191,
      "hd95_mm": 0.559,
      "hd95_max_directed_mm": 0.612,
      "hd100_mm": 0.901,
-     "centroid_mm": 0.33,
+     "centroid_mm": 0.321,
      "centroid_offset_mm_signed": {
-      "x": 0.086,
-      "y": 0.309,
-      "z": -0.078
+      "x": 0.077,
+      "y": 0.304,
+      "z": -0.068
      },
      "centroid_offset_mm_abs": {
-      "x": 0.086,
-      "y": 0.309,
-      "z": 0.078
+      "x": 0.077,
+      "y": 0.304,
+      "z": 0.068
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.34,
-      "y": 1.24,
-      "z": 0.31
+      "x": 0.31,
+      "y": 1.22,
+      "z": 0.27
      },
-     "vox_a": 348,
-     "vox_b": 460
+     "vox_a": 351,
+     "vox_b": 463
     },
     {
      "struct": "lhSTN",
      "a": "MR243",
      "b": "MR256",
-     "dice": 0.688,
-     "assd_mm": 0.182,
+     "dice": 0.6819,
+     "assd_mm": 0.188,
      "hd95_mm": 0.559,
      "hd95_max_directed_mm": 0.559,
      "hd100_mm": 0.901,
-     "centroid_mm": 0.609,
+     "centroid_mm": 0.631,
      "centroid_offset_mm_signed": {
-      "x": -0.5,
-      "y": -0.08,
-      "z": 0.338
+      "x": -0.515,
+      "y": -0.097,
+      "z": 0.352
      },
      "centroid_offset_mm_abs": {
-      "x": 0.5,
-      "y": 0.08,
-      "z": 0.338
+      "x": 0.515,
+      "y": 0.097,
+      "z": 0.352
      },
      "centroid_offset_voxels_abs": {
-      "x": 2.0,
-      "y": 0.32,
-      "z": 1.35
+      "x": 2.06,
+      "y": 0.39,
+      "z": 1.41
      },
-     "vox_a": 348,
-     "vox_b": 309
+     "vox_a": 351,
+     "vox_b": 306
     },
     {
      "struct": "lhSTN",
      "a": "MR243",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.6411,
+     "dice": 0.6412,
      "assd_mm": 0.196,
      "hd95_mm": 0.559,
      "hd95_max_directed_mm": 0.559,
      "hd100_mm": 0.829,
-     "centroid_mm": 0.73,
+     "centroid_mm": 0.741,
      "centroid_offset_mm_signed": {
-      "x": -0.613,
-      "y": -0.143,
-      "z": 0.371
+      "x": -0.62,
+      "y": -0.15,
+      "z": 0.377
      },
      "centroid_offset_mm_abs": {
-      "x": 0.613,
-      "y": 0.143,
-      "z": 0.371
+      "x": 0.62,
+      "y": 0.15,
+      "z": 0.377
      },
      "centroid_offset_voxels_abs": {
-      "x": 2.45,
-      "y": 0.57,
-      "z": 1.48
+      "x": 2.48,
+      "y": 0.6,
+      "z": 1.51
      },
-     "vox_a": 348,
+     "vox_a": 351,
      "vox_b": 382
     },
     {
      "struct": "lhSTN",
      "a": "MR252",
      "b": "MR256",
-     "dice": 0.6138,
-     "assd_mm": 0.243,
+     "dice": 0.6086,
+     "assd_mm": 0.251,
      "hd95_mm": 0.791,
-     "hd95_max_directed_mm": 0.935,
+     "hd95_max_directed_mm": 0.971,
      "hd100_mm": 1.436,
-     "centroid_mm": 0.817,
+     "centroid_mm": 0.829,
      "centroid_offset_mm_signed": {
-      "x": -0.586,
-      "y": -0.389,
-      "z": 0.416
+      "x": -0.592,
+      "y": -0.401,
+      "z": 0.42
      },
      "centroid_offset_mm_abs": {
-      "x": 0.586,
-      "y": 0.389,
-      "z": 0.416
+      "x": 0.592,
+      "y": 0.401,
+      "z": 0.42
      },
      "centroid_offset_voxels_abs": {
-      "x": 2.34,
-      "y": 1.56,
-      "z": 1.66
+      "x": 2.37,
+      "y": 1.61,
+      "z": 1.68
      },
-     "vox_a": 460,
-     "vox_b": 309
+     "vox_a": 463,
+     "vox_b": 306
     },
     {
      "struct": "lhSTN",
      "a": "MR252",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.6413,
+     "dice": 0.6438,
      "assd_mm": 0.221,
      "hd95_mm": 0.75,
-     "hd95_max_directed_mm": 0.901,
+     "hd95_max_directed_mm": 0.92,
      "hd100_mm": 1.369,
-     "centroid_mm": 0.945,
+     "centroid_mm": 0.943,
      "centroid_offset_mm_signed": {
-      "x": -0.699,
-      "y": -0.452,
-      "z": 0.449
+      "x": -0.697,
+      "y": -0.454,
+      "z": 0.444
      },
      "centroid_offset_mm_abs": {
-      "x": 0.699,
-      "y": 0.452,
-      "z": 0.449
+      "x": 0.697,
+      "y": 0.454,
+      "z": 0.444
      },
      "centroid_offset_voxels_abs": {
       "x": 2.79,
-      "y": 1.81,
-      "z": 1.79
+      "y": 1.82,
+      "z": 1.78
      },
-     "vox_a": 460,
+     "vox_a": 463,
      "vox_b": 382
     },
     {
@@ -2978,170 +2978,170 @@
      "a": "MR256",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.712,
-     "assd_mm": 0.155,
+     "dice": 0.7122,
+     "assd_mm": 0.156,
      "hd95_mm": 0.354,
      "hd95_max_directed_mm": 0.49,
      "hd100_mm": 0.75,
-     "centroid_mm": 0.133,
+     "centroid_mm": 0.12,
      "centroid_offset_mm_signed": {
-      "x": -0.113,
-      "y": -0.063,
-      "z": 0.033
+      "x": -0.105,
+      "y": -0.053,
+      "z": 0.025
      },
      "centroid_offset_mm_abs": {
-      "x": 0.113,
-      "y": 0.063,
-      "z": 0.033
+      "x": 0.105,
+      "y": 0.053,
+      "z": 0.025
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.45,
-      "y": 0.25,
-      "z": 0.13
+      "x": 0.42,
+      "y": 0.21,
+      "z": 0.1
      },
-     "vox_a": 309,
+     "vox_a": 306,
      "vox_b": 382
     },
     {
      "struct": "rhLGN",
      "a": "MR243",
      "b": "MR252",
-     "dice": 0.8558,
-     "assd_mm": 0.156,
+     "dice": 0.8555,
+     "assd_mm": 0.155,
      "hd95_mm": 0.433,
      "hd95_max_directed_mm": 0.433,
      "hd100_mm": 0.75,
-     "centroid_mm": 0.207,
+     "centroid_mm": 0.205,
      "centroid_offset_mm_signed": {
-      "x": 0.135,
-      "y": 0.151,
-      "z": 0.042
+      "x": 0.134,
+      "y": 0.149,
+      "z": 0.041
      },
      "centroid_offset_mm_abs": {
-      "x": 0.135,
-      "y": 0.151,
-      "z": 0.042
+      "x": 0.134,
+      "y": 0.149,
+      "z": 0.041
      },
      "centroid_offset_voxels_abs": {
       "x": 0.54,
-      "y": 0.61,
+      "y": 0.6,
       "z": 0.17
      },
-     "vox_a": 2242,
-     "vox_b": 2175
+     "vox_a": 2245,
+     "vox_b": 2178
     },
     {
      "struct": "rhLGN",
      "a": "MR243",
      "b": "MR256",
-     "dice": 0.8732,
-     "assd_mm": 0.148,
+     "dice": 0.8723,
+     "assd_mm": 0.149,
      "hd95_mm": 0.354,
      "hd95_max_directed_mm": 0.354,
      "hd100_mm": 0.75,
-     "centroid_mm": 0.112,
+     "centroid_mm": 0.11,
      "centroid_offset_mm_signed": {
-      "x": 0.011,
-      "y": 0.09,
+      "x": 0.013,
+      "y": 0.087,
       "z": 0.066
      },
      "centroid_offset_mm_abs": {
-      "x": 0.011,
-      "y": 0.09,
+      "x": 0.013,
+      "y": 0.087,
       "z": 0.066
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.04,
-      "y": 0.36,
-      "z": 0.27
+      "x": 0.05,
+      "y": 0.35,
+      "z": 0.26
      },
-     "vox_a": 2242,
-     "vox_b": 2300
+     "vox_a": 2245,
+     "vox_b": 2297
     },
     {
      "struct": "rhLGN",
      "a": "MR243",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.7879,
-     "assd_mm": 0.219,
+     "dice": 0.7869,
+     "assd_mm": 0.22,
      "hd95_mm": 0.559,
      "hd95_max_directed_mm": 0.559,
      "hd100_mm": 1.061,
-     "centroid_mm": 0.298,
+     "centroid_mm": 0.299,
      "centroid_offset_mm_signed": {
-      "x": -0.199,
-      "y": 0.104,
-      "z": 0.196
+      "x": -0.2,
+      "y": 0.101,
+      "z": 0.198
      },
      "centroid_offset_mm_abs": {
-      "x": 0.199,
-      "y": 0.104,
-      "z": 0.196
+      "x": 0.2,
+      "y": 0.101,
+      "z": 0.198
      },
      "centroid_offset_voxels_abs": {
       "x": 0.8,
       "y": 0.41,
-      "z": 0.78
+      "z": 0.79
      },
-     "vox_a": 2242,
+     "vox_a": 2245,
      "vox_b": 2289
     },
     {
      "struct": "rhLGN",
      "a": "MR252",
      "b": "MR256",
-     "dice": 0.8827,
-     "assd_mm": 0.137,
+     "dice": 0.884,
+     "assd_mm": 0.135,
      "hd95_mm": 0.354,
      "hd95_max_directed_mm": 0.354,
      "hd100_mm": 0.707,
-     "centroid_mm": 0.14,
+     "centroid_mm": 0.138,
      "centroid_offset_mm_signed": {
-      "x": -0.124,
-      "y": -0.061,
+      "x": -0.121,
+      "y": -0.062,
       "z": 0.024
      },
      "centroid_offset_mm_abs": {
-      "x": 0.124,
-      "y": 0.061,
+      "x": 0.121,
+      "y": 0.062,
       "z": 0.024
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.5,
+      "x": 0.48,
       "y": 0.25,
       "z": 0.1
      },
-     "vox_a": 2175,
-     "vox_b": 2300
+     "vox_a": 2178,
+     "vox_b": 2297
     },
     {
      "struct": "rhLGN",
      "a": "MR252",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.8047,
-     "assd_mm": 0.203,
+     "dice": 0.8041,
+     "assd_mm": 0.204,
      "hd95_mm": 0.559,
      "hd95_max_directed_mm": 0.559,
      "hd100_mm": 1.09,
-     "centroid_mm": 0.371,
+     "centroid_mm": 0.372,
      "centroid_offset_mm_signed": {
       "x": -0.334,
       "y": -0.048,
-      "z": 0.154
+      "z": 0.157
      },
      "centroid_offset_mm_abs": {
       "x": 0.334,
       "y": 0.048,
-      "z": 0.154
+      "z": 0.157
      },
      "centroid_offset_voxels_abs": {
       "x": 1.34,
       "y": 0.19,
-      "z": 0.61
+      "z": 0.63
      },
-     "vox_a": 2175,
+     "vox_a": 2178,
      "vox_b": 2289
     },
     {
@@ -3149,149 +3149,149 @@
      "a": "MR256",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.8285,
-     "assd_mm": 0.184,
+     "dice": 0.8269,
+     "assd_mm": 0.186,
      "hd95_mm": 0.5,
      "hd95_max_directed_mm": 0.559,
      "hd100_mm": 1.031,
-     "centroid_mm": 0.247,
+     "centroid_mm": 0.251,
      "centroid_offset_mm_signed": {
-      "x": -0.21,
+      "x": -0.213,
       "y": 0.014,
-      "z": 0.129
+      "z": 0.132
      },
      "centroid_offset_mm_abs": {
-      "x": 0.21,
+      "x": 0.213,
       "y": 0.014,
-      "z": 0.129
+      "z": 0.132
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.84,
-      "y": 0.05,
-      "z": 0.52
+      "x": 0.85,
+      "y": 0.06,
+      "z": 0.53
      },
-     "vox_a": 2300,
+     "vox_a": 2297,
      "vox_b": 2289
     },
     {
      "struct": "rhSTN",
      "a": "MR243",
      "b": "MR252",
-     "dice": 0.6255,
+     "dice": 0.6243,
      "assd_mm": 0.236,
-     "hd95_mm": 0.707,
-     "hd95_max_directed_mm": 0.784,
+     "hd95_mm": 0.693,
+     "hd95_max_directed_mm": 0.782,
      "hd100_mm": 1.146,
-     "centroid_mm": 0.717,
+     "centroid_mm": 0.72,
      "centroid_offset_mm_signed": {
       "x": -0.452,
-      "y": 0.49,
+      "y": 0.494,
       "z": -0.263
      },
      "centroid_offset_mm_abs": {
       "x": 0.452,
-      "y": 0.49,
+      "y": 0.494,
       "z": 0.263
      },
      "centroid_offset_voxels_abs": {
       "x": 1.81,
-      "y": 1.96,
+      "y": 1.98,
       "z": 1.05
      },
-     "vox_a": 413,
-     "vox_b": 511
+     "vox_a": 417,
+     "vox_b": 512
     },
     {
      "struct": "rhSTN",
      "a": "MR243",
      "b": "MR256",
-     "dice": 0.7268,
-     "assd_mm": 0.18,
+     "dice": 0.7176,
+     "assd_mm": 0.186,
      "hd95_mm": 0.5,
-     "hd95_max_directed_mm": 0.716,
+     "hd95_max_directed_mm": 0.75,
      "hd100_mm": 1.146,
-     "centroid_mm": 0.287,
+     "centroid_mm": 0.303,
      "centroid_offset_mm_signed": {
-      "x": -0.11,
-      "y": 0.265,
+      "x": -0.115,
+      "y": 0.279,
       "z": 0.021
      },
      "centroid_offset_mm_abs": {
-      "x": 0.11,
-      "y": 0.265,
+      "x": 0.115,
+      "y": 0.279,
       "z": 0.021
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.44,
-      "y": 1.06,
+      "x": 0.46,
+      "y": 1.12,
       "z": 0.08
      },
-     "vox_a": 413,
-     "vox_b": 374
+     "vox_a": 417,
+     "vox_b": 369
     },
     {
      "struct": "rhSTN",
      "a": "MR243",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.7224,
-     "assd_mm": 0.166,
+     "dice": 0.7188,
+     "assd_mm": 0.167,
      "hd95_mm": 0.354,
      "hd95_max_directed_mm": 0.433,
      "hd100_mm": 0.75,
-     "centroid_mm": 0.253,
+     "centroid_mm": 0.256,
      "centroid_offset_mm_signed": {
-      "x": 0.028,
-      "y": 0.251,
+      "x": 0.027,
+      "y": 0.254,
       "z": 0.015
      },
      "centroid_offset_mm_abs": {
-      "x": 0.028,
-      "y": 0.251,
+      "x": 0.027,
+      "y": 0.254,
       "z": 0.015
      },
      "centroid_offset_voxels_abs": {
       "x": 0.11,
-      "y": 1.0,
+      "y": 1.02,
       "z": 0.06
      },
-     "vox_a": 413,
+     "vox_a": 417,
      "vox_b": 401
     },
     {
      "struct": "rhSTN",
      "a": "MR252",
      "b": "MR256",
-     "dice": 0.7051,
-     "assd_mm": 0.215,
+     "dice": 0.6992,
+     "assd_mm": 0.217,
      "hd95_mm": 0.707,
-     "hd95_max_directed_mm": 0.93,
+     "hd95_max_directed_mm": 0.929,
      "hd100_mm": 1.458,
-     "centroid_mm": 0.499,
+     "centroid_mm": 0.491,
      "centroid_offset_mm_signed": {
-      "x": 0.342,
-      "y": -0.225,
+      "x": 0.338,
+      "y": -0.214,
       "z": 0.284
      },
      "centroid_offset_mm_abs": {
-      "x": 0.342,
-      "y": 0.225,
+      "x": 0.338,
+      "y": 0.214,
       "z": 0.284
      },
      "centroid_offset_voxels_abs": {
-      "x": 1.37,
-      "y": 0.9,
+      "x": 1.35,
+      "y": 0.86,
       "z": 1.14
      },
-     "vox_a": 511,
-     "vox_b": 374
+     "vox_a": 512,
+     "vox_b": 369
     },
     {
      "struct": "rhSTN",
      "a": "MR252",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.6798,
+     "dice": 0.6791,
      "assd_mm": 0.201,
      "hd95_mm": 0.612,
      "hd95_max_directed_mm": 0.791,
@@ -3299,20 +3299,20 @@
      "centroid_mm": 0.604,
      "centroid_offset_mm_signed": {
       "x": 0.48,
-      "y": -0.239,
-      "z": 0.279
+      "y": -0.24,
+      "z": 0.278
      },
      "centroid_offset_mm_abs": {
       "x": 0.48,
-      "y": 0.239,
-      "z": 0.279
+      "y": 0.24,
+      "z": 0.278
      },
      "centroid_offset_voxels_abs": {
       "x": 1.92,
-      "y": 0.95,
+      "y": 0.96,
       "z": 1.11
      },
-     "vox_a": 511,
+     "vox_a": 512,
      "vox_b": 401
     },
     {
@@ -3320,28 +3320,28 @@
      "a": "MR256",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.7355,
-     "assd_mm": 0.161,
+     "dice": 0.7325,
+     "assd_mm": 0.163,
      "hd95_mm": 0.354,
-     "hd95_max_directed_mm": 0.365,
-     "hd100_mm": 0.612,
-     "centroid_mm": 0.139,
+     "hd95_max_directed_mm": 0.433,
+     "hd100_mm": 0.707,
+     "centroid_mm": 0.144,
      "centroid_offset_mm_signed": {
-      "x": 0.138,
-      "y": -0.013,
-      "z": -0.005
+      "x": 0.142,
+      "y": -0.025,
+      "z": -0.006
      },
      "centroid_offset_mm_abs": {
-      "x": 0.138,
-      "y": 0.013,
-      "z": 0.005
+      "x": 0.142,
+      "y": 0.025,
+      "z": 0.006
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.55,
-      "y": 0.05,
+      "x": 0.57,
+      "y": 0.1,
       "z": 0.02
      },
-     "vox_a": 374,
+     "vox_a": 369,
      "vox_b": 401
     }
    ],
@@ -3350,142 +3350,142 @@
      "struct": "lhLGN",
      "a": "MR243",
      "b": "MR252",
-     "dice": 0.816,
-     "assd_mm": 0.205,
-     "hd95_mm": 0.729,
+     "dice": 0.8164,
+     "assd_mm": 0.204,
+     "hd95_mm": 0.707,
      "hd95_max_directed_mm": 0.935,
      "hd100_mm": 1.871,
-     "centroid_mm": 0.47,
+     "centroid_mm": 0.478,
      "centroid_offset_mm_signed": {
-      "x": -0.281,
-      "y": -0.352,
-      "z": 0.137
+      "x": -0.286,
+      "y": -0.356,
+      "z": 0.143
      },
      "centroid_offset_mm_abs": {
-      "x": 0.281,
-      "y": 0.352,
-      "z": 0.137
+      "x": 0.286,
+      "y": 0.356,
+      "z": 0.143
      },
      "centroid_offset_voxels_abs": {
-      "x": 1.12,
-      "y": 1.41,
-      "z": 0.55
+      "x": 1.14,
+      "y": 1.42,
+      "z": 0.57
      },
-     "vox_a": 2414,
-     "vox_b": 1956
+     "vox_a": 2416,
+     "vox_b": 1957
     },
     {
      "struct": "lhLGN",
      "a": "MR243",
      "b": "MR256",
-     "dice": 0.7719,
-     "assd_mm": 0.256,
-     "hd95_mm": 0.866,
-     "hd95_max_directed_mm": 1.031,
+     "dice": 0.7707,
+     "assd_mm": 0.258,
+     "hd95_mm": 0.901,
+     "hd95_max_directed_mm": 1.056,
      "hd100_mm": 1.768,
-     "centroid_mm": 0.694,
+     "centroid_mm": 0.703,
      "centroid_offset_mm_signed": {
-      "x": -0.223,
-      "y": -0.544,
-      "z": 0.369
+      "x": -0.23,
+      "y": -0.547,
+      "z": 0.378
      },
      "centroid_offset_mm_abs": {
-      "x": 0.223,
-      "y": 0.544,
-      "z": 0.369
+      "x": 0.23,
+      "y": 0.547,
+      "z": 0.378
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.89,
-      "y": 2.18,
-      "z": 1.47
+      "x": 0.92,
+      "y": 2.19,
+      "z": 1.51
      },
-     "vox_a": 2414,
-     "vox_b": 1882
+     "vox_a": 2416,
+     "vox_b": 1876
     },
     {
      "struct": "lhLGN",
      "a": "MR243",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.7471,
-     "assd_mm": 0.254,
+     "dice": 0.7459,
+     "assd_mm": 0.255,
      "hd95_mm": 0.559,
      "hd95_max_directed_mm": 0.744,
      "hd100_mm": 1.541,
-     "centroid_mm": 0.622,
+     "centroid_mm": 0.626,
      "centroid_offset_mm_signed": {
-      "x": -0.06,
-      "y": -0.361,
-      "z": 0.503
+      "x": -0.064,
+      "y": -0.362,
+      "z": 0.507
      },
      "centroid_offset_mm_abs": {
-      "x": 0.06,
-      "y": 0.361,
-      "z": 0.503
+      "x": 0.064,
+      "y": 0.362,
+      "z": 0.507
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.24,
-      "y": 1.44,
-      "z": 2.01
+      "x": 0.25,
+      "y": 1.45,
+      "z": 2.03
      },
-     "vox_a": 2414,
+     "vox_a": 2416,
      "vox_b": 2429
     },
     {
      "struct": "lhLGN",
      "a": "MR252",
      "b": "MR256",
-     "dice": 0.8484,
-     "assd_mm": 0.159,
+     "dice": 0.8474,
+     "assd_mm": 0.16,
      "hd95_mm": 0.433,
      "hd95_max_directed_mm": 0.559,
-     "hd100_mm": 1.118,
-     "centroid_mm": 0.307,
+     "hd100_mm": 1.146,
+     "centroid_mm": 0.308,
      "centroid_offset_mm_signed": {
-      "x": 0.058,
-      "y": -0.193,
-      "z": 0.232
+      "x": 0.056,
+      "y": -0.191,
+      "z": 0.235
      },
      "centroid_offset_mm_abs": {
-      "x": 0.058,
-      "y": 0.193,
-      "z": 0.232
+      "x": 0.056,
+      "y": 0.191,
+      "z": 0.235
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.23,
-      "y": 0.77,
-      "z": 0.93
+      "x": 0.22,
+      "y": 0.76,
+      "z": 0.94
      },
-     "vox_a": 1956,
-     "vox_b": 1882
+     "vox_a": 1957,
+     "vox_b": 1876
     },
     {
      "struct": "lhLGN",
      "a": "MR252",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.7389,
-     "assd_mm": 0.254,
+     "dice": 0.7383,
+     "assd_mm": 0.255,
      "hd95_mm": 0.559,
      "hd95_max_directed_mm": 0.559,
      "hd100_mm": 1.031,
      "centroid_mm": 0.427,
      "centroid_offset_mm_signed": {
-      "x": 0.221,
-      "y": -0.009,
-      "z": 0.366
+      "x": 0.222,
+      "y": -0.006,
+      "z": 0.364
      },
      "centroid_offset_mm_abs": {
-      "x": 0.221,
-      "y": 0.009,
-      "z": 0.366
+      "x": 0.222,
+      "y": 0.006,
+      "z": 0.364
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.88,
-      "y": 0.04,
+      "x": 0.89,
+      "y": 0.03,
       "z": 1.46
      },
-     "vox_a": 1956,
+     "vox_a": 1957,
      "vox_b": 2429
     },
     {
@@ -3493,170 +3493,170 @@
      "a": "MR256",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.7525,
-     "assd_mm": 0.25,
-     "hd95_mm": 0.559,
+     "dice": 0.7526,
+     "assd_mm": 0.251,
+     "hd95_mm": 0.586,
      "hd95_max_directed_mm": 0.75,
-     "hd100_mm": 1.25,
-     "centroid_mm": 0.28,
+     "hd100_mm": 1.275,
+     "centroid_mm": 0.281,
      "centroid_offset_mm_signed": {
-      "x": 0.163,
-      "y": 0.183,
-      "z": 0.134
+      "x": 0.167,
+      "y": 0.185,
+      "z": 0.13
      },
      "centroid_offset_mm_abs": {
-      "x": 0.163,
-      "y": 0.183,
-      "z": 0.134
+      "x": 0.167,
+      "y": 0.185,
+      "z": 0.13
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.65,
-      "y": 0.73,
-      "z": 0.54
+      "x": 0.67,
+      "y": 0.74,
+      "z": 0.52
      },
-     "vox_a": 1882,
+     "vox_a": 1876,
      "vox_b": 2429
     },
     {
      "struct": "lhSTN",
      "a": "MR243",
      "b": "MR252",
-     "dice": 0.6562,
-     "assd_mm": 0.19,
+     "dice": 0.6547,
+     "assd_mm": 0.189,
      "hd95_mm": 0.559,
      "hd95_max_directed_mm": 0.612,
      "hd100_mm": 0.901,
-     "centroid_mm": 0.23,
+     "centroid_mm": 0.225,
      "centroid_offset_mm_signed": {
-      "x": -0.019,
-      "y": 0.226,
-      "z": -0.034
+      "x": -0.028,
+      "y": 0.222,
+      "z": -0.024
      },
      "centroid_offset_mm_abs": {
-      "x": 0.019,
-      "y": 0.226,
-      "z": 0.034
+      "x": 0.028,
+      "y": 0.222,
+      "z": 0.024
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.08,
-      "y": 0.91,
-      "z": 0.14
+      "x": 0.11,
+      "y": 0.89,
+      "z": 0.1
      },
-     "vox_a": 348,
-     "vox_b": 484
+     "vox_a": 351,
+     "vox_b": 486
     },
     {
      "struct": "lhSTN",
      "a": "MR243",
      "b": "MR256",
-     "dice": 0.688,
-     "assd_mm": 0.182,
+     "dice": 0.6819,
+     "assd_mm": 0.188,
      "hd95_mm": 0.559,
      "hd95_max_directed_mm": 0.559,
      "hd100_mm": 0.901,
-     "centroid_mm": 0.609,
+     "centroid_mm": 0.631,
      "centroid_offset_mm_signed": {
-      "x": -0.5,
-      "y": -0.08,
-      "z": 0.338
+      "x": -0.515,
+      "y": -0.097,
+      "z": 0.352
      },
      "centroid_offset_mm_abs": {
-      "x": 0.5,
-      "y": 0.08,
-      "z": 0.338
+      "x": 0.515,
+      "y": 0.097,
+      "z": 0.352
      },
      "centroid_offset_voxels_abs": {
-      "x": 2.0,
-      "y": 0.32,
-      "z": 1.35
+      "x": 2.06,
+      "y": 0.39,
+      "z": 1.41
      },
-     "vox_a": 348,
-     "vox_b": 309
+     "vox_a": 351,
+     "vox_b": 306
     },
     {
      "struct": "lhSTN",
      "a": "MR243",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.6411,
+     "dice": 0.6412,
      "assd_mm": 0.196,
      "hd95_mm": 0.559,
      "hd95_max_directed_mm": 0.559,
      "hd100_mm": 0.829,
-     "centroid_mm": 0.73,
+     "centroid_mm": 0.741,
      "centroid_offset_mm_signed": {
-      "x": -0.613,
-      "y": -0.143,
-      "z": 0.371
+      "x": -0.62,
+      "y": -0.15,
+      "z": 0.377
      },
      "centroid_offset_mm_abs": {
-      "x": 0.613,
-      "y": 0.143,
-      "z": 0.371
+      "x": 0.62,
+      "y": 0.15,
+      "z": 0.377
      },
      "centroid_offset_voxels_abs": {
-      "x": 2.45,
-      "y": 0.57,
-      "z": 1.48
+      "x": 2.48,
+      "y": 0.6,
+      "z": 1.51
      },
-     "vox_a": 348,
+     "vox_a": 351,
      "vox_b": 382
     },
     {
      "struct": "lhSTN",
      "a": "MR252",
      "b": "MR256",
-     "dice": 0.6154,
-     "assd_mm": 0.244,
+     "dice": 0.6086,
+     "assd_mm": 0.253,
      "hd95_mm": 0.791,
      "hd95_max_directed_mm": 0.935,
      "hd100_mm": 1.436,
-     "centroid_mm": 0.681,
+     "centroid_mm": 0.693,
      "centroid_offset_mm_signed": {
-      "x": -0.481,
-      "y": -0.306,
-      "z": 0.372
+      "x": -0.487,
+      "y": -0.319,
+      "z": 0.376
      },
      "centroid_offset_mm_abs": {
-      "x": 0.481,
-      "y": 0.306,
-      "z": 0.372
+      "x": 0.487,
+      "y": 0.319,
+      "z": 0.376
      },
      "centroid_offset_voxels_abs": {
-      "x": 1.92,
-      "y": 1.22,
-      "z": 1.49
+      "x": 1.95,
+      "y": 1.28,
+      "z": 1.5
      },
-     "vox_a": 484,
-     "vox_b": 309
+     "vox_a": 486,
+     "vox_b": 306
     },
     {
      "struct": "lhSTN",
      "a": "MR252",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.6767,
-     "assd_mm": 0.2,
+     "dice": 0.6751,
+     "assd_mm": 0.201,
      "hd95_mm": 0.75,
      "hd95_max_directed_mm": 0.901,
      "hd100_mm": 1.369,
-     "centroid_mm": 0.808,
+     "centroid_mm": 0.806,
      "centroid_offset_mm_signed": {
-      "x": -0.594,
-      "y": -0.369,
-      "z": 0.405
+      "x": -0.592,
+      "y": -0.372,
+      "z": 0.401
      },
      "centroid_offset_mm_abs": {
-      "x": 0.594,
-      "y": 0.369,
-      "z": 0.405
+      "x": 0.592,
+      "y": 0.372,
+      "z": 0.401
      },
      "centroid_offset_voxels_abs": {
       "x": 2.37,
-      "y": 1.48,
-      "z": 1.62
+      "y": 1.49,
+      "z": 1.6
      },
-     "vox_a": 484,
+     "vox_a": 486,
      "vox_b": 382
     },
     {
@@ -3664,170 +3664,170 @@
      "a": "MR256",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.712,
-     "assd_mm": 0.155,
+     "dice": 0.7122,
+     "assd_mm": 0.156,
      "hd95_mm": 0.354,
      "hd95_max_directed_mm": 0.49,
      "hd100_mm": 0.75,
-     "centroid_mm": 0.133,
+     "centroid_mm": 0.12,
      "centroid_offset_mm_signed": {
-      "x": -0.113,
-      "y": -0.063,
-      "z": 0.033
+      "x": -0.105,
+      "y": -0.053,
+      "z": 0.025
      },
      "centroid_offset_mm_abs": {
-      "x": 0.113,
-      "y": 0.063,
-      "z": 0.033
+      "x": 0.105,
+      "y": 0.053,
+      "z": 0.025
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.45,
-      "y": 0.25,
-      "z": 0.13
+      "x": 0.42,
+      "y": 0.21,
+      "z": 0.1
      },
-     "vox_a": 309,
+     "vox_a": 306,
      "vox_b": 382
     },
     {
      "struct": "rhLGN",
      "a": "MR243",
      "b": "MR252",
-     "dice": 0.8399,
+     "dice": 0.8401,
      "assd_mm": 0.167,
      "hd95_mm": 0.433,
      "hd95_max_directed_mm": 0.433,
      "hd100_mm": 0.791,
-     "centroid_mm": 0.242,
+     "centroid_mm": 0.239,
      "centroid_offset_mm_signed": {
-      "x": 0.061,
-      "y": 0.231,
-      "z": -0.036
+      "x": 0.06,
+      "y": 0.228,
+      "z": -0.035
      },
      "centroid_offset_mm_abs": {
-      "x": 0.061,
-      "y": 0.231,
-      "z": 0.036
+      "x": 0.06,
+      "y": 0.228,
+      "z": 0.035
      },
      "centroid_offset_voxels_abs": {
       "x": 0.24,
-      "y": 0.92,
+      "y": 0.91,
       "z": 0.14
      },
-     "vox_a": 2242,
-     "vox_b": 2080
+     "vox_a": 2245,
+     "vox_b": 2083
     },
     {
      "struct": "rhLGN",
      "a": "MR243",
      "b": "MR256",
-     "dice": 0.8732,
-     "assd_mm": 0.148,
+     "dice": 0.8723,
+     "assd_mm": 0.149,
      "hd95_mm": 0.354,
      "hd95_max_directed_mm": 0.354,
      "hd100_mm": 0.75,
-     "centroid_mm": 0.112,
+     "centroid_mm": 0.11,
      "centroid_offset_mm_signed": {
-      "x": 0.011,
-      "y": 0.09,
+      "x": 0.013,
+      "y": 0.087,
       "z": 0.066
      },
      "centroid_offset_mm_abs": {
-      "x": 0.011,
-      "y": 0.09,
+      "x": 0.013,
+      "y": 0.087,
       "z": 0.066
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.04,
-      "y": 0.36,
-      "z": 0.27
+      "x": 0.05,
+      "y": 0.35,
+      "z": 0.26
      },
-     "vox_a": 2242,
-     "vox_b": 2300
+     "vox_a": 2245,
+     "vox_b": 2297
     },
     {
      "struct": "rhLGN",
      "a": "MR243",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.7879,
-     "assd_mm": 0.219,
+     "dice": 0.7869,
+     "assd_mm": 0.22,
      "hd95_mm": 0.559,
      "hd95_max_directed_mm": 0.559,
      "hd100_mm": 1.061,
-     "centroid_mm": 0.298,
+     "centroid_mm": 0.299,
      "centroid_offset_mm_signed": {
-      "x": -0.199,
-      "y": 0.104,
-      "z": 0.196
+      "x": -0.2,
+      "y": 0.101,
+      "z": 0.198
      },
      "centroid_offset_mm_abs": {
-      "x": 0.199,
-      "y": 0.104,
-      "z": 0.196
+      "x": 0.2,
+      "y": 0.101,
+      "z": 0.198
      },
      "centroid_offset_voxels_abs": {
       "x": 0.8,
       "y": 0.41,
-      "z": 0.78
+      "z": 0.79
      },
-     "vox_a": 2242,
+     "vox_a": 2245,
      "vox_b": 2289
     },
     {
      "struct": "rhLGN",
      "a": "MR252",
      "b": "MR256",
-     "dice": 0.8621,
-     "assd_mm": 0.153,
+     "dice": 0.8639,
+     "assd_mm": 0.151,
      "hd95_mm": 0.354,
-     "hd95_max_directed_mm": 0.433,
+     "hd95_max_directed_mm": 0.354,
      "hd100_mm": 0.791,
-     "centroid_mm": 0.181,
+     "centroid_mm": 0.18,
      "centroid_offset_mm_signed": {
-      "x": -0.05,
+      "x": -0.047,
       "y": -0.141,
-      "z": 0.102
+      "z": 0.101
      },
      "centroid_offset_mm_abs": {
-      "x": 0.05,
+      "x": 0.047,
       "y": 0.141,
-      "z": 0.102
+      "z": 0.101
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.2,
+      "x": 0.19,
       "y": 0.56,
-      "z": 0.41
+      "z": 0.4
      },
-     "vox_a": 2080,
-     "vox_b": 2300
+     "vox_a": 2083,
+     "vox_b": 2297
     },
     {
      "struct": "rhLGN",
      "a": "MR252",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.7782,
-     "assd_mm": 0.222,
+     "dice": 0.7777,
+     "assd_mm": 0.223,
      "hd95_mm": 0.559,
      "hd95_max_directed_mm": 0.559,
      "hd100_mm": 1.09,
-     "centroid_mm": 0.371,
+     "centroid_mm": 0.372,
      "centroid_offset_mm_signed": {
       "x": -0.26,
       "y": -0.127,
-      "z": 0.231
+      "z": 0.233
      },
      "centroid_offset_mm_abs": {
       "x": 0.26,
       "y": 0.127,
-      "z": 0.231
+      "z": 0.233
      },
      "centroid_offset_voxels_abs": {
       "x": 1.04,
       "y": 0.51,
       "z": 0.93
      },
-     "vox_a": 2080,
+     "vox_a": 2083,
      "vox_b": 2289
     },
     {
@@ -3835,170 +3835,170 @@
      "a": "MR256",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.8285,
-     "assd_mm": 0.184,
+     "dice": 0.8269,
+     "assd_mm": 0.186,
      "hd95_mm": 0.5,
      "hd95_max_directed_mm": 0.559,
      "hd100_mm": 1.031,
-     "centroid_mm": 0.247,
+     "centroid_mm": 0.251,
      "centroid_offset_mm_signed": {
-      "x": -0.21,
+      "x": -0.213,
       "y": 0.014,
-      "z": 0.129
+      "z": 0.132
      },
      "centroid_offset_mm_abs": {
-      "x": 0.21,
+      "x": 0.213,
       "y": 0.014,
-      "z": 0.129
+      "z": 0.132
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.84,
-      "y": 0.05,
-      "z": 0.52
+      "x": 0.85,
+      "y": 0.06,
+      "z": 0.53
      },
-     "vox_a": 2300,
+     "vox_a": 2297,
      "vox_b": 2289
     },
     {
      "struct": "rhSTN",
      "a": "MR243",
      "b": "MR252",
-     "dice": 0.6367,
+     "dice": 0.6354,
      "assd_mm": 0.229,
-     "hd95_mm": 0.683,
-     "hd95_max_directed_mm": 0.774,
+     "hd95_mm": 0.669,
+     "hd95_max_directed_mm": 0.772,
      "hd100_mm": 1.146,
-     "centroid_mm": 0.678,
+     "centroid_mm": 0.681,
      "centroid_offset_mm_signed": {
       "x": -0.42,
-      "y": 0.467,
-      "z": -0.255
+      "y": 0.471,
+      "z": -0.254
      },
      "centroid_offset_mm_abs": {
       "x": 0.42,
-      "y": 0.467,
-      "z": 0.255
+      "y": 0.471,
+      "z": 0.254
      },
      "centroid_offset_voxels_abs": {
       "x": 1.68,
-      "y": 1.87,
+      "y": 1.89,
       "z": 1.02
      },
-     "vox_a": 413,
-     "vox_b": 520
+     "vox_a": 417,
+     "vox_b": 521
     },
     {
      "struct": "rhSTN",
      "a": "MR243",
      "b": "MR256",
-     "dice": 0.7268,
-     "assd_mm": 0.18,
+     "dice": 0.7176,
+     "assd_mm": 0.186,
      "hd95_mm": 0.5,
-     "hd95_max_directed_mm": 0.716,
+     "hd95_max_directed_mm": 0.75,
      "hd100_mm": 1.146,
-     "centroid_mm": 0.287,
+     "centroid_mm": 0.303,
      "centroid_offset_mm_signed": {
-      "x": -0.11,
-      "y": 0.265,
+      "x": -0.115,
+      "y": 0.279,
       "z": 0.021
      },
      "centroid_offset_mm_abs": {
-      "x": 0.11,
-      "y": 0.265,
+      "x": 0.115,
+      "y": 0.279,
       "z": 0.021
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.44,
-      "y": 1.06,
+      "x": 0.46,
+      "y": 1.12,
       "z": 0.08
      },
-     "vox_a": 413,
-     "vox_b": 374
+     "vox_a": 417,
+     "vox_b": 369
     },
     {
      "struct": "rhSTN",
      "a": "MR243",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.7224,
-     "assd_mm": 0.166,
+     "dice": 0.7188,
+     "assd_mm": 0.167,
      "hd95_mm": 0.354,
      "hd95_max_directed_mm": 0.433,
      "hd100_mm": 0.75,
-     "centroid_mm": 0.253,
+     "centroid_mm": 0.256,
      "centroid_offset_mm_signed": {
-      "x": 0.028,
-      "y": 0.251,
+      "x": 0.027,
+      "y": 0.254,
       "z": 0.015
      },
      "centroid_offset_mm_abs": {
-      "x": 0.028,
-      "y": 0.251,
+      "x": 0.027,
+      "y": 0.254,
       "z": 0.015
      },
      "centroid_offset_voxels_abs": {
       "x": 0.11,
-      "y": 1.0,
+      "y": 1.02,
       "z": 0.06
      },
-     "vox_a": 413,
+     "vox_a": 417,
      "vox_b": 401
     },
     {
      "struct": "rhSTN",
      "a": "MR252",
      "b": "MR256",
-     "dice": 0.698,
-     "assd_mm": 0.219,
+     "dice": 0.6921,
+     "assd_mm": 0.222,
      "hd95_mm": 0.707,
-     "hd95_max_directed_mm": 0.922,
+     "hd95_max_directed_mm": 0.92,
      "hd100_mm": 1.458,
-     "centroid_mm": 0.462,
+     "centroid_mm": 0.454,
      "centroid_offset_mm_signed": {
-      "x": 0.31,
-      "y": -0.203,
+      "x": 0.305,
+      "y": -0.192,
       "z": 0.275
      },
      "centroid_offset_mm_abs": {
-      "x": 0.31,
-      "y": 0.203,
+      "x": 0.305,
+      "y": 0.192,
       "z": 0.275
      },
      "centroid_offset_voxels_abs": {
-      "x": 1.24,
-      "y": 0.81,
+      "x": 1.22,
+      "y": 0.77,
       "z": 1.1
      },
-     "vox_a": 520,
-     "vox_b": 374
+     "vox_a": 521,
+     "vox_b": 369
     },
     {
      "struct": "rhSTN",
      "a": "MR252",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.6862,
+     "dice": 0.6855,
      "assd_mm": 0.198,
      "hd95_mm": 0.612,
      "hd95_max_directed_mm": 0.791,
      "hd100_mm": 1.173,
      "centroid_mm": 0.566,
      "centroid_offset_mm_signed": {
-      "x": 0.448,
-      "y": -0.216,
+      "x": 0.447,
+      "y": -0.217,
       "z": 0.27
      },
      "centroid_offset_mm_abs": {
-      "x": 0.448,
-      "y": 0.216,
+      "x": 0.447,
+      "y": 0.217,
       "z": 0.27
      },
      "centroid_offset_voxels_abs": {
       "x": 1.79,
-      "y": 0.86,
+      "y": 0.87,
       "z": 1.08
      },
-     "vox_a": 520,
+     "vox_a": 521,
      "vox_b": 401
     },
     {
@@ -4006,36 +4006,36 @@
      "a": "MR256",
      "b": "GT",
      "kind": "subject_vs_GT",
-     "dice": 0.7355,
-     "assd_mm": 0.161,
+     "dice": 0.7325,
+     "assd_mm": 0.163,
      "hd95_mm": 0.354,
-     "hd95_max_directed_mm": 0.365,
-     "hd100_mm": 0.612,
-     "centroid_mm": 0.139,
+     "hd95_max_directed_mm": 0.433,
+     "hd100_mm": 0.707,
+     "centroid_mm": 0.144,
      "centroid_offset_mm_signed": {
-      "x": 0.138,
-      "y": -0.013,
-      "z": -0.005
+      "x": 0.142,
+      "y": -0.025,
+      "z": -0.006
      },
      "centroid_offset_mm_abs": {
-      "x": 0.138,
-      "y": 0.013,
-      "z": 0.005
+      "x": 0.142,
+      "y": 0.025,
+      "z": 0.006
      },
      "centroid_offset_voxels_abs": {
-      "x": 0.55,
-      "y": 0.05,
+      "x": 0.57,
+      "y": 0.1,
       "z": 0.02
      },
-     "vox_a": 374,
+     "vox_a": 369,
      "vox_b": 401
     }
    ]
   },
   "fields": {
-   "MR252": "<analysis project>/bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_03/fields/MR252_u.npy",
-   "MR256": "<analysis project>/bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_03/fields/MR256_u.npy",
-   "MR243": "<analysis project>/bftemplate/hr_2026-11-12/step9/out_015_s11/outside10/fields/MR243.npy"
+   "MR252": "<analysis project>/bftemplate/hr_2026-11-12/step9/out_s11w_full/final/nln_step_09/iteration_03/fields/MR252_u.npy",
+   "MR256": "<analysis project>/bftemplate/hr_2026-11-12/step9/out_s11w_full/final/nln_step_09/iteration_03/fields/MR256_u.npy",
+   "MR243": "<analysis project>/bftemplate/hr_2026-11-12/step9/out_s11w_full/final/refine/MR243.npy"
   },
   "rules": "LGN/STN OF MM1-MM3 THROUGH THE BLOCKFACE ROUTE (SUN 15 NOV 2026)\nRules written 14:36 (by `date`), before any number of this test. The question is the author's: does the sharper\nblockface template give better registrations along the chain? CPU only. New names only. Nothing of record is touched.\n\nWhat is compared\n  Today the paper's LGN/STN (and tracers) go through the MRI route, which never touches the blockface template:\n    bf-native -> b0-native (R1) -> MRI template (R5)\n  (record: paper/numbers/lgnstn_geometry_current_h9.json; between-brain median centroid distance LGN 0.494, STN 0.4845 mm).\n  This test carries the same labels through the BLOCKFACE route instead, to the same MRI template grid, and computes the same\n  measures:\n    R9 (with step 9):  MRI-template point y -> d2bs8_s5sym pull map bftemplate__to__mri-template -> blockface-template point x\n                       -> x + U(x) (step-9 field, 0.15 mm grid, trilinear, border values) -> step-8 member warp (d2bs8_bfview\n                       nln_step_08/iteration_03 <S>_scalar_mod_01_to_template_warp_resampled_unbiased_full, fsl_rel, src grid canon\n                       t1_grey) -> hr.native_map(S) (run-113 -> native blockface world, the brain's registration of record)\n                       -> the label in native blockface space.\n                       This is hr.member_job's chain, the one every step-9 input was carried through.\n    R8 (step 8 only):  the same chain with U = 0. It shows what the step-9 template adds on its own.\n  U per brain:\n    MM2 = MR252 and MM3 = MR256 are in S12. Their photographs BUILT the template's image, and U is their u_3, the composed\n      iteration-3 field of the template's construction (out_015 iteration_03/fields/<S>_u.npy, 0.15 mm).\n    MM1 = MR243 is NOT in S12. It did not build the image. U is today's outside registration to the finished template\n      (out_015/outside9/fields/MR243.npy, TESTS.md addendum 14).\n  All three were in the 21-brain step-8 (MMORF) build, as were all 21 brains. Every route therefore shares their step-8 alignment.\n\nLabels\n  Primary: the paper's inputs, labels/push_current_h9/<S>/<S>_<struct>_bfnative_L2_demons.nii.gz (H9, no MR252 frame-36 refit).\n  These are the same files the MRI route of record started from, so the comparison differs only in the route.\n  Secondary: the data tree's composites, labels/h9_2026-11-12/lgnstn_composites_h9/sub-<S>/<S>_lgn_stn_blockface.nii.gz.\n    - Key 1 lhLGN, 2 rhLGN, 3 lhSTN, 4 rhSTN. MR252 carries the 9 Nov frame-36 refit.\n    - Compared with the composites' own MRI-route files (<S>_lgn_stn_template.nii.gz; the \"H9 + refit\" row: LGN 0.49, STN 0.50).\n\nCarry rule: labels_to_template.py --dense, unchanged\n  - Crop to the label's bounding box + 2 mm (at least 1 mm along the section axis).\n  - Gaussian anti-aliasing per source axis with FWHM = max(source spacing, 0.25 mm) (label_refs.aa_sigma).\n  - ONE linear resample through the route onto template/mri/linc_mri_b0.nii.gz (0.25 mm), then > 0.5.\n  - Evaluated in a box on the MRI template grid: the MRI-route label of record united with the GT label of that structure,\n    dilated by 6 mm.\n\nMeasures: labels/lgnstn_geometry.py's row_metrics and stats, imported unchanged\n  - Per hemisphere-structure, the 3 pairs of brains (pairwise_subjects). LGN = lhLGN + rhLGN (6 rows), STN likewise.\n  - Medians of centroid distance (primary), ASSD, HD95 and Dice. subject_vs_GT is secondary.\n  - Reported for R8, R9 and the MRI route side by side. No pass or fail: the comparison is reported as it comes.\n\nChecks (stop and report if one fails)\n  C1 Reproduction: the MRI route's medians, recomputed with the same functions from push_current_h9's\n     *_mri-template_mask_demons, equal the record's summary medians (lgnstn_geometry_current_h9) within 6e-4.\n  C2 World and chain: each brain's native L2 photograph (hr.Native: n01 / valid, valid >= 0.5), carried through R9 onto the MRI\n     template grid, is correlated with T3s12_015_in_mri_grey in the template's brainmask. Pearson r is reported. r < 0.5 means\n     a convention error (a wrong world gives about 0): stop.\n  C3 Every carried label is non-empty and has no voxel on its box's border (no truncation).\n  C4 The composites of MR243 and MR256 equal push_current_h9's bfnative_L2_demons labels voxel for voxel (composites README).\n     If not, report it.\n\nGuards (h9run-style)\n  - Every write goes through one helper that refuses any path outside labels/bfroute_s9_2026-11-15/.\n  - Records are read only. No paper/numbers record is written unless asked.\n\nIf the author picks option C (TESTS.md addendum 16), this reruns on S11: MR252 and MR256 are in S11 too (their S11 u_3);\nMR243 uses its S11 outside field.\n",
   "definition": "The LGN/STN route comparison (RULES.txt in this folder) as a paper record, from the saved results only:\n    python labels/bfroute_s9_2026-11-15/bfroute_numbers.py s11      -> paper/numbers/lgnstn_bfroute_s11.json\n    python labels/bfroute_s9_2026-11-15/bfroute_numbers.py s12 --dry  (prints; writes nothing)\nSchema: out_<tag>/results.json's (checks, summary, rows, table, table_composites, fields), plus\n  routes: MRI = the MRI route of record (bf-native -> b0 (R1) -> MRI template (R5)); R8 = the blockface route with step 8 only;\n          R9 = the blockface route with the step-9 template (d2bs8_s5sym link, step-9 field, step-8 member warp, native map);\n  members: which of MM1-MM3 built the template's image (in S11/S12) and which are outside it;\n  definition: this docstring and RULES.txt's text."

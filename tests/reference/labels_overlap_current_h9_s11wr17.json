@@ -17,32 +17,32 @@
   "one_voxel_reference": {
    "rule": "Dice of the label vs itself shifted exactly one voxel (0.25 mm) along the grid axis closest to its thinnest principal axis (PCA of voxel world coords; integer shift, no interpolation; mean of +/-)",
    "variant": "demons",
-   "LGN_dice": 0.8757,
-   "STN_dice": 0.7226,
+   "LGN_dice": 0.8756,
+   "STN_dice": 0.7231,
    "per_struct": {
     "lhLGN": {
-     "MR243": 0.8786,
+     "MR243": 0.8796,
      "GT": 0.8662,
-     "MR252": 0.871,
-     "MR256": 0.873
+     "MR252": 0.8708,
+     "MR256": 0.8726
     },
     "lhSTN": {
-     "MR243": 0.6695,
+     "MR243": 0.6724,
      "GT": 0.7094,
-     "MR252": 0.7348,
-     "MR256": 0.6958
+     "MR252": 0.7365,
+     "MR256": 0.6993
     },
     "rhLGN": {
-     "MR243": 0.876,
+     "MR243": 0.8762,
      "GT": 0.8615,
-     "MR252": 0.8768,
-     "MR256": 0.8787
+     "MR252": 0.8765,
+     "MR256": 0.8781
     },
     "rhSTN": {
-     "MR243": 0.6973,
+     "MR243": 0.6954,
      "GT": 0.7357,
-     "MR252": 0.7867,
-     "MR256": 0.7513
+     "MR252": 0.7871,
+     "MR256": 0.748
     }
    }
   },
@@ -62,16 +62,16 @@
     "struct": "lhLGN",
     "a": "MR243",
     "b": "GT(run113, Chiara)",
-    "dice": 0.7066,
-    "assd_mm": 0.327,
-    "centroid_mm": 0.662,
-    "vol_ratio": 1.328,
-    "vox_a": 3226,
+    "dice": 0.7065,
+    "assd_mm": 0.328,
+    "centroid_mm": 0.664,
+    "vol_ratio": 1.326,
+    "vox_a": 3221,
     "vox_b": 2429,
     "one_voxel_ref": {
-     "a": 0.8831,
+     "a": 0.8826,
      "b": 0.8662,
-     "mean": 0.8746
+     "mean": 0.8744
     },
     "previous_carry": null,
     "links_a": [
@@ -95,16 +95,16 @@
     "struct": "lhLGN",
     "a": "MR252",
     "b": "GT(run113, Chiara)",
-    "dice": 0.7258,
-    "assd_mm": 0.265,
-    "centroid_mm": 0.485,
-    "vol_ratio": 0.902,
-    "vox_a": 2192,
+    "dice": 0.7256,
+    "assd_mm": 0.266,
+    "centroid_mm": 0.487,
+    "vol_ratio": 0.901,
+    "vox_a": 2188,
     "vox_b": 2429,
     "one_voxel_ref": {
-     "a": 0.8586,
+     "a": 0.8583,
      "b": 0.8662,
-     "mean": 0.8624
+     "mean": 0.8622
     },
     "previous_carry": null,
     "links_a": [
@@ -128,16 +128,16 @@
     "struct": "lhLGN",
     "a": "MR256",
     "b": "GT(run113, Chiara)",
-    "dice": 0.787,
-    "assd_mm": 0.218,
-    "centroid_mm": 0.25,
-    "vol_ratio": 0.927,
-    "vox_a": 2252,
+    "dice": 0.7878,
+    "assd_mm": 0.217,
+    "centroid_mm": 0.251,
+    "vol_ratio": 0.926,
+    "vox_a": 2250,
     "vox_b": 2429,
     "one_voxel_ref": {
-     "a": 0.8797,
+     "a": 0.88,
      "b": 0.8662,
-     "mean": 0.873
+     "mean": 0.8731
     },
     "previous_carry": null,
     "links_a": [
@@ -161,16 +161,16 @@
     "struct": "lhLGN",
     "a": "MR243",
     "b": "MR252",
-    "dice": 0.7501,
+    "dice": 0.7499,
     "assd_mm": 0.278,
-    "centroid_mm": 0.399,
+    "centroid_mm": 0.401,
     "vol_ratio": 1.472,
-    "vox_a": 3226,
-    "vox_b": 2192,
+    "vox_a": 3221,
+    "vox_b": 2188,
     "one_voxel_ref": {
-     "a": 0.8831,
-     "b": 0.8586,
-     "mean": 0.8709
+     "a": 0.8826,
+     "b": 0.8583,
+     "mean": 0.8704
     },
     "previous_carry": null,
     "links_a": [
@@ -196,16 +196,16 @@
     "struct": "lhLGN",
     "a": "MR243",
     "b": "MR256",
-    "dice": 0.7609,
-    "assd_mm": 0.296,
-    "centroid_mm": 0.676,
-    "vol_ratio": 1.433,
-    "vox_a": 3226,
-    "vox_b": 2252,
+    "dice": 0.7611,
+    "assd_mm": 0.297,
+    "centroid_mm": 0.687,
+    "vol_ratio": 1.432,
+    "vox_a": 3221,
+    "vox_b": 2250,
     "one_voxel_ref": {
-     "a": 0.8831,
-     "b": 0.8797,
-     "mean": 0.8814
+     "a": 0.8826,
+     "b": 0.88,
+     "mean": 0.8813
     },
     "previous_carry": null,
     "links_a": [
@@ -231,16 +231,16 @@
     "struct": "lhLGN",
     "a": "MR252",
     "b": "MR256",
-    "dice": 0.775,
+    "dice": 0.776,
     "assd_mm": 0.239,
-    "centroid_mm": 0.358,
-    "vol_ratio": 0.973,
-    "vox_a": 2192,
-    "vox_b": 2252,
+    "centroid_mm": 0.367,
+    "vol_ratio": 0.972,
+    "vox_a": 2188,
+    "vox_b": 2250,
     "one_voxel_ref": {
-     "a": 0.8586,
-     "b": 0.8797,
-     "mean": 0.8692
+     "a": 0.8583,
+     "b": 0.88,
+     "mean": 0.8691
     },
     "previous_carry": null,
     "links_a": [
@@ -266,16 +266,16 @@
     "struct": "lhSTN",
     "a": "MR243",
     "b": "GT(run113, Chiara)",
-    "dice": 0.5934,
-    "assd_mm": 0.236,
-    "centroid_mm": 0.613,
-    "vol_ratio": 1.047,
-    "vox_a": 400,
+    "dice": 0.5972,
+    "assd_mm": 0.232,
+    "centroid_mm": 0.603,
+    "vol_ratio": 1.06,
+    "vox_a": 405,
     "vox_b": 382,
     "one_voxel_ref": {
-     "a": 0.6225,
+     "a": 0.6296,
      "b": 0.7094,
-     "mean": 0.666
+     "mean": 0.6695
     },
     "previous_carry": null,
     "links_a": [
@@ -299,16 +299,16 @@
     "struct": "lhSTN",
     "a": "MR252",
     "b": "GT(run113, Chiara)",
-    "dice": 0.6159,
-    "assd_mm": 0.26,
-    "centroid_mm": 0.941,
+    "dice": 0.6138,
+    "assd_mm": 0.261,
+    "centroid_mm": 0.943,
     "vol_ratio": 1.508,
     "vox_a": 576,
     "vox_b": 382,
     "one_voxel_ref": {
-     "a": 0.724,
+     "a": 0.7205,
      "b": 0.7094,
-     "mean": 0.7167
+     "mean": 0.7149
     },
     "previous_carry": null,
     "links_a": [
@@ -332,16 +332,16 @@
     "struct": "lhSTN",
     "a": "MR256",
     "b": "GT(run113, Chiara)",
-    "dice": 0.7183,
-    "assd_mm": 0.151,
-    "centroid_mm": 0.136,
-    "vol_ratio": 1.063,
-    "vox_a": 406,
+    "dice": 0.7219,
+    "assd_mm": 0.147,
+    "centroid_mm": 0.122,
+    "vol_ratio": 1.052,
+    "vox_a": 402,
     "vox_b": 382,
     "one_voxel_ref": {
-     "a": 0.6946,
+     "a": 0.6915,
      "b": 0.7094,
-     "mean": 0.702
+     "mean": 0.7005
     },
     "previous_carry": null,
     "links_a": [
@@ -365,16 +365,16 @@
     "struct": "lhSTN",
     "a": "MR243",
     "b": "MR252",
-    "dice": 0.6168,
-    "assd_mm": 0.219,
-    "centroid_mm": 0.557,
-    "vol_ratio": 0.694,
-    "vox_a": 400,
+    "dice": 0.6157,
+    "assd_mm": 0.221,
+    "centroid_mm": 0.576,
+    "vol_ratio": 0.703,
+    "vox_a": 405,
     "vox_b": 576,
     "one_voxel_ref": {
-     "a": 0.6225,
-     "b": 0.724,
-     "mean": 0.6733
+     "a": 0.6296,
+     "b": 0.7205,
+     "mean": 0.6751
     },
     "previous_carry": null,
     "links_a": [
@@ -400,16 +400,16 @@
     "struct": "lhSTN",
     "a": "MR243",
     "b": "MR256",
-    "dice": 0.6278,
-    "assd_mm": 0.223,
-    "centroid_mm": 0.484,
-    "vol_ratio": 0.985,
-    "vox_a": 400,
-    "vox_b": 406,
+    "dice": 0.6394,
+    "assd_mm": 0.214,
+    "centroid_mm": 0.49,
+    "vol_ratio": 1.007,
+    "vox_a": 405,
+    "vox_b": 402,
     "one_voxel_ref": {
-     "a": 0.6225,
-     "b": 0.6946,
-     "mean": 0.6585
+     "a": 0.6296,
+     "b": 0.6915,
+     "mean": 0.6605
     },
     "previous_carry": null,
     "links_a": [
@@ -435,16 +435,16 @@
     "struct": "lhSTN",
     "a": "MR252",
     "b": "MR256",
-    "dice": 0.613,
-    "assd_mm": 0.249,
-    "centroid_mm": 0.812,
-    "vol_ratio": 1.419,
+    "dice": 0.6033,
+    "assd_mm": 0.254,
+    "centroid_mm": 0.827,
+    "vol_ratio": 1.433,
     "vox_a": 576,
-    "vox_b": 406,
+    "vox_b": 402,
     "one_voxel_ref": {
-     "a": 0.724,
-     "b": 0.6946,
-     "mean": 0.7093
+     "a": 0.7205,
+     "b": 0.6915,
+     "mean": 0.706
     },
     "previous_carry": null,
     "links_a": [
@@ -470,16 +470,16 @@
     "struct": "rhLGN",
     "a": "MR243",
     "b": "GT(run113, Chiara)",
-    "dice": 0.7682,
-    "assd_mm": 0.265,
-    "centroid_mm": 0.339,
-    "vol_ratio": 1.195,
-    "vox_a": 2736,
+    "dice": 0.7674,
+    "assd_mm": 0.263,
+    "centroid_mm": 0.342,
+    "vol_ratio": 1.197,
+    "vox_a": 2741,
     "vox_b": 2289,
     "one_voxel_ref": {
-     "a": 0.8732,
+     "a": 0.8741,
      "b": 0.8615,
-     "mean": 0.8674
+     "mean": 0.8678
     },
     "previous_carry": null,
     "links_a": [
@@ -505,12 +505,12 @@
     "b": "GT(run113, Chiara)",
     "dice": 0.805,
     "assd_mm": 0.209,
-    "centroid_mm": 0.359,
-    "vol_ratio": 1.044,
-    "vox_a": 2389,
+    "centroid_mm": 0.36,
+    "vol_ratio": 1.045,
+    "vox_a": 2392,
     "vox_b": 2289,
     "one_voxel_ref": {
-     "a": 0.8774,
+     "a": 0.8775,
      "b": 0.8615,
      "mean": 0.8695
     },
@@ -536,14 +536,14 @@
     "struct": "rhLGN",
     "a": "MR256",
     "b": "GT(run113, Chiara)",
-    "dice": 0.8292,
-    "assd_mm": 0.182,
-    "centroid_mm": 0.26,
-    "vol_ratio": 1.082,
-    "vox_a": 2477,
+    "dice": 0.8273,
+    "assd_mm": 0.184,
+    "centroid_mm": 0.264,
+    "vol_ratio": 1.085,
+    "vox_a": 2483,
     "vox_b": 2289,
     "one_voxel_ref": {
-     "a": 0.8765,
+     "a": 0.8764,
      "b": 0.8615,
      "mean": 0.869
     },
@@ -569,16 +569,16 @@
     "struct": "rhLGN",
     "a": "MR243",
     "b": "MR252",
-    "dice": 0.839,
-    "assd_mm": 0.187,
-    "centroid_mm": 0.253,
-    "vol_ratio": 1.145,
-    "vox_a": 2736,
-    "vox_b": 2389,
+    "dice": 0.8381,
+    "assd_mm": 0.186,
+    "centroid_mm": 0.255,
+    "vol_ratio": 1.146,
+    "vox_a": 2741,
+    "vox_b": 2392,
     "one_voxel_ref": {
-     "a": 0.8732,
-     "b": 0.8774,
-     "mean": 0.8753
+     "a": 0.8741,
+     "b": 0.8775,
+     "mean": 0.8758
     },
     "previous_carry": null,
     "links_a": [
@@ -604,16 +604,16 @@
     "struct": "rhLGN",
     "a": "MR243",
     "b": "MR256",
-    "dice": 0.8364,
-    "assd_mm": 0.205,
+    "dice": 0.835,
+    "assd_mm": 0.206,
     "centroid_mm": 0.202,
-    "vol_ratio": 1.105,
-    "vox_a": 2736,
-    "vox_b": 2477,
+    "vol_ratio": 1.104,
+    "vox_a": 2741,
+    "vox_b": 2483,
     "one_voxel_ref": {
-     "a": 0.8732,
-     "b": 0.8765,
-     "mean": 0.8748
+     "a": 0.8741,
+     "b": 0.8764,
+     "mean": 0.8752
     },
     "previous_carry": null,
     "links_a": [
@@ -639,15 +639,15 @@
     "struct": "rhLGN",
     "a": "MR252",
     "b": "MR256",
-    "dice": 0.8751,
-    "assd_mm": 0.145,
-    "centroid_mm": 0.112,
-    "vol_ratio": 0.964,
-    "vox_a": 2389,
-    "vox_b": 2477,
+    "dice": 0.8755,
+    "assd_mm": 0.144,
+    "centroid_mm": 0.111,
+    "vol_ratio": 0.963,
+    "vox_a": 2392,
+    "vox_b": 2483,
     "one_voxel_ref": {
-     "a": 0.8774,
-     "b": 0.8765,
+     "a": 0.8775,
+     "b": 0.8764,
      "mean": 0.8769
     },
     "previous_carry": null,
@@ -674,11 +674,11 @@
     "struct": "rhSTN",
     "a": "MR243",
     "b": "GT(run113, Chiara)",
-    "dice": 0.6483,
-    "assd_mm": 0.231,
-    "centroid_mm": 0.226,
-    "vol_ratio": 1.17,
-    "vox_a": 469,
+    "dice": 0.653,
+    "assd_mm": 0.229,
+    "centroid_mm": 0.216,
+    "vol_ratio": 1.185,
+    "vox_a": 475,
     "vox_b": 401,
     "one_voxel_ref": {
      "a": 0.6716,
@@ -707,16 +707,16 @@
     "struct": "rhSTN",
     "a": "MR252",
     "b": "GT(run113, Chiara)",
-    "dice": 0.6225,
-    "assd_mm": 0.237,
-    "centroid_mm": 0.425,
-    "vol_ratio": 1.484,
-    "vox_a": 595,
+    "dice": 0.6231,
+    "assd_mm": 0.236,
+    "centroid_mm": 0.427,
+    "vol_ratio": 1.481,
+    "vox_a": 594,
     "vox_b": 401,
     "one_voxel_ref": {
-     "a": 0.7681,
+     "a": 0.7677,
      "b": 0.7357,
-     "mean": 0.7519
+     "mean": 0.7517
     },
     "previous_carry": null,
     "links_a": [
@@ -740,16 +740,16 @@
     "struct": "rhSTN",
     "a": "MR256",
     "b": "GT(run113, Chiara)",
-    "dice": 0.7226,
-    "assd_mm": 0.165,
-    "centroid_mm": 0.089,
-    "vol_ratio": 1.112,
-    "vox_a": 446,
+    "dice": 0.731,
+    "assd_mm": 0.159,
+    "centroid_mm": 0.094,
+    "vol_ratio": 1.095,
+    "vox_a": 439,
     "vox_b": 401,
     "one_voxel_ref": {
-     "a": 0.713,
+     "a": 0.7198,
      "b": 0.7357,
-     "mean": 0.7244
+     "mean": 0.7278
     },
     "previous_carry": null,
     "links_a": [
@@ -773,16 +773,16 @@
     "struct": "rhSTN",
     "a": "MR243",
     "b": "MR252",
-    "dice": 0.6316,
-    "assd_mm": 0.226,
-    "centroid_mm": 0.525,
-    "vol_ratio": 0.788,
-    "vox_a": 469,
-    "vox_b": 595,
+    "dice": 0.6342,
+    "assd_mm": 0.224,
+    "centroid_mm": 0.511,
+    "vol_ratio": 0.8,
+    "vox_a": 475,
+    "vox_b": 594,
     "one_voxel_ref": {
      "a": 0.6716,
-     "b": 0.7681,
-     "mean": 0.7198
+     "b": 0.7677,
+     "mean": 0.7197
     },
     "previous_carry": null,
     "links_a": [
@@ -808,16 +808,16 @@
     "struct": "rhSTN",
     "a": "MR243",
     "b": "MR256",
-    "dice": 0.6798,
-    "assd_mm": 0.218,
-    "centroid_mm": 0.198,
-    "vol_ratio": 1.052,
-    "vox_a": 469,
-    "vox_b": 446,
+    "dice": 0.6805,
+    "assd_mm": 0.217,
+    "centroid_mm": 0.188,
+    "vol_ratio": 1.082,
+    "vox_a": 475,
+    "vox_b": 439,
     "one_voxel_ref": {
      "a": 0.6716,
-     "b": 0.713,
-     "mean": 0.6923
+     "b": 0.7198,
+     "mean": 0.6957
     },
     "previous_carry": null,
     "links_a": [
@@ -843,459 +843,459 @@
     "struct": "rhSTN",
     "a": "MR252",
     "b": "MR256",
-    "dice": 0.682,
-    "assd_mm": 0.215,
-    "centroid_mm": 0.471,
-    "vol_ratio": 1.334,
-    "vox_a": 595,
-    "vox_b": 446,
-    "one_voxel_ref": {
-     "a": 0.7681,
-     "b": 0.713,
-     "mean": 0.7406
-    },
-    "previous_carry": null,
-    "links_a": [
-     "bf-template->mri-template (MR252)",
-     "bf-template-step8->bf-template (MR252)",
-     "canon->bf-template-step8 (MR252)",
-     "bf-native->canon (MR252)"
-    ],
-    "links_b": [
-     "bf-template->mri-template (MR256)",
-     "bf-template-step8->bf-template (MR256)",
-     "canon->bf-template-step8 (MR256)",
-     "bf-native->canon (MR256)"
-    ],
-    "shared_links": [
-     "mri-template (common target)"
-    ]
-   },
-   {
-    "variant": "demons",
-    "primary": true,
-    "kind": "subject_vs_GT",
-    "struct": "lhLGN",
-    "a": "MR243",
-    "b": "GT(run113, Chiara)",
-    "dice": 0.7471,
-    "assd_mm": 0.254,
-    "centroid_mm": 0.622,
-    "vol_ratio": 0.994,
-    "vox_a": 2414,
-    "vox_b": 2429,
-    "one_voxel_ref": {
-     "a": 0.8786,
-     "b": 0.8662,
-     "mean": 0.8724
-    },
-    "previous_carry": null,
-    "links_a": [
-     "histology piece->bf-native (TIRL)",
-     "bf-template->mri-template (MR243)",
-     "bf-template-step8->bf-template (MR243)",
-     "canon->bf-template-step8 (MR243)",
-     "bf-native->canon (MR243)"
-    ],
-    "links_b": [
-     "GT drawn on run-113",
-     "mri-run113->mri-template"
-    ],
-    "shared_links": [],
-    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
-   },
-   {
-    "variant": "demons",
-    "primary": true,
-    "kind": "subject_vs_GT",
-    "struct": "lhLGN",
-    "a": "MR252",
-    "b": "GT(run113, Chiara)",
-    "dice": 0.7376,
-    "assd_mm": 0.253,
-    "centroid_mm": 0.404,
-    "vol_ratio": 0.833,
-    "vox_a": 2023,
-    "vox_b": 2429,
-    "one_voxel_ref": {
-     "a": 0.871,
-     "b": 0.8662,
-     "mean": 0.8686
-    },
-    "previous_carry": null,
-    "links_a": [
-     "histology piece->bf-native (TIRL)",
-     "bf-template->mri-template (MR252)",
-     "bf-template-step8->bf-template (MR252)",
-     "canon->bf-template-step8 (MR252)",
-     "bf-native->canon (MR252)"
-    ],
-    "links_b": [
-     "GT drawn on run-113",
-     "mri-run113->mri-template"
-    ],
-    "shared_links": [],
-    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
-   },
-   {
-    "variant": "demons",
-    "primary": true,
-    "kind": "subject_vs_GT",
-    "struct": "lhLGN",
-    "a": "MR256",
-    "b": "GT(run113, Chiara)",
-    "dice": 0.7525,
-    "assd_mm": 0.25,
-    "centroid_mm": 0.28,
-    "vol_ratio": 0.775,
-    "vox_a": 1882,
-    "vox_b": 2429,
-    "one_voxel_ref": {
-     "a": 0.873,
-     "b": 0.8662,
-     "mean": 0.8696
-    },
-    "previous_carry": null,
-    "links_a": [
-     "histology piece->bf-native (TIRL)",
-     "bf-template->mri-template (MR256)",
-     "bf-template-step8->bf-template (MR256)",
-     "canon->bf-template-step8 (MR256)",
-     "bf-native->canon (MR256)"
-    ],
-    "links_b": [
-     "GT drawn on run-113",
-     "mri-run113->mri-template"
-    ],
-    "shared_links": [],
-    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
-   },
-   {
-    "variant": "demons",
-    "primary": true,
-    "kind": "pairwise_subjects",
-    "struct": "lhLGN",
-    "a": "MR243",
-    "b": "MR252",
-    "dice": 0.7987,
-    "assd_mm": 0.207,
-    "centroid_mm": 0.488,
-    "vol_ratio": 1.193,
-    "vox_a": 2414,
-    "vox_b": 2023,
-    "one_voxel_ref": {
-     "a": 0.8786,
-     "b": 0.871,
-     "mean": 0.8748
-    },
-    "previous_carry": null,
-    "links_a": [
-     "bf-template->mri-template (MR243)",
-     "bf-template-step8->bf-template (MR243)",
-     "canon->bf-template-step8 (MR243)",
-     "bf-native->canon (MR243)"
-    ],
-    "links_b": [
-     "bf-template->mri-template (MR252)",
-     "bf-template-step8->bf-template (MR252)",
-     "canon->bf-template-step8 (MR252)",
-     "bf-native->canon (MR252)"
-    ],
-    "shared_links": [
-     "mri-template (common target)"
-    ]
-   },
-   {
-    "variant": "demons",
-    "primary": true,
-    "kind": "pairwise_subjects",
-    "struct": "lhLGN",
-    "a": "MR243",
-    "b": "MR256",
-    "dice": 0.7719,
-    "assd_mm": 0.256,
-    "centroid_mm": 0.694,
-    "vol_ratio": 1.283,
-    "vox_a": 2414,
-    "vox_b": 1882,
-    "one_voxel_ref": {
-     "a": 0.8786,
-     "b": 0.873,
-     "mean": 0.8758
-    },
-    "previous_carry": null,
-    "links_a": [
-     "bf-template->mri-template (MR243)",
-     "bf-template-step8->bf-template (MR243)",
-     "canon->bf-template-step8 (MR243)",
-     "bf-native->canon (MR243)"
-    ],
-    "links_b": [
-     "bf-template->mri-template (MR256)",
-     "bf-template-step8->bf-template (MR256)",
-     "canon->bf-template-step8 (MR256)",
-     "bf-native->canon (MR256)"
-    ],
-    "shared_links": [
-     "mri-template (common target)"
-    ]
-   },
-   {
-    "variant": "demons",
-    "primary": true,
-    "kind": "pairwise_subjects",
-    "struct": "lhLGN",
-    "a": "MR252",
-    "b": "MR256",
-    "dice": 0.8292,
-    "assd_mm": 0.183,
-    "centroid_mm": 0.267,
-    "vol_ratio": 1.075,
-    "vox_a": 2023,
-    "vox_b": 1882,
-    "one_voxel_ref": {
-     "a": 0.871,
-     "b": 0.873,
-     "mean": 0.872
-    },
-    "previous_carry": null,
-    "links_a": [
-     "bf-template->mri-template (MR252)",
-     "bf-template-step8->bf-template (MR252)",
-     "canon->bf-template-step8 (MR252)",
-     "bf-native->canon (MR252)"
-    ],
-    "links_b": [
-     "bf-template->mri-template (MR256)",
-     "bf-template-step8->bf-template (MR256)",
-     "canon->bf-template-step8 (MR256)",
-     "bf-native->canon (MR256)"
-    ],
-    "shared_links": [
-     "mri-template (common target)"
-    ]
-   },
-   {
-    "variant": "demons",
-    "primary": true,
-    "kind": "subject_vs_GT",
-    "struct": "lhSTN",
-    "a": "MR243",
-    "b": "GT(run113, Chiara)",
-    "dice": 0.6411,
-    "assd_mm": 0.196,
-    "centroid_mm": 0.73,
-    "vol_ratio": 0.911,
-    "vox_a": 348,
-    "vox_b": 382,
-    "one_voxel_ref": {
-     "a": 0.6695,
-     "b": 0.7094,
-     "mean": 0.6895
-    },
-    "previous_carry": null,
-    "links_a": [
-     "histology piece->bf-native (TIRL)",
-     "bf-template->mri-template (MR243)",
-     "bf-template-step8->bf-template (MR243)",
-     "canon->bf-template-step8 (MR243)",
-     "bf-native->canon (MR243)"
-    ],
-    "links_b": [
-     "GT drawn on run-113",
-     "mri-run113->mri-template"
-    ],
-    "shared_links": [],
-    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
-   },
-   {
-    "variant": "demons",
-    "primary": true,
-    "kind": "subject_vs_GT",
-    "struct": "lhSTN",
-    "a": "MR252",
-    "b": "GT(run113, Chiara)",
-    "dice": 0.6413,
-    "assd_mm": 0.221,
-    "centroid_mm": 0.945,
-    "vol_ratio": 1.204,
-    "vox_a": 460,
-    "vox_b": 382,
-    "one_voxel_ref": {
-     "a": 0.7348,
-     "b": 0.7094,
-     "mean": 0.7221
-    },
-    "previous_carry": null,
-    "links_a": [
-     "histology piece->bf-native (TIRL)",
-     "bf-template->mri-template (MR252)",
-     "bf-template-step8->bf-template (MR252)",
-     "canon->bf-template-step8 (MR252)",
-     "bf-native->canon (MR252)"
-    ],
-    "links_b": [
-     "GT drawn on run-113",
-     "mri-run113->mri-template"
-    ],
-    "shared_links": [],
-    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
-   },
-   {
-    "variant": "demons",
-    "primary": true,
-    "kind": "subject_vs_GT",
-    "struct": "lhSTN",
-    "a": "MR256",
-    "b": "GT(run113, Chiara)",
-    "dice": 0.712,
-    "assd_mm": 0.155,
-    "centroid_mm": 0.133,
-    "vol_ratio": 0.809,
-    "vox_a": 309,
-    "vox_b": 382,
-    "one_voxel_ref": {
-     "a": 0.6958,
-     "b": 0.7094,
-     "mean": 0.7026
-    },
-    "previous_carry": null,
-    "links_a": [
-     "histology piece->bf-native (TIRL)",
-     "bf-template->mri-template (MR256)",
-     "bf-template-step8->bf-template (MR256)",
-     "canon->bf-template-step8 (MR256)",
-     "bf-native->canon (MR256)"
-    ],
-    "links_b": [
-     "GT drawn on run-113",
-     "mri-run113->mri-template"
-    ],
-    "shared_links": [],
-    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
-   },
-   {
-    "variant": "demons",
-    "primary": true,
-    "kind": "pairwise_subjects",
-    "struct": "lhSTN",
-    "a": "MR243",
-    "b": "MR252",
-    "dice": 0.646,
-    "assd_mm": 0.193,
-    "centroid_mm": 0.33,
-    "vol_ratio": 0.757,
-    "vox_a": 348,
-    "vox_b": 460,
-    "one_voxel_ref": {
-     "a": 0.6695,
-     "b": 0.7348,
-     "mean": 0.7022
-    },
-    "previous_carry": null,
-    "links_a": [
-     "bf-template->mri-template (MR243)",
-     "bf-template-step8->bf-template (MR243)",
-     "canon->bf-template-step8 (MR243)",
-     "bf-native->canon (MR243)"
-    ],
-    "links_b": [
-     "bf-template->mri-template (MR252)",
-     "bf-template-step8->bf-template (MR252)",
-     "canon->bf-template-step8 (MR252)",
-     "bf-native->canon (MR252)"
-    ],
-    "shared_links": [
-     "mri-template (common target)"
-    ]
-   },
-   {
-    "variant": "demons",
-    "primary": true,
-    "kind": "pairwise_subjects",
-    "struct": "lhSTN",
-    "a": "MR243",
-    "b": "MR256",
-    "dice": 0.688,
-    "assd_mm": 0.182,
-    "centroid_mm": 0.609,
-    "vol_ratio": 1.126,
-    "vox_a": 348,
-    "vox_b": 309,
-    "one_voxel_ref": {
-     "a": 0.6695,
-     "b": 0.6958,
-     "mean": 0.6826
-    },
-    "previous_carry": null,
-    "links_a": [
-     "bf-template->mri-template (MR243)",
-     "bf-template-step8->bf-template (MR243)",
-     "canon->bf-template-step8 (MR243)",
-     "bf-native->canon (MR243)"
-    ],
-    "links_b": [
-     "bf-template->mri-template (MR256)",
-     "bf-template-step8->bf-template (MR256)",
-     "canon->bf-template-step8 (MR256)",
-     "bf-native->canon (MR256)"
-    ],
-    "shared_links": [
-     "mri-template (common target)"
-    ]
-   },
-   {
-    "variant": "demons",
-    "primary": true,
-    "kind": "pairwise_subjects",
-    "struct": "lhSTN",
-    "a": "MR252",
-    "b": "MR256",
-    "dice": 0.6138,
-    "assd_mm": 0.243,
-    "centroid_mm": 0.817,
-    "vol_ratio": 1.489,
-    "vox_a": 460,
-    "vox_b": 309,
-    "one_voxel_ref": {
-     "a": 0.7348,
-     "b": 0.6958,
-     "mean": 0.7153
-    },
-    "previous_carry": null,
-    "links_a": [
-     "bf-template->mri-template (MR252)",
-     "bf-template-step8->bf-template (MR252)",
-     "canon->bf-template-step8 (MR252)",
-     "bf-native->canon (MR252)"
-    ],
-    "links_b": [
-     "bf-template->mri-template (MR256)",
-     "bf-template-step8->bf-template (MR256)",
-     "canon->bf-template-step8 (MR256)",
-     "bf-native->canon (MR256)"
-    ],
-    "shared_links": [
-     "mri-template (common target)"
-    ]
-   },
-   {
-    "variant": "demons",
-    "primary": true,
-    "kind": "subject_vs_GT",
-    "struct": "rhLGN",
-    "a": "MR243",
-    "b": "GT(run113, Chiara)",
-    "dice": 0.7879,
+    "dice": 0.6738,
     "assd_mm": 0.219,
-    "centroid_mm": 0.298,
-    "vol_ratio": 0.979,
-    "vox_a": 2242,
+    "centroid_mm": 0.486,
+    "vol_ratio": 1.353,
+    "vox_a": 594,
+    "vox_b": 439,
+    "one_voxel_ref": {
+     "a": 0.7677,
+     "b": 0.7198,
+     "mean": 0.7438
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-template->mri-template (MR252)",
+     "bf-template-step8->bf-template (MR252)",
+     "canon->bf-template-step8 (MR252)",
+     "bf-native->canon (MR252)"
+    ],
+    "links_b": [
+     "bf-template->mri-template (MR256)",
+     "bf-template-step8->bf-template (MR256)",
+     "canon->bf-template-step8 (MR256)",
+     "bf-native->canon (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "lhLGN",
+    "a": "MR243",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.7459,
+    "assd_mm": 0.255,
+    "centroid_mm": 0.626,
+    "vol_ratio": 0.995,
+    "vox_a": 2416,
+    "vox_b": 2429,
+    "one_voxel_ref": {
+     "a": 0.8796,
+     "b": 0.8662,
+     "mean": 0.8729
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-template->mri-template (MR243)",
+     "bf-template-step8->bf-template (MR243)",
+     "canon->bf-template-step8 (MR243)",
+     "bf-native->canon (MR243)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "lhLGN",
+    "a": "MR252",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.7368,
+    "assd_mm": 0.253,
+    "centroid_mm": 0.403,
+    "vol_ratio": 0.832,
+    "vox_a": 2020,
+    "vox_b": 2429,
+    "one_voxel_ref": {
+     "a": 0.8708,
+     "b": 0.8662,
+     "mean": 0.8685
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-template->mri-template (MR252)",
+     "bf-template-step8->bf-template (MR252)",
+     "canon->bf-template-step8 (MR252)",
+     "bf-native->canon (MR252)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "lhLGN",
+    "a": "MR256",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.7526,
+    "assd_mm": 0.251,
+    "centroid_mm": 0.281,
+    "vol_ratio": 0.772,
+    "vox_a": 1876,
+    "vox_b": 2429,
+    "one_voxel_ref": {
+     "a": 0.8726,
+     "b": 0.8662,
+     "mean": 0.8694
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-template->mri-template (MR256)",
+     "bf-template-step8->bf-template (MR256)",
+     "canon->bf-template-step8 (MR256)",
+     "bf-native->canon (MR256)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "lhLGN",
+    "a": "MR243",
+    "b": "MR252",
+    "dice": 0.7985,
+    "assd_mm": 0.207,
+    "centroid_mm": 0.496,
+    "vol_ratio": 1.196,
+    "vox_a": 2416,
+    "vox_b": 2020,
+    "one_voxel_ref": {
+     "a": 0.8796,
+     "b": 0.8708,
+     "mean": 0.8752
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-template->mri-template (MR243)",
+     "bf-template-step8->bf-template (MR243)",
+     "canon->bf-template-step8 (MR243)",
+     "bf-native->canon (MR243)"
+    ],
+    "links_b": [
+     "bf-template->mri-template (MR252)",
+     "bf-template-step8->bf-template (MR252)",
+     "canon->bf-template-step8 (MR252)",
+     "bf-native->canon (MR252)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "lhLGN",
+    "a": "MR243",
+    "b": "MR256",
+    "dice": 0.7707,
+    "assd_mm": 0.258,
+    "centroid_mm": 0.703,
+    "vol_ratio": 1.288,
+    "vox_a": 2416,
+    "vox_b": 1876,
+    "one_voxel_ref": {
+     "a": 0.8796,
+     "b": 0.8726,
+     "mean": 0.8761
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-template->mri-template (MR243)",
+     "bf-template-step8->bf-template (MR243)",
+     "canon->bf-template-step8 (MR243)",
+     "bf-native->canon (MR243)"
+    ],
+    "links_b": [
+     "bf-template->mri-template (MR256)",
+     "bf-template-step8->bf-template (MR256)",
+     "canon->bf-template-step8 (MR256)",
+     "bf-native->canon (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "lhLGN",
+    "a": "MR252",
+    "b": "MR256",
+    "dice": 0.8275,
+    "assd_mm": 0.185,
+    "centroid_mm": 0.269,
+    "vol_ratio": 1.077,
+    "vox_a": 2020,
+    "vox_b": 1876,
+    "one_voxel_ref": {
+     "a": 0.8708,
+     "b": 0.8726,
+     "mean": 0.8717
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-template->mri-template (MR252)",
+     "bf-template-step8->bf-template (MR252)",
+     "canon->bf-template-step8 (MR252)",
+     "bf-native->canon (MR252)"
+    ],
+    "links_b": [
+     "bf-template->mri-template (MR256)",
+     "bf-template-step8->bf-template (MR256)",
+     "canon->bf-template-step8 (MR256)",
+     "bf-native->canon (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "lhSTN",
+    "a": "MR243",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.6412,
+    "assd_mm": 0.196,
+    "centroid_mm": 0.741,
+    "vol_ratio": 0.919,
+    "vox_a": 351,
+    "vox_b": 382,
+    "one_voxel_ref": {
+     "a": 0.6724,
+     "b": 0.7094,
+     "mean": 0.6909
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-template->mri-template (MR243)",
+     "bf-template-step8->bf-template (MR243)",
+     "canon->bf-template-step8 (MR243)",
+     "bf-native->canon (MR243)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "lhSTN",
+    "a": "MR252",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.6438,
+    "assd_mm": 0.221,
+    "centroid_mm": 0.943,
+    "vol_ratio": 1.212,
+    "vox_a": 463,
+    "vox_b": 382,
+    "one_voxel_ref": {
+     "a": 0.7365,
+     "b": 0.7094,
+     "mean": 0.7229
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-template->mri-template (MR252)",
+     "bf-template-step8->bf-template (MR252)",
+     "canon->bf-template-step8 (MR252)",
+     "bf-native->canon (MR252)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "lhSTN",
+    "a": "MR256",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.7122,
+    "assd_mm": 0.156,
+    "centroid_mm": 0.12,
+    "vol_ratio": 0.801,
+    "vox_a": 306,
+    "vox_b": 382,
+    "one_voxel_ref": {
+     "a": 0.6993,
+     "b": 0.7094,
+     "mean": 0.7044
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-template->mri-template (MR256)",
+     "bf-template-step8->bf-template (MR256)",
+     "canon->bf-template-step8 (MR256)",
+     "bf-native->canon (MR256)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "lhSTN",
+    "a": "MR243",
+    "b": "MR252",
+    "dice": 0.6486,
+    "assd_mm": 0.191,
+    "centroid_mm": 0.321,
+    "vol_ratio": 0.758,
+    "vox_a": 351,
+    "vox_b": 463,
+    "one_voxel_ref": {
+     "a": 0.6724,
+     "b": 0.7365,
+     "mean": 0.7045
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-template->mri-template (MR243)",
+     "bf-template-step8->bf-template (MR243)",
+     "canon->bf-template-step8 (MR243)",
+     "bf-native->canon (MR243)"
+    ],
+    "links_b": [
+     "bf-template->mri-template (MR252)",
+     "bf-template-step8->bf-template (MR252)",
+     "canon->bf-template-step8 (MR252)",
+     "bf-native->canon (MR252)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "lhSTN",
+    "a": "MR243",
+    "b": "MR256",
+    "dice": 0.6819,
+    "assd_mm": 0.188,
+    "centroid_mm": 0.631,
+    "vol_ratio": 1.147,
+    "vox_a": 351,
+    "vox_b": 306,
+    "one_voxel_ref": {
+     "a": 0.6724,
+     "b": 0.6993,
+     "mean": 0.6859
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-template->mri-template (MR243)",
+     "bf-template-step8->bf-template (MR243)",
+     "canon->bf-template-step8 (MR243)",
+     "bf-native->canon (MR243)"
+    ],
+    "links_b": [
+     "bf-template->mri-template (MR256)",
+     "bf-template-step8->bf-template (MR256)",
+     "canon->bf-template-step8 (MR256)",
+     "bf-native->canon (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "pairwise_subjects",
+    "struct": "lhSTN",
+    "a": "MR252",
+    "b": "MR256",
+    "dice": 0.6086,
+    "assd_mm": 0.251,
+    "centroid_mm": 0.829,
+    "vol_ratio": 1.513,
+    "vox_a": 463,
+    "vox_b": 306,
+    "one_voxel_ref": {
+     "a": 0.7365,
+     "b": 0.6993,
+     "mean": 0.7179
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-template->mri-template (MR252)",
+     "bf-template-step8->bf-template (MR252)",
+     "canon->bf-template-step8 (MR252)",
+     "bf-native->canon (MR252)"
+    ],
+    "links_b": [
+     "bf-template->mri-template (MR256)",
+     "bf-template-step8->bf-template (MR256)",
+     "canon->bf-template-step8 (MR256)",
+     "bf-native->canon (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons",
+    "primary": true,
+    "kind": "subject_vs_GT",
+    "struct": "rhLGN",
+    "a": "MR243",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.7869,
+    "assd_mm": 0.22,
+    "centroid_mm": 0.299,
+    "vol_ratio": 0.981,
+    "vox_a": 2245,
     "vox_b": 2289,
     "one_voxel_ref": {
-     "a": 0.876,
+     "a": 0.8762,
      "b": 0.8615,
-     "mean": 0.8688
+     "mean": 0.8689
     },
     "previous_carry": null,
     "links_a": [
@@ -1319,16 +1319,16 @@
     "struct": "rhLGN",
     "a": "MR252",
     "b": "GT(run113, Chiara)",
-    "dice": 0.8047,
-    "assd_mm": 0.203,
-    "centroid_mm": 0.371,
-    "vol_ratio": 0.95,
-    "vox_a": 2175,
+    "dice": 0.8041,
+    "assd_mm": 0.204,
+    "centroid_mm": 0.372,
+    "vol_ratio": 0.952,
+    "vox_a": 2178,
     "vox_b": 2289,
     "one_voxel_ref": {
-     "a": 0.8768,
+     "a": 0.8765,
      "b": 0.8615,
-     "mean": 0.8692
+     "mean": 0.869
     },
     "previous_carry": null,
     "links_a": [
@@ -1352,16 +1352,16 @@
     "struct": "rhLGN",
     "a": "MR256",
     "b": "GT(run113, Chiara)",
-    "dice": 0.8285,
-    "assd_mm": 0.184,
-    "centroid_mm": 0.247,
-    "vol_ratio": 1.005,
-    "vox_a": 2300,
+    "dice": 0.8269,
+    "assd_mm": 0.186,
+    "centroid_mm": 0.251,
+    "vol_ratio": 1.003,
+    "vox_a": 2297,
     "vox_b": 2289,
     "one_voxel_ref": {
-     "a": 0.8787,
+     "a": 0.8781,
      "b": 0.8615,
-     "mean": 0.8701
+     "mean": 0.8698
     },
     "previous_carry": null,
     "links_a": [
@@ -1385,16 +1385,16 @@
     "struct": "rhLGN",
     "a": "MR243",
     "b": "MR252",
-    "dice": 0.8558,
-    "assd_mm": 0.156,
-    "centroid_mm": 0.207,
+    "dice": 0.8555,
+    "assd_mm": 0.155,
+    "centroid_mm": 0.205,
     "vol_ratio": 1.031,
-    "vox_a": 2242,
-    "vox_b": 2175,
+    "vox_a": 2245,
+    "vox_b": 2178,
     "one_voxel_ref": {
-     "a": 0.876,
-     "b": 0.8768,
-     "mean": 0.8764
+     "a": 0.8762,
+     "b": 0.8765,
+     "mean": 0.8763
     },
     "previous_carry": null,
     "links_a": [
@@ -1420,16 +1420,16 @@
     "struct": "rhLGN",
     "a": "MR243",
     "b": "MR256",
-    "dice": 0.8732,
-    "assd_mm": 0.148,
-    "centroid_mm": 0.112,
-    "vol_ratio": 0.975,
-    "vox_a": 2242,
-    "vox_b": 2300,
+    "dice": 0.8723,
+    "assd_mm": 0.149,
+    "centroid_mm": 0.11,
+    "vol_ratio": 0.977,
+    "vox_a": 2245,
+    "vox_b": 2297,
     "one_voxel_ref": {
-     "a": 0.876,
-     "b": 0.8787,
-     "mean": 0.8774
+     "a": 0.8762,
+     "b": 0.8781,
+     "mean": 0.8771
     },
     "previous_carry": null,
     "links_a": [
@@ -1455,16 +1455,16 @@
     "struct": "rhLGN",
     "a": "MR252",
     "b": "MR256",
-    "dice": 0.8827,
-    "assd_mm": 0.137,
-    "centroid_mm": 0.14,
-    "vol_ratio": 0.946,
-    "vox_a": 2175,
-    "vox_b": 2300,
+    "dice": 0.884,
+    "assd_mm": 0.135,
+    "centroid_mm": 0.138,
+    "vol_ratio": 0.948,
+    "vox_a": 2178,
+    "vox_b": 2297,
     "one_voxel_ref": {
-     "a": 0.8768,
-     "b": 0.8787,
-     "mean": 0.8778
+     "a": 0.8765,
+     "b": 0.8781,
+     "mean": 0.8773
     },
     "previous_carry": null,
     "links_a": [
@@ -1490,16 +1490,16 @@
     "struct": "rhSTN",
     "a": "MR243",
     "b": "GT(run113, Chiara)",
-    "dice": 0.7224,
-    "assd_mm": 0.166,
-    "centroid_mm": 0.253,
-    "vol_ratio": 1.03,
-    "vox_a": 413,
+    "dice": 0.7188,
+    "assd_mm": 0.167,
+    "centroid_mm": 0.256,
+    "vol_ratio": 1.04,
+    "vox_a": 417,
     "vox_b": 401,
     "one_voxel_ref": {
-     "a": 0.6973,
+     "a": 0.6954,
      "b": 0.7357,
-     "mean": 0.7165
+     "mean": 0.7156
     },
     "previous_carry": null,
     "links_a": [
@@ -1523,16 +1523,16 @@
     "struct": "rhSTN",
     "a": "MR252",
     "b": "GT(run113, Chiara)",
-    "dice": 0.6798,
+    "dice": 0.6791,
     "assd_mm": 0.201,
     "centroid_mm": 0.604,
-    "vol_ratio": 1.274,
-    "vox_a": 511,
+    "vol_ratio": 1.277,
+    "vox_a": 512,
     "vox_b": 401,
     "one_voxel_ref": {
-     "a": 0.7867,
+     "a": 0.7871,
      "b": 0.7357,
-     "mean": 0.7612
+     "mean": 0.7614
     },
     "previous_carry": null,
     "links_a": [
@@ -1556,16 +1556,16 @@
     "struct": "rhSTN",
     "a": "MR256",
     "b": "GT(run113, Chiara)",
-    "dice": 0.7355,
-    "assd_mm": 0.161,
-    "centroid_mm": 0.139,
-    "vol_ratio": 0.933,
-    "vox_a": 374,
+    "dice": 0.7325,
+    "assd_mm": 0.163,
+    "centroid_mm": 0.144,
+    "vol_ratio": 0.92,
+    "vox_a": 369,
     "vox_b": 401,
     "one_voxel_ref": {
-     "a": 0.7513,
+     "a": 0.748,
      "b": 0.7357,
-     "mean": 0.7435
+     "mean": 0.7419
     },
     "previous_carry": null,
     "links_a": [
@@ -1589,16 +1589,16 @@
     "struct": "rhSTN",
     "a": "MR243",
     "b": "MR252",
-    "dice": 0.6255,
+    "dice": 0.6243,
     "assd_mm": 0.236,
-    "centroid_mm": 0.717,
-    "vol_ratio": 0.808,
-    "vox_a": 413,
-    "vox_b": 511,
+    "centroid_mm": 0.72,
+    "vol_ratio": 0.814,
+    "vox_a": 417,
+    "vox_b": 512,
     "one_voxel_ref": {
-     "a": 0.6973,
-     "b": 0.7867,
-     "mean": 0.742
+     "a": 0.6954,
+     "b": 0.7871,
+     "mean": 0.7412
     },
     "previous_carry": null,
     "links_a": [
@@ -1624,16 +1624,16 @@
     "struct": "rhSTN",
     "a": "MR243",
     "b": "MR256",
-    "dice": 0.7268,
-    "assd_mm": 0.18,
-    "centroid_mm": 0.287,
-    "vol_ratio": 1.104,
-    "vox_a": 413,
-    "vox_b": 374,
+    "dice": 0.7176,
+    "assd_mm": 0.186,
+    "centroid_mm": 0.303,
+    "vol_ratio": 1.13,
+    "vox_a": 417,
+    "vox_b": 369,
     "one_voxel_ref": {
-     "a": 0.6973,
-     "b": 0.7513,
-     "mean": 0.7243
+     "a": 0.6954,
+     "b": 0.748,
+     "mean": 0.7217
     },
     "previous_carry": null,
     "links_a": [
@@ -1659,16 +1659,16 @@
     "struct": "rhSTN",
     "a": "MR252",
     "b": "MR256",
-    "dice": 0.7051,
-    "assd_mm": 0.215,
-    "centroid_mm": 0.499,
-    "vol_ratio": 1.366,
-    "vox_a": 511,
-    "vox_b": 374,
+    "dice": 0.6992,
+    "assd_mm": 0.217,
+    "centroid_mm": 0.491,
+    "vol_ratio": 1.388,
+    "vox_a": 512,
+    "vox_b": 369,
     "one_voxel_ref": {
-     "a": 0.7867,
-     "b": 0.7513,
-     "mean": 0.769
+     "a": 0.7871,
+     "b": 0.748,
+     "mean": 0.7675
     },
     "previous_carry": null,
     "links_a": [
@@ -1694,16 +1694,16 @@
     "struct": "lhLGN",
     "a": "MR243",
     "b": "GT(run113, Chiara)",
-    "dice": 0.8214,
+    "dice": 0.82,
     "assd_mm": 0.077,
-    "centroid_mm": 0.474,
-    "vol_ratio": 1.391,
-    "vox_a": 925,
-    "vox_b": 665,
+    "centroid_mm": 0.477,
+    "vol_ratio": 1.392,
+    "vox_a": 931,
+    "vox_b": 669,
     "one_voxel_ref": {
-     "a": 0.7384,
-     "b": 0.7038,
-     "mean": 0.7211
+     "a": 0.7411,
+     "b": 0.7055,
+     "mean": 0.7233
     },
     "previous_carry": null,
     "links_a": [
@@ -1727,16 +1727,16 @@
     "struct": "lhLGN",
     "a": "MR252",
     "b": "GT(run113, Chiara)",
-    "dice": 0.8105,
-    "assd_mm": 0.142,
-    "centroid_mm": 0.369,
-    "vol_ratio": 1.354,
-    "vox_a": 88,
-    "vox_b": 65,
+    "dice": 0.8313,
+    "assd_mm": 0.112,
+    "centroid_mm": 0.331,
+    "vol_ratio": 1.306,
+    "vox_a": 94,
+    "vox_b": 72,
     "one_voxel_ref": {
-     "a": 0.1023,
-     "b": 0.0615,
-     "mean": 0.0819
+     "a": 0.0957,
+     "b": 0.0694,
+     "mean": 0.0825
     },
     "previous_carry": null,
     "links_a": [
@@ -1760,16 +1760,16 @@
     "struct": "lhLGN",
     "a": "MR256",
     "b": "GT(run113, Chiara)",
-    "dice": 0.9286,
-    "assd_mm": 0.033,
-    "centroid_mm": 0.127,
-    "vol_ratio": 1.049,
-    "vox_a": 86,
+    "dice": 0.9419,
+    "assd_mm": 0.022,
+    "centroid_mm": 0.042,
+    "vol_ratio": 1.098,
+    "vox_a": 90,
     "vox_b": 82,
     "one_voxel_ref": {
-     "a": 0.1628,
-     "b": 0.1585,
-     "mean": 0.1607
+     "a": 0.1444,
+     "b": 0.1341,
+     "mean": 0.1392
     },
     "previous_carry": null,
     "links_a": [
@@ -1797,13 +1797,13 @@
     "assd_mm": null,
     "centroid_mm": null,
     "vol_ratio": null,
-    "vox_a": 49,
-    "vox_b": 47,
+    "vox_a": 50,
+    "vox_b": 49,
     "na": "< 50 voxels",
     "one_voxel_ref": {
-     "a": 0.1224,
-     "b": 0.1277,
-     "mean": 0.125
+     "a": 0.1,
+     "b": 0.102,
+     "mean": 0.101
     },
     "previous_carry": null,
     "links_a": [
@@ -1833,13 +1833,13 @@
     "assd_mm": null,
     "centroid_mm": null,
     "vol_ratio": null,
-    "vox_a": 6,
-    "vox_b": 6,
+    "vox_a": 5,
+    "vox_b": 5,
     "na": "< 50 voxels",
     "one_voxel_ref": {
-     "a": 0.3333,
-     "b": 0.3333,
-     "mean": 0.3333
+     "a": 0.4,
+     "b": 0.4,
+     "mean": 0.4
     },
     "previous_carry": null,
     "links_a": [
@@ -1864,179 +1864,6 @@
     "kind": "pairwise_subjects",
     "struct": "lhLGN",
     "a": "MR252",
-    "b": "MR256",
-    "dice": null,
-    "assd_mm": null,
-    "centroid_mm": null,
-    "vol_ratio": null,
-    "vox_a": null,
-    "vox_b": null,
-    "na": "< 50 voxels",
-    "one_voxel_ref": {
-     "a": null,
-     "b": null,
-     "mean": null
-    },
-    "previous_carry": null,
-    "links_a": [
-     "bf-template->mri-template (MR252)",
-     "bf-template-step8->bf-template (MR252)",
-     "canon->bf-template-step8 (MR252)",
-     "bf-native->canon (MR252)"
-    ],
-    "links_b": [
-     "bf-template->mri-template (MR256)",
-     "bf-template-step8->bf-template (MR256)",
-     "canon->bf-template-step8 (MR256)",
-     "bf-native->canon (MR256)"
-    ],
-    "shared_links": [
-     "mri-template (common target)"
-    ]
-   },
-   {
-    "variant": "demons_real_sections",
-    "primary": false,
-    "kind": "subject_vs_GT",
-    "struct": "lhSTN",
-    "a": "MR243",
-    "b": "GT(run113, Chiara)",
-    "dice": 0.7803,
-    "assd_mm": 0.082,
-    "centroid_mm": 0.657,
-    "vol_ratio": 1.323,
-    "vox_a": 127,
-    "vox_b": 96,
-    "one_voxel_ref": {
-     "a": 0.378,
-     "b": 0.3333,
-     "mean": 0.3557
-    },
-    "previous_carry": null,
-    "links_a": [
-     "histology piece->bf-native (TIRL)",
-     "bf-template->mri-template (MR243)",
-     "bf-template-step8->bf-template (MR243)",
-     "canon->bf-template-step8 (MR243)",
-     "bf-native->canon (MR243)"
-    ],
-    "links_b": [
-     "GT drawn on run-113",
-     "mri-run113->mri-template"
-    ],
-    "shared_links": [],
-    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
-   },
-   {
-    "variant": "demons_real_sections",
-    "primary": false,
-    "kind": "subject_vs_GT",
-    "struct": "lhSTN",
-    "a": "MR252",
-    "b": "GT(run113, Chiara)",
-    "dice": null,
-    "assd_mm": null,
-    "centroid_mm": null,
-    "vol_ratio": null,
-    "vox_a": 29,
-    "vox_b": 21,
-    "na": "< 50 voxels",
-    "one_voxel_ref": {
-     "a": 0.3103,
-     "b": 0.0,
-     "mean": 0.1552
-    },
-    "previous_carry": null,
-    "links_a": [
-     "histology piece->bf-native (TIRL)",
-     "bf-template->mri-template (MR252)",
-     "bf-template-step8->bf-template (MR252)",
-     "canon->bf-template-step8 (MR252)",
-     "bf-native->canon (MR252)"
-    ],
-    "links_b": [
-     "GT drawn on run-113",
-     "mri-run113->mri-template"
-    ],
-    "shared_links": [],
-    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
-   },
-   {
-    "variant": "demons_real_sections",
-    "primary": false,
-    "kind": "subject_vs_GT",
-    "struct": "lhSTN",
-    "a": "MR256",
-    "b": "GT(run113, Chiara)",
-    "dice": null,
-    "assd_mm": null,
-    "centroid_mm": null,
-    "vol_ratio": null,
-    "vox_a": 10,
-    "vox_b": 12,
-    "na": "< 50 voxels",
-    "one_voxel_ref": {
-     "a": 0.3,
-     "b": 0.1667,
-     "mean": 0.2334
-    },
-    "previous_carry": null,
-    "links_a": [
-     "histology piece->bf-native (TIRL)",
-     "bf-template->mri-template (MR256)",
-     "bf-template-step8->bf-template (MR256)",
-     "canon->bf-template-step8 (MR256)",
-     "bf-native->canon (MR256)"
-    ],
-    "links_b": [
-     "GT drawn on run-113",
-     "mri-run113->mri-template"
-    ],
-    "shared_links": [],
-    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
-   },
-   {
-    "variant": "demons_real_sections",
-    "primary": false,
-    "kind": "pairwise_subjects",
-    "struct": "lhSTN",
-    "a": "MR243",
-    "b": "MR252",
-    "dice": null,
-    "assd_mm": null,
-    "centroid_mm": null,
-    "vol_ratio": null,
-    "vox_a": 3,
-    "vox_b": 3,
-    "na": "< 50 voxels",
-    "one_voxel_ref": {
-     "a": null,
-     "b": null,
-     "mean": null
-    },
-    "previous_carry": null,
-    "links_a": [
-     "bf-template->mri-template (MR243)",
-     "bf-template-step8->bf-template (MR243)",
-     "canon->bf-template-step8 (MR243)",
-     "bf-native->canon (MR243)"
-    ],
-    "links_b": [
-     "bf-template->mri-template (MR252)",
-     "bf-template-step8->bf-template (MR252)",
-     "canon->bf-template-step8 (MR252)",
-     "bf-native->canon (MR252)"
-    ],
-    "shared_links": [
-     "mri-template (common target)"
-    ]
-   },
-   {
-    "variant": "demons_real_sections",
-    "primary": false,
-    "kind": "pairwise_subjects",
-    "struct": "lhSTN",
-    "a": "MR243",
     "b": "MR256",
     "dice": null,
     "assd_mm": null,
@@ -2052,6 +1879,179 @@
     },
     "previous_carry": null,
     "links_a": [
+     "bf-template->mri-template (MR252)",
+     "bf-template-step8->bf-template (MR252)",
+     "canon->bf-template-step8 (MR252)",
+     "bf-native->canon (MR252)"
+    ],
+    "links_b": [
+     "bf-template->mri-template (MR256)",
+     "bf-template-step8->bf-template (MR256)",
+     "canon->bf-template-step8 (MR256)",
+     "bf-native->canon (MR256)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "lhSTN",
+    "a": "MR243",
+    "b": "GT(run113, Chiara)",
+    "dice": 0.7814,
+    "assd_mm": 0.082,
+    "centroid_mm": 0.673,
+    "vol_ratio": 1.312,
+    "vox_a": 122,
+    "vox_b": 93,
+    "one_voxel_ref": {
+     "a": 0.377,
+     "b": 0.3226,
+     "mean": 0.3498
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-template->mri-template (MR243)",
+     "bf-template-step8->bf-template (MR243)",
+     "canon->bf-template-step8 (MR243)",
+     "bf-native->canon (MR243)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "lhSTN",
+    "a": "MR252",
+    "b": "GT(run113, Chiara)",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": 30,
+    "vox_b": 23,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": 0.3,
+     "b": 0.0,
+     "mean": 0.15
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-template->mri-template (MR252)",
+     "bf-template-step8->bf-template (MR252)",
+     "canon->bf-template-step8 (MR252)",
+     "bf-native->canon (MR252)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "subject_vs_GT",
+    "struct": "lhSTN",
+    "a": "MR256",
+    "b": "GT(run113, Chiara)",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": 11,
+    "vox_b": 13,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": 0.0,
+     "b": 0.0,
+     "mean": 0.0
+    },
+    "previous_carry": null,
+    "links_a": [
+     "histology piece->bf-native (TIRL)",
+     "bf-template->mri-template (MR256)",
+     "bf-template-step8->bf-template (MR256)",
+     "canon->bf-template-step8 (MR256)",
+     "bf-native->canon (MR256)"
+    ],
+    "links_b": [
+     "GT drawn on run-113",
+     "mri-run113->mri-template"
+    ],
+    "shared_links": [],
+    "note": "GT is single-rater, drawn on the old run-113 template (in-sample for neither route)"
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "lhSTN",
+    "a": "MR243",
+    "b": "MR252",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": 4,
+    "vox_b": 3,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": 0.0,
+     "b": null,
+     "mean": null
+    },
+    "previous_carry": null,
+    "links_a": [
+     "bf-template->mri-template (MR243)",
+     "bf-template-step8->bf-template (MR243)",
+     "canon->bf-template-step8 (MR243)",
+     "bf-native->canon (MR243)"
+    ],
+    "links_b": [
+     "bf-template->mri-template (MR252)",
+     "bf-template-step8->bf-template (MR252)",
+     "canon->bf-template-step8 (MR252)",
+     "bf-native->canon (MR252)"
+    ],
+    "shared_links": [
+     "mri-template (common target)"
+    ]
+   },
+   {
+    "variant": "demons_real_sections",
+    "primary": false,
+    "kind": "pairwise_subjects",
+    "struct": "lhSTN",
+    "a": "MR243",
+    "b": "MR256",
+    "dice": null,
+    "assd_mm": null,
+    "centroid_mm": null,
+    "vol_ratio": null,
+    "vox_a": null,
+    "vox_b": null,
+    "na": "< 50 voxels",
+    "one_voxel_ref": {
+     "a": null,
+     "b": null,
+     "mean": null
+    },
+    "previous_carry": null,
+    "links_a": [
      "bf-template->mri-template (MR243)",
      "bf-template-step8->bf-template (MR243)",
      "canon->bf-template-step8 (MR243)",
@@ -2110,16 +2110,16 @@
     "struct": "rhLGN",
     "a": "MR243",
     "b": "GT(run113, Chiara)",
-    "dice": 0.8501,
-    "assd_mm": 0.071,
-    "centroid_mm": 0.259,
-    "vol_ratio": 1.296,
-    "vox_a": 806,
-    "vox_b": 622,
+    "dice": 0.8529,
+    "assd_mm": 0.068,
+    "centroid_mm": 0.256,
+    "vol_ratio": 1.281,
+    "vox_a": 798,
+    "vox_b": 623,
     "one_voxel_ref": {
-     "a": 0.7022,
-     "b": 0.6768,
-     "mean": 0.6895
+     "a": 0.703,
+     "b": 0.6758,
+     "mean": 0.6894
     },
     "previous_carry": null,
     "links_a": [
@@ -2143,16 +2143,16 @@
     "struct": "rhLGN",
     "a": "MR252",
     "b": "GT(run113, Chiara)",
-    "dice": 0.8571,
-    "assd_mm": 0.105,
-    "centroid_mm": 0.34,
-    "vol_ratio": 1.253,
-    "vox_a": 109,
-    "vox_b": 87,
+    "dice": 0.8619,
+    "assd_mm": 0.101,
+    "centroid_mm": 0.258,
+    "vol_ratio": 1.207,
+    "vox_a": 99,
+    "vox_b": 82,
     "one_voxel_ref": {
-     "a": 0.0642,
-     "b": 0.0345,
-     "mean": 0.0493
+     "a": 0.0404,
+     "b": 0.0366,
+     "mean": 0.0385
     },
     "previous_carry": null,
     "links_a": [
@@ -2176,16 +2176,16 @@
     "struct": "rhLGN",
     "a": "MR256",
     "b": "GT(run113, Chiara)",
-    "dice": 0.8571,
-    "assd_mm": 0.085,
-    "centroid_mm": 0.212,
-    "vol_ratio": 1.308,
-    "vox_a": 119,
-    "vox_b": 91,
+    "dice": 0.8727,
+    "assd_mm": 0.071,
+    "centroid_mm": 0.21,
+    "vol_ratio": 1.268,
+    "vox_a": 123,
+    "vox_b": 97,
     "one_voxel_ref": {
-     "a": 0.2941,
-     "b": 0.2527,
-     "mean": 0.2734
+     "a": 0.2927,
+     "b": 0.268,
+     "mean": 0.2803
     },
     "previous_carry": null,
     "links_a": [
@@ -2213,13 +2213,13 @@
     "assd_mm": null,
     "centroid_mm": null,
     "vol_ratio": null,
-    "vox_a": 15,
-    "vox_b": 14,
+    "vox_a": 12,
+    "vox_b": 11,
     "na": "< 50 voxels",
     "one_voxel_ref": {
-     "a": 0.0667,
-     "b": 0.0714,
-     "mean": 0.0691
+     "a": 0.0833,
+     "b": 0.0909,
+     "mean": 0.0871
     },
     "previous_carry": null,
     "links_a": [
@@ -2249,13 +2249,13 @@
     "assd_mm": null,
     "centroid_mm": null,
     "vol_ratio": null,
-    "vox_a": 19,
-    "vox_b": 19,
+    "vox_a": 18,
+    "vox_b": 18,
     "na": "< 50 voxels",
     "one_voxel_ref": {
-     "a": 0.2632,
-     "b": 0.2632,
-     "mean": 0.2632
+     "a": 0.2222,
+     "b": 0.2222,
+     "mean": 0.2222
     },
     "previous_carry": null,
     "links_a": [
@@ -2317,16 +2317,16 @@
     "struct": "rhSTN",
     "a": "MR243",
     "b": "GT(run113, Chiara)",
-    "dice": 0.8123,
+    "dice": 0.8108,
     "assd_mm": 0.063,
-    "centroid_mm": 0.203,
-    "vol_ratio": 1.373,
-    "vox_a": 151,
-    "vox_b": 110,
+    "centroid_mm": 0.208,
+    "vol_ratio": 1.376,
+    "vox_a": 150,
+    "vox_b": 109,
     "one_voxel_ref": {
-     "a": 0.4371,
-     "b": 0.4545,
-     "mean": 0.4458
+     "a": 0.4467,
+     "b": 0.4587,
+     "mean": 0.4527
     },
     "previous_carry": null,
     "links_a": [
@@ -2355,12 +2355,12 @@
     "centroid_mm": null,
     "vol_ratio": null,
     "vox_a": 29,
-    "vox_b": 14,
+    "vox_b": 15,
     "na": "< 50 voxels",
     "one_voxel_ref": {
-     "a": 0.5172,
-     "b": 0.0,
-     "mean": 0.2586
+     "a": 0.5862,
+     "b": 0.5333,
+     "mean": 0.5597
     },
     "previous_carry": null,
     "links_a": [
@@ -2389,12 +2389,12 @@
     "centroid_mm": null,
     "vol_ratio": null,
     "vox_a": 14,
-    "vox_b": 14,
+    "vox_b": 15,
     "na": "< 50 voxels",
     "one_voxel_ref": {
      "a": 0.0,
-     "b": 0.0,
-     "mean": 0.0
+     "b": 0.0667,
+     "mean": 0.0333
     },
     "previous_carry": null,
     "links_a": [
@@ -2458,8 +2458,8 @@
     "assd_mm": null,
     "centroid_mm": null,
     "vol_ratio": null,
-    "vox_a": 7,
-    "vox_b": 6,
+    "vox_a": 5,
+    "vox_b": 5,
     "na": "< 50 voxels",
     "one_voxel_ref": {
      "a": 0.0,

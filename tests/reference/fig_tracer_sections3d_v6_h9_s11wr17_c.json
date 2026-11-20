@@ -4,50 +4,50 @@
   "cases": {
    "MR243": {
     "Bundles": {
-     "points": 8495,
+     "points": 8516,
      "outside_brain_mask": 0,
      "share_outside_brain_mask": 0.0,
-     "share_left_of_midline_as_drawn": 0.0149,
+     "share_left_of_midline_as_drawn": 0.0147,
      "sections": 34,
-     "points_in_csv": 8579
+     "points_in_csv": 8596
     },
     "Injection_site": {
-     "points": 137,
+     "points": 141,
      "outside_brain_mask": 0,
      "share_outside_brain_mask": 0.0,
      "share_left_of_midline_as_drawn": 0.0,
      "sections": 1,
-     "points_in_csv": 137
+     "points_in_csv": 141
     },
     "sections_with_bundles_or_injection": 34
    },
    "MR252": {
     "Bundles": {
-     "points": 2269,
+     "points": 2261,
      "outside_brain_mask": 0,
      "share_outside_brain_mask": 0.0,
      "share_left_of_midline_as_drawn": 0.0,
      "sections": 27,
-     "points_in_csv": 4503
+     "points_in_csv": 4482
     },
     "Injection_site": {
      "points": 32,
      "outside_brain_mask": 0,
      "share_outside_brain_mask": 0.0,
      "share_left_of_midline_as_drawn": 0.0,
-     "sections": 2,
+     "sections": 3,
      "points_in_csv": 32
     },
     "sections_with_bundles_or_injection": 27
    },
    "MR256": {
     "Bundles": {
-     "points": 5118,
+     "points": 5124,
      "outside_brain_mask": 4,
      "share_outside_brain_mask": 0.00078,
-     "share_left_of_midline_as_drawn": 0.0612,
+     "share_left_of_midline_as_drawn": 0.0603,
      "sections": 31,
-     "points_in_csv": 5137
+     "points_in_csv": 5143
     },
     "Injection_site": {
      "points": 0,
@@ -61,20 +61,20 @@
    },
    "MF191": {
     "Bundles": {
-     "points": 26270,
-     "outside_brain_mask": 59,
-     "share_outside_brain_mask": 0.00225,
-     "share_left_of_midline_as_drawn": 0.1422,
+     "points": 26322,
+     "outside_brain_mask": 60,
+     "share_outside_brain_mask": 0.00228,
+     "share_left_of_midline_as_drawn": 0.1426,
      "sections": 28,
-     "points_in_csv": 27050
+     "points_in_csv": 27109
     },
     "Injection_site": {
-     "points": 775,
+     "points": 781,
      "outside_brain_mask": 0,
      "share_outside_brain_mask": 0.0,
      "share_left_of_midline_as_drawn": 0.0,
      "sections": 3,
-     "points_in_csv": 775
+     "points_in_csv": 781
     },
     "sections_with_bundles_or_injection": 28
    }
@@ -118,43 +118,43 @@
   ],
   "still_visibility_pixels": {
    "MR243": {
-    "pixels_alone_no_planes": 225736,
-    "pixels_alone_with_planes": 207230,
-    "pixels_as_drawn": 133422,
-    "share_hidden_by_planes": 0.082,
-    "share_hidden_by_other_cases": 0.3562,
-    "injection_pixels_alone": 6637,
-    "injection_pixels_as_drawn": 6607,
+    "pixels_alone_no_planes": 225859,
+    "pixels_alone_with_planes": 207384,
+    "pixels_as_drawn": 133475,
+    "share_hidden_by_planes": 0.0818,
+    "share_hidden_by_other_cases": 0.3564,
+    "injection_pixels_alone": 6728,
+    "injection_pixels_as_drawn": 6698,
     "points_projected_outside_brain_outline": 0
    },
    "MR252": {
-    "pixels_alone_no_planes": 65446,
-    "pixels_alone_with_planes": 33739,
-    "pixels_as_drawn": 33739,
-    "share_hidden_by_planes": 0.4845,
+    "pixels_alone_no_planes": 65477,
+    "pixels_alone_with_planes": 33956,
+    "pixels_as_drawn": 33956,
+    "share_hidden_by_planes": 0.4814,
     "share_hidden_by_other_cases": 0.0,
-    "injection_pixels_alone": 1664,
-    "injection_pixels_as_drawn": 1664,
+    "injection_pixels_alone": 1836,
+    "injection_pixels_as_drawn": 1836,
     "points_projected_outside_brain_outline": 0
    },
    "MR256": {
-    "pixels_alone_no_planes": 128669,
-    "pixels_alone_with_planes": 114282,
-    "pixels_as_drawn": 112966,
-    "share_hidden_by_planes": 0.1118,
-    "share_hidden_by_other_cases": 0.0115,
+    "pixels_alone_no_planes": 129208,
+    "pixels_alone_with_planes": 114676,
+    "pixels_as_drawn": 113446,
+    "share_hidden_by_planes": 0.1125,
+    "share_hidden_by_other_cases": 0.0107,
     "injection_pixels_alone": 0,
     "injection_pixels_as_drawn": 0,
     "points_projected_outside_brain_outline": 0
    },
    "MF191": {
-    "pixels_alone_no_planes": 453493,
-    "pixels_alone_with_planes": 388621,
-    "pixels_as_drawn": 388621,
+    "pixels_alone_no_planes": 454373,
+    "pixels_alone_with_planes": 389410,
+    "pixels_as_drawn": 389410,
     "share_hidden_by_planes": 0.143,
     "share_hidden_by_other_cases": 0.0,
-    "injection_pixels_alone": 21768,
-    "injection_pixels_as_drawn": 21768,
+    "injection_pixels_alone": 22042,
+    "injection_pixels_as_drawn": 22042,
     "points_projected_outside_brain_outline": 0
    }
   },
@@ -162,10 +162,10 @@
    "16.0": {
     "cases": {
      "MR243": {
-      "charted_voxels": 46,
+      "charted_voxels": 47,
       "charted_voxels_in_capsule": 0,
       "charted_voxels_within_0p5mm_of_capsule": 1,
-      "charted_voxels_whole_slab": 168,
+      "charted_voxels_whole_slab": 163,
       "charted_voxels_whole_slab_in_capsule": 0,
       "sections": [
        29,
@@ -180,10 +180,10 @@
       "check_charted_pixels_outside_capsule": 33
      },
      "MR252": {
-      "charted_voxels": 180,
+      "charted_voxels": 179,
       "charted_voxels_in_capsule": 146,
-      "charted_voxels_within_0p5mm_of_capsule": 180,
-      "charted_voxels_whole_slab": 203,
+      "charted_voxels_within_0p5mm_of_capsule": 179,
+      "charted_voxels_whole_slab": 202,
       "charted_voxels_whole_slab_in_capsule": 146,
       "sections": [
        28,
@@ -192,17 +192,17 @@
        31,
        32
       ],
-      "pixels_drawn": 135,
+      "pixels_drawn": 134,
       "check_interpolated_pixels": 90,
       "check_interpolated_pixels_outside_capsule": 12,
       "check_of_those_covered_by_charted": 10,
-      "check_charted_pixels_outside_capsule": 27
+      "check_charted_pixels_outside_capsule": 26
      },
      "MR256": {
-      "charted_voxels": 55,
+      "charted_voxels": 56,
       "charted_voxels_in_capsule": 0,
       "charted_voxels_within_0p5mm_of_capsule": 0,
-      "charted_voxels_whole_slab": 99,
+      "charted_voxels_whole_slab": 100,
       "charted_voxels_whole_slab_in_capsule": 0,
       "sections": [
        27,
@@ -210,17 +210,17 @@
        29,
        31
       ],
-      "pixels_drawn": 34,
-      "check_interpolated_pixels": 18,
-      "check_interpolated_pixels_outside_capsule": 18,
-      "check_of_those_covered_by_charted": 15,
-      "check_charted_pixels_outside_capsule": 34
+      "pixels_drawn": 35,
+      "check_interpolated_pixels": 19,
+      "check_interpolated_pixels_outside_capsule": 19,
+      "check_of_those_covered_by_charted": 16,
+      "check_charted_pixels_outside_capsule": 35
      },
      "MF191": {
       "charted_voxels": 171,
       "charted_voxels_in_capsule": 0,
       "charted_voxels_within_0p5mm_of_capsule": 0,
-      "charted_voxels_whole_slab": 390,
+      "charted_voxels_whole_slab": 381,
       "charted_voxels_whole_slab_in_capsule": 0,
       "sections": [
        19,
@@ -229,11 +229,11 @@
        23,
        25
       ],
-      "pixels_drawn": 77,
-      "check_interpolated_pixels": 17,
-      "check_interpolated_pixels_outside_capsule": 17,
-      "check_of_those_covered_by_charted": 17,
-      "check_charted_pixels_outside_capsule": 77
+      "pixels_drawn": 76,
+      "check_interpolated_pixels": 18,
+      "check_interpolated_pixels_outside_capsule": 18,
+      "check_of_those_covered_by_charted": 18,
+      "check_charted_pixels_outside_capsule": 76
      }
     },
     "capsule_voxels_three_planes": 882,
@@ -242,11 +242,11 @@
    "18.0": {
     "cases": {
      "MR243": {
-      "charted_voxels": 65,
-      "charted_voxels_in_capsule": 58,
-      "charted_voxels_within_0p5mm_of_capsule": 62,
-      "charted_voxels_whole_slab": 147,
-      "charted_voxels_whole_slab_in_capsule": 58,
+      "charted_voxels": 66,
+      "charted_voxels_in_capsule": 59,
+      "charted_voxels_within_0p5mm_of_capsule": 63,
+      "charted_voxels_whole_slab": 140,
+      "charted_voxels_whole_slab_in_capsule": 59,
       "sections": [
        25,
        27,
@@ -261,26 +261,24 @@
       "check_charted_pixels_outside_capsule": 4
      },
      "MR252": {
-      "charted_voxels": 29,
-      "charted_voxels_in_capsule": 15,
-      "charted_voxels_within_0p5mm_of_capsule": 22,
-      "charted_voxels_whole_slab": 29,
-      "charted_voxels_whole_slab_in_capsule": 15,
-      "sections": [
-       27
-      ],
-      "pixels_drawn": 23,
+      "charted_voxels": 27,
+      "charted_voxels_in_capsule": 16,
+      "charted_voxels_within_0p5mm_of_capsule": 20,
+      "charted_voxels_whole_slab": 27,
+      "charted_voxels_whole_slab_in_capsule": 16,
+      "sections": [],
+      "pixels_drawn": 22,
       "check_interpolated_pixels": 15,
       "check_interpolated_pixels_outside_capsule": 4,
       "check_of_those_covered_by_charted": 4,
-      "check_charted_pixels_outside_capsule": 11
+      "check_charted_pixels_outside_capsule": 9
      },
      "MR256": {
-      "charted_voxels": 53,
-      "charted_voxels_in_capsule": 46,
-      "charted_voxels_within_0p5mm_of_capsule": 53,
+      "charted_voxels": 52,
+      "charted_voxels_in_capsule": 45,
+      "charted_voxels_within_0p5mm_of_capsule": 52,
       "charted_voxels_whole_slab": 89,
-      "charted_voxels_whole_slab_in_capsule": 46,
+      "charted_voxels_whole_slab_in_capsule": 45,
       "sections": [
        26,
        27,
@@ -294,10 +292,10 @@
      },
      "MF191": {
       "charted_voxels": 247,
-      "charted_voxels_in_capsule": 187,
+      "charted_voxels_in_capsule": 186,
       "charted_voxels_within_0p5mm_of_capsule": 226,
-      "charted_voxels_whole_slab": 431,
-      "charted_voxels_whole_slab_in_capsule": 187,
+      "charted_voxels_whole_slab": 428,
+      "charted_voxels_whole_slab_in_capsule": 186,
       "sections": [
        17,
        18,
@@ -306,11 +304,11 @@
        22,
        23
       ],
-      "pixels_drawn": 106,
+      "pixels_drawn": 107,
       "check_interpolated_pixels": 38,
       "check_interpolated_pixels_outside_capsule": 4,
       "check_of_those_covered_by_charted": 4,
-      "check_charted_pixels_outside_capsule": 31
+      "check_charted_pixels_outside_capsule": 33
      }
     },
     "capsule_voxels_three_planes": 979,
@@ -322,7 +320,7 @@
       "charted_voxels": 47,
       "charted_voxels_in_capsule": 16,
       "charted_voxels_within_0p5mm_of_capsule": 32,
-      "charted_voxels_whole_slab": 204,
+      "charted_voxels_whole_slab": 201,
       "charted_voxels_whole_slab_in_capsule": 16,
       "sections": [
        23,
@@ -338,20 +336,20 @@
       "check_charted_pixels_outside_capsule": 28
      },
      "MR252": {
-      "charted_voxels": 48,
+      "charted_voxels": 50,
       "charted_voxels_in_capsule": 0,
       "charted_voxels_within_0p5mm_of_capsule": 4,
-      "charted_voxels_whole_slab": 52,
+      "charted_voxels_whole_slab": 54,
       "charted_voxels_whole_slab_in_capsule": 0,
       "sections": [
        23,
        25
       ],
-      "pixels_drawn": 34,
-      "check_interpolated_pixels": 22,
-      "check_interpolated_pixels_outside_capsule": 21,
-      "check_of_those_covered_by_charted": 21,
-      "check_charted_pixels_outside_capsule": 33
+      "pixels_drawn": 35,
+      "check_interpolated_pixels": 21,
+      "check_interpolated_pixels_outside_capsule": 20,
+      "check_of_those_covered_by_charted": 20,
+      "check_charted_pixels_outside_capsule": 34
      },
      "MR256": {
       "charted_voxels": 46,
@@ -371,11 +369,11 @@
       "check_charted_pixels_outside_capsule": 22
      },
      "MF191": {
-      "charted_voxels": 200,
-      "charted_voxels_in_capsule": 77,
-      "charted_voxels_within_0p5mm_of_capsule": 128,
-      "charted_voxels_whole_slab": 445,
-      "charted_voxels_whole_slab_in_capsule": 77,
+      "charted_voxels": 204,
+      "charted_voxels_in_capsule": 80,
+      "charted_voxels_within_0p5mm_of_capsule": 134,
+      "charted_voxels_whole_slab": 444,
+      "charted_voxels_whole_slab_in_capsule": 80,
       "sections": [
        16,
        17,
@@ -383,11 +381,11 @@
        19,
        20
       ],
-      "pixels_drawn": 105,
-      "check_interpolated_pixels": 37,
-      "check_interpolated_pixels_outside_capsule": 24,
-      "check_of_those_covered_by_charted": 24,
-      "check_charted_pixels_outside_capsule": 60
+      "pixels_drawn": 106,
+      "check_interpolated_pixels": 39,
+      "check_interpolated_pixels_outside_capsule": 23,
+      "check_of_those_covered_by_charted": 23,
+      "check_charted_pixels_outside_capsule": 61
      }
     },
     "capsule_voxels_three_planes": 604,
@@ -402,36 +400,36 @@
   "alic_slab_mm": 0.5,
   "capsule_totals": {
    "MR243": {
-    "charted_voxels": 158,
-    "charted_voxels_in_capsule": 74,
-    "charted_voxels_within_0p5mm_of_capsule": 95,
+    "charted_voxels": 160,
+    "charted_voxels_in_capsule": 75,
+    "charted_voxels_within_0p5mm_of_capsule": 96,
     "check_interpolated_pixels_outside_capsule": 13,
     "check_of_those_covered_by_charted": 10,
     "check_charted_pixels_outside_capsule": 65
    },
    "MR252": {
-    "charted_voxels": 257,
-    "charted_voxels_in_capsule": 161,
-    "charted_voxels_within_0p5mm_of_capsule": 206,
-    "check_interpolated_pixels_outside_capsule": 37,
-    "check_of_those_covered_by_charted": 35,
-    "check_charted_pixels_outside_capsule": 71
+    "charted_voxels": 256,
+    "charted_voxels_in_capsule": 162,
+    "charted_voxels_within_0p5mm_of_capsule": 203,
+    "check_interpolated_pixels_outside_capsule": 36,
+    "check_of_those_covered_by_charted": 34,
+    "check_charted_pixels_outside_capsule": 69
    },
    "MR256": {
     "charted_voxels": 154,
-    "charted_voxels_in_capsule": 62,
-    "charted_voxels_within_0p5mm_of_capsule": 91,
-    "check_interpolated_pixels_outside_capsule": 36,
-    "check_of_those_covered_by_charted": 33,
-    "check_charted_pixels_outside_capsule": 59
+    "charted_voxels_in_capsule": 61,
+    "charted_voxels_within_0p5mm_of_capsule": 90,
+    "check_interpolated_pixels_outside_capsule": 37,
+    "check_of_those_covered_by_charted": 34,
+    "check_charted_pixels_outside_capsule": 60
    },
    "MF191": {
-    "charted_voxels": 618,
-    "charted_voxels_in_capsule": 264,
-    "charted_voxels_within_0p5mm_of_capsule": 354,
+    "charted_voxels": 622,
+    "charted_voxels_in_capsule": 266,
+    "charted_voxels_within_0p5mm_of_capsule": 360,
     "check_interpolated_pixels_outside_capsule": 45,
     "check_of_those_covered_by_charted": 45,
-    "check_charted_pixels_outside_capsule": 168
+    "check_charted_pixels_outside_capsule": 170
    }
   },
   "capsule_box_mm": {
@@ -460,16 +458,16 @@
   "arrange": "side",
   "injection_label_anchor_px": {
    "MR243": [
-    3316.8,
-    794.6
+    3317.1,
+    793.5
    ],
    "MR252": [
-    2427.7,
-    413.0
+    2426.5,
+    416.2
    ],
    "MF191": [
-    2704.7,
-    918.2
+    2704.5,
+    918.8
    ]
   },
   "layout_mm": {

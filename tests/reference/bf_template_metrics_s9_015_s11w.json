@@ -3,8 +3,8 @@
   "templates": [
    {
     "label": "step 9 at 0.15 mm, 11 brains",
-    "arm": "s9_015_s11",
-    "folder": "bftemplate/hr_2026-11-12/step9/out_015_s11/nln_step_09/iteration_03",
+    "arm": "s9_015_s11w",
+    "folder": "bftemplate/hr_2026-11-12/step9/out_s11w_full/final/nln_step_09/iteration_03",
     "n_brains": 11,
     "n_blockface_inputs": 22,
     "members": "S11: MF278 MF282 MR250 MR251 MR252 MR253 MR254 MR256 MR257 MR261 MR273",
@@ -15,11 +15,11 @@
      347
     ],
     "rule": "tissue probability, mask-normalized values, precision weights",
-    "brain_cm3": 68.41372190555055,
-    "photographed_cm3": 60.175632798493865,
-    "predicted_cm3": 8.238089107056672,
-    "predicted_share_of_brain": 0.12041574230429787,
-    "photo_share_zero_cm3": 3.28430739151992,
+    "brain_cm3": 68.37879740138722,
+    "photographed_cm3": 62.29172430075161,
+    "predicted_cm3": 6.087073100635602,
+    "predicted_share_of_brain": 0.08901989113532015,
+    "photo_share_zero_cm3": 2.673388443692712,
     "symmetry": {
      "max_abs_mirror_diff": {
       "grey": 0.0,
@@ -31,9 +31,9 @@
     "in_mri_template": {
      "grid_mm": 0.25,
      "link": "d2bs8_s5sym",
-     "brain_cm3": 52.3794375,
-     "predicted_cm3": 5.929625,
-     "predicted_share_of_brain": 0.11320520576418944
+     "brain_cm3": 52.35403125,
+     "predicted_cm3": 4.30584375,
+     "predicted_share_of_brain": 0.08224474118217974
     },
     "d2bs8_for_reference": {
      "brain_cm3": 68.1105625,

@@ -109,6 +109,9 @@ def warp(a):
 
 
 def image(a):
+    if not Path(a.paper).exists():
+        print(f"{label(a.mine)}: nothing to compare with: the data folder holds no copy of the paper's file here ({a.paper})")
+        sys.exit(3)
     if same_file(a.mine, a.paper):
         finish(True, f"{label(a.mine)}: identical")
     (hm, A), (hp, B) = load(a.mine), load(a.paper)

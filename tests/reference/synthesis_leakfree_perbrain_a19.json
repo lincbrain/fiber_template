@@ -1,0 +1,75 @@
+{
+ "data": {
+  "definition": "Per-brain counts and ranges behind the sentences of Supplementary Section S5 that compare brains in the withheld-slab test,\nat the paper's original placements and at both procedures of the test made without the withheld tissue. Nothing is rescored:\nevery value is read from the test's two records, synthesis_leakfree_ownarm_a19 (slab SSIM per brain, own-b0 arm) and\nstandin_2x2_a19 (per brain, stand-in arm).\nProcedures: envrec = the original placements (control), lfr1 = the registration of the b0 image to the photographs made in\nwhole without the withheld slab (the lower values), lfr1c = only its deformable stage made without it (the higher values).\nThe stand-in cells record / CC / CCcc are the same three procedures of the stand-in arm.\nPer procedure, own-b0 arm: seen_range and never_seen_range (min and max over the 12 brains); n_seen_above_never_seen (brains\nwhere the network that had seen the brain's other tissue scored higher); mean_seen_minus_never_seen (mean per-brain difference).\nPer procedure, stand-in arm: d3p_range (min and max of the stand-in network's SSIM); n_gain_positive (brains where the stand-in\nnetwork beat the own-b0 network given the stand-in b0); n_own_above_d3p (brains where the own-b0 network given its own b0 beat\nthe stand-in network).",
+  "own_b0_arm": {
+   "envrec": {
+    "n": 12,
+    "seen_range": [
+     0.5469743007173141,
+     0.7487770900130272
+    ],
+    "never_seen_range": [
+     0.4801387895519535,
+     0.7212462842464447
+    ],
+    "n_seen_above_never_seen": 12,
+    "mean_seen_minus_never_seen": 0.02754527985776892
+   },
+   "lfr1": {
+    "n": 12,
+    "seen_range": [
+     0.24864235520362854,
+     0.6527488219494723
+    ],
+    "never_seen_range": [
+     0.24283975469214575,
+     0.5857257526748034
+    ],
+    "n_seen_above_never_seen": 9,
+    "mean_seen_minus_never_seen": 0.010517819499854161
+   },
+   "lfr1c": {
+    "n": 12,
+    "seen_range": [
+     0.32283819304860156,
+     0.6962573212735793
+    ],
+    "never_seen_range": [
+     0.29590619387833966,
+     0.62357765027121
+    ],
+    "n_seen_above_never_seen": 12,
+    "mean_seen_minus_never_seen": 0.02852095025186488
+   }
+  },
+  "standin_arm": {
+   "record": {
+    "n": 12,
+    "d3p_range": [
+     0.467429912516049,
+     0.7368863505475661
+    ],
+    "n_gain_positive": 12,
+    "n_own_above_d3p": 10
+   },
+   "CC": {
+    "n": 12,
+    "d3p_range": [
+     0.18280774062233313,
+     0.3577753007411957
+    ],
+    "n_gain_positive": 6,
+    "n_own_above_d3p": 7
+   },
+   "CCcc": {
+    "n": 12,
+    "d3p_range": [
+     0.3106769174337387,
+     0.4460670986771584
+    ],
+    "n_gain_positive": 9,
+    "n_own_above_d3p": 11
+   }
+  }
+ }
+}
