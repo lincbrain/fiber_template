@@ -183,7 +183,7 @@ s_tracer_fidelity:
 
 # Fig. 10, the tracer figure: each charted section's labels in 3D (a) and the internal capsule slabs (b), with its rotation video;
 # renders headless in settings/env/viz3d.yml (record fig_tracer_sections3d_v6_h9_c, the cases of settings/figures.yaml tracer_sections3d): skipped with a message when PY_VIZ3D is unset
-# the README's animation, docs/media/tracers_rotation.gif: Fig. 9a's two views (MM1, MM2, MM3 and MF8) turning together, +-45 degrees
+# the README's animation, docs/media/tracers_rotation.gif: the two views of Fig. 9a's four cases (MM1, MM2, MM3 and MF8), as charted, turning together, +-45 degrees
 # about the vertical axis (72 frames, 12 fps, 960 px, as the template's); settings/env/viz3d.yml, about 1.5 min and 1.6 GB of RAM
 tracers-animation:
 	@if [ -z "$(PY_VIZ3D)" ]; then echo "SKIPPED tracers-animation: set PY_VIZ3D (settings/env/viz3d.yml; install.sh --with-figures-3d)"; \

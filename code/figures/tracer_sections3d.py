@@ -40,8 +40,9 @@ You get
         [--cases MR243 MF191 MR252]
 The cases drawn: settings/figures.yaml tracer_sections3d.cases (or --cases), MM1, MM2 and MM3 since 12 Nov 2026 (record
 fig_tracer_sections3d_v6_h9_a3; until then MM1, MF8 and MM2, record fig_tracer_sections3d_v6_h9). MM3 (MR256; the author,
-12 Nov 2026: Jingjing's three cases are MM1, MM2 and MM3) can be drawn too, in the fourth tracer color (figstyle TRACER); it has no
-annotated injection site, so no marker and no tag, and its key says so. The layers go from the largest case to the smallest
+12 Nov 2026: Jingjing's three cases are MM1, MM2 and MM3) can be drawn too, in the fourth tracer color (figstyle TRACER). Each case's
+key and tag name its injection site by the laboratory's names, as the paper's Fig. 9 does (20 Nov 2026). A case whose labels hold no
+injection site (MM3's: its site, placed on 19 Nov 2026, is not in this label set) gets no marker and no tag, and its key says so. The layers go from the largest case to the smallest
 (LAYER_ORDER). (a) can show the cases in groups, one view per group at the same camera, crop and scale
 (tracer_sections3d.views, e.g. [[MR243, MR252, MR256], [MF191]], arrange: side or stack; the paper's figure: the
 dense MF8 apart); (b) and the key always hold every case. One group (the default) is the single view above.
@@ -73,15 +74,16 @@ SEC, V2 = Path(P_MRI["tracer_sections_v2"]), Path(P_MRI["tracer_template_v2"])
 T2_F, MASK_F, FA_F, SARM = (Path(P_FIG[k]) for k in ("template_t2", "template_mask", "template_fa", "sarm_level6"))
 IC_LABEL = 50
 CASES = ["MR243", "MF191", "MR252"]                                  # MM1, MF8, MM2 (key order); settings/figures.yaml or --cases
-AREA = {"MR243": "area 10", "MF191": "area 13m", "MR252": "SMA"}
-KEY_NOTE = {"MR256": "injection site not annotated"}               # a case without an annotated injection site: its key's note
+AREA = {"MR243": "area 10", "MF191": "area 11", "MR252": "pre-SMA", "MR256": "area 10d"}   # the laboratory's names (the paper's Fig. 9)
+NO_SITE = set()                                                     # the cases whose labels hold no injection site (scene_data fills it)
 COLOR = {S: FS.TRACER[S] for S in CASES}
 MIRROR = {"MF191"}
 
 
 def key_text(S):
-    """a case's key: its name, its injection site (or the note why none is drawn) and, for a mirrored case, where it comes from"""
-    return f"{FS.label(S)}, {AREA.get(S) or KEY_NOTE[S]}" + (" (mirrored from the left)" if S in MIRROR else "")
+    """a case's key: its name, its injection site (and that it is not drawn when its labels hold none) and, for a mirrored case, where
+    it comes from"""
+    return f"{FS.label(S)}, {AREA[S]}" + (" (site not drawn)" if S in NO_SITE else "") + (" (mirrored from the left)" if S in MIRROR else "")
 
 
 X_SAG, Y_COR = 0.0, 18.0                                             # mm: the midline plane; the coronal plane (right half) through (b)'s middle slab
@@ -129,8 +131,8 @@ def scene_data():
         pts[S] = {}
         for g in ("Bundles", "Injection_site"):
             f = SEC / S / f"{S}_{g}_mri-template_sections_footprint.nii.gz"
-            if g == "Injection_site" and not f.exists() and S in KEY_NOTE:          # none annotated (MM3)
-                ijk = np.zeros((0, 3), int)
+            if g == "Injection_site" and not f.exists():                            # none in the labels (MM3): no marker, no tag
+                ijk = np.zeros((0, 3), int); NO_SITE.add(S)
             else:
                 a, Aa = load(f); assert np.allclose(Aa, A), f; ins.append(f)
                 ijk = np.argwhere(a > 0)
@@ -335,7 +337,7 @@ def compose(sd, stills, views, sil, cap, rec, args, arrange="side"):
     T = text_mm(plt); pt = 25.4 / 72
     pad = 2.0 / 72 * 25.4                                                           # figstyle.dirs's pad
     nv = len(views); ratio = crops[0].shape[0] / crops[0].shape[1]
-    tag_ws = [max([T(TAG[S])[0] for S in g if LAB_SIDE.get(S) == "right"] or [0.0]) for g in views]; tag_h = T("SMA")[1]
+    tag_ws = [max([T(TAG[S])[0] for S in g if LAB_SIDE.get(S) == "right"] or [0.0]) for g in views]; tag_h = T("Pre-SMA")[1]
     let_h = T("ab", FS.LETTER_PT, fontweight="bold")[1]
     subs = [", ".join(FS.label(S) for S in g) for g in views] if nv > 1 else None   # the views' sub-labels
     sub_h = T("MM1")[1] + 2.0 * pt if subs else 0.0                                   # their line, 4 pt above each view
@@ -397,7 +399,7 @@ def compose(sd, stills, views, sil, cap, rec, args, arrange="side"):
             uv, _ = project(xyz.mean(0)[None], (W, H)); u, v = uv[0][0] - c0, uv[0][1] - r0
             rec["injection_label_anchor_px"][S] = [round(float(u), 1), round(float(v), 1)]
             fu, fv = u / crop.shape[1], 1 - v / crop.shape[0]
-            if LAB_SIDE[S] == "right":
+            if LAB_SIDE.get(S, "right") == "right":                                  # a case without a set side (MM3): right
                 yl = min(max(fv, 0.05), 0.95)
                 if vi == nv - 1 or arrange != "side":                               # this view has the A at its right, at the
                     dA = (tag_h / 2 + T.ink("A") / 2 + TAG_CLEAR_MM) / ha            # tissue's middle (orient_letters): the tag
@@ -476,7 +478,7 @@ def main(argv=None):
     import yaml
     cfg = (yaml.safe_load((HERE.parents[1] / "settings" / "figures.yaml").read_text()) or {}).get("tracer_sections3d") or {}
     CASES = list(a.cases or cfg.get("cases") or CASES)
-    assert set(CASES) <= set(FS.TRACER) and all(S in AREA or S in KEY_NOTE for S in CASES), f"cases {CASES}: no tracer color or key"
+    assert set(CASES) <= set(FS.TRACER) and all(S in AREA for S in CASES), f"cases {CASES}: no tracer color or key"
     COLOR = {S: FS.TRACER[S] for S in CASES}; LAYERS = [S for S in LAYER_ORDER if S in CASES]
     if a.record:
         rec_name = a.record

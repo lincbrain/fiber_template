@@ -8,7 +8,7 @@ The y value under the grid is the plane's coordinate in NMT v2, in mm.*
 ![MM1, MM2 and MM3's charted tracer labels (left) and MF8's (right) in the template, turning together](docs/media/tracers_rotation.gif)
 
 *Charted tracer-labeled fiber bundles and injection sites from four cases, carried into the template: MR243 (MM1), MR252 (MM2) and MR256 (MM3) on the left, and MF191 (MF8) on the right, mirrored from the left hemisphere.
-Each case is named with its injection site; MM3's site was not annotated.
+Each case is named with its injection site; MM3's site is not in these labels, so it is not drawn.
 The gray planes are two T2-weighted sections of the template, at the midline and in one coronal plane.*
 
 This is the code for the paper "A multimodal macaque template for aligning ex vivo MRI and microscopy" (Gonzales et al., in preparation).

@@ -343,7 +343,7 @@ def main(argv=None):
             FS.dirs_row(axi[0], axi[-1], "coronal")
             no_inj = [S for S in CASES if S not in inj_cases]
             if no_inj:
-                axi[min(1, len(axi) - 1)].annotate(", ".join(FS.label(S) for S in no_inj) + ": no injection site annotated", xy=(0, 0),
+                axi[min(1, len(axi) - 1)].annotate(", ".join(FS.label(S) for S in no_inj) + ": no injection site in its labels", xy=(0, 0),
                                                    xycoords="axes fraction", xytext=(0, -4), textcoords="offset points", ha="left",
                                                    va="top", fontsize=FS.MIN_PT, color=FS.FG)
 
