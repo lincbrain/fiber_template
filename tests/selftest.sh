@@ -57,6 +57,7 @@ step test_build_force      "$PY"      tests/run.py tests/test_build_force.py tes
 step test_construction     "$PY"      tests/run.py tests/test_construction_inputs.py
 step test_docs_site        "$PY"      tests/run.py tests/test_docs_site.py
 step test_docs_names       "$PY"      tests/run.py tests/test_docs_names.py
+step test_results_view     "$PY"      tests/run.py tests/test_results_view.py
 
 # --- the command lines on toy data
 step linc-info             "$PY"      code/shared/linc-info

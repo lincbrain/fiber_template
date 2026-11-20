@@ -183,3 +183,23 @@ def raw_root():
 
 def models_root():
     return _env("LINC_MODELS")
+
+
+def _results_view():
+    """at the end of every tool: outputs/brains/, each brain's results in the data folder's layout, brought up to date
+    (code/shared/results.py; links only, quiet, never an error or a changed exit status; LINC_RESULTS_VIEW=0 turns it off)"""
+    try:
+        if os.environ.get("LINC_RESULTS_VIEW", "1") == "0" or not os.environ.get("LINC_DATA_TREE"):
+            return
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("_linc_results", str(Path(__file__).with_name("results.py")))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        mod.at_exit()
+    except BaseException:
+        pass
+
+
+import atexit  # noqa: E402
+
+atexit.register(_results_view)

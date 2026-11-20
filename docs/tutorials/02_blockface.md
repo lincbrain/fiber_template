@@ -97,20 +97,33 @@ When you keep the brain, copy the corrected masks into the data folder's `inputs
 
 ### Step 3. Register the volume to the brain's own b0 (a brain with MRI)
 
+**A paper brain**, MR252 here.
+These two commands redo what the data folder already holds, so that you can compare the result with the paper's transform:
+
 ```bash
-$PY code/blockface/registration/linc-register mri --subject MR252 --overwrite        # a paper brain: its masks and start pose
-M=$LINC_DATA/sub-<ID>/mri                                                            # a new brain, its b0 prepared as in 01
+$PY code/blockface/registration/linc-register mri --subject MR252 --overwrite        # its masks and start pose of record
+$PY code/blockface/registration/linc-register mri-template --subject MR252 \
+    --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz \
+    --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz                     # its b0 and mask of record
+```
+
+`$PY run.py --run --only register-mri-MR252` and `$PY run.py --run --only register-mri-template-MR252` run the same two commands and compare each result with the paper's file.
+
+**A new brain**, its b0 prepared as in [01](01_mri.md), Step B1:
+
+```bash
+M=$LINC_DATA/sub-<ID>/mri
 $PY code/blockface/registration/linc-register mri --subject <ID> --new-brain \
     --place-b0 $M/dwi/b0_brain_n4.nii.gz $M/masks/dwi_brain_mask.nii.gz
 $PY code/blockface/registration/linc-register mri-template --subject <ID> \
     --b0 $M/dwi/b0_brain_n4.nii.gz --mask $M/masks/dwi_brain_mask.nii.gz \
     --template-b0 $LINC_TEMPLATE/mri/linc_mri_b0.nii.gz \
-    --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz                     # the b0 to the template (01)
+    --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
 ```
 
 `mri` registers the blockface volume to the brain's own b0, linearly (FSL FLIRT) and then deformably (FireANTs) on features that a pretrained network, anatomix, computes from both images, which makes the two contrasts comparable.
 For a new brain, `--place-b0` first places the b0 on the template's grid (the MRI brain-mask network makes a mask if none is given) and the start pose is estimated; `--new-brain` makes a paper brain do the same.
-`mri-template` then registers the b0 to the template (01), starting from the placement `mri` made, so it needs no `--frame`.
+`mri-template` then registers the b0 to the template (01): a paper brain's b0 and mask of record by default, a new brain's from `--b0` and `--mask`, starting from the placement `mri` made, so it needs no `--frame`.
 
 For a paper brain you reconstructed yourself (Step 1), put `LINC_DATA=$LINC_REBUILD_DATA` in front of the `mri` command, so that it reads your volume.
 The command also reads the brain's b0 placed on the template's grid, which is a product (`brains/sub-<ID>/intermediate/registration/` in the data folder).
@@ -137,6 +150,7 @@ $PY code/blockface/registration/linc-register direct-placement --subject MF191 \
     --template-mask $LINC_TEMPLATE/mri/linc_mri_brainmask.nii.gz
 ```
 
+These are a paper brain's, MF191's; for a new brain, run the same two commands with its ID.
 `blockface-template` registers the volume to the blockface template, so that the brain's chain into the template goes through the template link.
 `direct-placement`, the cross-modal alignment, registers it straight to the template's b0, only to give the brain the stand-in b0 that Step 5 needs.
 A brain with histology runs `blockface-template` and the refinement below even when it has MRI, because its labels reach the template that way.
@@ -259,6 +273,8 @@ Without a GPU, `final --fields-from $LINC_DATA_TREE/template/intermediate/constr
 Axial views have anterior up.*
 
 ## 4. Checks
+
+Each brain's finished files that `settings/results.tsv` lists also appear in the repository's `outputs/brains/sub-<ID>/outputs/`, named as the data folder names them ([00](00_start_here.md#where-the-files-are)).
 
 **Look through the volume** (`<ID>_blockface_L2.nii.gz`, in FSLeyes or ITK-SNAP) from front to back.
 A good volume has the brain dorsal side up, no step in the brain's outline from one section to the next (an uncorrected camera jump), and a mask and markers that follow the tissue.

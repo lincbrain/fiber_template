@@ -60,8 +60,10 @@ mkdir -p "$_O"
   echo "settings/roots.sh: $(tail -n 1 "$_LOG")" >&2
   unset _FT _O _IN _L _LOG _T _DT _R; return 1
 }
-# outputs/README.txt: what each folder here is (settings/outputs_README.txt); written when outputs/ is built and on refresh, nothing else
-{ [ -n "$_R" ] || [ ! -e "$_O/README.txt" ]; } && [ -f "$_FT/settings/outputs_README.txt" ] && cp -f "$_FT/settings/outputs_README.txt" "$_O/README.txt"
+# outputs/README.txt: what each folder here is (settings/outputs_README.txt); written when outputs/ is built and on refresh, nothing else;
+# then, at the end, outputs/brains/ (code/shared/linc-results)
+_RV=""
+{ [ -n "$_R" ] || [ ! -e "$_O/README.txt" ]; } && [ -f "$_FT/settings/outputs_README.txt" ] && cp -f "$_FT/settings/outputs_README.txt" "$_O/README.txt" && _RV=1
 # refresh: the working folders are filled again from the new links (code/shared/make_local_data.sh leaves alone what exists), for the
 # brains they start with and for every brain added to them since (the data-folders step, or code/shared/make_local_data.sh by hand)
 _W="building"; _ONCE="once; "; _XL=""; _XR=""
@@ -145,5 +147,8 @@ unset _S _P
 export LINC_WORK=$_O/work LINC_NUMBERS=$_O/numbers
 export HISTOLOGY_ARGS="--jp2-root $LINC_RAW/linc_000003/sourcedata"                  # the histology figure reads the JPEG 2000 sections
 export MM_MRI_ARGS="--raw-bruker-root $_L/raw/mri_mm --unpacked-root $_L/raw/macaque_mri"   # the numbers record mm_mri_check_r054 reads the raw MRI
+if [ -n "$_RV" ] && [ -f "$_FT/code/shared/linc-results" ]; then  # each brain's results in the data folder's layout, as links
+  "${PY:-python3}" "$_FT/code/shared/linc-results" >> "$_LOG" 2>&1 || echo "settings/roots.sh: outputs/brains FAILED: $(tail -n 1 "$_LOG") (log: $_LOG)" >&2
+fi
 case $- in *i*) echo "settings/roots.sh: data folder $LINC_DATA_TREE; working folder $LINC_DATA" >&2 ;; esac   # interactive shells only
-unset _FT _O _IN _L _LOG _RAW _LINKS _T _DT _R _W _ONCE _XL _XR
+unset _FT _O _IN _L _LOG _RAW _LINKS _T _DT _R _W _ONCE _XL _XR _RV

@@ -45,6 +45,7 @@ The files live in two places.
 - `template/`: the template, split the same way; `models/`: the trained networks; `paper/`: what only the paper's numbers and figures read.
 
 **The repository's `outputs/`**, made by `settings/roots.sh`, holds what your own runs write.
+- `brains/sub-<ID>/`: each brain's results in the data folder's three parts, as links: `inputs` (the brain's inputs in the data folder), `intermediate/` (one link per place where a run wrote for the brain) and `outputs/` (the finished files your run made that `settings/results.tsv` lists, under the data folder's names); `settings/roots.sh`, `run.py` after each step and every tool at its end refresh it, and `$PY code/shared/linc-results` does it on request.
 - `in/`: links to the data folder's files, under the names the code uses; nothing of yours.
 - `local_data/`: `data/`, the working folder (`$LINC_DATA`: one `sub-<ID>/` per brain, with `blockface/`, `mri/`, `xfm/`, `histology/` and `labels/`), `raw/` (`$LINC_RAW`) and `template/` (`$LINC_TEMPLATE`).
 - `local_rebuild/` and `local_mri/`: the working folders for reconstructing a paper brain from its photographs (`$LINC_REBUILD_DATA`) and for the MRI template's build (`$LINC_MRI_DATA`); `local_mri/` is not made when the data folder lacks the four template brains' masks.
@@ -52,7 +53,7 @@ The files live in two places.
 
 The repository's `outputs/` is not a brain's `outputs/`.
 A brain's `outputs/` is in the data folder and holds the paper's finished files.
-A run does not sort what it writes into inputs, intermediate and outputs: it writes into the working folders, under the code's names, and each command's `--help` and the tutorials say where.
+Each brain's results are laid out in `outputs/brains/sub-<ID>/` in those three parts, as links, with the finished files under the data folder's names; the other folders of `outputs/` are where the code works.
 
 | Name | What it is | Who sets it |
 |---|---|---|

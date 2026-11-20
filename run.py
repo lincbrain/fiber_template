@@ -72,6 +72,17 @@ def die(msg):
     sys.exit(f"build_everything: {msg}")
 
 
+def results_view():
+    """outputs/brains/: each brain's results in the data folder's layout, brought up to date after a step (code/shared/results.py);
+    quiet, and never stops the run"""
+    try:
+        sys.path.insert(0, str(REPO / "code"))
+        from shared import results
+        results.at_exit()
+    except BaseException:
+        pass
+
+
 def say(msg=""):
     print(msg, flush=True)
 
@@ -569,8 +580,13 @@ def _run(a, steps, names, forced, by):
         die("no machine passed the installation test (bash tests/selftest.sh shows why)")
     tried, known, notes, dead, last_probe, last_look, last_say = set(), {}, {}, {}, 0, time.time(), 0
     (OUT / "notes.json").write_text("{}")
+    seen = None
     while True:
         rows, now = snapshot(steps), time.time()
+        over = {n for n in names if rows[n]["state"] in OVER}
+        if over != seen:                                                # a step has ended: the brains' results view follows
+            seen = over
+            results_view()
         mine = {h: [] for h in good}
         for s in steps:
             r = rows[s["name"]]
@@ -625,6 +641,7 @@ def _run(a, steps, names, forced, by):
             say(f"{clock()} {counts(rows, set(names))}")
         time.sleep(15)
     rows = snapshot(steps)
+    results_view()
     say(f"{clock()} nothing left to run: {counts(rows, set(names))}")
     for state in ("failed", "differs", "blocked"):
         for n in names:

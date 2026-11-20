@@ -40,7 +40,7 @@ source settings/roots.sh         # in every new shell
 $PY run.py --plan                # every step of the paper and what it needs; runs nothing
 ```
 
-Your own runs write into the repository's `outputs/`, never into the data folder; the start page's [map](docs/tutorials/00_start_here.md#where-the-files-are) shows the two places.
+Your own runs write into the repository's `outputs/`, never into the data folder, and each brain's results are in `outputs/brains/sub-<ID>/`, laid out like the brain's folder in the data folder; the start page's [map](docs/tutorials/00_start_here.md#where-the-files-are) shows the two places.
 Then continue with [docs/tutorials/00_start_here.md](docs/tutorials/00_start_here.md).
 
 ## Documentation

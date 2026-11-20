@@ -1,0 +1,31 @@
+# A brain's finished files: their names in the data folder (brains/sub-<ID>/outputs) and where a run of this repository writes them.
+# code/shared/linc-results links each one the run made itself into outputs/brains/sub-<ID>/outputs/ under its data-folder name.
+#   name      the name in the data folder's brains/sub-<ID>/outputs/ (settings/files.tsv); <ID> is the brain
+#   run_file  where a run writes it, with $LINC_DATA, $LINC_REBUILD_DATA, $LINC_MRI_DATA or $LINC_WORK and <ID>; several are separated
+#             by " | " and tried in order: the first that is the run's own file wins: a file whose real path is inside the real path of
+#             the root it was found under (a link to the paper's file, or a file inside a linked folder, is not)
+#   made_by   the step of steps.yaml, or the command, that writes it
+name	run_file	made_by
+<ID>_blockface_L2.nii.gz	$LINC_DATA/sub-<ID>/blockface/<ID>_blockface_L2.nii.gz | $LINC_REBUILD_DATA/sub-<ID>/blockface/<ID>_blockface_L2.nii.gz	linc-reconstruct (reconstruct-<ID>)
+<ID>_brain_mask.nii.gz	$LINC_DATA/sub-<ID>/blockface/<ID>_mask.nii.gz | $LINC_REBUILD_DATA/sub-<ID>/blockface/<ID>_mask.nii.gz	linc-reconstruct (reconstruct-<ID>)
+<ID>_tubes.nii.gz	$LINC_DATA/sub-<ID>/blockface/<ID>_holes.nii.gz | $LINC_REBUILD_DATA/sub-<ID>/blockface/<ID>_holes.nii.gz	linc-reconstruct (reconstruct-<ID>)
+<ID>_completed.nii.gz	$LINC_WORK/complete/<ID>/<ID>_bf_completed.nii.gz	linc-complete (synthesis-complete)
+<ID>_synthesized_mask.nii.gz	$LINC_WORK/complete/<ID>/<ID>_synth_mask.nii.gz	linc-complete (synthesis-complete)
+<ID>_t2_T2w.nii.gz	$LINC_MRI_DATA/sub-<ID>/mri/t2/echo_n4_brain.nii.gz	linc-mri (mri-stage-<ID>, the four MRI-template brains)
+<ID>_micro_soma_fraction.nii.gz	$LINC_MRI_DATA/sub-<ID>/mri/micro/frac1_brain.nii.gz	linc-mri (mri-stage-<ID>, the four MRI-template brains)
+<ID>_micro_neurite_fraction.nii.gz	$LINC_MRI_DATA/sub-<ID>/mri/micro/frac2_brain.nii.gz	linc-mri (mri-stage-<ID>, the four MRI-template brains)
+<ID>_micro_b0.nii.gz	$LINC_MRI_DATA/sub-<ID>/mri/micro/b0_brain_n4.nii.gz	linc-mri (mri-stage-<ID>, the four MRI-template brains)
+<ID>_tensor_b0.nii.gz	$LINC_MRI_DATA/sub-<ID>/mri/dwi/b0_brain_n4.nii.gz	linc-mri (mri-stage-<ID>, the four MRI-template brains)
+<ID>_SARM_b0.nii.gz	$LINC_MRI_DATA/sub-<ID>/mri/landmarks/SARM6_in_subject.nii.gz	linc-mri (mri-nmt-<ID>, the four MRI-template brains)
+<ID>_tensor_dti.nii.gz	$LINC_WORK/build_mri_channels/tensor_d9/<ID>/tensor_d9_dwigrid.nii.gz	build_mri_channels.py (mri-tensor)
+<ID>_tracer_bundles_blockface.nii.gz	$LINC_WORK/labels/<ID>/blockface/<ID>_Bundles_bfnative_L2_demons.nii.gz | $LINC_DATA/sub-<ID>/labels/blockface/tracer/<ID>_Bundles_bfnative_L2_demons.nii.gz	linc-labels interpolate (labels-interpolate)
+<ID>_tracer_injection_site_blockface.nii.gz	$LINC_WORK/labels/<ID>/blockface/<ID>_Injection_site_bfnative_L2_demons.nii.gz | $LINC_DATA/sub-<ID>/labels/blockface/tracer/<ID>_Injection_site_bfnative_L2_demons.nii.gz	linc-labels interpolate (labels-interpolate)
+<ID>_tracer_terminals_blockface.nii.gz	$LINC_WORK/labels/<ID>/blockface/<ID>_Terminals_bfnative_L2_demons.nii.gz | $LINC_DATA/sub-<ID>/labels/blockface/tracer/<ID>_Terminals_bfnative_L2_demons.nii.gz	linc-labels interpolate (labels-interpolate)
+<ID>_tracer_bundles_template.nii.gz	$LINC_WORK/labels/<ID>/template_route/<ID>_Bundles_mri-template.nii.gz | $LINC_DATA/sub-<ID>/labels/template/tracer/<ID>_Bundles_mri-template.nii.gz	linc-labels carry (labels-carry-route)
+<ID>_tracer_injection_site_template.nii.gz	$LINC_WORK/labels/<ID>/template_route/<ID>_Injection_site_mri-template.nii.gz | $LINC_DATA/sub-<ID>/labels/template/tracer/<ID>_Injection_site_mri-template.nii.gz	linc-labels carry (labels-carry-route)
+<ID>_tracer_terminals_template.nii.gz	$LINC_WORK/labels/<ID>/template_route/<ID>_Terminals_mri-template.nii.gz | $LINC_DATA/sub-<ID>/labels/template/tracer/<ID>_Terminals_mri-template.nii.gz	linc-labels carry (labels-carry-route)
+<ID>_tracer_bundles_connected_template.nii.gz	$LINC_WORK/labels/<ID>/template_route/<ID>_Bundles_mri-template_connected.nii.gz | $LINC_DATA/sub-<ID>/labels/template/tracer/<ID>_Bundles_mri-template_connected.nii.gz	linc-labels connect (labels-connect-route)
+<ID>_b0_to_template.nii.gz	$LINC_WORK/transforms/<ID>/<ID>_b0_to_template.nii.gz	linc-results --transforms (from the run's own registrations)
+<ID>_blockface_to_template.nii.gz	$LINC_WORK/transforms/<ID>/<ID>_blockface_to_template.nii.gz	linc-results --transforms (from the run's own registrations)
+<ID>_t2_to_template.nii.gz	$LINC_WORK/transforms/<ID>/<ID>_t2_to_template.nii.gz	linc-results --transforms (from the run's own registrations)
+<ID>_micro_to_template.nii.gz	$LINC_WORK/transforms/<ID>/<ID>_micro_to_template.nii.gz	linc-results --transforms (from the run's own registrations)

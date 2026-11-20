@@ -54,5 +54,15 @@ A new brain's registrations are unchecked until you check them yourself.
 ## 5. Keep the results
 
 The commands write under the repository's `outputs/`, never into the data folder.
-To keep a result, copy it into the data folder under `brains/sub-<ID>/`: the finished files in the brain's `outputs/` and everything else in its `intermediate/`, named like the paper's brains' files (any brain's `outputs/README.txt` in the data folder lists the names), with a `README.txt` in each folder.
-For the paper's brains, `settings/files.tsv` pairs each of these files with the name the code knows it by, which shows where a file of the working folder belongs.
+`outputs/brains/sub-<ID>/` shows the brain's results laid out like its folder in the data folder, as links ([00](../tutorials/00_start_here.md#where-the-files-are)): `outputs/` holds the finished files your run made, under the data folder's names, and `intermediate/` one link per place where the run wrote for the brain.
+To keep the finished files, copy the files the links point to into the data folder, under the same names; from the top of the repository:
+
+```bash
+$PY code/shared/linc-results --subject <ID> --transforms      # also the complete transforms to the template, about 15 s each
+mkdir -p $LINC_DATA_TREE/brains/sub-<ID>/outputs
+cp -L outputs/brains/sub-<ID>/outputs/* $LINC_DATA_TREE/brains/sub-<ID>/outputs/
+```
+
+`--transforms` composes the complete transforms from your run's own registrations, into `$LINC_WORK/transforms/<ID>/`; leave it out if you do not want them.
+`settings/results.tsv` lists the finished files the view can show; the histology stacked on the blockface, the LGN and STN composites, the labels' `.tsv` tables and the viewer copy of the blockface store are not among them, because no step of the repository writes them.
+Copy what else you want to keep from `outputs/brains/sub-<ID>/intermediate/` into the brain's `intermediate/` in the data folder, and give each folder a `README.txt` (any paper brain's `outputs/README.txt` in the data folder lists the names of the finished files).

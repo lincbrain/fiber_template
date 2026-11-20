@@ -157,7 +157,8 @@ def test_roots_stops_on_a_wrong_data_folder(tmp_path):
 def test_roots_refresh_links_again_and_fills_the_working_folders_again(tmp_path):
     table, tree = toy(tmp_path, "tree", keep=(0, 2))
     repo = tmp_path / "repo"                                       # the files under test, the toy table, and stand-ins for the two helpers
-    for rel in ("settings/roots.sh", "code/shared/link_data.py", "settings/outputs_README.txt"):
+    for rel in ("settings/roots.sh", "code/shared/link_data.py", "settings/outputs_README.txt", "settings/results.tsv",
+                "code/shared/__init__.py", "code/shared/results.py", "code/shared/linc-results"):
         (repo / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(str(REPO / rel), str(repo / rel))
     shutil.copy(str(table), str(repo / "settings" / "files.tsv"))
@@ -179,6 +180,7 @@ def test_roots_refresh_links_again_and_fills_the_working_folders_again(tmp_path)
     assert first[1].startswith(f"{out / 'local_rebuild'} --rebuild MR252 --rebuild MF191 --rebuild MR263 --raw ")
     readme = (REPO / "settings" / "outputs_README.txt").read_text()
     assert (out / "README.txt").read_text() == readme              # outputs/README.txt, written when outputs/ is built
+    assert (out / "brains").is_dir()                               # and the brains' results view, empty while no brain is there
     (out / "README.txt").write_text("an older one")
     mine = out / "local_data" / "my_result.txt"                    # something the user made in a working folder
     mine.write_text("mine")
@@ -204,6 +206,7 @@ def test_roots_refresh_links_again_and_fills_the_working_folders_again(tmp_path)
     assert all((out / d / ".complete").exists() for d in ("local_data", "local_rebuild"))
     assert mine.read_text() == "mine"                              # nothing of the user's is touched
     assert (out / "README.txt").read_text() == readme              # the README is written again on a refresh
+    assert os.readlink(str(out / "brains" / "sub-MR243" / "intermediate" / "local_data")) == str(out / "local_data" / "data" / "sub-MR243")
 
     stdout, err = source_roots(repo, LINC_DATA=tree)               # and afterwards it is quiet again
     assert "adding" not in err and len(calls.read_text().split()) == 4

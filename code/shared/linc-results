@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+"""Show each brain's results in the data folder's layout: outputs/brains/sub-<ID>/{inputs, intermediate/, outputs/}, made of links.
+
+    code/shared/linc-results [--subject ID ...] [--transforms]
+
+You need
+  a shell that sourced settings/roots.sh (LINC_DATA_TREE, the data folder). Any Python 3: standard library only.
+What it does
+  For every brain of the working folders (or the brains given), it links into outputs/brains/sub-<ID>/:
+    inputs         the data folder's brains/sub-<ID>/inputs
+    intermediate/  each place where your run wrote for this brain: local_data ($LINC_DATA/sub-<ID>), local_rebuild and local_mri (its
+                   folders in $LINC_REBUILD_DATA and $LINC_MRI_DATA, when they exist) and work_<kind> (each $LINC_WORK/<kind>/<ID>)
+    outputs/       the finished files your run made, under the names the data folder's brains/sub-<ID>/outputs gives them
+                   (settings/results.tsv says where each one is written). A file is your run's own when it physically lives in the
+                   working folder or work folder it was found in (its real path is inside that folder's); a link to the paper's
+                   file, or a file inside a linked folder, is not, wherever it points
+  It writes links only, and only under outputs/brains/; it changes nothing else. Running it again changes nothing, and a link whose
+  source is gone is removed. settings/roots.sh, run.py after each step and every tool at its end run it too, quietly
+  (LINC_RESULTS_VIEW=0 turns that off).
+  --transforms also writes the complete transforms a brain's outputs/ holds in the data folder, <ID>_b0_to_template, and for the four
+  MRI-template brains _t2_to_template and _micro_to_template, and <ID>_blockface_to_template for a brain whose blockface is
+  registered to its own b0, composed from your run's own registrations (python -m shared.xfm compose, as the data folder's were), into
+  $LINC_WORK/transforms/<ID>/, and links them. About 200 MB and 15 s each; never done without the option. It needs the environment's
+  Python (settings/env/linc.yml), not just any Python 3.
+You get
+  one line per brain: how many finished files and intermediate places it linked.
+"""
+import argparse
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from shared import results  # noqa: E402
+
+ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+ap.add_argument("--subject", nargs="+", metavar="ID", help="only these brains (default: every brain of the working folders)")
+ap.add_argument("--transforms", action="store_true", help="also compose the complete transforms from your run's own registrations")
+a = ap.parse_args()
+if a.transforms:
+    for sid, f, what in results.transforms(subjects=a.subject):
+        print(f"sub-{sid}: {Path(f).name}: {what}")
+done = results.update(subjects=a.subject)
+for sid, n_out, n_int, inp in done:
+    print(f"sub-{sid}: {n_out} finished file{'' if n_out == 1 else 's'}, {n_int} intermediate place{'' if n_int == 1 else 's'}"
+          f"{', inputs' if inp else ''}  (outputs/brains/sub-{sid})")
+if not done:
+    print("linc-results: no brain in the working folders yet")

@@ -186,6 +186,8 @@ The data folder has MR243's LGN and STN in four spaces, `brains/sub-MR243/output
 
 ## 4. Checks
 
+Each brain's finished files that `settings/results.tsv` lists also appear in the repository's `outputs/brains/sub-<ID>/outputs/`, named as the data folder names them ([00](00_start_here.md#where-the-files-are)).
+
 **The registration check** scores each component by the Dice coefficient of the registered section's tissue with the photograph's, after each stage, and passes it when the Dice coefficient after the nonlinear stage is at least 0.85.
 On MR243, 93 of 97 components passed, with a median of 0.945 after the affine stage and 0.960 after the nonlinear stage.
 On the other five histology brains, MR252 passed 46 of 47, MR256 53 of 53, MF278 77 of 79, MF275 58 of 62 and MF191 55 of 57.

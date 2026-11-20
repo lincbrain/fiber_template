@@ -180,6 +180,8 @@ The published templates are `atlas:NMT_v2.0_sym`, `atlas:INIA19` and `atlas:CIVM
 
 ## 4. Checks
 
+Each brain's finished files that `settings/results.tsv` lists also appear in the repository's `outputs/brains/sub-<ID>/outputs/`, named as the data folder names them ([00](00_start_here.md#where-the-files-are)).
+
 **The outline check** runs at the end of step B2.
 It moves the b0's brain mask into the template and measures, in six directions, how far the moved outline lies outside the template brain's outline (overshoot) or inside it (undershoot).
 The verdict is PASS when every 99th percentile of the distance is at most 2.5 mm, and WARN, which still counts as a pass, when a 99th percentile is over 2.5 mm.
